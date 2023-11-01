@@ -44,7 +44,12 @@ function App() {
                 <Route path="/agregarEmpleado" element={<EmpleadosForm/>} />
                 <Route path="/editarEmpleado/:id" element={<EmpleadosForm/>} />
               </Routes>
-            </EmpleadoContextProvider>            
+            </EmpleadoContextProvider>
+            <ClientesContextProvider>
+              <Routes>
+                
+              </Routes>
+            </ClientesContextProvider>  
           </main>
         </div>
       </div>
