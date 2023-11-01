@@ -1,0 +1,213 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <meta name="description" content="">
+  <meta name="author" content="Constru-tech">
+    <title>Constru-tech</title>
+    <link rel="stylesheet" href="css/all.min.css">
+    <link rel="stylesheet" href="css/jquery-confirm.min.css">
+    <link rel="stylesheet" href="css/jquery-ui.css">
+    <link rel="stylesheet" href="css/themes-jquery-ui.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+      li.badge>button{
+        line-height: 0.8em !important;
+      }
+      li.badge>span{
+        color: black !important;
+      }
+      .jconfirm .jconfirm-box.jconfirm-animation-news{
+          transform: rotate(400deg) scale(0);
+          animation-duration: 3s;
+      }      
+    </style>
+</head>
+
+<body>
+    <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+      <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 bg-white" href="#"><img src="images/logo.png" class="d-inline-block align-text-top w-50"></a>
+      <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="navbar-nav">
+        <div class="nav-item text-nowrap">
+          <a class="nav-link px-3" href="#">Perfil</a>
+        </div>
+      </div>
+    </header>    
+    <div class="container-fluid">
+        <div class="row">
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                <li class="nav-item" id="dashboard">
+                    <a class="nav-link" aria-current="page" href="index.html">
+                    <i class="fa-solid fa-gauge-high"></i>
+                    Inicio
+                    </a>
+                </li>
+                <li class="nav-item" id="usuarios">
+                    <a class="nav-link" aria-current="page" href="usuarios.html">
+                    <i class="fa-solid fa-users"></i>
+                    Usuarios
+                    </a>
+                </li>
+                <li class="nav-item" id="roles">
+                    <a class="nav-link" href="roles.html">
+                    <i class="fa-solid fa-user-tie"></i>
+                    Roles
+                    </a>
+                </li>
+                <li class="nav-item" id="permisos">
+                    <a class="nav-link" href="permisos.html">
+                    <i class="fa-solid fa-user-gear"></i>
+                    Permisos
+                    </a>
+                </li>
+                <li class="nav-item" id="empleados">
+                    <a class="nav-link" href="empleados.html">
+                    <i class="fa-solid fa-user-group"></i>
+                    Empleados
+                    </a>
+                </li>
+                <li class="nav-item" id="especialidades">
+                    <a class="nav-link" href="especialidad.html">
+                    <i class="fa-solid fa-screwdriver-wrench"></i>
+                    Especialidades
+                    </a>
+                </li>
+                <li class="nav-item" id="proveedores">
+                    <a class="nav-link" href="proveedores.html">
+                    <i class="fa-solid fa-truck"></i>
+                    Proveedores
+                    </a>
+                </li>
+                <li class="nav-item" id="materiales">
+                    <a class="nav-link" href="materiales.html">
+                    <i class="fa-solid fa-box-open"></i>
+                    Materiales
+                    </a>
+                </li>
+                <li class="nav-item" id="categorias">
+                    <a class="nav-link" href="categorias.html">
+                    <i class="fa-solid fa-book"></i>
+                    Categorias
+                    </a>
+                </li>
+                <li class="nav-item" id="compras">
+                    <a class="nav-link" href="compras.html">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    Compras
+                    </a>
+                </li>
+                <li class="nav-item" id="obras">
+                    <a class="nav-link" href="obras.html">
+                    <i class="fa-solid fa-map-location-dot"></i>
+                    Obras y tiempos
+                    </a>
+                </li>
+                <li class="nav-item" id="clientes">
+                    <a class="nav-link" href="/clientsList">
+                    <i class="fa-solid fa-id-card"></i>
+                    Clientes
+                    </a>
+                </li>
+                </ul>
+            </div>
+            </nav> 
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                {{{body}}}                
+            </main>
+        </div>
+    </div>
+  <script type="text/javascript" src="js/jquery-3.6.0.js"></script>
+  <script src="js/jquery-ui.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/popper.min.js"></script>
+  <script src="Bootstrap-4-Multi-Select-BsMultiSelect/Bootstrap-4-Multi-Select-BsMultiSelect/dist/js/BsMultiSelect.min.js"></script>
+  <script src="Bootstrap-4-Multi-Select-BsMultiSelect/Bootstrap-4-Multi-Select-BsMultiSelect/dist/js/BsMultiSelect.bs4.min.js"></script>
+  <script src="js/38595e06c7.js"></script>
+  <script src="js/jquery-confirm.min.js"></script>
+  <script src="js/validaciones.js"></script>
+  <script src="js/moment.js"></script>
+  {{!-- <script>   
+    $(function(){
+      $("#fechaini").datepicker({
+        dateFormat: "yy/mm/dd",
+        defaultDate:+7
+      });
+      $("#fechaini").datepicker("option", "showAnim", "slide");
+
+    });
+    $("#example").bsMultiSelect();
+    $("#example2").bsMultiSelect();
+    $("#form").submit(function(e){
+        e.preventDefault();
+    });
+    $('#add').on('click', async function(){
+      let cliente = $("#cliente").val();
+      let direccion = $("#direccion").val();
+      let descripcion = $("#descripcion").val();
+      let fechaini = $("#fechaini").val();
+      let selectEmpl = $("#example2").val();
+      let selectMat = $("#example").val();
+      let errors = []
+      await errors.push(alertconfirm("Cliente", cliente,'',''))
+      await errors.push(alertconfirm("Fecha inicio", fechaini,'date',''))
+      await errors.push(alertconfirm("Direccion", direccion,'string',20))
+      await errors.push(alertconfirm("Descripcion", descripcion,'string',30))
+      await errors.push(alertconfirm("Empleado", selectEmpl,'array',0))
+      await errors.push(alertconfirm("Material", selectMat,'array',0))            
+      const allcheck =  array => array.every(value => value === array[0])
+      const check = allcheck(errors)
+       if (check) {
+        $.confirm({
+            title:"Obra ingresada con exito!",
+            content:"Redirecionando a listado de obras...",
+            icon: 'fa fa-check',
+            theme: 'modern',
+            closeIcon: true,
+            animation: 'news',
+            closeAnimation: 'news',
+            type: 'green',
+            columnClass:'col-md-6 col-md-offset-3',
+            autoClose: 'okay|4000',
+            buttons: {
+                okay: function () {
+                  window.location.href = "obras.html";
+                },
+            }            
+        })     
+      }else{
+          $.confirm({
+          title:"Error",
+          content:errors,
+          icon: 'fa fa-xmark',
+          theme: 'modern',
+          closeIcon: true,
+          animation: 'news',
+          closeAnimation: 'news',
+          type: 'red',
+        })
+      }      
+    });
+  </script>   --}}
+</body>
+</html>

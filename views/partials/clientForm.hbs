@@ -1,0 +1,49 @@
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-6 mt-3">
+                      <label class="form-label">Nombre cliente <span class="text-danger">*</span></label>
+                      <input id="nombre" name="nombre" type="text" class="form-control" placeholder="Nombre" value="{{this.nombre}}">
+                    </div>
+                    <div class="col-6 mt-3">
+                      <label for="correo" class="form-label">Correo electrónico <span class="text-danger">*</span></label>
+                      <input id="email" name="email" type="text" class="form-control" placeholder="Correo electrónico" value="{{this.email}}">
+                    </div>
+                    <div class="col-6 mt-3">
+                      <label for="direccion" class="form-label">Direccion </label>
+                      <input id="direccion" name="direccion" type="text" class="form-control" placeholder="Dirección" value="{{this.direccion}}">
+                    </div>
+                    <div class="col-6 mt-3">
+                      <label for="telefono" class="form-label">Teléfono <span class="text-danger">*</span></label>
+                      <input id="telefono" name="telefono" type="text" class="form-control" placeholder="Teléfono" value="{{this.telefono}}">
+                    </div>
+                    <div class="col-6 mt-3">
+                      <label for="cedula" class="form-label">Cédula <span class="text-danger">*</span></label>
+                      <input id="cedula" name="cedula" type="text" class="form-control" placeholder="Cédula" value="{{this.cedula}}">
+                    </div>
+                    <div class="col-6 mt-3">
+                      <label for="estado" class="form-label">Estado <span class="text-danger">*</span></label>
+                      <select id="estado" name="estado" class="form-select form-select-sm" aria-label=".form-select-sm example">
+                        <option selected value="">Seleccione estado</option>
+                        <option value="1" {{selectOptionSelected this.estado}}>Activo</option>
+                        <option value="0" {{selectOptionSelected this.estado}}>Inactivo</option>
+                      </select>
+                    </div>
+                    <div class="col-6 mt-3">
+                      <label class="form-label">Fecha nacimiento</label>
+                      <input id="fecha_nac" name="fecha_nac" type="text" class="form-control" placeholder="Fecha de nacimiento"  value="{{this.fecha_nac}}">                                  
+                    </div>                    
+                    {{#if this.idCli}}
+                        <input type="hidden" name="idCli" id="idCli" value="{{this.idCli}}">
+                    {{/if}}
+                  </div>  
+                </div>
+                <div class="card-footer text-center">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <button id="add" type="submit" class="btn btn-primary w-50"><h4>{{#if this.idCli}}Editar{{else}}Agregar{{/if}}</h4></button>
+                    </div>
+                    <div class="col-md-6">
+                      <a type="button" href="http://localhost:4000/clientsList" class="btn btn-danger w-50"><h4>Cancelar</h4></a>
+                    </div>
+                  </div>
+                </div>

@@ -1,0 +1,191 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model categoria {
+  idcat      Int          @id @default(autoincrement())
+  nombre     String?      @db.VarChar(50)
+  estado     Int?
+  medida     String?      @db.VarChar(50)
+  materiales materiales[]
+}
+
+model cliente {
+  idCli     Int       @id @default(autoincrement())
+  nombre    String?   @db.VarChar(70)
+  email     String?   @db.VarChar(100)
+  direccion String?   @db.VarChar(50)
+  telefono  String?   @db.VarChar(10)
+  cedula    String    @db.VarChar(10)
+  fecha_nac DateTime? @db.Date
+  estado    Int?
+  obras     obras[]
+}
+
+model compras {
+  idCom           Int               @id @default(autoincrement())
+  fecha           DateTime?         @db.Date
+  imagen          String?           @db.VarChar(100)
+  total_compra    Int?
+  compras_detalle compras_detalle[]
+}
+
+model compras_detalle {
+  id         Int         @id @default(autoincrement())
+  idCompra   Int?
+  idMat      Int?
+  cantidad   Int?
+  subtotal   Int?
+  compras    compras?    @relation(fields: [idCompra], references: [idCom], onDelete: Restrict, onUpdate: Restrict, map: "compras_detalle_ibfk_1")
+  materiales materiales? @relation(fields: [idMat], references: [idMat], onDelete: Restrict, onUpdate: Restrict, map: "compras_detalle_ibfk_2")
+
+  @@index([idCompra], map: "idCompra")
+  @@index([idMat], map: "idMat")
+}
+
+model empleado {
+  idEmp                 Int                     @id @default(autoincrement())
+  nombre                String?                 @db.VarChar(50)
+  direccion             String?                 @db.VarChar(50)
+  email                 String?                 @db.VarChar(100)
+  telefono              String?                 @db.VarChar(10)
+  tipoDoc               String?                 @db.VarChar(10)
+  cedula                String?                 @db.VarChar(10)
+  estado                Int?
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+  empleado_especialidad empleado_especialidad[]
+  empleado_obra         empleado_obra[]
+}
+
+model empleado_especialidad {
+  id           Int           @id @default(autoincrement())
+  idEmp        Int?
+  idEsp        Int?
+  empleado     empleado?     @relation(fields: [idEmp], references: [idEmp], onDelete: Restrict, onUpdate: Restrict, map: "empleado_especialidad_ibfk_1")
+  especialidad especialidad? @relation(fields: [idEsp], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "empleado_especialidad_ibfk_2")
+
+  @@index([idEmp], map: "idEmp")
+  @@index([idEsp], map: "idEsp")
+}
+
+model empleado_obra {
+  id       Int       @id @default(autoincrement())
+  idEmp    Int?
+  idObra   Int?
+  empleado empleado? @relation(fields: [idEmp], references: [idEmp], onDelete: Restrict, onUpdate: Restrict, map: "empleado_obra_ibfk_1")
+  obras    obras?    @relation(fields: [idObra], references: [idObra], onDelete: Restrict, onUpdate: Restrict, map: "empleado_obra_ibfk_2")
+
+  @@index([idEmp], map: "idEmp")
+  @@index([idObra], map: "idObra")
+}
+
+model especialidad {
+  id                    Int                     @id @default(autoincrement())
+  especialidad          String?                 @db.VarChar(30)
+  estado                Int?
+  empleado_especialidad empleado_especialidad[]
+}
+
+model materiales {
+  idMat            Int                @id @default(autoincrement())
+  nombre           String?            @db.VarChar(50)
+  idProveedor      Int?
+  estado           Int?
+  precio           Int?
+  cantidad         Int?
+  idCategoria      Int?
+  compras_detalle  compras_detalle[]
+  proveedor        proveedor?         @relation(fields: [idProveedor], references: [idProv], onDelete: Restrict, onUpdate: Restrict, map: "materiales_ibfk_1")
+  categoria        categoria?         @relation(fields: [idCategoria], references: [idcat], onDelete: Restrict, onUpdate: Restrict, map: "materiales_ibfk_2")
+  materiales_obras materiales_obras[]
+
+  @@index([idCategoria], map: "idCategoria")
+  @@index([idProveedor], map: "idProveedor")
+}
+
+model materiales_obras {
+  id         Int         @id @default(autoincrement())
+  idMaterial Int?
+  idObra     Int?
+  consumo    String?     @db.VarChar(20)
+  materiales materiales? @relation(fields: [idMaterial], references: [idMat], onDelete: Restrict, onUpdate: Restrict, map: "materiales_obras_ibfk_3")
+  obras      obras?      @relation(fields: [idObra], references: [idObra], onDelete: Restrict, onUpdate: Restrict, map: "materiales_obras_ibfk_4")
+
+  @@index([idMaterial], map: "idMaterial")
+  @@index([idObra], map: "idObra")
+}
+
+model obras {
+  idObra           Int                @id @default(autoincrement())
+  descripcion      String?            @db.VarChar(100)
+  fechaini         DateTime?          @db.Date
+  fechafin         DateTime?          @db.Date
+  area             Int?
+  idCliente        Int?
+  estado           String?            @db.VarChar(50)
+  empleado_obra    empleado_obra[]
+  materiales_obras materiales_obras[]
+  cliente          cliente?           @relation(fields: [idCliente], references: [idCli], onDelete: Restrict, onUpdate: Restrict, map: "obras_ibfk_3")
+
+  @@index([idCliente], map: "idCliente")
+}
+
+model permiso {
+  idPer       Int           @id @default(autoincrement())
+  permiso     String?       @db.VarChar(30)
+  estado      Int?
+  rol_permiso rol_permiso[]
+}
+
+model proveedor {
+  idProv           Int          @id @default(autoincrement())
+  nombre           String?      @db.VarChar(50)
+  direccion        String?      @db.VarChar(100)
+  nit              String?      @db.VarChar(14)
+  tipo             String?      @db.VarChar(10)
+  estado           Int?
+  email            String?      @db.VarChar(100)
+  telefono         String?      @db.VarChar(15)
+  nombreContacto   String?      @db.VarChar(50)
+  telefonoContacto String?      @db.VarChar(10)
+  emailContacto    String?      @db.VarChar(100)
+  materiales       materiales[]
+}
+
+model rol {
+  idRol       Int           @id @default(autoincrement())
+  nombre      String?       @db.VarChar(30)
+  estado      Int?
+  rol_permiso rol_permiso[]
+  usuario     usuario[]
+}
+
+model rol_permiso {
+  id      Int      @id @default(autoincrement())
+  idRol   Int?
+  idPer   Int?
+  tipo    String   @db.VarChar(100)
+  rol     rol?     @relation(fields: [idRol], references: [idRol], onDelete: Restrict, onUpdate: Restrict, map: "rol_permiso_ibfk_1")
+  permiso permiso? @relation(fields: [idPer], references: [idPer], onDelete: Restrict, onUpdate: Restrict, map: "rol_permiso_ibfk_2")
+
+  @@index([idPer], map: "idPer")
+  @@index([idRol], map: "idRol")
+}
+
+model usuario {
+  idUsu      Int     @id @default(autoincrement())
+  estado     Int
+  contrasena String? @db.VarChar(20)
+  idRol      Int?
+  idEmp      Int
+  rol        rol?    @relation(fields: [idRol], references: [idRol], onDelete: Restrict, onUpdate: Restrict, map: "usuario_ibfk_1")
+
+  @@index([idEmp], map: "idEmp")
+  @@index([idRol], map: "idRol")
+}

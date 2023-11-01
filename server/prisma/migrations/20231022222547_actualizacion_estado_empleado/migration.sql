@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `empleado` ADD COLUMN `estado` INTEGER NOT NULL DEFAULT 1;
