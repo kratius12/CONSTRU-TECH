@@ -1,19 +1,17 @@
-//import { useEmpleados } from "../context/EmpleadosProvider";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Relaciones } from "../components/Relaciones"
-// import { Card, Typography } from "@material-tailwind/react";
+
  
-export default function EmpleadoTable({empleados}) {
-  const empleadosData = empleados
+export default function ProveedorTable({proveedores}) {
+  const proveedoresData = proveedores
   const navigate = useNavigate()
-  const [estadoEpm, setStatus] = useState()
-  const handleClick = (idEmp, estado) => {
+  const [estadoProv, setStatus] = useState()
+  const handleClick = (idProv, estado) => {
     const newStatus = estado === 1 ? 0 : 1
-    console.log(idEmp+"-"+estado+"-"+newStatus)
+    console.log(idProv+"-"+estado+"-"+newStatus)
     setStatus(newStatus)
   }
-  // const toggleStatus = (idEmp, status) => {
+  // const toggleStatus = (idProv, status) => {
   //   const newStatus = status === 1 ? 0 : 1
   //   setStatus(newStatus)
   // }
@@ -24,24 +22,26 @@ export default function EmpleadoTable({empleados}) {
           <tr>
             <th scope="col">#</th>
             <th scope="col">Nombre</th>
-            <th scope="col">Correo</th>
-            <th scope="col">Telófono</th>
-            <th scope="col">Cédula</th>
-            <th scope="col">Especialidad</th>
+            <th scope="col">Email</th>
+            <th scope="col">Telefono</th>
+            <th scope="col">Tipo</th>
+            <th scope="col">Nombre{"\n"}/telefono Contacto</th>
+            <th scope="col">Dirección</th>
             <th scope="col">Estado</th>
             <th scope="col">Acción</th>
           </tr>
         </thead>
         <tbody>
-          {empleadosData.map(({ idEmp, nombre, email, telefono, cedula, estado }) => {
+          {proveedoresData.map(({ idProv, nombre, direccion, nit, tipo, email,telefono,estado,nombreContacto,telefonoContacto }) => {
             return (
-              <tr key={idEmp}>
-                <td>{idEmp}</td>
+              <tr key={idProv}>
+                <td>{idProv}</td>
                 <td>{nombre}</td>
                 <td>{email}</td>
                 <td>{telefono}</td>
-                <td>{cedula}</td>
-                <td><Relaciones relaciones /></td>
+                <td>{nit}-{tipo}</td>
+                <td>{nombreContacto}/{telefonoContacto}</td>
+                <td>{direccion}</td>
                 <td>
                   <div className="form-check form-switch">
                     <input
@@ -50,14 +50,14 @@ export default function EmpleadoTable({empleados}) {
                       id="flexSwitchCheckDefault" 
                       value={estado} 
                       checked
-                      onChange={() => handleClick(idEmp, estado)}
+                      onChange={() => handleClick(idProv, estado)}
                     />
                   </div>
                 </td>
                 <td>
                   <a
                     className="btn bg-secondary text-white"
-                    onClick={ ()=> navigate(`/editarEmpleado/${idEmp}`)}
+                    onClick={ ()=> navigate(`/editarProveedor/${idProv}`)}
                   >
                     {" "}
                     Editar <span data-feather="edit-3" />{" "}

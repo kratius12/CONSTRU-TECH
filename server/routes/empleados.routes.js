@@ -99,6 +99,29 @@ router.delete("/empleado/:id", async (req, res) => {
     }
 })
 
-router.get("/empleadosEsp", getEmpleadosEspecialidades)
+router.get("/empleadosEsp", async (req, res) => {
+    try {
+        const result= await prisma.empleado.findMany({
+            select:{
+                idEmp:true,
+                nombre:true,
+                email:true,
+                telefono:true,
+                cedula:true,
+                estado:true,
+                empleado_especialidad:{
+                    select:{
+                        especialidad:true
+                    }
+                }
+            }
+        })   
+        res.json(result)
+        console.log(result);
+            
+        } catch (error) {
+            return res.status(500).json({message: error.message})
+        }
+})
 
 export default router

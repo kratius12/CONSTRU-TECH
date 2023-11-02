@@ -14,6 +14,9 @@ import { ClientContextProvider } from "./context/ClientesProvider";
 import { MaterialContextProvider } from "./context/MaterialesProvider";
 import { ObraContextProvider } from "./context/ObrasProvider";
 import { EmpleadoContextProvider } from "./context/EmpleadosProvider";
+import {ProveedorContextProvider} from './context/ProveedorProvider'
+import ProveedoresPage from './pages/ProveedorPage'
+import ProveedoresForm from "./pages/ProveedoresForm";
 import Sidebar from "./components/Sidebar";
 function App() {
   return (
@@ -46,14 +49,6 @@ function App() {
                 <Route path="/agregarEmpleado" element={<EmpleadosForm/>} />
                 <Route path="/editarEmpleado/:id" element={<EmpleadosForm/>} />
               </Routes>
-            </EmpleadoContextProvider>
-            <ClientContextProvider>
-              <Routes>
-                <Route path="/clientes" element={<ClientPage />} />
-                <Route path="/agregarCliente" element={<ClientForm />} />
-                <Route path="/editarCliente/:id" element={<ClientForm />} />
-              </Routes>
-            </ClientContextProvider>
           </main>
         </div>
       </div>
