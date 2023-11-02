@@ -54,7 +54,6 @@ export default function ClienteTable({clientes}) {
                       onChange={() => handleClick(idCli, estado)}
                     />
                   </div>
-                  {estado}
                 </td>
                 <td>
                   <a
