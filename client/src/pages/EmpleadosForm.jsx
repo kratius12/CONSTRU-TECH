@@ -43,10 +43,11 @@ export default function EmpleadosForm() {
     const options = especialidades.map(item => ({value:item.id, label:item.especialidad}))
     const [selectedOption, setSelectedOption] = useState("");
 
-    const handleClick = (selectedOption) => {
+    const handleClick = (selected) => {
+      setSelectedOption(selected.value);
       console.log(selectedOption);
-      setSelectedOption(selectedOption.value);
     };
+    
     const params = useParams()
     const navigate = useNavigate()
     const [empleado, setEmpleado] = useState({
@@ -87,13 +88,13 @@ export default function EmpleadosForm() {
           validationSchema={EmpleadoSchema}
           onSubmit={ async (values) => {
             console.log(values);
-            // if (params.id) {
-            //   await updateEmpleado(params.id, values)
-            //   navigate("/empleados")
-            // } else {
-            //   await createEmpleado(values)
-            //   navigate("/empleados")
-            // }
+            if (params.id) {
+              await updateEmpleado(params.id, values)
+              navigate("/empleados")
+            } else {
+              await createEmpleado(values)
+              navigate("/empleados")
+            }
               setEmpleado({
                   nombre:"",
                   direccion:"",
@@ -164,7 +165,7 @@ export default function EmpleadosForm() {
                         <label htmlFor="especialidad" className="form-label">Especialidad <span className="text-danger">*</span></label>
                         <Select
                         onChange={handleClick}
-                        value={values.especialidad}
+
                         closeMenuOnSelect={false}
                         isMulti
                         components={animatedComponents} 

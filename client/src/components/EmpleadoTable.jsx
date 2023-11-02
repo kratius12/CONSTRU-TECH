@@ -52,7 +52,6 @@ export default function EmpleadoTable({empleados}) {
                       onChange={() => handleClick(idEmp, estado)}
                     />
                   </div>
-                  {estado}
                 </td>
                 <td>
                   <a
