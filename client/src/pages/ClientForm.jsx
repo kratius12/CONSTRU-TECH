@@ -82,13 +82,13 @@ export default function ClientsForm() {
           validationSchema={ClientSchema}
           onSubmit={ async (values) => {
             console.log(values);
-            // if (params.id) {
-            //   await updateEmpleado(params.id, values)
-            //   navigate("/clientes")
-            // } else {
-            //   await createClient(values)
-            //   navigate("/clientes")
-            // }
+            if (params.id) {
+              await updateClient(params.id, values)
+              navigate("/clientes")
+            } else {
+              await createClient(values)
+              navigate("/clientes")
+            }
               setCliente({
                 nombre:"",
                 email: "",
@@ -146,9 +146,9 @@ export default function ClientsForm() {
                       <div className="col-6 mt-3">
                         <label htmlFor="fecha_nac" className="form-label">Fecha de nacimiento <span className="text-danger">*</span></label>
                         <input type="date" className="form-control" id="fecha_nac" onChange={handleChange} value={values.fecha_nac} />
-                          {errors.fecha_nac && touchederrors.fecha_nac ? (
+                          {errors.fecha_nac && touched.fecha_nac ? (
                           <div className="alert alert-danger" role="alert">{errors.fecha_nac}</div>
-                          ) : null}                        
+                          ) : null}
                       </div>
                       <div className="col-6 mt-3">
                         <label htmlFor="estado" className="form-label">Estado <span className="text-danger">*</span></label>

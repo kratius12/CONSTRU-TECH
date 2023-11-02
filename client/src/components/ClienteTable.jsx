@@ -42,7 +42,7 @@ export default function ClienteTable({clientes}) {
                 <td>{telefono}</td>
                 <td>{cedula}</td>
                 <td>{fecha_nac}</td>
-                <td>{estado}</td>
+                {/* <td>{estado}</td> */}
                 <td>
                   <div className="form-check form-switch">
                     <input
