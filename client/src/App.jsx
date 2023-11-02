@@ -4,11 +4,13 @@ import ObrasPage from "./pages/ObrasPage";
 import ObrasForm from "./pages/ObrasForm";
 import MaterialesPage from "./pages/MaterialesPage";
 import EmpleadosPage from "./pages/EmpleadosPage";
+import ClientPage from "./pages/ClientPage";
 import FormMaterial from "./pages/FormMaterial";
 import FormTemplate from "./pages/FormTemplate";
 import EmpleadosForm from "./pages/EmpleadosForm";
-import NotFound from "./pages/NotFound";
+import ClientForm from "./pages/ClientForm";
 import Header from "./components/Header";
+import { ClientContextProvider } from "./context/ClientesProvider";
 import { MaterialContextProvider } from "./context/MaterialesProvider";
 import { ObraContextProvider } from "./context/ObrasProvider";
 import { EmpleadoContextProvider } from "./context/EmpleadosProvider";
@@ -47,14 +49,6 @@ function App() {
                 <Route path="/agregarEmpleado" element={<EmpleadosForm/>} />
                 <Route path="/editarEmpleado/:id" element={<EmpleadosForm/>} />
               </Routes>
-            </EmpleadoContextProvider>   
-            <ProveedorContextProvider>
-            <Routes>
-                <Route path="/proveedores" element={<ProveedoresPage/>} />
-                <Route path="/agregarProveedor" element={<ProveedoresForm/>} />
-                <Route path="/editarProveedor/:id" element={<ProveedoresForm/>} />
-              </Routes>
-            </ProveedorContextProvider>       
           </main>
         </div>
       </div>
