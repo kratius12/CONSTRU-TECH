@@ -1,8 +1,9 @@
 import { useContext, useState } from "react";
 import { getClientsRequest, deleteClientRequest, createClientRequest, getClientRequest, updateClientRequest } from "../api/clientes.api";
+import { ClientsContext } from "./ClientesContext"
 
 export const useClients =() => {
-    const context = useContext(ClientContext);
+    const context = useContext(ClientsContext);
     if(!context){
         throw new Error ("F")
     }
@@ -11,7 +12,7 @@ export const useClients =() => {
 
 export const ClientContextProvider=({children}) => {
     const [clientes, setClientes] = useState([])
-    async function loadClients() {
+    async function Clients() {
         const respuesta = await getClientsRequest()
         setClientes(respuesta.data)
     }
@@ -51,7 +52,7 @@ export const ClientContextProvider=({children}) => {
         }
     }
 
-    return <ClientContext.Provider value={{clientes,loadClients,deleteClient,createClient,getClient,updateClient}}>
+    return <ClientsContext.Provider value={{clientes,Clients,deleteClient,createClient,getClient,updateClient}}>
         {children}
-    </ClientContext.Provider>
+    </ClientsContext.Provider>
 }

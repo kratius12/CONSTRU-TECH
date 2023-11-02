@@ -4,11 +4,13 @@ import ObrasPage from "./pages/ObrasPage";
 import ObrasForm from "./pages/ObrasForm";
 import MaterialesPage from "./pages/MaterialesPage";
 import EmpleadosPage from "./pages/EmpleadosPage";
+import ClientPage from "./pages/ClientPage";
 import FormMaterial from "./pages/FormMaterial";
 import FormTemplate from "./pages/FormTemplate";
 import EmpleadosForm from "./pages/EmpleadosForm";
-import NotFound from "./pages/NotFound";
+import ClientForm from "./pages/ClientForm";
 import Header from "./components/Header";
+import { ClientContextProvider } from "./context/ClientesProvider";
 import { MaterialContextProvider } from "./context/MaterialesProvider";
 import { ObraContextProvider } from "./context/ObrasProvider";
 import { EmpleadoContextProvider } from "./context/EmpleadosProvider";
@@ -45,11 +47,13 @@ function App() {
                 <Route path="/editarEmpleado/:id" element={<EmpleadosForm/>} />
               </Routes>
             </EmpleadoContextProvider>
-            <ClientesContextProvider>
+            <ClientContextProvider>
               <Routes>
-                
+                <Route path="/clientes" element={<ClientPage />} />
+                <Route path="/agregarCliente" element={<ClientForm />} />
+                <Route path="/editarCliente/:id" element={<ClientForm />} />
               </Routes>
-            </ClientesContextProvider>  
+            </ClientContextProvider>
           </main>
         </div>
       </div>
