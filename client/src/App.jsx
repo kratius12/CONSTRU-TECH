@@ -12,6 +12,9 @@ import Header from "./components/Header";
 import { MaterialContextProvider } from "./context/MaterialesProvider";
 import { ObraContextProvider } from "./context/ObrasProvider";
 import { EmpleadoContextProvider } from "./context/EmpleadosProvider";
+import {ProveedorContextProvider} from './context/ProveedorProvider'
+import ProveedoresPage from './pages/ProveedorPage'
+import ProveedoresForm from "./pages/ProveedoresForm";
 import Sidebar from "./components/Sidebar";
 function App() {
   return (
@@ -44,7 +47,14 @@ function App() {
                 <Route path="/agregarEmpleado" element={<EmpleadosForm/>} />
                 <Route path="/editarEmpleado/:id" element={<EmpleadosForm/>} />
               </Routes>
-            </EmpleadoContextProvider>            
+            </EmpleadoContextProvider>   
+            <ProveedorContextProvider>
+            <Routes>
+                <Route path="/proveedores" element={<ProveedoresPage/>} />
+                <Route path="/agregarProveedor" element={<ProveedoresForm/>} />
+                <Route path="/editarProveedor/:id" element={<ProveedoresForm/>} />
+              </Routes>
+            </ProveedorContextProvider>       
           </main>
         </div>
       </div>
