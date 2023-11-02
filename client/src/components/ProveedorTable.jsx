@@ -20,11 +20,12 @@ export default function ProveedorTable({proveedores}) {
       <table id="table" className="table table-striped table-sm">
         <thead>
           <tr>
+            <th scope="col">#</th>
             <th scope="col">Nombre</th>
             <th scope="col">Email</th>
             <th scope="col">Telefono</th>
             <th scope="col">Tipo</th>
-            <th scope="col">Contacto</th>
+            <th scope="col">Nombre{"\n"}/telefono Contacto</th>
             <th scope="col">Dirección</th>
             <th scope="col">Estado</th>
             <th scope="col">Acción</th>
@@ -34,11 +35,12 @@ export default function ProveedorTable({proveedores}) {
           {proveedoresData.map(({ idProv, nombre, direccion, nit, tipo, email,telefono,estado,nombreContacto,telefonoContacto }) => {
             return (
               <tr key={idProv}>
+                <td>{idProv}</td>
                 <td>{nombre}</td>
                 <td>{email}</td>
                 <td>{telefono}</td>
-                <td>{nit}/{"\n"+tipo}</td>
-                <td>{nombreContacto}/{"\n"+telefonoContacto}</td>
+                <td>{nit}-{tipo}</td>
+                <td>{nombreContacto}/{telefonoContacto}</td>
                 <td>{direccion}</td>
                 <td>
                   <div className="form-check form-switch">

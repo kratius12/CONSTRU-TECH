@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ProveedorTable from "../components/ProveedorTable";
 import { useProveedores } from "../context/ProveedorProvider";
+import { useLocation } from "react-router-dom";
 function ProveedoresPage() {
 
     const {proveedores, Proveedores} = useProveedores()
@@ -9,7 +10,12 @@ function ProveedoresPage() {
     useEffect(() =>{
     Proveedores()  
     }, [])
-
+    function HeaderView() {
+        const location = useLocation();
+        console.log(location.pathname);
+        return <span>Path : {location.pathname}</span>
+      }
+      console.log(location)
     function renderMain() {
         if (proveedores.length === 0) {
             return <h1>Sin proveedores</h1>

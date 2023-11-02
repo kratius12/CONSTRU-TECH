@@ -1,6 +1,11 @@
 import { Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 export default function Sidebar() {
-
+  function HeaderView() {
+    const location = useLocation();
+    console.log(location.pathname);
+    return "active"
+  }
   return (
     <nav
       id="sidebarMenu"
@@ -27,7 +32,7 @@ export default function Sidebar() {
             </a>
           </li>
           <li className="nav-item">
-            <Link className="nav-link active" to="/empleados">
+            <Link className="nav-link" to="/empleados">
               <i className="fa-solid fa-user-group" />
               Empleados
             </Link>
@@ -39,7 +44,7 @@ export default function Sidebar() {
             </a>
           </li>
           <li className="nav-item">
-            <Link className="nav-link active" to="/proveedores">
+            <Link className="nav-link "s to="/proveedores">
               <i className="fa-solid fa-truck" />
               Proveedores
             </Link>

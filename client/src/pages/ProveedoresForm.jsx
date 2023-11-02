@@ -13,7 +13,9 @@ const proveedorSchema = Yup.object().shape({
     telefono: Yup.string()
         .min(7, 'El telefono debe contener al menos 7 caracteres')
         .max(12, 'El telefono no puede contener mas de 12 caracteres')
-        .required('El telefono es requerido'),
+        .required('El telefono es requerido')
+        .trim()
+    ,
     direccion: Yup.string()
         .min(5, 'La direccion debe contener al menos 5 caracteres')
         .max(50, 'La direccion no puede contener mas de 50 caracteres')
@@ -21,9 +23,11 @@ const proveedorSchema = Yup.object().shape({
     estado: Yup.string()
         .required('El estado es requerido'),
     nit: Yup.string()
-        .min(14, 'El nit debe contener 14 digitos')
+        .min(9, 'El nit debe contener 9 digitos')
         .max(14, 'El nit debe tener como maximo 14 digitos')
-        .required('El nit es requerido'),
+        .required('El nit es requerido')
+        .trim('El telefono no permite espacios')
+    ,
     nombreContacto: Yup.string()
         .min(3, 'El nombre del contacto debe contener al menos 3 caracteres')
         .max(50, 'El nombre del contacto no puede contener mas de 50 caracteres')
@@ -31,7 +35,8 @@ const proveedorSchema = Yup.object().shape({
     telefonoContacto: Yup.string()
         .min(7, 'El telefono del contacto debe contener al menos 7 caracteres')
         .max(12, 'El telefono del contacto no puede contener mas de 12 caracteres')
-        .required('El telefono del contacto es requerido'),
+        .required('El telefono del contacto es requerido')
+        .trim('El telefono no permite espacios'),
     emailContacto: Yup.string().email('Formato de correo electronico invalido').required('Correo electronico requerido'),
 });
 export default function ProveedoresForm() {
