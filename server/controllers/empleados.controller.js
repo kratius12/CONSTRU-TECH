@@ -15,13 +15,7 @@ export  const getEmpleadosEspecialidades = async (req,res) =>{
                 }
             }
         }
-    })
-    // result.forEach(element => {
-    //     console.log(`Nombre: ${element.nombre}`)
-    //     element.Empleado_Especialidad.forEach(element2 => {
-    //         console.log(`Especialidad: ${element2.especialidad.especialidad}`);
-    //     });
-    // });    
+    }) 
     res.json(result)
     console.log(result);
         

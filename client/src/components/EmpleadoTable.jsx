@@ -1,6 +1,7 @@
 //import { useEmpleados } from "../context/EmpleadosProvider";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Relaciones } from "../components/Relaciones"
 // import { Card, Typography } from "@material-tailwind/react";
  
 export default function EmpleadoTable({empleados}) {
@@ -40,7 +41,7 @@ export default function EmpleadoTable({empleados}) {
                 <td>{email}</td>
                 <td>{telefono}</td>
                 <td>{cedula}</td>
-                <td>{estado}</td>
+                <td><Relaciones relaciones /></td>
                 <td>
                   <div className="form-check form-switch">
                     <input
@@ -52,7 +53,6 @@ export default function EmpleadoTable({empleados}) {
                       onChange={() => handleClick(idEmp, estado)}
                     />
                   </div>
-                  {estado}
                 </td>
                 <td>
                   <a
