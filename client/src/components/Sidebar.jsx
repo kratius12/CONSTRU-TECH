@@ -32,22 +32,22 @@ export default function Sidebar() {
             </a>
           </li>
           <li className="nav-item">
-            <Link className="nav-link" to="/empleados">
+          <Link className="nav-link" to="/empleados">
               <i className="fa-solid fa-user-group" />
               Empleados
-            </Link>
+          </Link>
           </li>
           <li className="nav-item">
-            <a className="nav-link" href="especialidad.html">
+          <Link className="nav-link " to="/especialidades">
               <i className="fa-solid fa-screwdriver-wrench" />
               Especialidades
-            </a>
+          </Link>
           </li>
           <li className="nav-item">
-            <Link className="nav-link "s to="/proveedores">
+            <a className="nav-link" href="proveedores.html">
               <i className="fa-solid fa-truck" />
               Proveedores
-            </Link>
+            </a>
           </li>
           <li className="nav-item">
             <a className="nav-link" href="materiales.html">
@@ -56,10 +56,10 @@ export default function Sidebar() {
             </a>
           </li>
           <li className="nav-item">
-            <a className="nav-link" href="categorias.html">
+          <Link className="nav-link " to="/categorias">
               <i className="fa-solid fa-book" />
               Categorias
-            </a>
+          </Link>
           </li>
           <li className="nav-item">
             <a className="nav-link" href="compras.html">
