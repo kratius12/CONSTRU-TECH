@@ -27,7 +27,7 @@ export default function Sidebar() {
           </a>
         </li>
         <li className="nav-item">
-        <Link className="nav-link active" to="/empleados">
+        <Link className="nav-link" to="/empleados">
             <i className="fa-solid fa-user-group" />
             Empleados
         </Link>
