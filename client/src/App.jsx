@@ -16,6 +16,7 @@ import { MaterialContextProvider } from "./context/MaterialesProvider";
 import { ObraContextProvider } from "./context/ObrasProvider";
 import { EmpleadoContextProvider } from "./context/EmpleadosProvider";
 import {ProveedorContextProvider} from './context/ProveedorProvider'
+import {ClientContextProvider} from "./context/ClientesProvider"; 
 import ProveedoresPage from './pages/ProveedorPage'
 import ProveedoresForm from "./pages/ProveedoresForm";
 import Sidebar from "./components/Sidebar";
@@ -68,7 +69,21 @@ function App() {
                 <Route path="/agregarCategoria" element={<CategoriasForm />} />
                 <Route path="/editarCategoria/:id" element={<CategoriasForm />} />
               </Routes>
-            </CategoriaContextProvider> 
+            </CategoriaContextProvider>
+            <ProveedorContextProvider>
+              <Routes>
+                <Route path="/proveedores" element={<ProveedoresPage/>}></Route>
+                <Route path="/agregarProveedor" element={<ProveedoresForm/>}></Route>
+                <Route path="/editarProveedor/:id" element={<ProveedoresForm/>}></Route>
+              </Routes>
+            </ProveedorContextProvider>
+            <ClientContextProvider>
+              <Routes>
+                <Route path="/clientes" element={<ClientPage/>}></Route>
+                <Route path="/agregarCliente" element={<ClientForm/>}></Route>
+                <Route path="/editarCliente/:id" element={<ClientForm/>}></Route>
+              </Routes>
+            </ClientContextProvider>
           </main>
         </div>
       </div>
