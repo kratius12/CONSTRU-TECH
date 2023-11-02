@@ -4,16 +4,20 @@ import ObrasPage from "./pages/ObrasPage";
 import ObrasForm from "./pages/ObrasForm";
 import MaterialesPage from "./pages/MaterialesPage";
 import EmpleadosPage from "./pages/EmpleadosPage";
+import ClientPage from "./pages/ClientPage";
 import FormMaterial from "./pages/FormMaterial";
 import FormTemplate from "./pages/FormTemplate";
 import EmpleadosForm from "./pages/EmpleadosForm";
-import NotFound from "./pages/NotFound";
+import ClientForm from "./pages/ClientForm";
 import Header from "./components/Header";
 import { CategoriaContextProvider } from "./context/CategoriasProvider";
 import { EspecialidadContextProvider } from "./context/EspecialidadesProvider";
 import { MaterialContextProvider } from "./context/MaterialesProvider";
 import { ObraContextProvider } from "./context/ObrasProvider";
 import { EmpleadoContextProvider } from "./context/EmpleadosProvider";
+import {ProveedorContextProvider} from './context/ProveedorProvider'
+import ProveedoresPage from './pages/ProveedorPage'
+import ProveedoresForm from "./pages/ProveedoresForm";
 import Sidebar from "./components/Sidebar";
 import EspecialidadesPage from "./pages/EspecialidadesPage";
 import EspecialidadesForm from "./pages/EspecialidadesForm";
@@ -50,7 +54,7 @@ function App() {
                 <Route path="/agregarEmpleado" element={<EmpleadosForm/>} />
                 <Route path="/editarEmpleado/:id" element={<EmpleadosForm/>} />
               </Routes>
-            </EmpleadoContextProvider>  
+            </EmpleadoContextProvider> 
             <EspecialidadContextProvider>
               <Routes>
                 <Route path="/especialidades" element={<EspecialidadesPage/>} />
@@ -64,7 +68,7 @@ function App() {
                 <Route path="/agregarCategoria" element={<CategoriasForm />} />
                 <Route path="/editarCategoria/:id" element={<CategoriasForm />} />
               </Routes>
-            </CategoriaContextProvider>    
+            </CategoriaContextProvider> 
           </main>
         </div>
       </div>

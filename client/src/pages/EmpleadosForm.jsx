@@ -47,7 +47,30 @@ export default function EmpleadosForm() {
       setSelectedOption(selected.value);
       console.log(selectedOption);
     };
-    
+    const alertConfirm = (type) => {
+      var message =""
+      if (type == "update") {
+        message = "Actualizado"
+      }else{
+        message = "Agregado"
+      }
+      $.confirm({
+        title:`Empleado `+message+` con exito!`,
+        content:"Redirecionando a listado de empleados...",
+        icon: 'fa fa-check',
+        theme: 'modern',
+        closeIcon: true,
+        animation: 'news',
+        closeAnimation: 'news',
+        type: 'green',
+        columnClass:'col-md-6 col-md-offset-3',
+        autoClose: 'okay|4000',
+        buttons: {
+            okay: function () {
+            },
+        }            
+    })
+    }
     const params = useParams()
     const navigate = useNavigate()
     const [empleado, setEmpleado] = useState({
@@ -90,10 +113,18 @@ export default function EmpleadosForm() {
             console.log(values);
             if (params.id) {
               await updateEmpleado(params.id, values)
-              navigate("/empleados")
+              alertConfirm()
+              setTimeout(
+                navigate("/empleados"),
+                5000
+              )
             } else {
               await createEmpleado(values)
-              navigate("/empleados")
+              alertConfirm()
+              setTimeout(
+                navigate("/empleados"),
+                5000
+              )
             }
               setEmpleado({
                   nombre:"",
