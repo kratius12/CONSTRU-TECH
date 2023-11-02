@@ -69,10 +69,10 @@ export default function Sidebar() {
           </a>
         </li>
         <li className="nav-item">
-          <a className="nav-link" href="clientes.html">
-            <i className="fa-solid fa-id-card" />
+        <Link className="nav-link active" to="/clientes">
+            <i className="fa-solid fa-user-group" />
             Clientes
-          </a>
+        </Link>
         </li>
       </ul>
     </div>
