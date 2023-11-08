@@ -4,6 +4,7 @@ import { CreateEmpleadoRequest,
     UpdateEmpleadoRequest,
     DeleteEmpleadoRequest,
     GetEmpleadosRequest,
+    GetEmpleadosEspecialidadesRequest,
     ToggleEmpleadoStatusRequest,
     GetEspecialidadesRequest,
     CreateEspecialidadesRequest
@@ -25,7 +26,7 @@ export const EmpleadoContextProvider = ({children}) => {
     const [empleados, setEmpleados] = useState([])
     const [especialidades, setEspecialidades] = useState([])
     async function Empleados() {
-        const response = await GetEmpleadosRequest()
+        const response = await GetEmpleadosEspecialidadesRequest()
         console.log(response.data)  
         setEmpleados(response.data)          
     }  

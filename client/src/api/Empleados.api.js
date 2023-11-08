@@ -4,6 +4,10 @@ export const GetEmpleadosRequest = async () =>{
     return await axios.get('http://localhost:4000/empleados')
 }
 
+export const GetEmpleadosEspecialidadesRequest = async () =>{
+    return await axios.get('http://localhost:4000/empleadosEsp')
+}
+
 export const GetEspecialidadesRequest = async () =>{
     return await axios.get('http://localhost:4000/especialidades')
 }
