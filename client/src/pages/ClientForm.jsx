@@ -67,7 +67,8 @@ export default function ClientsForm() {
                     cedula:cliente.cedula,
                     fecha_nac:cliente.fecha_nac,
                     estado:cliente.estado
-                })                
+                })
+                
             }
         }
         loadClients()
