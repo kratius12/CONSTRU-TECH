@@ -11,6 +11,10 @@ const ClientSchema = Yup.object().shape({
     .min(3, 'El nombre debe contener al menos 3 caracteres')
     .max(50, 'El nombre no puede contener mas de 50 caracteres')
     .required('El nombre es requerido'),
+    apellidos: Yup.string()
+    .min(3, 'El apellido debe contener al menos 3 caracteres')
+    .max(50, 'El apellido no puede contener mas de 50 caracteres')
+    .required('El apellido es requerido'),
     email: Yup.string().email('Formato de correo electronico invalido').required('Correo electronico requerido'),
     direccion: Yup.string()
     .min(5, 'La direccion debe contener al menos 5 caracteres')
@@ -20,6 +24,8 @@ const ClientSchema = Yup.object().shape({
     .min(7, 'El numero telefonico debe tener al menos 7 caracteres')
     .max(12, 'El numero telefonico no puede tener mas de 12 caracteres')
     .required('El numero telefonico es requerido'),
+    tipoDoc: Yup.string()
+    .required('El tipo de documento es requerido'),
     cedula: Yup.string()
     .min(8, 'La cedula debe contener al menos 8 caracteres')
     .max(20, 'La cedula no puede contener mas de 20 caracteres')
@@ -27,7 +33,11 @@ const ClientSchema = Yup.object().shape({
     fecha_nac: Yup.string()
     .required('La fecha de nacimiento es requerida'),
     estado: Yup.string()
-    .required('El estado es requerido')
+    .required('El estado es requerido'),
+    contrasena: Yup.string()
+    .min(5, 'La contraseña debe tener al menos 5 caracteres')
+    .max(50, 'La contraseña no puede tener mas de 50 caracteres')
+    .required('La contraseña es requerida')
 });
 
 const animatedComponents = makeAnimated();
@@ -47,12 +57,15 @@ export default function ClientsForm() {
     const navigate = useNavigate()
     const [cliente, setCliente] = useState({
         nombre:"",
+        apellidos:"",
         email: "",
         direccion:"",
         telefono:"",
+        tipoDoc:"",
         cedula:"",
         fecha_nac: "",
-        estado:""
+        estado:"",
+        contrasena:""
     })
     
     useEffect(() =>{
@@ -61,12 +74,15 @@ export default function ClientsForm() {
                 const cliente = await getClient(params.id)
                 setCliente({
                     nombre:cliente.nombre,
+                    apellidos:cliente.apellidos,
                     email:cliente.email,
                     direccion:cliente.direccion,
                     telefono:cliente.telefono,
+                    tipoDoc:cliente.tipoDoc,
                     cedula:cliente.cedula,
                     fecha_nac:cliente.fecha_nac,
-                    estado:cliente.estado
+                    estado:cliente.estado,
+                    contrasena:cliente.contrasena
                 })
                 
             }
@@ -92,12 +108,15 @@ export default function ClientsForm() {
             }
               setCliente({
                 nombre:"",
+                apellidos:"",
                 email: "",
                 direccion:"",
                 telefono:"",
+                tipoDoc:"",
                 cedula:"",
                 fecha_nac: "",
-                estado:""
+                estado:"",
+                contrasena:""
               })
           }}
           >
@@ -114,6 +133,13 @@ export default function ClientsForm() {
                         <input type="text" className="form-control" id="nombre" onChange={handleChange} value={values.nombre} />
                           {errors.nombre && touched.nombre ? (
                           <div className="alert alert-danger" role="alert">{errors.nombre}</div>
+                          ) : null}                        
+                      </div>
+                      <div className="col-6 mt-3">
+                        <label htmlFor="apellidos" className="form-label">Apellidos<span className="text-danger">*</span></label>
+                        <input type="text" className="form-control" id="apellidos" onChange={handleChange} value={values.apellidos} />
+                          {errors.apellidos && touched.apellidos ? (
+                          <div className="alert alert-danger" role="alert">{errors.apellidos}</div>
                           ) : null}                        
                       </div>
                       <div className="col-6 mt-3">
@@ -138,6 +164,18 @@ export default function ClientsForm() {
                           ) : null}                        
                       </div>
                       <div className="col-6 mt-3">
+                        <label htmlFor="tipoDoc" className="form-label">Tipo documento <span className="text-danger">*</span></label>
+                        <select id="tipoDoc" className="form-select" onChange={handleChange} value={values.tipoDoc} >
+                          <option value="">Seleccione tipo documento</option>
+                          <option value="Cedula de ciudadania">Cedula de ciudadania</option>
+                          <option value="Cedula de extranjeria">Cedula de extranjeria</option>
+                          <option value="Pasaporte">Pasaporte</option>
+                        </select>
+                        {errors.tipoDoc && touched.tipoDoc ? (
+                          <div className="alert alert-danger" role="alert">{errors.tipoDoc}</div>
+                          ) : null}                         
+                      </div>
+                      <div className="col-6 mt-3">
                         <label htmlFor="cedula" className="form-label">Cedula <span className="text-danger">*</span></label>
                         <input type="text" className="form-control" id="cedula" onChange={handleChange} value={values.cedula} />
                           {errors.cedula && touched.cedula ? (
@@ -150,6 +188,13 @@ export default function ClientsForm() {
                           {errors.fecha_nac && touched.fecha_nac ? (
                           <div className="alert alert-danger" role="alert">{errors.fecha_nac}</div>
                           ) : null}
+                      </div>
+                      <div className="col-6 mt-3">
+                        <label htmlFor="contrasena" className="form-label">Contraseña <span className="text-danger">*</span></label>
+                        <input type="password" className="form-control" id="contrasena" onChange={handleChange} value={values.contrasena} />
+                          {errors.contrasena && touched.contrasena ? (
+                          <div className="alert alert-danger" role="alert">{errors.contrasena}</div>
+                          ) : null}                        
                       </div>
                       <div className="col-6 mt-3">
                         <label htmlFor="estado" className="form-label">Estado <span className="text-danger">*</span></label>
@@ -168,7 +213,7 @@ export default function ClientsForm() {
                     <div className="row">
                       <div className="col-md-6">
                         <button type="submit" disabled={isSubmitting} className="btn btn-primary w-50">
-                          <h4>{params.id ? "Editar": "Agregar"}</h4>
+                          <h4>{params.id ? "Guardar": "Agregar"}</h4>
                         </button>
                       </div>
                       <div className="col-md-6">

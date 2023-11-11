@@ -22,9 +22,10 @@ export default function ClienteTable({ clientes }) {
             <thead>
               <tr>
                 <th scope="col">#</th>
-                <th scope="col">Nombre</th>
-                <th scope="col">Correo</th>
-                {/* <th scope="col">Direccion</th> */}
+                <th scope="col">Nombres</th>
+                <th scope="col">Apellidos</th>
+                {/* <th scope="col">Correo</th> */}
+                <th scope="col">Direccion</th>
                 <th scope="col">Telefono</th>
                 <th scope="col">Cedula</th>
                 {/* <th scope="col">Fecha de nacimiento</th> */}
@@ -34,13 +35,14 @@ export default function ClienteTable({ clientes }) {
               </tr>
             </thead>
             <tbody>
-              {clientesData.map(({ idCli, nombre, email, direccion, telefono, cedula, fecha_nac, estado }) => {
+              {clientesData.map(({ idCli, nombre, email, direccion, telefono, cedula, fecha_nac, estado,apellidos }) => {
                 return (
                   <tr key={idCli}>
                     <td>{idCli}</td>
                     <td>{nombre}</td>
-                    <td>{email}</td>
-                    {/* <td>{direccion}</td> */}
+                    <td>{apellidos}</td>
+                    {/* <td>{email}</td> */}
+                    <td>{direccion}</td>
                     <td>{telefono}</td>
                     <td>{cedula}</td>
                     {/* <td>{fecha_nac}</td> */}
