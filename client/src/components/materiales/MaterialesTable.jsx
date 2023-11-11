@@ -15,7 +15,6 @@ export default function MaterialTable({ materiales }) {
                         <th scope="col">#</th>
                         <th scope="col">Nombre</th>
                         <th scope="col">Proveedor</th>
-                        <th scope="col">Precio</th>
                         <th scope="col">Cantidad</th>
                         <th scope="col">Categoria</th>
                         <th scope="col">Estado</th>
@@ -23,13 +22,12 @@ export default function MaterialTable({ materiales }) {
                     </tr>
                 </thead>
                 <tbody>
-                    {materialesData.map(({ idMat, nombre, idProveedor, precio, cantidad, idCategoria, estado }) => {
+                    {materialesData.map(({ idMat, nombre, idProveedor,  cantidad, idCategoria, estado }) => {
                         return (
                             <tr key={idMat}>
                                 <td>{idMat}</td>
                                 <td>{nombre}</td>
                                 <td>{idProveedor}</td>
-                                <td>{precio}</td>
                                 <td>{cantidad}</td>
                                 <td>{idCategoria}</td>
                                 <td>

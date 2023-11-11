@@ -97,7 +97,6 @@ model materiales {
   nombre           String?            @db.VarChar(50)
   idProveedor      Int?
   estado           Int?
-  precio           Int?
   cantidad         Int?
   idCategoria      Int?
   compras_detalle  compras_detalle[]

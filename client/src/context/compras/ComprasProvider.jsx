@@ -4,7 +4,9 @@ import {
     DeleteCompraRequest,
     GetCompraRequest,
     GetComprasRequest,
-    UpdateCompraRequest
+    UpdateCompraRequest,
+    DetalleCompraRequest,
+    GetDetalleReques
 } from '../../api/Compras.api'
 import { ComprasContext } from './ComprasContext'
 
@@ -56,8 +58,24 @@ export const CompraContextProvider = ({ children }) => {
             console.error(error)
         }
     }
+    const createDetalle = async(detalle)=>{
+        try{
+            const response = await DetalleCompraRequest(detalle)
+            console.log(response)
+        }catch(error){
+            console.error(error)
+        }
+    }
+    const getDetalle = async(idCom)=>{
+        try{
+            const response = await GetDetalleReques(idCom)
+            console.log(response)
+        }catch(error){
+            console.error(error)
+        }
+    }
     return (
-        <ComprasContext.Provider value={{ compras, Compras, deleteCompra, createCompra, updateCompra, getCompra }}
+        <ComprasContext.Provider value={{ compras, Compras, deleteCompra, createCompra, updateCompra, getCompra,createDetalle,getDetalle }}
         >
             {children}
         </ComprasContext.Provider>

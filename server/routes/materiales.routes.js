@@ -24,6 +24,7 @@ router.get("/material/:id", async (req, res) => {
                 idMat: parseInt(req.params.id)
             }
         })
+        console.log(material)
     } catch (error) {
         console.error(error)
     }
@@ -31,11 +32,10 @@ router.get("/material/:id", async (req, res) => {
 
 router.post("/materiales", async (req, res) => {
     try {
-        const { nombre, precio, cantidad, idProveedor, idCategoria, estado } = req.body
+        const { nombre, cantidad, idProveedor, idCategoria, estado } = req.body
         const result = await prisma.materiales.create({
             data: {
                 nombre: nombre,
-                precio: precio,
                 cantidad: cantidad,
                 estado: estado,
                 idProveedor: idProveedor,
@@ -50,14 +50,13 @@ router.post("/materiales", async (req, res) => {
 router.put("/material/:id", async (req, res) => {
     try {
         const idMat = req.params.id
-        const { nombre, precio, cantidad, idProveedor, idCategoria, estado } = req.body
+        const { nombre, cantidad, idProveedor, idCategoria, estado } = req.body
         const response = await prisma.materiales.update({
             where: {
                 idMat: idMat
             },
             data: {
                 nombre: nombre,
-                precio: precio,
                 cantidad: cantidad,
                 estado: estado,
                 idProveedor: idProveedor,
