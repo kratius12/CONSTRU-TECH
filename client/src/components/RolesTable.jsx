@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 // import { Card, Typography } from "@material-tailwind/react";
  
-export default function RolTable({rol}) {
-    const rolesData = rol
+export default function RolTable({roles}) {
+    const rolesData = roles
     const navigate = useNavigate()
     const [estado, setStatus] = useState()
     const handleClick = (idRol, estado) => {
@@ -23,13 +23,14 @@ export default function RolTable({rol}) {
             <th scope="col">#</th>
             <th scope="col">Nombre</th>
             <th scope="col">Estado</th>
+            <th scope="col">Accion</th>
           </tr>
         </thead>
         <tbody>
           {rolesData.map(({ idRol, nombre, estado }) => {
             return (
-              <tr key={idCli}>
-                <td>{idCli}</td>
+              <tr key={idRol}>
+                <td>{idRol}</td>
                 <td>{nombre}</td>
                 <td>
                   <div className="form-check form-switch">
