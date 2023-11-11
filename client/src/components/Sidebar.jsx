@@ -21,13 +21,13 @@ export default function Sidebar() {
           </a>
         </li>
         <li className="nav-item">
-          <a className="nav-link" href="roles.html">
+          <a className="nav-link" href="/roles">
             <i className="fa-solid fa-user-tie" />
             Roles
           </a>
         </li>
         <li className="nav-item">
-        <Link className="nav-link active" to="/empleados">
+        <Link className="nav-link" to="/empleados">
             <i className="fa-solid fa-user-group" />
             Empleados
         </Link>
