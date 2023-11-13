@@ -15,7 +15,7 @@ export default function Sidebar() {
         </Link>
         </li>
         <li className="nav-item">
-          <a className="nav-link" aria-current="page" href="usuarios.html">
+          <a className="nav-link" aria-current="page" href="/usuarios">
             <i className="fa-solid fa-users" />
             Usuarios
           </a>

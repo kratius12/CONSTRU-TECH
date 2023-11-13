@@ -9,11 +9,13 @@ import FormTemplate from "./pages/FormTemplate";
 import EmpleadosForm from "./pages/EmpleadosForm";
 import RolesForm from "./pages/RolesForm";
 import RolesPage from "./pages/RolesPage";
+import UsuariosPage from "./pages/UsuariosPage";
 import Header from "./components/Header";
 import { MaterialContextProvider } from "./context/MaterialesProvider";
 import { ObraContextProvider } from "./context/ObrasProvider";
 import { EmpleadoContextProvider } from "./context/EmpleadosProvider";
 import { RolContextProvider } from "./context/RolesProvider";
+import { UsuarioContextProvider } from "./context/UsuariosProvider";
 import Sidebar from "./components/Sidebar";
 function App() {
   return (
@@ -53,7 +55,14 @@ function App() {
                 <Route path="/agregarRol" element={<RolesForm/>} />
                 <Route path="/editarRol/:id" element={<RolesForm/>} />
               </Routes>
-            </RolContextProvider>    
+            </RolContextProvider>  
+            <UsuarioContextProvider>
+              <Routes>
+                <Route path="/usuarios" element={<UsuariosPage/>} />
+                {/* <Route path="/agregarUsuario" element={<UsuariosForm/>} />
+                <Route path="/editarUsuario/:id" element={<UsuariosForm/>} /> */}
+              </Routes>
+            </UsuarioContextProvider>  
           </main>
         </div>
       </div>
