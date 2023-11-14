@@ -1,37 +1,57 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import ComprasTable from "../../components/compras/ComprasTable"
 import { useCompras } from "../../context/compras/ComprasProvider";
-import ComprasTable from "../../components/compras/ComprasTable";
+import TableInfo from "../../components/TableInfo";
 function ComprasPage() {
+    const dataHeader = [
+        {
+            header: "ID",
+            accessorKey: 'idCom'
 
+        },
+        {
+            header: "Fecha",
+            accessorKey: 'fecha'
+        },
+        {
+            header: "Factura",
+            accessorKey: 'imagen'
+        },
+        {
+            header:"Ver detalle",
+            accessorKey: 'verDetalle'
+        }
+    ]
     const { compras, Compras } = useCompras()
     const navigate = useNavigate()
     useEffect(() => {
         Compras()
     }, [])
-    function HeaderView() {
-        const location = useLocation();
-        console.log(location.pathname);
-        return <span>Path : {location.pathname}</span>
-    }
-    console.log(location)
+
     function renderMain() {
         if (compras.length === 0) {
-            return <h1>Sin compras</h1>
+            return <h1>Sin comrpas</h1>
 
         }
-        return <ComprasTable compras={compras} />
+        return <TableInfo dataHeader={dataHeader} dataBody={compras} routeEdit={'editarCompra'} />
+        
     }
 
     return (
         <div>
             <h1 className="text5-xl text-black font-bold text-left my-3">Compras</h1>
-            <button className="btn btn-primary" onClick={() => navigate(`/agregarCompras`)}>
-                Agregar compras
-            </button>
+
             <div className="table-responsive">
-                {renderMain()}
+                <div className="row">
+                    <div className="col-md-6 mb-3">
+                        <button className="btn btn-primary" onClick={() => navigate(`/agregarCompra`)}>
+                            Agregar compra
+                        </button>
+                    </div>
+                    {renderMain()}
+                </div>
+
             </div>
 
         </div>
@@ -39,3 +59,4 @@ function ComprasPage() {
 }
 
 export default ComprasPage
+

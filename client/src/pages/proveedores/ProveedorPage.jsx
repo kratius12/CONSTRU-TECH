@@ -1,37 +1,78 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import ProveedorTable from "../../components/proveedores/ProveedorTable";
+import ComprasTable from "../../components/compras/ComprasTable"
 import { useProveedores } from "../../context/proveedores/ProveedorProvider";
-import { useLocation } from "react-router-dom";
+import TableInfo from "../../components/TableInfo";
 function ProveedoresPage() {
+    const dataHeader = [
+        {
+            header: "ID",
+            accessorKey: 'idProv'
 
-    const {proveedores, Proveedores} = useProveedores()
+        },
+        {
+            header: "Nombre",
+            accessorKey: 'nombre'
+        },
+        {
+            header: "Telefono",
+            accessorKey: 'telefono'
+        },
+        {
+            header:"Email",
+            accessorKey: 'email'
+        },
+        {
+            header:"Nombre contacto",
+            accessorKey: 'nombreContacto'
+        },
+        {
+            header:"Telefono contacto",
+            accessorKey: 'telefonoContacto'
+        },
+        {
+            header:"Estado",
+            accessorKey: 'estado'
+        },
+        {
+            header:"Ver detalle",
+            accessorKey: ''
+        },
+        {
+            header:"Editar",
+            accessorKey: 'accion',
+            idProperty:"idProv"
+        },
+    ]
+    const { proveedores, Proveedores } = useProveedores()
     const navigate = useNavigate()
-    useEffect(() =>{
-    Proveedores()  
+    useEffect(() => {
+        Proveedores()
     }, [])
-    function HeaderView() {
-        const location = useLocation();
-        console.log(location.pathname);
-        return <span>Path : {location.pathname}</span>
-      }
-      console.log(location)
+
     function renderMain() {
         if (proveedores.length === 0) {
             return <h1>Sin proveedores</h1>
-            
+
         }
-        return <ProveedorTable proveedores={proveedores}/>
+        return <TableInfo dataHeader={dataHeader} dataBody={proveedores} routeEdit={'editarProveedor'} />
+        
     }
 
-    return(
+    return (
         <div>
             <h1 className="text5-xl text-black font-bold text-left my-3">Proveedores</h1>
-                <button className="btn btn-primary" onClick={ ()=> navigate(`/agregarProveedor`)}>
-                    Agregar proveedor
-                </button>
+
             <div className="table-responsive">
-                {renderMain()}
+                <div className="row">
+                    <div className="col-md-6 mb-3">
+                        <button className="btn btn-primary" onClick={() => navigate(`/agregarProveedor`)}>
+                            Agregar proveedor
+                        </button>
+                    </div>
+                    {renderMain()}
+                </div>
+
             </div>
 
         </div>
@@ -39,3 +80,4 @@ function ProveedoresPage() {
 }
 
 export default ProveedoresPage
+
