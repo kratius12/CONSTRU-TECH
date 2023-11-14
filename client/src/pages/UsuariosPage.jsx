@@ -2,7 +2,29 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import UsuarioTable  from "../components/UsuariosTable"
 import { useUsuario } from "../context/UsuariosProvider";
+import TableInfo from "../components/TableInfo";
 function UsuariosPage() {
+
+    const dataHeader = [
+        {
+           header: "ID",
+           accessorKey: 'idUsu'
+
+        },
+        {
+            header: "Rol",
+            accessorKey: 'idRol'
+        },
+        {
+            header: "Empleado",
+            accessorKey: 'idEmp'
+        },
+        {
+            header: "Estado",
+            accessorKey: 'estado'
+        }
+    ]
+
 
     const {usuarios, Usuarios} = useUsuario()
     const navigate = useNavigate()
@@ -14,8 +36,9 @@ function UsuariosPage() {
         if (usuarios.length === 0) {
             return <h1>Sin Usuarios</h1>
             
+        }else{
+            return <TableInfo dataHeader={dataHeader} dataBody={usuarios}/>
         }
-        return <UsuarioTable usuarios={usuarios}/>
     }
 
     return(

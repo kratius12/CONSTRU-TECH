@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import RolTable  from "../components/RolesTable"
-import { useRol } from "../context/RolesProvider";
+import { usePermiso } from "../context/RolesProvider";
 import TableInfo from "../components/TableInfo";
 
 function RolesPage() {
@@ -26,20 +26,19 @@ function RolesPage() {
         }
     ]
 
-    const {roles, Roles} = useRol()
+    const {permisos, Roles} = useRol()
     const navigate = useNavigate()
     useEffect(() =>{
     Roles()  
     }, [])
 
     function renderMain() {
-        if (roles.length === 0) {
-            return <h1>Sin Roles</h1>
+        if (permisos.length === 0) {
+            return <h1>Sin permisos</h1>
             
         }else{
-            return <TableInfo dataHeader={dataHeader} dataBody={roles}/>
+            return <TableInfo dataHeader={dataHeader} dataBody={permisos}/>
         }
-        // return <RolTable roles={roles}/>
     }
 
     return(

@@ -83,4 +83,34 @@ router.delete('/usuarios/:id', async (req, res) => {
         }
     })
 
+router.get("/usuariosRol", async (req, res) => {
+try {
+        const result= await prisma.usuario.findMany({
+        select:{
+                idUsu:true,
+                contrasena:true,
+                idRol:true,
+                idEmp:true,
+                estado:true,
+                rol:{
+                select:{
+                        nombre:true
+                }
+                },
+                empleado:{
+                select:{
+                        nombre:true
+                }
+                }
+        }
+        })   
+        res.json(result)
+        console.log(result);
+        
+        } catch (error) {
+        return res.status(500).json({message: error.message})
+        }
+})
+
+
 export default router

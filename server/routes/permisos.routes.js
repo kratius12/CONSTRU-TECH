@@ -4,9 +4,9 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 const router = Router();
 
-router.get('/roles', async (req, res) =>{
+router.get('/permisos', async (req, res) =>{
         try {
-            const result = await prisma.rol.findMany()
+            const result = await prisma.permiso.findMany()
             return res.status(200).json(result)
         } catch (error) {
             console.log(error);
@@ -14,11 +14,11 @@ router.get('/roles', async (req, res) =>{
         }
     });
 
-router.get('/roles/:id', async (req, res) =>{
+router.get('/permisos/:id', async (req, res) =>{
         try{
-                const result = await prisma.rol.findFirst({
+                const result = await prisma.permiso.findFirst({
                         where:{
-                                idRol:parseInt(req.params.id)
+                                idPer:parseInt(req.params.id)
                         }
                 })
                 console.log(result);
@@ -29,12 +29,12 @@ router.get('/roles/:id', async (req, res) =>{
         }
 });
 
-router.post('/roles', async (req, res) => {
+router.post('/permisos', async (req, res) => {
         try{
-                const {nombre, estado} = req.body
-                const result = await prisma.rol.create({
+                const {permiso, estado} = req.body
+                const result = await prisma.permiso.create({
                         data:{
-                                nombre: nombre,
+                                permiso: permiso,
                                 estado: parseInt(estado)
                         }
                 })
@@ -45,14 +45,14 @@ router.post('/roles', async (req, res) => {
         }
 });
 
-router.put('/roles/:id', async (req, res) => {
+router.put('/permisos/:id', async (req, res) => {
         try {
-                const {nombre, estado} = req.body
-                const result = await prisma.rol.update({
+                const {permiso, estado} = req.body
+                const result = await prisma.permiso.update({
                         where:{
-                                idRol: parseInt(req.params.id)
+                                idPer: parseInt(req.params.id)
                         },data:{
-                                nombre: nombre,
+                                permiso: permiso,
                                 estado: parseInt(estado)
                         }
                 })
@@ -64,11 +64,11 @@ router.put('/roles/:id', async (req, res) => {
         }
 });
 
-router.delete('/roles/:id', async (req, res) => {
+router.delete('/permisos/:id', async (req, res) => {
         try {
-            const result = await prisma.rol.delete({
+            const result = await prisma.permiso.delete({
                 where:{
-                    idRol:parseInt(req.params.id)
+                    idPer:parseInt(req.params.id)
                 }
             })
             console.log(result);
@@ -78,27 +78,5 @@ router.delete('/roles/:id', async (req, res) => {
             return res.status(500).json(error)
         }
     })
-
-router.get("/rolesPer", async (req, res) => {
-try {
-        const result= await prisma.rol.findMany({
-        select:{
-                idRol:true,
-                nombre:true,
-                estado:true,
-                rol_permiso:{
-                        select:{
-                                permiso:true
-                        }
-                }
-        }
-        })   
-        res.json(result)
-        console.log(result);
-        
-        } catch (error) {
-        return res.status(500).json({message: error.message})
-        }
-})
 
 export default router
