@@ -25,11 +25,7 @@ const ClientSchema = Yup.object().shape({
     .max(12, 'El numero telefonico no puede tener mas de 12 caracteres')
     .required('El numero telefonico es requerido'),
     tipoDoc: Yup.string()
-<<<<<<< Updated upstream
     .required('El tipo de documento es requerido'),
-=======
-    .required('El tipo de documento es requer ido'),
->>>>>>> Stashed changes
     cedula: Yup.string()
     .min(8, 'La cedula debe contener al menos 8 caracteres')
     .max(20, 'La cedula no puede contener mas de 20 caracteres')

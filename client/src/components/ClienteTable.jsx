@@ -11,10 +11,6 @@ export default function ClienteTable({ clientes }) {
     console.log(idCli + "-" + estado + "-" + newStatus)
     setStatus(newStatus)
   }
-  // const toggleStatus = (idCli, status) => {
-  //   const newStatus = status === 1 ? 0 : 1
-  //   setStatus(newStatus)
-  // }
   return (
 
     <div>
