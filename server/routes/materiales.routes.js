@@ -7,10 +7,24 @@ const router = Router()
 router.get("/materiales", async (req, res) => {
     try {
         const materiales = await prisma.materiales.findMany({
-            include: {
-                categoria: true,
-                proveedor: true
+            select: {
+                idMat: true,
+                cantidad: true,
+                estado: true,
+                nombre: true,
+                proveedor: {
+                    select: {
+                        nombre: true
+                    }
+                },
+                categoria: {
+                    select: {
+                        nombre: true
+                    }
+                }
+
             }
+
         })
         return res.send(materiales)
     } catch (error) {
@@ -37,11 +51,14 @@ router.post("/materiales", async (req, res) => {
             data: {
                 nombre: nombre,
                 cantidad: cantidad,
-                estado: estado,
-                idProveedor: idProveedor,
-                idCategoria: idCategoria
-            }
+                
+                estado:  parseInt(estado),
+                idCategoria:parseInt(idCategoria),
+                idProveedor:parseInt(idProveedor)
+            },
+            
         })
+        console.log(result)
     } catch (error) {
         console.error(error)
     }
@@ -76,7 +93,7 @@ router.delete("/material/:id", async (req, res) => {
                 idMat: req.params.id
             }
         })
-    }catch(error){
+    } catch (error) {
         console.error(error)
     }
 })

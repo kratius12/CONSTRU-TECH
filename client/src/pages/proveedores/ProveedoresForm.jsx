@@ -65,7 +65,7 @@ export default function ProveedoresForm() {
         }
         loadProveedores()
     }, [getProveedor, params.id])
-    const [opcionSeleccionada, setOpcionSeleccionada] = useState(''); // Estado para la opción seleccionada
+    const [tipo, setOpcionSeleccionada] = useState(''); // Estado para la opción seleccionada
     const [mostrarContacto, setMostrarContacto] = useState(false);
     const handleSelectChange = (event) => {
         const seleccion = event.target.value
@@ -125,7 +125,7 @@ export default function ProveedoresForm() {
                                                 ) : null}
                                             </div>
                                             <div className="col-6 mt-3">
-                                                <label htmlFor="nit" className="form-label">Nit <span className="text-danger">*</span></label>
+                                                <label htmlFor="nit" className="form-label">Nit/Documento de <span className="text-danger">*</span></label>
                                                 <input type="text" className="form-control" id="nit" onChange={handleChange} value={values.nit} />
                                                 {errors.nit && touched.nit ? (
                                                     <div className="alert alert-danger" role="alert">{errors.nit}</div>
@@ -165,7 +165,7 @@ export default function ProveedoresForm() {
                                             </div>
                                             <div className="col-6 mt-3">
                                                 <label htmlFor="tipo" className="form-label">Tipo proveedor <span className="text-danger">*</span></label>
-                                                <select id="tipo" className="form-select" onChange={handleSelectChange}   value={values.tipo}>
+                                                <select id="tipo" className="form-select" onChange={handleSelectChange}   value={values.tipo} values={values.tipo}>
                                                     <option value="">Seleccione tipo</option>
                                                     <option value="Natural">Natural</option>
                                                     <option value="Juridico">Juridico</option>

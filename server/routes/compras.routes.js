@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
-import datetime from 'datetime'
+
 
 const router = Router();
 const prisma = new PrismaClient()
@@ -31,15 +31,25 @@ router.get('/compra',async(req,res)=>{
 
 router.post('/compra',async(req,res)=>{
     try{
-        const {fecha,imagen,total_compra} = req.body
+        const {fecha,imagen,total_compra,idMat,cantidad,Precio} = req.body
         const date = new Date(fecha)
-        const respone = await prisma.compras.create({
+        const response = await prisma.compras.create({
             data:{
                 fecha:date,
                 imagen:imagen,
-                total_compra:parseInt(total_compra),
+                total_compra:parseInt(cantidad*Precio),
             },
         })
+            await prisma.compras_detalle.createMany({
+                data:{
+                    idCompra:response.idCom,
+                    idMat:parseInt(idMat),
+                    cantidad:parseInt(cantidad),
+                    Precio:parseInt(Precio),
+                    subtotal:parseInt(Precio*cantidad)
+                }
+            })
+
     }catch(error){
         console.error(error)
     }

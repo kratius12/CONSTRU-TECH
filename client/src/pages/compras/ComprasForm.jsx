@@ -3,6 +3,7 @@ import { Form, Formik } from "formik";
 import { useParams, useNavigate } from "react-router-dom";
 import { useCompras } from "../../context/compras/ComprasProvider";
 import comprasSchema from './ComprasSchema'
+import axios from "axios";
 export default function ComprasForm() {
   //   const [agreed, setAgreed] = useState(false)
   const { createCompra, getCompra, Compras, createDetalle, getDetalle } = useCompras()
@@ -26,6 +27,11 @@ export default function ComprasForm() {
     cantidad: '',
     subtotal: ''
   })
+
+  const [material,setMaterial] = useState([])
+  const [categoria,setCategoria] = useState([])
+  const [materialSeleccionado,setMaterialSeleccionado] = useState('')
+  const [categoriaSeleccionada,setCategoriaSeleccionada] = useState('')
   useEffect(() => {
     const loadCompras = async () => {
       if (params.id) {
@@ -36,6 +42,20 @@ export default function ComprasForm() {
           total_compra: compra.total_compra
         })
       }
+      axios.get(`http://localhost:4000/materiales`)
+        .then((response)=>{
+          setMaterial(response.data)
+        })
+        .catch((error)=>{
+          console.error(error)
+        })
+      axios.get(`http://localhost:4000/categorias`)
+        .then((response)=>{
+          setCategoria(response.data)
+        })
+        .catch((error)=>{
+          console.error(error)
+        })
     }
     loadCompras()
   }, [getCompra, params.id])
@@ -62,7 +82,7 @@ export default function ComprasForm() {
         <div className="col-md-12">
           <Formik initialValues={compra}
             enableReinitialize={true}
-      
+            validationSchema={comprasSchema}
             onSubmit={async (values) => {
               console.log(values);
               await createCompra(values)
@@ -109,20 +129,24 @@ export default function ComprasForm() {
 
                       <div className="col-3 mt-3">
                         <label htmlFor="categoria" className="form-label">Categoria <span className="text-danger">*</span></label>
-                        <select id="categoria" className="form-select" onChange={handleChange} value={values.categoria} >
-                          <option value="">Seleccione categoria</option>
-                          <option value="6000">Ceramica</option>
-                          <option value="6001">Tuberia</option>
+                        <select className="form-select" id="idCategoria" value={values.idCategoria= categoriaSeleccionada} onChange={(e) => { setCategoriaSeleccionada(e.target.value) }}>
+                          <option >Seleccione una categoria</option>
+                          {categoria.map((categoria,e) => (
+                            <option key={e} value={categoria.idcat}>{categoria.nombre}</option>
+                          ))}
                         </select>
+                          
                         {errors.categoria && touched.categoria ? (
                           <div className="alert alert-danger" role="alert">{errors.categoria}</div>
                         ) : null}
                       </div>
                       <div className="col-3 mt-3">
                         <label htmlFor="estado" className="form-label">Material <span className="text-danger">*</span></label>
-                        <select id="estado" className="form-select" onChange={handleChange} value={values.estado} >
-                          <option value="">Seleccione el nombre del material</option>
-                          <option value="504">Cemento</option>
+                        <select className="form-select" id="idCategoria" value={values.idMat= materialSeleccionado} onChange={(e) => { setMaterialSeleccionado(e.target.value) }}>
+                          <option >Seleccione un material</option>
+                          {material.map((material,e) => (
+                            <option key={e} value={material.idcat}>{material.nombre}</option>
+                          ))}
                         </select>
                         {errors.estado && touched.estado ? (
                           <div className="alert alert-danger" role="alert">{errors.estado}</div>

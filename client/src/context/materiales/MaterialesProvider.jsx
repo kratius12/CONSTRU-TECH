@@ -7,9 +7,8 @@ import {
     UpdateMaterialRequest,
 
 } from "../../api/Materiales.api";
-import { GetProveedoresRequest } from "../../api/Proveedores.api";
+import { GetProveedorRequest } from "../../api/Proveedores.api";
 import { MaterialContext } from "./MaterialesContext";
-import { GetCategoriasRequest } from "../../api/Categorias.api";
 
 
 export const useMateriales = () => {
@@ -24,7 +23,6 @@ export const useMateriales = () => {
 export const MaterialContextProvider = ({children}) => {
 
     const [materiales, setMateriales] = useState([])
-
     async function Materiales() {
         const response = await GetMaterialesRequest()
         console.log(response.data)  
@@ -49,10 +47,12 @@ export const MaterialContextProvider = ({children}) => {
         }
     }
 
+
     const deleteMaterial = async (idMat) => {
         try {
             const response = await DeleteMaterialRequest(idMat)
             setMateriales(materiales.filter(material => material.idMat !== idMat))
+            console.log(response)
         } catch (error) {
             console.error(error)
         }
@@ -67,23 +67,8 @@ export const MaterialContextProvider = ({children}) => {
         }
     }
 
-    const proveedor = async ()=>{
-        try{
-            const response = await GetProveedoresRequest()
-            console.log(response)
-        }catch(error){
-            console.error(error)
-        }
-    }
 
-    const categoria = async()=>{
-        try{
-            const response = await GetCategoriasRequest()
-            console.log(response)
-        }catch(error){
-            console.log(error)
-        }
-    }
+
 
     //  const toggleObraStatus = async (idObra) =>{
     //     try {
@@ -103,7 +88,7 @@ export const MaterialContextProvider = ({children}) => {
     //     }
     // }
     return (
-        <MaterialContext.Provider value={{materiales, Materiales, deleteMaterial, createMaterial, getMaterial, updateMaterial, proveedor,categoria}}>
+        <MaterialContext.Provider value={{materiales, Materiales, deleteMaterial, createMaterial, getMaterial, updateMaterial}}>
             {children}
         </MaterialContext.Provider>
     )

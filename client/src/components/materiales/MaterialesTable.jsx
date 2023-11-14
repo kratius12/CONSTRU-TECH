@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
-
 export default function MaterialTable({ materiales }) {
     const materialesData = materiales
     const navigate = useNavigate()
+
     const handleClick = (idMat, estado) => {
         const newStatus = estado === 1 ? 0 : 1
         console.log(idMat + "-" + estado + "-" + newStatus)
@@ -22,14 +22,14 @@ export default function MaterialTable({ materiales }) {
                     </tr>
                 </thead>
                 <tbody>
-                    {materialesData.map(({ idMat, nombre, idProveedor,  cantidad, idCategoria, estado }) => {
+                    {materialesData.map(({ idMat, nombre, proveedor, cantidad,categoria,  estado }) => {
                         return (
                             <tr key={idMat}>
                                 <td>{idMat}</td>
                                 <td>{nombre}</td>
-                                <td>{idProveedor}</td>
+                                <td>==</td>
                                 <td>{cantidad}</td>
-                                <td>{idCategoria}</td>
+                                <td>==</td>
                                 <td>
                                     <div className="form-check form-switch">
                                         <input
@@ -37,7 +37,7 @@ export default function MaterialTable({ materiales }) {
                                             type="checkbox"
                                             id="flexSwitchCheckDefault"
                                             value={estado}
-                                            onChange={() => handleClick(idMat, estado)}
+                                            onChange={() => handleClick(materialesData.idMat, materialesData.estado)}
                                         />
                                     </div>
                                     {estado}

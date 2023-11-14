@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
-import Select from "react-select";
-import makeAnimated from 'react-select/animated';
 import { Form, Formik } from "formik";
 import { useParams, useNavigate } from "react-router-dom";
 import { useMateriales } from "../../context/materiales/MaterialesProvider";
 import * as Yup from 'yup';
-
+import axios from "axios";
 const materialSchema = Yup.object().shape({
   nombre: Yup.string()
     .min(3, 'El nombre debe contener al menos 3 caracteres')
@@ -18,33 +16,23 @@ const materialSchema = Yup.object().shape({
   cantidad: Yup.string()
     .min(1)
     .required("La cantidad es requerida"),
-  precio: Yup.string()
-    .min(1)
-    .required("El precio es requerido"),
   estado: Yup.string()
     .required('El estado es requerido')
 });
 
-const animatedComponents = makeAnimated();
 
 
 export default function MaterialesForm() {
   //   const [agreed, setAgreed] = useState(false)
-  const { createMaterial, getMaterial, updateMaterial, categoria, proveedor } = useMateriales()
+  const { createMaterial, getMaterial, updateMaterial, Materiales } = useMateriales()
   useEffect(() => {
-    categoria()
-    proveedor()
+    Materiales()
   }, [])
 
-  // const categorias = categoria.map(item => ({ value: item.id, label: item.categoria }))
-  const [selectedOption, setSelectedOption] = useState();
-
-  // const proveedores = proveedor.map(item => ({ value: item.id, label: item.proveedor }))
-
-  const handleClick = (selected) => {
-    setSelectedOption(selected.value);
-    console.log(selectedOption);
-  };
+  const [idPRoveedor, setProveedor] = useState([])
+  const [idCategoria, setCategoria] = useState([])
+  const [proveedorSeleccionado, setProveedorSeleccionado] = useState("")
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("")
   const alertConfirm = (type) => {
     var message = ""
     if (type == "update") {
@@ -52,8 +40,9 @@ export default function MaterialesForm() {
     } else {
       message = "Agregado"
     }
+    // eslint-disable-next-line no-undef
     $.confirm({
-      title: `Proveedor ` + message + ` con exito!`,
+      title: `material ` + message + ` con exito!`,
       content: "Redirecionando a listado de materiales...",
       icon: 'fa fa-check',
       theme: 'modern',
@@ -74,7 +63,6 @@ export default function MaterialesForm() {
   const [material, setMaterial] = useState({
     nombre: "",
     idProveedor: "",
-    precio: "",
     cantidad: "",
     idCategoria: "",
     estado: ""
@@ -87,14 +75,29 @@ export default function MaterialesForm() {
         setMaterial({
           nombre: material.nombre,
           idProveedor: material.idProveedor,
-          precio: material.precio,
           cantidad: material.cantidad,
           idCategoria: material.idCategoria,
           estado: material.estado
         })
       }
     }
+    axios.get("http://localhost:4000/provs")
+      .then((response) => {
+        setProveedor(response.data)
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+    axios.get("http://localhost:4000/categorias")
+      .then((response) => {
+        setCategoria(response.data)
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+
     loadMateriales()
+
   }, [getMaterial, params.id])
 
   return (
@@ -124,7 +127,6 @@ export default function MaterialesForm() {
               setMaterial({
                 nombre: "",
                 idProveedor: "",
-                precio: "",
                 cantidad: "",
                 idCategoria: "",
                 estado: ""
@@ -132,7 +134,7 @@ export default function MaterialesForm() {
             }}
           >
             {({ handleChange, handleSubmit, values, isSubmitting, errors, touched }) => (
-              <Form onSubmit={handleSubmit}>
+              <Form onSubmit={handleSubmit} >
                 <div className="card text-center w-100">
                   <div className="card-header bg-primary text-white">
                     <h2>{params.id ? "Editar" : "Agregar"} material</h2>
@@ -147,13 +149,6 @@ export default function MaterialesForm() {
                         ) : null}
                       </div>
                       <div className="col-6 mt-3">
-                        <label htmlFor="number" className="form-label">Precio <span className="text-danger">*</span></label>
-                        <input type="text" className="form-control" id="precio" onChange={handleChange} value={values.precio} />
-                        {errors.precio && touched.precio ? (
-                          <div className="alert alert-danger" role="alert">{errors.precio}</div>
-                        ) : null}
-                      </div>
-                      <div className="col-6 mt-3">
                         <label htmlFor="cantidad" className="form-label">Cantidad <span className="text-danger">*</span></label>
                         <input type="number" className="form-control" id="cantidad" onChange={handleChange} value={values.cantidad} />
                         {errors.cantidad && touched.cantidad ? (
@@ -162,21 +157,21 @@ export default function MaterialesForm() {
                       </div>
                       <div className="col-6 mt-3">
                         <label htmlFor="idCategoria" className="form-label">categorias <span className="text-danger">*</span></label>
-                        <Select
-                          onChange={handleClick}
-                          closeMenuOnSelect={false}
-                          isMulti
-                          components={animatedComponents}
-                          />
+                        <select className="form-select" id="idCategoria" value={values.idCategoria= categoriaSeleccionada} onChange={(e) => { setCategoriaSeleccionada(e.target.value) }}>
+                          <option >Seleccione una categoria</option>
+                          {idCategoria.map((categoria,e) => (
+                            <option key={e} value={categoria.idcat}>{categoria.nombre}</option>
+                          ))}
+                        </select>
                       </div>
                       <div className="col-6 mt-3">
-                        <label htmlFor="idProveedor" className="form-label">proveedores <span className="text-danger">*</span></label>
-                        <Select
-                          onChange={handleClick}
-                          closeMenuOnSelect={false}
-                          isMulti
-                          components={animatedComponents}
-                           />
+                        <label htmlFor="idProveedor" className="form-label">Proveedor <span className="text-danger">*</span></label>
+                        <select className="form-select" id="idProveedor" value={values.idProveedor=proveedorSeleccionado} onChange={(i) => { setProveedorSeleccionado(i.target.value) } }>
+                          <option value="">Seleccione un proveedor</option>
+                          {idPRoveedor.map((proveedor,i) => (
+                            <option key={i} value={proveedor.idProv}>{proveedor.nombre}</option>
+                          ))}
+                        </select>
                       </div>
                       <div className="col-6 mt-3">
                         <label htmlFor="estado" className="form-label">Estado <span className="text-danger">*</span></label>
@@ -199,7 +194,7 @@ export default function MaterialesForm() {
                         </button>
                       </div>
                       <div className="col-md-6">
-                        <a type="button" href="" className="btn btn-danger w-50" onClick={() => navigate(`/materiales`)}>
+                        <a type="button" className="btn btn-danger w-50" onClick={() => navigate(`/materiales`)}>
                           <h4>Cancelar</h4>
                         </a>
                       </div>

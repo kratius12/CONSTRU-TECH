@@ -41,6 +41,7 @@ model compras_detalle {
   idMat      Int?
   cantidad   Int?
   subtotal   Int?
+  Precio     Int?
   compras    compras?    @relation(fields: [idCompra], references: [idCom], onDelete: Restrict, onUpdate: Restrict, map: "compras_detalle_ibfk_1")
   materiales materiales? @relation(fields: [idMat], references: [idMat], onDelete: Restrict, onUpdate: Restrict, map: "compras_detalle_ibfk_2")
 
