@@ -2,8 +2,31 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import CategoriaTable  from "../components/CategoriaTable"
 import { useCategorias } from "../context/CategoriasProvider";
+import TableInfo from "../components/TableInfo";
 function CategoriasPage() {
+    const dataHeader = [
+        {
+           header: "ID",
+           accessorKey: 'idcat'
 
+        },
+        {
+            header: "Nombre",
+            accessorKey: 'nombre'
+        },
+        {
+            header: "Estado",
+            accessorKey: 'estado'
+        },
+        {
+            header: "Medida",
+            accessorKey: 'medida'
+        },
+        {
+            header: "Accion",
+            accessorKey: 'accion'
+        }
+    ]
     const {categorias, Categorias} = useCategorias()
     const navigate = useNavigate()
     useEffect(() =>{
@@ -15,7 +38,8 @@ function CategoriasPage() {
             return <h1>Sin Categorias</h1>
             
         }
-        return <CategoriaTable categorias={categorias}/>
+        return <TableInfo dataHeader={dataHeader} dataBody={categorias}/>
+        // return <CategoriaTable categorias={categorias}/>
     }
 
     return(

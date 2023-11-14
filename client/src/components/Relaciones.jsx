@@ -2,9 +2,13 @@ import { useObras } from "../context/ObrasProvider";
 import { useNavigate } from "react-router-dom"; 
 export default function Relaciones({relaciones}) {
     const dataRelaciones = relaciones
-
-    relaciones.map((item) =>{
-        console.log(item);
+    const items=dataRelaciones.map((especialidades, index) => {
+        return <span key={index}>{especialidades.especialidades}</span>
     })
+    return(
+        <>
+            {items}  
+        </>
+    )
 
 }

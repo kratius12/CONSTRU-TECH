@@ -2,7 +2,28 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import EspecialidadTable  from "../components/EspecialidadTable"
 import { useEspecialidades } from "../context/EspecialidadesProvider";
+import TableInfo from "../components/TableInfo";
 function EspecialidadesPage() {
+
+    const dataHeader = [
+        {
+           header: "ID",
+           accessorKey: 'id'
+
+        },
+        {
+            header: "Especialidad",
+            accessorKey: 'especialidad'
+        },
+        {
+            header: "Estado",
+            accessorKey: 'estado'
+        },
+        {
+            header: "Accion",
+            accessorKey: 'accion'
+        }
+    ]
 
     const {especialidades, Especialidades} = useEspecialidades()
     const navigate = useNavigate()
@@ -15,7 +36,8 @@ function EspecialidadesPage() {
             return <h1>Sin Especialidades</h1>
             
         }
-        return <EspecialidadTable especialidades={especialidades}/>
+        return <TableInfo dataHeader={dataHeader} dataBody={especialidades}/>
+        // return <EspecialidadTable especialidades={especialidades}/>
     }
 
     return(
