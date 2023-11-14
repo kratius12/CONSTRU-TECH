@@ -29,7 +29,8 @@ function EmpleadosPage() {
         },
         {
             header: "Estado",
-            accessorKey: 'estado'
+            accessorKey: 'estado',
+            idProperty: 'idEmp'
         },
         {
             header: "Accion",
@@ -49,7 +50,7 @@ function EmpleadosPage() {
             return <h1>Sin Empleados</h1>
             
         }else{
-            return <TableInfo dataHeader={dataHeader} dataBody={empleados} routeEdit={'editarEspecialidad'}/>
+            return <TableInfo dataHeader={dataHeader} dataBody={empleados} routeEdit={'editarEspecialidad'} viewDetail/>
             //return <EmpleadoTable empleados={empleados}/>
         }
     }
