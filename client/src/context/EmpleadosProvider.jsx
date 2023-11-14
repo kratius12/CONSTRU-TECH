@@ -27,7 +27,7 @@ export const EmpleadoContextProvider = ({children}) => {
     const [especialidades, setEspecialidades] = useState([])
     async function Empleados() {
         const response = await GetEmpleadosEspecialidadesRequest()
-        console.log(response.data)  
+        // console.log(response.data)  
         setEmpleados(response.data)          
     }  
 

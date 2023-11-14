@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import  Select  from "react-select";
 import makeAnimated from 'react-select/animated';
-import { Form, Formik } from "formik";
+import { Form, Formik, Field } from "formik";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEmpleados } from "../context/EmpleadosProvider";
 import * as Yup from 'yup';
@@ -40,7 +40,7 @@ export default function EmpleadosForm() {
       Especialidades()  
       }, [])
 
-    const options = especialidades.map(item => ({value:item.id, label:item.especialidad}))
+    // const options = especialidades.map(item => ({value:item.id, label:item.especialidad}))
     const [selectedOption, setSelectedOption] = useState("");
 
     const handleClick = (selected) => {
@@ -60,8 +60,9 @@ export default function EmpleadosForm() {
         icon: 'fa fa-check',
         theme: 'modern',
         closeIcon: true,
-        animation: 'news',
-        closeAnimation: 'news',
+        animation: 'zoom',
+        closeAnimation: 'scale',
+        animationSpeed: 1500,
         type: 'green',
         columnClass:'col-md-6 col-md-offset-3',
         autoClose: 'okay|4000',
@@ -81,7 +82,7 @@ export default function EmpleadosForm() {
         telefono:"",
         tipoDoc:"",
         cedula:"",
-        especialidad:""
+        especialidad:[]
     })
     
     useEffect(() =>{
@@ -95,7 +96,8 @@ export default function EmpleadosForm() {
                     email:empleado.email,
                     telefono:empleado.telefono,
                     tipoDoc:empleado.tipoDoc,
-                    cedula:empleado.cedula
+                    cedula:empleado.cedula,
+                    especialidad:empleado.especialidad
                 })                
             }
         }
@@ -112,12 +114,12 @@ export default function EmpleadosForm() {
           onSubmit={ async (values) => {
             console.log(values);
             if (params.id) {
-              await updateEmpleado(params.id, values)
-              alertConfirm()
-              setTimeout(
-                navigate("/empleados"),
-                5000
-              )
+              // await updateEmpleado(params.id, values)
+              // alertConfirm()
+              // setTimeout(
+              //   navigate("/empleados"),
+              //   5000
+              // )
             } else {
               await createEmpleado(values)
               alertConfirm()
@@ -125,6 +127,7 @@ export default function EmpleadosForm() {
                 navigate("/empleados"),
                 5000
               )
+
             }
               setEmpleado({
                   nombre:"",
@@ -133,7 +136,8 @@ export default function EmpleadosForm() {
                   email:"",
                   telefono:"",
                   tipoDoc:"",
-                  cedula:""
+                  cedula:"",
+                  especialidad:[]
               })
           }}
           >
@@ -193,14 +197,18 @@ export default function EmpleadosForm() {
                           ) : null} 
                       </div>
                       <div className="col-6 mt-3">
-                        <label htmlFor="especialidad" className="form-label">Especialidad <span className="text-danger">*</span></label>
-                        <Select
-                        onChange={handleClick}
-
-                        closeMenuOnSelect={false}
-                        isMulti
-                        components={animatedComponents} 
-                        options={options} />
+                      <label>Selecciona opciones:</label>
+                        <Field
+                          name="especialidad"
+                          as="select"
+                          multiple
+                        >
+                          {especialidades.map(item => (
+                            <option key={item.id} value={item.id}>
+                              {item.especialidad}
+                            </option>
+                            ))}
+                        </Field>
                       </div>
                       <div className="col-6 mt-3">
                         <label htmlFor="estado" className="form-label">Estado <span className="text-danger">*</span></label>

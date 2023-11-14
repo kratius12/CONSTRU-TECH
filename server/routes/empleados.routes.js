@@ -40,7 +40,8 @@ router.get("/empleado/:id", async (req, res) =>{
 
 router.post("/empleados", async (req, res) => {
     try {
-        const {nombre, direccion, estado, email, telefono, tipoDoc, cedula} = req.body
+        const {nombre, direccion, estado, email, telefono, tipoDoc, cedula, especialidad
+        } = req.body
         const result = await prisma.empleado.create({
             data:{
                 nombre: nombre,
@@ -52,7 +53,15 @@ router.post("/empleados", async (req, res) => {
                 estado:parseInt(estado)
             }
         })
-        console.log(result);
+        await Promise.all(especialidad.map(async (idEsp) => {
+            console.log(result,especialidad);
+            await prisma.empleado_especialidad.create({
+                data:{
+                    idEmp:result.idEmp,
+                    idEsp:parseInt(idEsp)
+                }
+            })
+        }))
         res.status(200).json(result)
     } catch (error) {
         return res.status(500).json({message: error.message})
