@@ -36,7 +36,8 @@ function ClientPage() {
         },
         {
             header: "Acción",
-            accessorKey: 'accion'
+            accessorKey: 'accion',
+            idProperty: 'idCli'
         }
     ]
     const {clientes, Clients} = useClients()
@@ -51,7 +52,7 @@ function ClientPage() {
             return <h1>Sin Clientes</h1>
             
         }else{
-            return <TableInfo dataHeader={dataHeader} dataBody={clientes}/>
+            return <TableInfo dataHeader={dataHeader} dataBody={clientes} routeEdit={"editarCliente"}/>
         }
     }
 

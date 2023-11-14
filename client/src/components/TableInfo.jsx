@@ -7,9 +7,11 @@ import {useReactTable,
 import { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {Table as BTable} from 'react-bootstrap';
-function TableInfo({dataHeader, dataBody}) {
+import { Link } from 'react-router-dom';
+function TableInfo({dataHeader, dataBody, routeEdit}) {
     const data = dataBody
     const header = dataHeader
+    const columnNumber = dataHeader.length
     const [sorting, setSorting] = useState([])
     const [filtering, setFiltering] = useState()
     const table = useReactTable({
@@ -27,8 +29,10 @@ function TableInfo({dataHeader, dataBody}) {
         onGlobalFilterChange: setFiltering,
     })
     return(
-        <div className="p-2">
-            <input type="text" name="" id=""  value={filtering} onChange={e => setFiltering(e.target.value)}/>
+        <>
+            <div className="col-md-6">
+            <input placeholder='Filtrar por busqueda' className='form-control border-primary' type="text" name="" id=""  value={filtering} onChange={e => setFiltering(e.target.value)}/>
+            </div>
             <BTable striped bordered hover responsive size='sm'>
                 <thead>
                     {
@@ -67,28 +71,54 @@ function TableInfo({dataHeader, dataBody}) {
                                 {
                                     row.getVisibleCells().map(cell => (
                                         <td key={cell.id}>
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                            {
+                                            cell.column.id === 'accion' 
+                                            ?<Link className="btn bg-secondary text-white" to={`/${routeEdit}/${cell.row.original[cell.column.columnDef.idProperty]}`}>
+                                                Editar <i className="fa-solid fa-pencil" />
+                                            </Link>
+                                            :flexRender(cell.column.columnDef.cell, cell.getContext())
+                                            }
+                                            {
+                                                console.log(cell.row.original)
+                                            }
                                         </td>
                                     ))
+                                    
                                 }
                             </tr>
                         ))
                     } 
                 </tbody>
+                <tfoot>
+                    <tr className='border-0'>
+                        <td colSpan={columnNumber} className='border-0'>
+                            <div className="row">
+                                <div className="col-md-3">
+                                    <button className='btn btn-primary' onClick={() => table.setPageIndex(0)}>
+                                        Primer página
+                                    </button>
+                                </div>
+                                <div className="col-md-3">
+                                    <button className='btn btn-secondary' onClick={() => table.previousPage()}>
+                                        Página anterior
+                                    </button>
+                                </div>
+                                <div className="col-md-3">
+                                    <button className='btn btn-secondary' onClick={() => table.nextPage()}>
+                                        Página siguiente
+                                    </button>
+                                </div>                        
+                                <div className="col-md-3">
+                                    <button className='btn btn-primary' onClick={()=> table.setPageIndex(table.getPageCount() - 1)}>
+                                        Ultima página
+                                    </button>
+                                </div>    
+                            </div>                           
+                        </td>
+                    </tr>
+                </tfoot>
             </BTable>
-            <button onClick={() => table.setPageIndex(0)}>
-                Primer Página
-            </button>
-            <button onClick={() => table.previousPage()}>
-                Página Anterior
-            </button>
-            <button onClick={() => table.nextPage()}>
-                Página siguiente
-            </button>                        
-            <button onClick={()=> table.setPageIndex(table.getPageCount() - 1)}>
-                Ultima página
-            </button>
-        </div>
+        </>
     )
 }
 export default TableInfo

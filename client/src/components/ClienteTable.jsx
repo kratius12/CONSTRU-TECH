@@ -31,7 +31,7 @@ export default function ClienteTable({ clientes }) {
               </tr>
             </thead>
             <tbody>
-              {clientesData.map(({ idCli, nombre, email, direccion, telefono, cedula, fecha_nac, estado,apellidos }) => {
+              {clientesData.map(({ idCli, nombre, email, direccion, telefono, cedula, fecha_nac, estado,apellidos,tipoDoc,contrasena }) => {
                 return (
                   <tr key={idCli}>
                     <td>{idCli}</td>
@@ -40,8 +40,10 @@ export default function ClienteTable({ clientes }) {
                     {/* <td>{email}</td> */}
                     <td>{direccion}</td>
                     <td>{telefono}</td>
+                    {/* <td>{tipoDoc}</td> */}
                     <td>{cedula}</td>
                     {/* <td>{fecha_nac}</td> */}
+                    {/* <td>{contrasena}</td> */}
                     {/* <td>{estado}</td> */}
                     <td>
                       <div className="form-check form-switch">
@@ -66,13 +68,13 @@ export default function ClienteTable({ clientes }) {
                       </div>
                     </td>
                     <td>
-                      <a
+                      <button id="detalle"
                         className="btn bg-secondary text-white"
                         onClick={ ()=> navigate(`/editarCliente/${idCli}`)}
                       >
                         {" "}
                         Editar <span data-feather="edit-3" />{" "}
-                      </a>
+                      </button>
                     </td>
                   </tr>
                 );
