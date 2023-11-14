@@ -21,7 +21,8 @@ function EspecialidadesPage() {
         },
         {
             header: "Accion",
-            accessorKey: 'accion'
+            accessorKey: 'accion',
+            idProperty: 'id'
         }
     ]
 
@@ -36,18 +37,22 @@ function EspecialidadesPage() {
             return <h1>Sin Especialidades</h1>
             
         }
-        return <TableInfo dataHeader={dataHeader} dataBody={especialidades}/>
+        return <TableInfo dataHeader={dataHeader} dataBody={especialidades} routeEdit={'editarEspecialidad'}/>
         // return <EspecialidadTable especialidades={especialidades}/>
     }
 
     return(
         <div>
             <h1 className="text5-xl text-black font-bold text-left my-3">Especialidades</h1>
-                <button className="btn btn-primary" onClick={ ()=> navigate(`/agregarEspecialidad`)}>
-                    Agregar especialidad
-                </button>
             <div className="table-responsive">
-                {renderMain()}
+                <div className="row">
+                    <div className="col-md-6 mb-3">
+                        <button className="btn btn-primary" onClick={ ()=> navigate(`/agregarEspecialidad`)}>
+                            Agregar especialidad
+                        </button>                      
+                    </div>
+                    {renderMain()}
+                </div>
             </div>
 
         </div>

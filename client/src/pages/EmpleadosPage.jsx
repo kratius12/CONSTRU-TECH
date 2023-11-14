@@ -33,7 +33,8 @@ function EmpleadosPage() {
         },
         {
             header: "Accion",
-            accessorKey: 'accion'
+            accessorKey: 'accion',
+            idProperty: 'idEmp'
         }
     ]
     const {empleados, Empleados} = useEmpleados()
@@ -48,7 +49,7 @@ function EmpleadosPage() {
             return <h1>Sin Empleados</h1>
             
         }else{
-            return <TableInfo dataHeader={dataHeader} dataBody={empleados}/>
+            return <TableInfo dataHeader={dataHeader} dataBody={empleados} routeEdit={'editarEspecialidad'}/>
             //return <EmpleadoTable empleados={empleados}/>
         }
     }
@@ -56,11 +57,16 @@ function EmpleadosPage() {
     return(
         <div>
             <h1 className="text-black font-bold text-left my-3">Empleados</h1>
-                <button className="btn btn-primary" onClick={ ()=> navigate(`/agregarEmpleado`)}>
-                    Agregar empleado
-                </button>
+                
             <div className="table-responsive">
-                {renderMain()}
+                <div className="row">
+                    <div className="col-md-6 mb-3">
+                        <button className="btn btn-primary" onClick={ ()=> navigate(`/agregarEmpleado`)}>
+                            Agregar empleado
+                        </button>                        
+                    </div>
+                    {renderMain()}
+                </div>
             </div>
 
         </div>

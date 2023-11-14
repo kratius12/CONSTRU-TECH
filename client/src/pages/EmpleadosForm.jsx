@@ -114,12 +114,12 @@ export default function EmpleadosForm() {
           onSubmit={ async (values) => {
             console.log(values);
             if (params.id) {
-              // await updateEmpleado(params.id, values)
-              // alertConfirm()
-              // setTimeout(
-              //   navigate("/empleados"),
-              //   5000
-              // )
+              await updateEmpleado(params.id, values)
+              alertConfirm()
+              setTimeout(
+                navigate("/empleados"),
+                5000
+              )
             } else {
               await createEmpleado(values)
               alertConfirm()

@@ -56,7 +56,7 @@ export default function Sidebar() {
             </a>
           </li>
           <li className="nav-item">
-          <Link className="nav-link " to="#">
+          <Link className="nav-link " to="/categorias">
               <i className="fa-solid fa-book" />
               Categorias
           </Link>
