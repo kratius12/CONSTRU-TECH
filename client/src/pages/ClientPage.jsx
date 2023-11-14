@@ -19,15 +19,15 @@ function ClientPage() {
             accessorKey: 'apellidos'
         },
         {
-            header: "Direcion",
+            header: "Dirección",
             accessorKey: 'direccion'
         },
         {
-            header: "Telefono",
+            header: "Teléfono",
             accessorKey: 'telefono'
         },
         {
-            header: "Cedula",
+            header: "Cédula",
             accessorKey: 'cedula'
         },
         {
@@ -35,7 +35,7 @@ function ClientPage() {
             accessorKey: 'estado'
         },
         {
-            header: "Accion",
+            header: "Acción",
             accessorKey: 'accion'
         }
     ]
