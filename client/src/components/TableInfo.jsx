@@ -8,10 +8,22 @@ import { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {Table as BTable} from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-function TableInfo({dataHeader, dataBody, routeEdit}) {
+import StatusToggle from '../components/StatusToggle';
+import AlertDetail from '../components/AlertDetail';
+
+
+function TableInfo({dataHeader, dataBody, routeEdit, viewDetail}) {
+    
     const data = dataBody
     const header = dataHeader
     const columnNumber = dataHeader.length
+
+    const handleClick = () => {
+       
+    }
+    const detail = viewDetail ? <button onClick={<AlertDetail/>} className="btn bg-secondary text-white mx-3"
+     >Ver <i className="fa-solid fa-eye"></i></button> : '';
+    
     const [sorting, setSorting] = useState([])
     const [filtering, setFiltering] = useState()
     const table = useReactTable({
@@ -72,18 +84,23 @@ function TableInfo({dataHeader, dataBody, routeEdit}) {
                                     row.getVisibleCells().map(cell => (
                                         <td key={cell.id}>
                                             {
-                                            cell.column.id === 'accion' 
-                                            ?<Link className="btn bg-secondary text-white" to={`/${routeEdit}/${cell.row.original[cell.column.columnDef.idProperty]}`}>
-                                                Editar <i className="fa-solid fa-pencil" />
-                                            </Link>
-                                            :flexRender(cell.column.columnDef.cell, cell.getContext())
-                                            }
-                                            {
-                                                console.log(cell.row.original)
-                                            }
+                                            cell.column.id === 'accion' ? (
+                                                <>
+                                                    {detail}
+                                                    <Link className="btn bg-secondary text-white" to={`/${routeEdit}/${cell.row.original[cell.column.columnDef.idProperty]}`}>
+                                                        Editar <i className="fa-solid fa-pencil" />
+                                                    </Link>  
+                                                </>                               
+                                            ): cell.column.id === 'estado' ? (
+                                                <StatusToggle id={cell.row.original[cell.column.columnDef.idProperty]} status={cell.row.original[cell.column.columnDef.accessorKey]} />
+                                            )
+                                            :(
+                                                flexRender(cell.column.columnDef.cell, cell.getContext())
+                                            )}
+                                            
                                         </td>
                                     ))
-                                    
+
                                 }
                             </tr>
                         ))
@@ -95,22 +112,22 @@ function TableInfo({dataHeader, dataBody, routeEdit}) {
                             <div className="row">
                                 <div className="col-md-3">
                                     <button className='btn btn-primary' onClick={() => table.setPageIndex(0)}>
-                                        Primer página
+                                        Primer Pagina
                                     </button>
                                 </div>
                                 <div className="col-md-3">
                                     <button className='btn btn-secondary' onClick={() => table.previousPage()}>
-                                        Página anterior
+                                        Pagina Anterior
                                     </button>
                                 </div>
                                 <div className="col-md-3">
                                     <button className='btn btn-secondary' onClick={() => table.nextPage()}>
-                                        Página siguiente
+                                        Pagina siguiente
                                     </button>
                                 </div>                        
                                 <div className="col-md-3">
                                     <button className='btn btn-primary' onClick={()=> table.setPageIndex(table.getPageCount() - 1)}>
-                                        Ultima página
+                                        Ultima pagina
                                     </button>
                                 </div>    
                             </div>                           

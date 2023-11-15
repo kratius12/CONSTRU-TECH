@@ -4,9 +4,9 @@ import { PrismaClient } from "@prisma/client"
 const prisma = new PrismaClient()
 const router = Router()
 
-router.get("/especialidades", async (req, res) =>{
+router.get("/categorias", async (req, res) =>{
     try {
-        const result = await prisma.especialidad.findMany()
+        const result = await prisma.categoria.findMany()
         res.status(200).json(result)
 
     } catch (error) {
@@ -15,11 +15,11 @@ router.get("/especialidades", async (req, res) =>{
     }
 })
 
-router.get("/especialidad/:id", async (req, res) =>{
+router.get("/categoria/:id", async (req, res) =>{
     try {
-        const result = await prisma.especialidad.findFirst({
+        const result = await prisma.categoria.findFirst({
             where: {
-                id:parseInt(req.params.id)
+                idcat:parseInt(req.params.id)
             }
         })
         console.log(result);
@@ -30,13 +30,14 @@ router.get("/especialidad/:id", async (req, res) =>{
     }
 })
 
-router.post("/especialidades", async (req, res) => {
+router.post("/categorias", async (req, res) => {
     try {
-        const {especialidad, estado} = req.body
-        const result = await prisma.especialidad.create({
+        const {nombre, estado, medida} = req.body
+        const result = await prisma.categoria.create({
             data:{
-                especialidad: especialidad,
-                estado:parseInt(estado)
+                nombre: nombre,
+                estado:parseInt(estado),
+                medida:medida
             }
         })
         console.log(result);
@@ -46,16 +47,17 @@ router.post("/especialidades", async (req, res) => {
     }
 })
 
-router.put("/especialidad/:id", async (req, res) => {
+router.put("/categoria/:id", async (req, res) => {
     try {
-        const {especialidad, estado} = req.body
-        const result = await prisma.especialidad.update({
+        const {nombre, estado, medida} = req.body
+        const result = await prisma.categoria.update({
             where:{
-                id:parseInt(req.params.id)
+                idcat:parseInt(req.params.id)
             },
             data:{
-                especialidad: especialidad,
-                estado:parseInt(estado)
+                nombre: nombre,
+                estado:parseInt(estado),
+                medida:medida
             }
         })
 
@@ -66,11 +68,11 @@ router.put("/especialidad/:id", async (req, res) => {
     }
 })
 
-router.delete("/especialidad/:id", async (req, res) => {
+router.delete("/categoria/:id", async (req, res) => {
     try {
-        const result = await prisma.especialidad.delete({
+        const result = await prisma.categoria.delete({
             where:{
-                id:parseInt(req.params.id)
+                idcat:parseInt(req.params.id)
             }
         })
         res.status(200).json(result)

@@ -9,6 +9,8 @@ import materialesRoutes from "./routes/materiales.routes.js"
 import clientesRoutes from "./routes/clientes.routes.js";
 import empleadosRoutes from "./routes/empleados.routes.js";
 import especialidadRoutes from "./routes/especialidades.routes.js"
+import categoriasRoutes from "./routes/categorias.routes.js"
+import proveedoresRoutes from './routes/proveedores.routes.js'
 import exphbs from "express-handlebars";
 const app = express()
 const _dirname = dirname(fileURLToPath(import.meta.url))
@@ -22,7 +24,9 @@ app.use(obrasRoutes)
 app.use(materialesRoutes)
 app.use(clientesRoutes)
 app.use(empleadosRoutes)
+app.use(proveedoresRoutes)
 app.use(especialidadRoutes)
+app.use(categoriasRoutes)
 app.use(express.static(join(_dirname,"../client/dist")))
 app.listen(PORT)
 console.log("server listeing in port: "+PORT)
