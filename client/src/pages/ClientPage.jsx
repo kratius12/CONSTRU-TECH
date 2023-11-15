@@ -6,8 +6,8 @@ function ClientPage() {
 
     const dataHeader = [
         {
-           header: "ID",
-           accessorKey: 'idCli'
+            header: "ID",
+            accessorKey: 'idCli'
 
         },
         {
@@ -15,7 +15,7 @@ function ClientPage() {
             accessorKey: 'nombre'
         },
         {
-            header:"Apellidos",
+            header: "Apellidos",
             accessorKey: 'apellidos'
         },
         {
@@ -40,32 +40,35 @@ function ClientPage() {
             idProperty: 'idCli'
         }
     ]
-    const {clientes, Clients} = useClients()
+    const { clientes, Clients } = useClients()
     const navigate = useNavigate()
-    useEffect(() =>{
-    Clients()  
+    useEffect(() => {
+        Clients()
     }, [])
 
     function renderMain() {
 
         if (clientes.length === 0) {
             return <h1>Sin Clientes</h1>
-            
-        }else{
-            return <TableInfo dataHeader={dataHeader} dataBody={clientes} routeEdit={"editarCliente"}/>
+
+        } else {
+            return <TableInfo dataHeader={dataHeader} dataBody={clientes} routeEdit={"editarCliente"} viewDetail/>
         }
     }
 
-    return(
+    return (
         <div>
             <h1 className="text-black font-bold text-left my-3">Clientes</h1>
-                <button className="btn btn-primary" onClick={ ()=> navigate(`/agregarCliente`)}>
-                    Agregar cliente
-                </button>
             <div className="table-responsive">
-                {renderMain()}
+                <div className="row">
+                    <div className="col-md-6 mb-3">
+                        <button className="btn btn-primary" onClick={() => navigate(`/agregarCliente`)}>
+                            Agregar cliente
+                        </button>
+                    </div>
+                    {renderMain()}
+                </div>
             </div>
-
         </div>
     )
 }
