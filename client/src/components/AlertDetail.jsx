@@ -1,7 +1,10 @@
 import React from 'react';
-import $ from 'jquery'; // Asegúrate de tener la librería jQuery instalada
 
-function AlertDetail() {
+
+function AlertDetail({data}) {
+
+
+
   const alertConfirm = () => {
     $.confirm({
       title: 'Test con éxito!',
@@ -12,9 +15,9 @@ function AlertDetail() {
       animation: 'zoom',
       closeAnimation: 'scale',
       animationSpeed: 1500,
-      type: 'green',
+      type: 'yellow',
       columnClass: 'col-md-6 col-md-offset-3',
-      autoClose: 'okay|4000',
+      autoClose: 'okay|3000',
       buttons: {
         okay: function () {},
       },
@@ -22,9 +25,11 @@ function AlertDetail() {
   };
 
   return (
-    <div>
-      {/* Contenido de tu componente */}
-    </div>
+    <>
+    <button onClick={() => alertConfirm()} className="btn bg-secondary text-white mx-3">
+      Ver <i className="fa-solid fa-eye"></i>
+    </button>    
+    </>
   );
 }
 
