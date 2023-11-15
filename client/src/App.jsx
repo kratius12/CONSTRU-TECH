@@ -60,7 +60,8 @@ function App() {
                 <Route path="/agregarEmpleado" element={<EmpleadosForm />} />
                 <Route path="/editarEmpleado/:id" element={<EmpleadosForm />} />
               </Routes>
-
+            </EmpleadoContextProvider>
+            <EspecialidadContextProvider>
               <Routes>
                 <Route path="/especialidades" element={<EspecialidadesPage />} />
                 <Route path="/agregarEspecialidad" element={<EspecialidadesForm />} />
@@ -74,7 +75,7 @@ function App() {
                 <Route path="/agregarCategoria" element={<CategoriasForm />} />
                 <Route path="/editarCategoria/:id" element={<CategoriasForm />} />
               </Routes>
-            </CategoriaContextProvider> */}
+            </CategoriaContextProvider>
             <ProveedorContextProvider>
               <Routes>
                 <Route path="/proveedores" element={<ProveedoresPage />}></Route>
