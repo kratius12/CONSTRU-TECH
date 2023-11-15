@@ -10,16 +10,17 @@ import FormTemplate from "./pages/FormTemplate";
 import EmpleadosForm from "./pages/EmpleadosForm";
 import ClientForm from "./pages/ClientForm";
 import Header from "./components/Header";
-import { CategoriaContextProvider } from "./context/CategoriasProvider";
-import { EspecialidadContextProvider } from "./context/EspecialidadesProvider";
-
-import { MaterialContextProvider } from "./context/MaterialesProvider";
+import { MaterialContextProvider } from "./context/materiales/MaterialesProvider";
 import { ObraContextProvider } from "./context/ObrasProvider";
 import { EmpleadoContextProvider } from "./context/EmpleadosProvider";
-import {ProveedorContextProvider} from './context/ProveedorProvider'
-import {ClientContextProvider} from "./context/ClientesProvider"; 
-import ProveedoresPage from './pages/ProveedorPage'
-import ProveedoresForm from "./pages/ProveedoresForm";
+import {ProveedorContextProvider} from './context/proveedores/ProveedorProvider'
+import {ClientContextProvider} from "./context/ClientesProvider";
+import {CompraContextProvider} from './context/compras/ComprasProvider'
+import ProveedoresPage from './pages/proveedores/ProveedorPage'
+import ProveedoresForm from "./pages/proveedores/ProveedoresForm";
+import ProveedorDetalle from "./pages/proveedores/ProveedorDetalle";
+import ComprasPage from "./pages/compras/Compraspage";
+import ComprasForm from "./pages/compras/ComprasForm";
 import Sidebar from "./components/Sidebar";
 import EspecialidadesPage from "./pages/EspecialidadesPage";
 import EspecialidadesForm from "./pages/EspecialidadesForm";
@@ -58,20 +59,20 @@ function App() {
                 <Route path="/editarEmpleado/:id" element={<EmpleadosForm/>} />
               </Routes>
             </EmpleadoContextProvider> 
-            <EspecialidadContextProvider>
+            {/* <EspecialidadContextProvider>
               <Routes>
                 <Route path="/especialidades" element={<EspecialidadesPage/>} />
                 <Route path="/agregarEspecialidad" element={<EspecialidadesForm />} />
                 <Route path="/editarEspecialidad/:id" element={<EspecialidadesForm />} />
               </Routes>  
-            </EspecialidadContextProvider>     
-            <CategoriaContextProvider>
+            </EspecialidadContextProvider>      */}
+            {/* <CategoriaContextProvider>
               <Routes>
                 <Route path="/categorias" element={<CategoriasPage />} />
                 <Route path="/agregarCategoria" element={<CategoriasForm />} />
                 <Route path="/editarCategoria/:id" element={<CategoriasForm />} />
               </Routes>
-            </CategoriaContextProvider>
+            </CategoriaContextProvider> */}
             <ProveedorContextProvider>
               <Routes>
                 <Route path="/proveedores" element={<ProveedoresPage/>}></Route>
@@ -86,6 +87,12 @@ function App() {
                 <Route path="/editarCliente/:id" element={<ClientForm/>}></Route>
               </Routes>
             </ClientContextProvider>
+            <CompraContextProvider>
+              <Routes>
+                <Route path="/compras" element={<ComprasPage/>}></Route>
+                <Route path="/agregarCompras" element={<ComprasForm/>}></Route>
+              </Routes>
+            </CompraContextProvider>
           </main>
         </div>
       </div>

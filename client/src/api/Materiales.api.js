@@ -23,3 +23,11 @@ export const UpdateMaterialRequest = async (idMat, newFields) =>{
 export const ToggleMaterialStatusRequest = async (idMat, status) =>{
     return await axios.put(`http://localhost:4000/material/${idMat}`, status)
 }
+
+export const GetProveedoresRequest = async()=>{
+    return await axios.get("http://localhost:4000/provs")
+}
+
+export const GetCategoriasRequest = async()=>{
+    return await axios.get("http://localhost:4000/categorias")
+}

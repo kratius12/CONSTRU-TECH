@@ -5,9 +5,10 @@ import {
     CreateMaterialRequest,
     DeleteMaterialRequest,
     UpdateMaterialRequest,
+    GetProveedoresRequest,
+    GetCategoriasRequest,
 
 } from "../../api/Materiales.api";
-import { GetProveedorRequest } from "../../api/Proveedores.api";
 import { MaterialContext } from "./MaterialesContext";
 
 
@@ -22,6 +23,9 @@ export const useMateriales = () => {
 
 export const MaterialContextProvider = ({children}) => {
 
+
+    const [proveedores,setProveedores] = useState([])
+    const [categorias,setCategorias] = useState([])
     const [materiales, setMateriales] = useState([])
     async function Materiales() {
         const response = await GetMaterialesRequest()
@@ -67,6 +71,25 @@ export const MaterialContextProvider = ({children}) => {
         }
     }
 
+    async function getProveedores(){
+        try{
+            const response = await GetProveedoresRequest()
+            console.log(response.data)
+            setProveedores(response.data)
+        }catch(error){
+            console.error(error)
+        }
+    }
+
+    async function getCategorias(){
+        try{
+            const response = await GetCategoriasRequest()
+            console.log(response.data)
+            setCategorias(response.data)
+        }catch(error){
+            console.error(error)
+        }
+    }
 
 
 
@@ -88,7 +111,7 @@ export const MaterialContextProvider = ({children}) => {
     //     }
     // }
     return (
-        <MaterialContext.Provider value={{materiales, Materiales, deleteMaterial, createMaterial, getMaterial, updateMaterial}}>
+        <MaterialContext.Provider value={{materiales, Materiales, deleteMaterial, createMaterial, getMaterial, updateMaterial,getCategorias,getProveedores,proveedores,categorias,setProveedores,setCategorias}}>
             {children}
         </MaterialContext.Provider>
     )
