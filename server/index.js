@@ -11,6 +11,9 @@ import empleadosRoutes from "./routes/empleados.routes.js";
 import especialidadRoutes from "./routes/especialidades.routes.js"
 import categoriasRoutes from "./routes/categorias.routes.js"
 import proveedoresRoutes from './routes/proveedores.routes.js'
+import rolesRoutes from "./routes/roles.routes.js";
+import usuariosRoutes from "./routes/usuarios.routes.js";
+import permisosRoutes from "./routes/permisos.routes.js";
 import comprasRoutes from './routes/compras.routes.js'
 import exphbs from "express-handlebars";
 const app = express()
@@ -28,6 +31,9 @@ app.use(empleadosRoutes)
 app.use(proveedoresRoutes)
 app.use(especialidadRoutes)
 app.use(categoriasRoutes)
+app.use(rolesRoutes)
+app.use(usuariosRoutes)
+app.use(permisosRoutes)
 app.use(comprasRoutes)
 app.use(express.static(join(_dirname,"../client/dist")))
 app.listen(PORT)
