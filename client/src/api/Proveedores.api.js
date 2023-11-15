@@ -19,3 +19,6 @@ export const GetProveedorRequest = async (idProv) => {
 export const UpdateProveedorRequest = async (idProv, newFields) =>{
     return await axios.put(`http://localhost:4000/prov/${idProv}`, newFields)
 }
+export const ToggleProveedorStatusRequest = async (idProv, status) =>{
+    return await axios.put(`http://localhost:4000/material/${idProv}`, status)
+}

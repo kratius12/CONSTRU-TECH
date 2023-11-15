@@ -5,7 +5,7 @@ export const GetMaterialesRequest = async () =>{
 }
 
 export const CreateMaterialRequest = async (materiales) => {
-    return await axios.post('http://localhost:4000/materiales', materiales)
+    return await axios.post('http://localhost:4000/materiales', materiales,{timeout:500})
 }
 
 export const DeleteMaterialRequest = async (idMat) =>{

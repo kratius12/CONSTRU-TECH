@@ -27,9 +27,9 @@ export default function MaterialTable({ materiales }) {
                             <tr key={idMat}>
                                 <td>{idMat}</td>
                                 <td>{nombre}</td>
-                                <td>==</td>
+                                <td>{proveedor.nombre}</td>
                                 <td>{cantidad}</td>
-                                <td>==</td>
+                                <td>{categoria.nombre}</td>
                                 <td>
                                     <div className="form-check form-switch">
                                         <input

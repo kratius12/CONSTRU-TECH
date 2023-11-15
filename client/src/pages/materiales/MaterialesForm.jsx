@@ -98,14 +98,14 @@ export default function MaterialesForm() {
                 alertConfirm()
                 setTimeout(
                   navigate("/materiales"),
-                  5000
+                  500
                 )
               } else {
                 await createMaterial(values)
                 alertConfirm()
                 setTimeout(
                   navigate("/materiales"),
-                  5000
+                  500
                 )
               }
               setMaterial({

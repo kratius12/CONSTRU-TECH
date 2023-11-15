@@ -32,8 +32,7 @@ export const proveedorSchema = Yup.object().shape({
         .max(12, 'El telefono del contacto no puede contener mas de 12 caracteres')
         .trim('El telefono no permite espacios'),
     emailContacto: Yup.string().email('Formato de correo electronico invalido'),
-    tipoP:Yup.string()
-        .min(3)
+    tipo:Yup.string()
         .required('el tipo de proveedor es requerido')
 });
 

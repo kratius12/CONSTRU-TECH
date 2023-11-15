@@ -90,7 +90,7 @@ function App() {
             <CompraContextProvider>
               <Routes>
                 <Route path="/compras" element={<ComprasPage/>}></Route>
-                <Route path="/agregarCompras" element={<ComprasForm/>}></Route>
+                <Route path="/agregarCompra" element={<ComprasForm/>}></Route>
               </Routes>
             </CompraContextProvider>
           </main>
