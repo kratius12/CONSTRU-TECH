@@ -12,7 +12,7 @@ router.get('/provs', async (req, res) => {
     } catch (error) {
         return res.status(500).json({ message: error.message })
     }
-})
+})  
 router.get('/prov/:idProv', async (req, res) => {
     try {
         const provFound = await prisma.proveedor.findFirst({

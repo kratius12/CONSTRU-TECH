@@ -11,6 +11,7 @@ import empleadosRoutes from "./routes/empleados.routes.js";
 import especialidadRoutes from "./routes/especialidades.routes.js"
 import categoriasRoutes from "./routes/categorias.routes.js"
 import proveedoresRoutes from './routes/proveedores.routes.js'
+import comprasRoutes from './routes/compras.routes.js'
 import exphbs from "express-handlebars";
 const app = express()
 const _dirname = dirname(fileURLToPath(import.meta.url))

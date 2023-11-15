@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import EspecialidadTable  from "../components/EspecialidadTable"
 import { useEspecialidades } from "../context/EspecialidadesProvider";
+
 import TableInfo from "../components/TableInfo";
 function EspecialidadesPage() {
 
@@ -37,6 +38,7 @@ function EspecialidadesPage() {
             return <h1>Sin Especialidades</h1>
             
         }
+
         return <TableInfo dataHeader={dataHeader} dataBody={especialidades} routeEdit={'editarEspecialidad'}/>
         // return <EspecialidadTable especialidades={especialidades}/>
     }

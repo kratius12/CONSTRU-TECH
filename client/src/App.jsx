@@ -2,16 +2,17 @@ import { Route, Routes } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ObrasPage from "./pages/ObrasPage";
 import ObrasForm from "./pages/ObrasForm";
-import MaterialesPage from "./pages/MaterialesPage";
+import MaterialesPage from "./pages/materiales/MaterialesPage";
 import EmpleadosPage from "./pages/EmpleadosPage";
 import ClientPage from "./pages/ClientPage";
-import FormMaterial from "./pages/FormMaterial";
+import MaterialesForm from "./pages/materiales/MaterialesForm";
 import FormTemplate from "./pages/FormTemplate";
 import EmpleadosForm from "./pages/EmpleadosForm";
 import ClientForm from "./pages/ClientForm";
 import Header from "./components/Header";
 import { CategoriaContextProvider } from "./context/CategoriasProvider";
 import { EspecialidadContextProvider } from "./context/EspecialidadesProvider";
+
 import { MaterialContextProvider } from "./context/MaterialesProvider";
 import { ObraContextProvider } from "./context/ObrasProvider";
 import { EmpleadoContextProvider } from "./context/EmpleadosProvider";
@@ -24,6 +25,7 @@ import EspecialidadesPage from "./pages/EspecialidadesPage";
 import EspecialidadesForm from "./pages/EspecialidadesForm";
 import CategoriasPage from "./pages/CategoriasPage";
 import CategoriasForm from "./pages/CategoriasForm";
+
 function App() {
   return (
     <>
@@ -45,8 +47,8 @@ function App() {
             <MaterialContextProvider>
               <Routes>
                 <Route path="/materiales" element={<MaterialesPage />} />
-                <Route path="/formMaterial" element={<FormMaterial/>} />
-                <Route path="/formMaterialEdit/:id" element={<FormMaterial/>} />
+                <Route path="/agregarMaterial" element={<MaterialesForm/>} />
+                <Route path="/editarMaterial/:id" element={<MaterialesForm/>} />
               </Routes>
             </MaterialContextProvider>
             <EmpleadoContextProvider>

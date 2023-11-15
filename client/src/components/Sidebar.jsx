@@ -53,9 +53,10 @@ export default function Sidebar() {
             <a className="nav-link" href="#">
               <i className="fa-solid fa-box-open" />
               Materiales
-            </a>
+            </Link>
           </li>
           <li className="nav-item">
+
           <Link className="nav-link " to="/categorias">
               <i className="fa-solid fa-book" />
               Categorias
@@ -65,7 +66,7 @@ export default function Sidebar() {
             <a className="nav-link" href="#">
               <i className="fa-solid fa-cart-shopping" />
               Compras
-            </a>
+            </Link>
           </li>
           <li className="nav-item">
             <a className="nav-link" href="#">
