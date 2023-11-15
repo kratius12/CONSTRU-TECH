@@ -32,7 +32,6 @@ import CategoriasForm from "./pages/CategoriasForm";
 function App() {
   return (
     <>
-
       <Header />
       <div className="container-fluid">
         <div className="row">
@@ -95,7 +94,6 @@ function App() {
                 <Route path="/compras" element={<ComprasPage />}></Route>
                 <Route path="/agregarCompras" element={<ComprasForm />}></Route>
               </Routes>
-            </CompraContextProvider>
           </main>
         </div>
       </div>
