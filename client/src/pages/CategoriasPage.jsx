@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import CategoriaTable  from "../components/CategoriaTable"
 import { useCategorias } from "../context/CategoriasProvider";
+
 import TableInfo from "../components/TableInfo";
 function CategoriasPage() {
     const dataHeader = [
@@ -28,6 +29,7 @@ function CategoriasPage() {
             idProperty: 'idcat'
         }
     ]
+
     const {categorias, Categorias} = useCategorias()
     const navigate = useNavigate()
     useEffect(() =>{

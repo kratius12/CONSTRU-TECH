@@ -1,20 +1,28 @@
 import { useState } from 'react';
+import "./StatusToggle.css"
+function StatusToggle() {
 
-function StatusToggle(id, status) {
+    const [switchActivado,setswitchActivado] = useState(false);
+    const [valor,setValor] = useState(0)
 
-    return(
+    const estado = ()=>{
+        setswitchActivado(!switchActivado);
+
+        setValor(switchActivado ? 0 : 1);
+    }
+
+    return (
         <div>
-            <input
-            className="form-check-input"
-            type="checkbox"
-            id="flexSwitchCheckDefault" 
-            value={status} 
-            {...status == 1 ? "checked":""}
-            // onChange={() => handleClick(idEsp, estado)}
-            />            
+            <label className='switch'>
+                <input type="checkbox"
+                    checked={switchActivado}
+                    onChange={estado}
+                />
+                <span className='slider rounded'/>
+            </label>
         </div>
     )
-    
+
 }
 
 export default StatusToggle

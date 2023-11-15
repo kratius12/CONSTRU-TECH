@@ -171,6 +171,7 @@ export default function EmpleadosForm() {
                           ) : null} 
                       </div>
                       <div className="col-6 mt-3">
+
                       <label>Selecciona especialidades:</label>
                         <Field
                           name="especialidad"
