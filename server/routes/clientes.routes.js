@@ -31,17 +31,20 @@ router.get('/cliente/:id', async (req, res) =>{
 
 router.post('/cliente', async (req, res) => {
         try{
-                const {nombre, email, direccion, telefono, cedula, fecha_nac, estado} = req.body
+                const {nombre, apellidos, email, direccion, telefono, tipoDoc, cedula, fecha_nac, estado, contrasena} = req.body
                 let date = new Date(fecha_nac)
                 const result = await prisma.cliente.create({
                         data:{
                                 nombre: nombre,
+                                apellidos:apellidos,
                                 email: email,
                                 direccion: direccion,
                                 telefono: telefono,
+                                tipoDoc: tipoDoc,
                                 cedula: cedula,
                                 fecha_nac: date,
-                                estado: parseInt(estado)
+                                estado: parseInt(estado),
+                                contrasena:contrasena
                         }
                 })
                 console.log(result);
@@ -53,19 +56,22 @@ router.post('/cliente', async (req, res) => {
 
 router.put('/cliente/:id', async (req, res) => {
         try {
-                const {nombre, email, direccion, telefono, cedula, fecha_nac, estado} = req.body
+                const {nombre,apellidos, email, direccion, telefono, tipoDoc, cedula, fecha_nac, estado,contrasena} = req.body
                 let date = new Date(fecha_nac)
                 const result = await prisma.cliente.update({
                         where:{
                                 idCli: parseInt(req.params.id)
                         },data:{
                                 nombre: nombre,
+                                apellidos:apellidos,
                                 email: email,
                                 direccion: direccion,
                                 telefono: telefono,
+                                tipoDoc: tipoDoc,
                                 cedula: cedula,
                                 fecha_nac: date,
-                                estado: parseInt(estado)
+                                estado: parseInt(estado),
+                                contrasena:contrasena
                         }
                 })
                 console.log(result);

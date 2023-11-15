@@ -12,22 +12,20 @@ import ClientForm from "./pages/ClientForm";
 import Header from "./components/Header";
 import { CategoriaContextProvider } from "./context/CategoriasProvider";
 import { EspecialidadContextProvider } from "./context/EspecialidadesProvider";
-import { MaterialContextProvider } from "./context/materiales/MaterialesProvider";
+
+import { MaterialContextProvider } from "./context/MaterialesProvider";
 import { ObraContextProvider } from "./context/ObrasProvider";
 import { EmpleadoContextProvider } from "./context/EmpleadosProvider";
-import {ProveedorContextProvider} from './context/proveedores/ProveedorProvider'
-import {ClientContextProvider} from "./context/ClientesProvider";
-import {CompraContextProvider} from './context/compras/ComprasProvider'
-import ProveedoresPage from './pages/proveedores/ProveedorPage'
-import ProveedoresForm from "./pages/proveedores/ProveedoresForm";
+import {ProveedorContextProvider} from './context/ProveedorProvider'
+import {ClientContextProvider} from "./context/ClientesProvider"; 
+import ProveedoresPage from './pages/ProveedorPage'
+import ProveedoresForm from "./pages/ProveedoresForm";
 import Sidebar from "./components/Sidebar";
 import EspecialidadesPage from "./pages/EspecialidadesPage";
 import EspecialidadesForm from "./pages/EspecialidadesForm";
 import CategoriasPage from "./pages/CategoriasPage";
 import CategoriasForm from "./pages/CategoriasForm";
-import ProveedorDetalle from "./pages/proveedores/ProveedorDetalle";
-import ComprasPage from "./pages/compras/Compraspage";
-import ComprasForm from "./pages/compras/ComprasForm";
+
 function App() {
   return (
     <>
@@ -79,7 +77,6 @@ function App() {
                 <Route path="/proveedores" element={<ProveedoresPage/>}></Route>
                 <Route path="/agregarProveedor" element={<ProveedoresForm/>}></Route>
                 <Route path="/editarProveedor/:id" element={<ProveedoresForm/>}></Route>
-                <Route path="/verProveedor/:id" element={<ProveedorDetalle/>}></Route>
               </Routes>
             </ProveedorContextProvider>
             <ClientContextProvider>
@@ -89,12 +86,6 @@ function App() {
                 <Route path="/editarCliente/:id" element={<ClientForm/>}></Route>
               </Routes>
             </ClientContextProvider>
-            <CompraContextProvider>
-              <Routes>
-                <Route path="/compras" element={<ComprasPage/>}></Route>
-                <Route path="/agregarCompras" element={<ComprasForm/>}></Route>
-              </Routes>
-            </CompraContextProvider>
           </main>
         </div>
       </div>

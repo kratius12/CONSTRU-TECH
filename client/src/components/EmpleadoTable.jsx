@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 export default function EmpleadoTable({empleados}) {
   const empleadosData = empleados
   const navigate = useNavigate()
-  const [estadoEpm, setStatus] = useState()
   const handleClick = (idEmp, estado) => {
     const newStatus = estado === 1 ? 0 : 1
     console.log(idEmp+"-"+estado+"-"+newStatus)

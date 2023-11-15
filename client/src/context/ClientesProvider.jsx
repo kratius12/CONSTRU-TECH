@@ -29,7 +29,6 @@ export const ClientContextProvider=({children}) => {
     const createClient = async (cliente) => {
         try {
              await createClientRequest(cliente)
-          //  setClientes([... cllientes, response.data])
         } catch (error) {
             console.log(error)
         }

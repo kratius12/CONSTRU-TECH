@@ -32,37 +32,38 @@ export default function Sidebar() {
             </a>
           </li>
           <li className="nav-item">
-            <Link className="nav-link" to="/empleados">
+          <Link className="nav-link" to="/empleados">
               <i className="fa-solid fa-user-group" />
               Empleados
-            </Link>
+          </Link>
           </li>
           <li className="nav-item">
-            <Link className="nav-link " to="/especialidades">
+          <Link className="nav-link " to="/especialidades">
               <i className="fa-solid fa-screwdriver-wrench" />
               Especialidades
-            </Link>
+          </Link>
           </li>
           <li className="nav-item">
             <Link className="nav-link" to="/proveedores">
               <i className="fa-solid fa-truck" />
               Proveedores
-            </Link>
+              </Link>
           </li>
           <li className="nav-item">
-            <Link className="nav-link" to="/materiales">
+            <a className="nav-link" href="#">
               <i className="fa-solid fa-box-open" />
               Materiales
             </Link>
           </li>
           <li className="nav-item">
-            <Link className="nav-link " to="/categorias">
+
+          <Link className="nav-link " to="/categorias">
               <i className="fa-solid fa-book" />
               Categorias
-            </Link>
+          </Link>
           </li>
           <li className="nav-item">
-            <Link className="nav-link" to='/compras'>
+            <a className="nav-link" href="#">
               <i className="fa-solid fa-cart-shopping" />
               Compras
             </Link>
@@ -77,7 +78,7 @@ export default function Sidebar() {
             <Link className="nav-link" to="/clientes">
               <i className="fa-solid fa-id-card" />
               Clientes
-            </Link>
+              </Link>
           </li>
         </ul>
       </div>
