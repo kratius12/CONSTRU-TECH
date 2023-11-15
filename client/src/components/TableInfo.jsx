@@ -1,34 +1,52 @@
-import {useReactTable, 
-    getCoreRowModel, 
-    flexRender, 
-    getPaginationRowModel, 
+import {
+    useReactTable,
+    getCoreRowModel,
+    flexRender,
+    getPaginationRowModel,
     getSortedRowModel,
-    getFilteredRowModel} from '@tanstack/react-table';
+    getFilteredRowModel
+} from '@tanstack/react-table';
 import { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {Table as BTable} from 'react-bootstrap';
-function TableInfo({dataHeader, dataBody}) {
+import { Table as BTable } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
+import StatusToggle from '../components/StatusToggle';
+import AlertDetail from '../components/AlertDetail';
+
+
+function TableInfo({ dataHeader, dataBody, routeEdit, viewDetail }) {
+
     const data = dataBody
     const header = dataHeader
+    const columnNumber = dataHeader.length
+
+    const handleClick = () => {
+
+    }
+    const detail = viewDetail ? <button onClick={<AlertDetail />} className="btn bg-secondary text-white mx-3"
+    >Ver <i className="fa-solid fa-eye"></i></button> : '';
+
     const [sorting, setSorting] = useState([])
     const [filtering, setFiltering] = useState()
     const table = useReactTable({
-        data: data, 
-        columns: header, 
-        getCoreRowModel:getCoreRowModel(), 
+        data: data,
+        columns: header,
+        getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
-        getSortedRowModel:getSortedRowModel(),
-        getFilteredRowModel:getFilteredRowModel(),
-        state:{
+        getSortedRowModel: getSortedRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        state: {
             sorting,
-            globalFilter:filtering
+            globalFilter: filtering
         },
-        onSortingChange:setSorting,
+        onSortingChange: setSorting,
         onGlobalFilterChange: setFiltering,
     })
-    return(
-        <div className="p-2">
-            <input type="text" name="" id=""  value={filtering} onChange={e => setFiltering(e.target.value)}/>
+    return (
+        <>
+            <div className="col-md-6">
+                <input placeholder='Filtrar por busqueda' className='form-control border-primary' type="text" name="" id="" value={filtering} onChange={e => setFiltering(e.target.value)} />
+            </div>
             <BTable striped bordered hover responsive size='sm'>
                 <thead>
                     {
@@ -40,19 +58,19 @@ function TableInfo({dataHeader, dataBody}) {
                                             onClick={header.column.getToggleSortingHandler()}
                                         >
                                             {
-                                            header.isPlaceholder ? null : (
-                                                <div>
-                                                    {flexRender(
-                                                            header.column.columnDef.header, 
+                                                header.isPlaceholder ? null : (
+                                                    <div>
+                                                        {flexRender(
+                                                            header.column.columnDef.header,
                                                             header.getContext()
                                                         )}
                                                         {
-                                                            {'asc':"⬆️", 'desc':"⬇️"}[
-                                                                header.column.getIsSorted() ?? null
+                                                            { 'asc': "⬆️", 'desc': "⬇️" }[
+                                                            header.column.getIsSorted() ?? null
                                                             ]
-                                                        }                                                        
-                                                </div>
-                                            )}
+                                                        }
+                                                    </div>
+                                                )}
                                         </th>
                                     ))
                                 }
@@ -67,33 +85,65 @@ function TableInfo({dataHeader, dataBody}) {
                                 {
                                     row.getVisibleCells().map(cell => (
                                         <td key={cell.id}>
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                            {
+                                                cell.column.id === 'accion' ? (
+                                                    <>
+                                                        {detail}
+                                                        <Link className="btn bg-secondary text-white" to={`/${routeEdit}/${cell.row.original[cell.column.columnDef.idProperty]}`}>
+                                                            Editar <i className="fa-solid fa-pencil" />
+                                                        </Link>
+                                                    </>
+                                                ) : cell.column.id === 'estado' ? (
+                                                    <StatusToggle
+                                                        id={cell.row.original.id}
+                                                        status={cell.row.original.estado}
+                                                    >
+                                                        <Link to={`/${routeEdit}/${cell.row.original[cell.column.columnDef.idProperty]}`}>
+                                                        </Link>
+                                                    </StatusToggle>
+                                                )
+                                                    : (
+                                                        flexRender(cell.column.columnDef.cell, cell.getContext())
+                                                    )}
+
                                         </td>
                                     ))
+
                                 }
                             </tr>
                         ))
-                    } 
+                    }
                 </tbody>
-                {/* <tfoot>
-                    <tr>
-                        <td></td>
+                <tfoot>
+                    <tr className='border-0'>
+                        <td colSpan={columnNumber} className='border-0'>
+                            <div className="row">
+                                <div className="col-md-3">
+                                    <button className='btn btn-primary' onClick={() => table.setPageIndex(0)}>
+                                        Primer Pagina
+                                    </button>
+                                </div>
+                                <div className="col-md-3">
+                                    <button className='btn btn-secondary' onClick={() => table.previousPage()}>
+                                        Pagina Anterior
+                                    </button>
+                                </div>
+                                <div className="col-md-3">
+                                    <button className='btn btn-secondary' onClick={() => table.nextPage()}>
+                                        Pagina siguiente
+                                    </button>
+                                </div>
+                                <div className="col-md-3">
+                                    <button className='btn btn-primary' onClick={() => table.setPageIndex(table.getPageCount() - 1)}>
+                                        Ultima pagina
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
                     </tr>
-                </tfoot> */}
+                </tfoot>
             </BTable>
-            <button onClick={() => table.setPageIndex(0)}>
-                Primer Pagina
-            </button>
-            <button onClick={() => table.previousPage()}>
-                Pagina Anterior
-            </button>
-            <button onClick={() => table.nextPage()}>
-                Pagina siguiente
-            </button>                        
-            <button onClick={()=> table.setPageIndex(table.getPageCount() - 1)}>
-                Ultima pagina
-            </button>
-        </div>
+        </>
     )
 }
 export default TableInfo

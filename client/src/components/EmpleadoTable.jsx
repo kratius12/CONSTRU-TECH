@@ -1,12 +1,12 @@
 //import { useEmpleados } from "../context/EmpleadosProvider";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 // import { Card, Typography } from "@material-tailwind/react";
  
 export default function EmpleadoTable({empleados}) {
   const empleadosData = empleados
   const navigate = useNavigate()
-  const [estadoEpm, setStatus] = useState()
   const handleClick = (idEmp, estado) => {
     const newStatus = estado === 1 ? 0 : 1
     console.log(idEmp+"-"+estado+"-"+newStatus)
@@ -40,7 +40,7 @@ export default function EmpleadoTable({empleados}) {
                 <td>{email}</td>
                 <td>{telefono}</td>
                 <td>{cedula}</td>
-                <td>{estado}</td>
+                <td>...</td>
                 <td>
                   <div className="form-check form-switch">
                     <input
@@ -52,7 +52,6 @@ export default function EmpleadoTable({empleados}) {
                       onChange={() => handleClick(idEmp, estado)}
                     />
                   </div>
-                  {estado}
                 </td>
                 <td>
                   <a
