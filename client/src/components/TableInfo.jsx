@@ -23,8 +23,7 @@ function TableInfo({ dataHeader, dataBody, routeEdit, viewDetail }) {
     const handleClick = () => {
 
     }
-    const detail = viewDetail ? <button onClick={<AlertDetail />} className="btn bg-secondary text-white mx-3"
-    >Ver <i className="fa-solid fa-eye"></i></button> : '';
+    const detail = viewDetail ? <AlertDetail /> : '';
 
     const [sorting, setSorting] = useState([])
     const [filtering, setFiltering] = useState()
