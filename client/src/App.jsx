@@ -12,14 +12,16 @@ import ClientForm from "./pages/ClientForm";
 import Header from "./components/Header";
 import { CategoriaContextProvider } from "./context/CategoriasProvider";
 import { EspecialidadContextProvider } from "./context/EspecialidadesProvider";
-
-import { MaterialContextProvider } from "./context/MaterialesProvider";
+import { MaterialContextProvider } from "./context/materiales/MaterialesProvider";
 import { ObraContextProvider } from "./context/ObrasProvider";
 import { EmpleadoContextProvider } from "./context/EmpleadosProvider";
-import {ProveedorContextProvider} from './context/ProveedorProvider'
-import {ClientContextProvider} from "./context/ClientesProvider"; 
-import ProveedoresPage from './pages/ProveedorPage'
-import ProveedoresForm from "./pages/ProveedoresForm";
+import { ProveedorContextProvider } from './context/proveedores/ProveedorProvider'
+import { ClientContextProvider } from "./context/ClientesProvider";
+import { CompraContextProvider } from './context/compras/ComprasProvider'
+import ProveedoresPage from './pages/proveedores/ProveedorPage'
+import ProveedoresForm from "./pages/proveedores/ProveedoresForm";
+import ComprasPage from "./pages/compras/Compraspage";
+import ComprasForm from "./pages/compras/ComprasForm";
 import Sidebar from "./components/Sidebar";
 import EspecialidadesPage from "./pages/EspecialidadesPage";
 import EspecialidadesForm from "./pages/EspecialidadesForm";
@@ -30,41 +32,41 @@ function App() {
   return (
     <>
 
-      <Header/>
+      <Header />
       <div className="container-fluid">
         <div className="row">
-          <Sidebar/>
+          <Sidebar />
           <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-          <ObraContextProvider>
-            <Routes>
-              <Route path="/obras" element={<ObrasPage />} />
-              <Route path="/new" element={<ObrasForm />} />
-              <Route path="/edit/:id" element={<ObrasForm />} />
-              <Route path="/formTemplate" element={<FormTemplate />} />      
-              <Route path="/formTemplateEdit/:id" element={<FormTemplate />} />                  
-            </Routes>           
-            </ObraContextProvider> 
+            <ObraContextProvider>
+              <Routes>
+                <Route path="/obras" element={<ObrasPage />} />
+                <Route path="/new" element={<ObrasForm />} />
+                <Route path="/edit/:id" element={<ObrasForm />} />
+                <Route path="/formTemplate" element={<FormTemplate />} />
+                <Route path="/formTemplateEdit/:id" element={<FormTemplate />} />
+              </Routes>
+            </ObraContextProvider>
             <MaterialContextProvider>
               <Routes>
                 <Route path="/materiales" element={<MaterialesPage />} />
-                <Route path="/agregarMaterial" element={<MaterialesForm/>} />
-                <Route path="/editarMaterial/:id" element={<MaterialesForm/>} />
+                <Route path="/agregarMaterial" element={<MaterialesForm />} />
+                <Route path="/editarMaterial/:id" element={<MaterialesForm />} />
               </Routes>
             </MaterialContextProvider>
             <EmpleadoContextProvider>
               <Routes>
-                <Route path="/empleados" element={<EmpleadosPage/>} />
-                <Route path="/agregarEmpleado" element={<EmpleadosForm/>} />
-                <Route path="/editarEmpleado/:id" element={<EmpleadosForm/>} />
+                <Route path="/empleados" element={<EmpleadosPage />} />
+                <Route path="/agregarEmpleado" element={<EmpleadosForm />} />
+                <Route path="/editarEmpleado/:id" element={<EmpleadosForm />} />
               </Routes>
-            </EmpleadoContextProvider> 
+            </EmpleadoContextProvider>
             <EspecialidadContextProvider>
               <Routes>
-                <Route path="/especialidades" element={<EspecialidadesPage/>} />
+                <Route path="/especialidades" element={<EspecialidadesPage />} />
                 <Route path="/agregarEspecialidad" element={<EspecialidadesForm />} />
                 <Route path="/editarEspecialidad/:id" element={<EspecialidadesForm />} />
-              </Routes>  
-            </EspecialidadContextProvider>     
+              </Routes>
+            </EspecialidadContextProvider>
             <CategoriaContextProvider>
               <Routes>
                 <Route path="/categorias" element={<CategoriasPage />} />
@@ -74,18 +76,24 @@ function App() {
             </CategoriaContextProvider>
             <ProveedorContextProvider>
               <Routes>
-                <Route path="/proveedores" element={<ProveedoresPage/>}></Route>
-                <Route path="/agregarProveedor" element={<ProveedoresForm/>}></Route>
-                <Route path="/editarProveedor/:id" element={<ProveedoresForm/>}></Route>
+                <Route path="/proveedores" element={<ProveedoresPage />}></Route>
+                <Route path="/agregarProveedor" element={<ProveedoresForm />}></Route>
+                <Route path="/editarProveedor/:id" element={<ProveedoresForm />}></Route>
               </Routes>
             </ProveedorContextProvider>
             <ClientContextProvider>
               <Routes>
-                <Route path="/clientes" element={<ClientPage/>}></Route>
-                <Route path="/agregarCliente" element={<ClientForm/>}></Route>
-                <Route path="/editarCliente/:id" element={<ClientForm/>}></Route>
+                <Route path="/clientes" element={<ClientPage />}></Route>
+                <Route path="/agregarCliente" element={<ClientForm />}></Route>
+                <Route path="/editarCliente/:id" element={<ClientForm />}></Route>
               </Routes>
             </ClientContextProvider>
+            <CompraContextProvider>
+              <Routes>
+                <Route path="/compras" element={<ComprasPage />}></Route>
+                <Route path="/agregarCompras" element={<ComprasForm />}></Route>
+              </Routes>
+            </CompraContextProvider>
           </main>
         </div>
       </div>
