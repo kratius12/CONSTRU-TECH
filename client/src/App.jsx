@@ -37,15 +37,14 @@ function App() {
         <div className="row">
           <Sidebar />
           <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-            <ObraContextProvider>
-              <Routes>
-                <Route path="/obras" element={<ObrasPage />} />
-                <Route path="/new" element={<ObrasForm />} />
-                <Route path="/edit/:id" element={<ObrasForm />} />
-                <Route path="/formTemplate" element={<FormTemplate />} />
-                <Route path="/formTemplateEdit/:id" element={<FormTemplate />} />
-              </Routes>
-            </ObraContextProvider>
+
+          <ObraContextProvider>
+            <Routes>
+              <Route path="/obras" element={<ObrasPage />} />
+              <Route path="/agregarObra" element={<ObrasForm />} />
+              <Route path="/editarObra/:id" element={<ObrasForm />} />
+            </Routes>           
+            </ObraContextProvider> 
             <MaterialContextProvider>
               <Routes>
                 <Route path="/materiales" element={<MaterialesPage />} />
