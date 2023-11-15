@@ -1,27 +1,64 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import ClienteTable from "../components/ClienteTable";
 import { useClients } from "../context/ClientesProvider";
-
+import TableInfo from "../components/TableInfo";
 function ClientPage() {
 
+    const dataHeader = [
+        {
+           header: "ID",
+           accessorKey: 'idCli'
+
+        },
+        {
+            header: "Nombre",
+            accessorKey: 'nombre'
+        },
+        {
+            header:"Apellidos",
+            accessorKey: 'apellidos'
+        },
+        {
+            header: "Dirección",
+            accessorKey: 'direccion'
+        },
+        {
+            header: "Teléfono",
+            accessorKey: 'telefono'
+        },
+        {
+            header: "Cédula",
+            accessorKey: 'cedula'
+        },
+        {
+            header: "Estado",
+            accessorKey: 'estado'
+        },
+        {
+            header: "Acción",
+            accessorKey: 'accion',
+            idProperty: 'idCli'
+        }
+    ]
     const {clientes, Clients} = useClients()
     const navigate = useNavigate()
     useEffect(() =>{
-    Clients()
+    Clients()  
     }, [])
 
     function renderMain() {
+
         if (clientes.length === 0) {
-            return <h1>Sin clientes</h1>
+            return <h1>Sin Clientes</h1>
             
+        }else{
+            return <TableInfo dataHeader={dataHeader} dataBody={clientes} routeEdit={"editarCliente"}/>
         }
-        return <ClienteTable clientes={clientes}/>
     }
 
     return(
         <div>
-            <h1 className="text5-xl text-black font-bold text-left my-3">Clientes</h1>
+            <h1 className="text-black font-bold text-left my-3">Clientes</h1>
                 <button className="btn btn-primary" onClick={ ()=> navigate(`/agregarCliente`)}>
                     Agregar cliente
                 </button>

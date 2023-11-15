@@ -24,9 +24,6 @@ function TableInfo({dataHeader, dataBody, routeEdit, viewDetail}) {
     const detail = viewDetail ? <button onClick={<AlertDetail/>} className="btn bg-secondary text-white mx-3"
      >Ver <i className="fa-solid fa-eye"></i></button> : '';
     
-
-
-
     const [sorting, setSorting] = useState([])
     const [filtering, setFiltering] = useState()
     const table = useReactTable({
@@ -87,7 +84,6 @@ function TableInfo({dataHeader, dataBody, routeEdit, viewDetail}) {
                                     row.getVisibleCells().map(cell => (
                                         <td key={cell.id}>
                                             {
-
                                             cell.column.id === 'accion' ? (
                                                 <>
                                                     {detail}
@@ -104,6 +100,7 @@ function TableInfo({dataHeader, dataBody, routeEdit, viewDetail}) {
                                             
                                         </td>
                                     ))
+
                                 }
                             </tr>
                         ))
