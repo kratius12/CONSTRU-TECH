@@ -195,11 +195,12 @@ export default function EmpleadosForm() {
                           ) : null} 
                       </div>
                       <div className="col-6 mt-3">
-                      <label>Selecciona opciones:</label>
+                      <label>Selecciona especialidades:</label>
                         <Field
                           name="especialidad"
                           as="select"
                           multiple
+                          className="form-select"
                         >
                           {especialidades.map(item => (
                             <option key={item.id} value={item.id}>

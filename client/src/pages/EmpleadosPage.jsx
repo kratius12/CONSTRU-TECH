@@ -50,7 +50,7 @@ function EmpleadosPage() {
             return <h1>Sin Empleados</h1>
             
         }else{
-            return <TableInfo dataHeader={dataHeader} dataBody={empleados} routeEdit={'editarEspecialidad'} viewDetail/>
+            return <TableInfo dataHeader={dataHeader} dataBody={empleados} routeEdit={'editarObra'} viewDetail/>
             //return <EmpleadoTable empleados={empleados}/>
         }
     }

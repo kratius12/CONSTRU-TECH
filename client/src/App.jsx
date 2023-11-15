@@ -36,10 +36,8 @@ function App() {
           <ObraContextProvider>
             <Routes>
               <Route path="/obras" element={<ObrasPage />} />
-              <Route path="/new" element={<ObrasForm />} />
-              <Route path="/edit/:id" element={<ObrasForm />} />
-              <Route path="/formTemplate" element={<FormTemplate />} />      
-              <Route path="/formTemplateEdit/:id" element={<FormTemplate />} />                  
+              <Route path="/agregarObra" element={<ObrasForm />} />
+              <Route path="/editarObra/:id" element={<ObrasForm />} />
             </Routes>           
             </ObraContextProvider> 
             <MaterialContextProvider>
