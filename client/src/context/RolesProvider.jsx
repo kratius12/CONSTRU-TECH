@@ -6,6 +6,7 @@ import { CreateRolRequest,
         DeleteRolRequest,
         ToggleRolStatusRequest
 } from "../api/Roles.api";
+import{ GetPermisosRequest } from "../api/Permisos.api"
 import { RolesContext } from "./RolesContext";
 
 
@@ -21,11 +22,18 @@ export const useRol = () => {
 export const RolContextProvider = ({children}) => {
 
     const [roles, setRoles] = useState([])
+    const[permisos, setPermisos] = useState([])
 
     async function Roles() {
         const response = await GetRolesRequest()
         console.log(response.data)  
         setRoles(response.data)          
+    }
+
+    async function Permisos() {
+        const response = await GetPermisosRequest()
+        console.log(response.data)
+        setPermisos(response.data)
     }
 
     const createRol = async (rol) => {
@@ -80,7 +88,7 @@ export const RolContextProvider = ({children}) => {
         }
     }
     return (
-        <RolesContext.Provider value={{roles, Roles, deleteRol, createRol, getRol, updateRol, toggleRolStatus}}>
+        <RolesContext.Provider value={{roles, permisos, Permisos, Roles, deleteRol, createRol, getRol, updateRol, toggleRolStatus}}>
             {children}
         </RolesContext.Provider>
     )

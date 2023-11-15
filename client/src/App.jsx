@@ -18,8 +18,13 @@ import { EmpleadoContextProvider } from "./context/EmpleadosProvider";
 import { ProveedorContextProvider } from './context/proveedores/ProveedorProvider'
 import { ClientContextProvider } from "./context/ClientesProvider";
 import { CompraContextProvider } from './context/compras/ComprasProvider'
+import { RolContextProvider } from "./context/RolesProvider";
+// import { UsuarioContextProvider } from "./context/UsuariosProvider";
 import ProveedoresPage from './pages/proveedores/ProveedorPage'
 import ProveedoresForm from "./pages/proveedores/ProveedoresForm";
+import RolesForm from "./pages/RolesForm";
+import RolesPage from "./pages/RolesPage";
+// import UsuariosPage from "./pages/UsuariosPage";
 
 import ComprasPage from "./pages/compras/Compraspage";
 import ComprasForm from "./pages/compras/ComprasForm";
@@ -65,7 +70,6 @@ function App() {
                 <Route path="/especialidades" element={<EspecialidadesPage />} />
                 <Route path="/agregarEspecialidad" element={<EspecialidadesForm />} />
                 <Route path="/editarEspecialidad/:id" element={<EspecialidadesForm />} />
-
               </Routes>
             </EspecialidadContextProvider>
             <CategoriaContextProvider>
@@ -94,6 +98,14 @@ function App() {
                 <Route path="/compras" element={<ComprasPage />}></Route>
                 <Route path="/agregarCompras" element={<ComprasForm />}></Route>
               </Routes>
+            </CompraContextProvider>
+            <RolContextProvider>
+              <Routes>
+                <Route path="/roles" element={<RolesPage/>} />
+                <Route path="/agregarRol" element={<RolesForm/>} />
+                <Route path="/editarRol/:id" element={<RolesForm/>} />
+              </Routes>
+            </RolContextProvider>  
           </main>
         </div>
       </div>

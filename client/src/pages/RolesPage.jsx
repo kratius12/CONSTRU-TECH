@@ -18,11 +18,13 @@ function RolesPage() {
         },
         {
             header: "Estado",
-            accessorKey: 'estado'
+            accessorKey: 'estado',
+            idProperty: 'idRol'
         },
         {
             header: "Accion",
-            accessorKey: 'accion'
+            accessorKey: 'accion',
+            idProperty: 'idRol'
         }
     ]
 
@@ -37,7 +39,7 @@ function RolesPage() {
             return <h1>Sin Roles</h1>
             
         }else{
-            return <TableInfo dataHeader={dataHeader} dataBody={roles}/>
+            return <TableInfo dataHeader={dataHeader} dataBody={roles} routeEdit={'editarRol'} viewDetail/>
         }
         // return <RolTable roles={roles}/>
     }
@@ -48,11 +50,11 @@ function RolesPage() {
                 <button className="btn btn-primary" onClick={ ()=> navigate(`/agregarRol`)}>
                     Agregar rol
                 </button>
-            <div>
+            {/* <div>
                 <button className="btn btn-secondary" onClick={ () => navigate(`/permisos`)}>
                     Permisos
                 </button>
-            </div>
+            </div> */}
             <div className="table-responsive">
                 {renderMain()}
             </div>
