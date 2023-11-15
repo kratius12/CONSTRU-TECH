@@ -4,9 +4,12 @@ import {
     DeleteProveedorRequest,
     GetProveedorRequest,
     GetProveedoresRequest,
-    UpdateProveedorRequest
+    UpdateProveedorRequest,ToggleProveedorStatusRequest
+
 } from "../../api/Proveedores.api";
 import { ProveedorContext } from "./ProveedorContext";
+
+
 
 
 export const useProveedores = () => {
@@ -63,9 +66,17 @@ export const ProveedorContextProvider = ({children}) => {
             console.error(error)
         }
     }
+    const toggleStado = async(idProv,newEstado)=>{
+        try{
+            const response = await ToggleProveedorStatusRequest(idProv,newEstado)
+            console.log(response)
+        }catch(error){
+            console.error(error)
+        }
+    }
 
     return (
-        <ProveedorContext.Provider value={{proveedores, Proveedores, deleteProveedor, createProveedor, getProveedor, updateProveedor}}>
+        <ProveedorContext.Provider value={{proveedores, Proveedores, deleteProveedor,toggleStado, createProveedor, getProveedor, updateProveedor}}>
             {children}
         </ProveedorContext.Provider>
     )

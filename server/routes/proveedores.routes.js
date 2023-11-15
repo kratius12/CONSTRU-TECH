@@ -91,4 +91,19 @@ router.post('/newprov',async(req,res)=>{
     }
 })
 
+router.put("/proveedorEstado",async(req,res)=>{
+    try{
+        const estado = req.body
+        const newEstado = await prisma.proveedor.update({
+            where: {
+                idProv:req.params.id
+            },data:{
+                estado:estado
+            }
+        })
+    }catch(error){
+        console.error(error)
+    }
+})
+
 export default router

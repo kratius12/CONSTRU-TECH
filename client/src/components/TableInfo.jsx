@@ -1,49 +1,51 @@
-import {useReactTable, 
-    getCoreRowModel, 
-    flexRender, 
-    getPaginationRowModel, 
+import {
+    useReactTable,
+    getCoreRowModel,
+    flexRender,
+    getPaginationRowModel,
     getSortedRowModel,
-    getFilteredRowModel} from '@tanstack/react-table';
+    getFilteredRowModel
+} from '@tanstack/react-table';
 import { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {Table as BTable} from 'react-bootstrap';
+import { Table as BTable } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import StatusToggle from '../components/StatusToggle';
 import AlertDetail from '../components/AlertDetail';
 
 
-function TableInfo({dataHeader, dataBody, routeEdit, viewDetail}) {
-    
+function TableInfo({ dataHeader, dataBody, routeEdit, viewDetail }) {
+
     const data = dataBody
     const header = dataHeader
     const columnNumber = dataHeader.length
 
     const handleClick = () => {
-       
+
     }
-    const detail = viewDetail ? <button onClick={<AlertDetail/>} className="btn bg-secondary text-white mx-3"
-     >Ver <i className="fa-solid fa-eye"></i></button> : '';
-    
+    const detail = viewDetail ? <button onClick={<AlertDetail />} className="btn bg-secondary text-white mx-3"
+    >Ver <i className="fa-solid fa-eye"></i></button> : '';
+
     const [sorting, setSorting] = useState([])
     const [filtering, setFiltering] = useState()
     const table = useReactTable({
-        data: data, 
-        columns: header, 
-        getCoreRowModel:getCoreRowModel(), 
+        data: data,
+        columns: header,
+        getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
-        getSortedRowModel:getSortedRowModel(),
-        getFilteredRowModel:getFilteredRowModel(),
-        state:{
+        getSortedRowModel: getSortedRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        state: {
             sorting,
-            globalFilter:filtering
+            globalFilter: filtering
         },
-        onSortingChange:setSorting,
+        onSortingChange: setSorting,
         onGlobalFilterChange: setFiltering,
     })
-    return(
+    return (
         <>
             <div className="col-md-6">
-            <input placeholder='Filtrar por busqueda' className='form-control border-primary' type="text" name="" id=""  value={filtering} onChange={e => setFiltering(e.target.value)}/>
+                <input placeholder='Filtrar por busqueda' className='form-control border-primary' type="text" name="" id="" value={filtering} onChange={e => setFiltering(e.target.value)} />
             </div>
             <BTable striped bordered hover responsive size='sm'>
                 <thead>
@@ -56,19 +58,19 @@ function TableInfo({dataHeader, dataBody, routeEdit, viewDetail}) {
                                             onClick={header.column.getToggleSortingHandler()}
                                         >
                                             {
-                                            header.isPlaceholder ? null : (
-                                                <div>
-                                                    {flexRender(
-                                                            header.column.columnDef.header, 
+                                                header.isPlaceholder ? null : (
+                                                    <div>
+                                                        {flexRender(
+                                                            header.column.columnDef.header,
                                                             header.getContext()
                                                         )}
                                                         {
-                                                            {'asc':"⬆️", 'desc':"⬇️"}[
-                                                                header.column.getIsSorted() ?? null
+                                                            { 'asc': "⬆️", 'desc': "⬇️" }[
+                                                            header.column.getIsSorted() ?? null
                                                             ]
-                                                        }                                                        
-                                                </div>
-                                            )}
+                                                        }
+                                                    </div>
+                                                )}
                                         </th>
                                     ))
                                 }
@@ -84,27 +86,33 @@ function TableInfo({dataHeader, dataBody, routeEdit, viewDetail}) {
                                     row.getVisibleCells().map(cell => (
                                         <td key={cell.id}>
                                             {
-                                            cell.column.id === 'accion' ? (
-                                                <>
-                                                    {detail}
-                                                    <Link className="btn bg-secondary text-white" to={`/${routeEdit}/${cell.row.original[cell.column.columnDef.idProperty]}`}>
-                                                        Editar <i className="fa-solid fa-pencil" />
-                                                    </Link>  
-                                                </>                               
-                                            ): cell.column.id === 'estado' ? (
-                                                <StatusToggle id={cell.row.original[cell.column.columnDef.idProperty]} status={cell.row.original[cell.column.columnDef.accessorKey]} />
-                                            )
-                                            :(
-                                                flexRender(cell.column.columnDef.cell, cell.getContext())
-                                            )}
-                                            
+                                                cell.column.id === 'accion' ? (
+                                                    <>
+                                                        {detail}
+                                                        <Link className="btn bg-secondary text-white" to={`/${routeEdit}/${cell.row.original[cell.column.columnDef.idProperty]}`}>
+                                                            Editar <i className="fa-solid fa-pencil" />
+                                                        </Link>
+                                                    </>
+                                                ) : cell.column.id === 'estado' ? (
+                                                    <StatusToggle
+                                                        id={cell.row.original.id}
+                                                        status={cell.row.original.estado}
+                                                    >
+                                                        <Link to={`/${routeEdit}/${cell.row.original[cell.column.columnDef.idProperty]}`}>
+                                                        </Link>
+                                                    </StatusToggle>
+                                                )
+                                                    : (
+                                                        flexRender(cell.column.columnDef.cell, cell.getContext())
+                                                    )}
+
                                         </td>
                                     ))
 
                                 }
                             </tr>
                         ))
-                    } 
+                    }
                 </tbody>
                 <tfoot>
                     <tr className='border-0'>
@@ -124,13 +132,13 @@ function TableInfo({dataHeader, dataBody, routeEdit, viewDetail}) {
                                     <button className='btn btn-secondary' onClick={() => table.nextPage()}>
                                         Pagina siguiente
                                     </button>
-                                </div>                        
+                                </div>
                                 <div className="col-md-3">
-                                    <button className='btn btn-primary' onClick={()=> table.setPageIndex(table.getPageCount() - 1)}>
+                                    <button className='btn btn-primary' onClick={() => table.setPageIndex(table.getPageCount() - 1)}>
                                         Ultima pagina
                                     </button>
-                                </div>    
-                            </div>                           
+                                </div>
+                            </div>
                         </td>
                     </tr>
                 </tfoot>

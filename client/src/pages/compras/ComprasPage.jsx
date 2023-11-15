@@ -20,7 +20,8 @@ function ComprasPage() {
         },
         {
             header:"Ver detalle",
-            accessorKey: 'verDetalle'
+            accessorKey: 'accion',
+            idProperty:"idMat"
         }
     ]
     const { compras, Compras } = useCompras()
@@ -31,11 +32,12 @@ function ComprasPage() {
 
     function renderMain() {
         if (compras.length === 0) {
-            return <h1>Sin comrpas</h1>
+            return <h1>Sin compras</h1>
 
         }
-        return <TableInfo dataHeader={dataHeader} dataBody={compras} routeEdit={'editarCompra'} />
-        
+        else{
+        return <TableInfo dataHeader={dataHeader} dataBody={compras}  viewDetail/>
+        }
     }
 
     return (

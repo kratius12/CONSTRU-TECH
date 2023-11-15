@@ -24,15 +24,13 @@ const materialSchema = Yup.object().shape({
 
 export default function MaterialesForm() {
   //   const [agreed, setAgreed] = useState(false)
-  const { createMaterial, getMaterial, updateMaterial, Materiales } = useMateriales()
+  const { createMaterial, getMaterial, updateMaterial, getProveedores, getCategorias,proveedores,categorias } = useMateriales()
   useEffect(() => {
-    Materiales()
+    getCategorias()
+    getProveedores()
   }, [])
 
-  const [idPRoveedor, setProveedor] = useState([])
-  const [idCategoria, setCategoria] = useState([])
-  const [proveedorSeleccionado, setProveedorSeleccionado] = useState("")
-  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("")
+ 
   const alertConfirm = (type) => {
     var message = ""
     if (type == "update") {
@@ -81,20 +79,6 @@ export default function MaterialesForm() {
         })
       }
     }
-    axios.get("http://localhost:4000/provs")
-      .then((response) => {
-        setProveedor(response.data)
-      })
-      .catch((error) => {
-        console.error(error)
-      })
-    axios.get("http://localhost:4000/categorias")
-      .then((response) => {
-        setCategoria(response.data)
-      })
-      .catch((error) => {
-        console.error(error)
-      })
 
     loadMateriales()
 
@@ -114,14 +98,14 @@ export default function MaterialesForm() {
                 alertConfirm()
                 setTimeout(
                   navigate("/materiales"),
-                  5000
+                  500
                 )
               } else {
                 await createMaterial(values)
                 alertConfirm()
                 setTimeout(
                   navigate("/materiales"),
-                  5000
+                  500
                 )
               }
               setMaterial({
@@ -157,18 +141,18 @@ export default function MaterialesForm() {
                       </div>
                       <div className="col-6 mt-3">
                         <label htmlFor="idCategoria" className="form-label">categorias <span className="text-danger">*</span></label>
-                        <select className="form-select" id="idCategoria" value={values.idCategoria= categoriaSeleccionada} onChange={(e) => { setCategoriaSeleccionada(e.target.value) }}>
+                        <select className="form-select" id="idCategoria" value={values.idCategoria } onChange={handleChange}>
                           <option >Seleccione una categoria</option>
-                          {idCategoria.map((categoria,e) => (
+                          {categorias.map((categoria, e) => (
                             <option key={e} value={categoria.idcat}>{categoria.nombre}</option>
                           ))}
                         </select>
                       </div>
                       <div className="col-6 mt-3">
                         <label htmlFor="idProveedor" className="form-label">Proveedor <span className="text-danger">*</span></label>
-                        <select className="form-select" id="idProveedor" value={values.idProveedor=proveedorSeleccionado} onChange={(i) => { setProveedorSeleccionado(i.target.value) } }>
+                        <select className="form-select" id="idProveedor" value={values.idProveedor } onChange={handleChange}>
                           <option value="">Seleccione un proveedor</option>
-                          {idPRoveedor.map((proveedor,i) => (
+                          {proveedores.map((proveedor, i) => (
                             <option key={i} value={proveedor.idProv}>{proveedor.nombre}</option>
                           ))}
                         </select>

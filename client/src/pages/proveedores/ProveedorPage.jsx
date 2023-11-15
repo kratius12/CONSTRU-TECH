@@ -35,11 +35,7 @@ function ProveedoresPage() {
             accessorKey: 'estado'
         },
         {
-            header:"Ver detalle",
-            accessorKey: ''
-        },
-        {
-            header:"Editar",
+            header:"Acciones",
             accessorKey: 'accion',
             idProperty:"idProv"
         },
@@ -55,7 +51,7 @@ function ProveedoresPage() {
             return <h1>Sin proveedores</h1>
 
         }
-        return <TableInfo dataHeader={dataHeader} dataBody={proveedores} routeEdit={'editarProveedor'} />
+        return <TableInfo dataHeader={dataHeader} dataBody={proveedores} routeEdit={'editarProveedor'} viewDetail/>
         
     }
 

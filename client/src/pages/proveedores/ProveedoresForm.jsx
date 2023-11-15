@@ -165,7 +165,7 @@ export default function ProveedoresForm() {
                                             </div>
                                             <div className="col-6 mt-3">
                                                 <label htmlFor="tipo" className="form-label">Tipo proveedor <span className="text-danger">*</span></label>
-                                                <select id="tipo" className="form-select" onChange={handleSelectChange}   value={values.tipo = tipo } values={values.tipo}>
+                                                <select id="tipo" className="form-select" onChange={handleSelectChange}   value={values.tipo = tipo }>
                                                     <option value="">Seleccione tipo</option>
                                                     <option value="Natural">Natural</option>
                                                     <option value="Juridico">Juridico</option>
