@@ -1,25 +1,65 @@
 import React from 'react';
 
 
-function AlertDetail({data}) {
+function AlertDetail({dataHeader, dataBody, entity}) {
 
+  console.log(dataBody)
 
+  const head =
+  `<table className="text-center">
+    ` +
+      dataHeader.map(item => (
+        `<tr><th key=${item.header}>${item.header}</th>`
+      )).join('') +
+      Object.values(dataBody).map(value => (
+        `<td key=${value}>${value}</td></tr>`
+      )).join('') 
+      + `
+  </table>`;
 
+  // for (let index = 0; index < dataHeader.length; index++) {
+  //     console.log(dataHeader[index].header)
+  //     for (let index = 0; index < dataBody.length; index++) {
+  //       console.log(dataBody[index][0])
+  //     }
+  // }
+
+  // `<table className="text-center">
+  //   <thead>
+  //   <tr>`+
+  //   dataHeader.map(item => (
+  //     `<th key=${item.header}>${item.header}</th>`
+  //   )).join('')
+  //   +`</tr>
+  //   </thead>
+  //   <tbody>
+  //    <tr>
+  //    `+
+  //    dataBody.map(itemB => (
+  //     `<td key=${itemB.idEmp}>${itemB.idEmp}</td>`
+  //     `<td key=${itemB.idEmp}>${itemB.idEmp}</td>`
+  //    ))
+  //    +`
+  //    </tr>
+  //   </tbody>
+  // </table>`
+  
   const alertConfirm = () => {
+    const Div = document.createElement('div');
+    Div.innerHTML= head
     $.confirm({
-      title: 'Test con éxito!',
-      content: 'Test',
-      icon: 'fa fa-check',
+      title: 'Detalle '+entity,
+      content: Div,
+      icon: 'fa fa-check-circle',
       theme: 'modern',
       closeIcon: true,
       animation: 'zoom',
       closeAnimation: 'scale',
-      animationSpeed: 1500,
-      type: 'yellow',
-      columnClass: 'col-md-6 col-md-offset-3',
-      autoClose: 'okay|3000',
+      animationSpeed: 500,
+      type: 'orange',
+      columnClass: 'col-md-8 offset-md-1',
       buttons: {
-        okay: function () {},
+        Cerrar: function () {},
       },
     });
   };

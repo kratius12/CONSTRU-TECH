@@ -14,16 +14,33 @@ import StatusToggle from '../components/StatusToggle';
 import AlertDetail from '../components/AlertDetail';
 
 
-function TableInfo({ dataHeader, dataBody, routeEdit, viewDetail }) {
+function TableInfo({ dataHeader, dataBody, routeEdit, viewDetail, entity }) {
 
     const data = dataBody
     const header = dataHeader
     const columnNumber = dataHeader.length
 
-    const handleClick = () => {
-
-    }
-    const detail = viewDetail ? <AlertDetail /> : '';
+    const dataHead =[
+        {
+            header:"idEmp"
+        },
+        {
+            header:"Nombre"
+        },
+        {
+            header:"Correo"
+        },
+        {
+            header:"Telefono"
+        },
+        {
+            header:"Cedula"
+        },
+        {
+            header:"Estado"
+        }
+    ]
+    //const detail = viewDetail ? <AlertDetail /> : '';
 
     const [sorting, setSorting] = useState([])
     const [filtering, setFiltering] = useState()
@@ -84,10 +101,11 @@ function TableInfo({ dataHeader, dataBody, routeEdit, viewDetail }) {
                                 {
                                     row.getVisibleCells().map(cell => (
                                         <td key={cell.id}>
+                                            {console.log(cell)}
                                             {
                                                 cell.column.id === 'accion' ? (
                                                     <>
-                                                        {detail}
+                                                        {viewDetail? <AlertDetail dataHeader={dataHead} dataBody={cell.row.original} entity={entity} />:''}
                                                         <Link className="btn bg-secondary text-white" to={`/${routeEdit}/${cell.row.original[cell.column.columnDef.idProperty]}`}>
                                                             Editar <i className="fa-solid fa-pencil" />
                                                         </Link>
