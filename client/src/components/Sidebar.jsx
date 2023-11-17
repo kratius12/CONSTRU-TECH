@@ -68,10 +68,10 @@ export default function Sidebar() {
             </a>
           </li>
           <li className="nav-item">
-            <a className="nav-link" href="#">
+            <Link className="nav-link" to="/obras">
               <i className="fa-solid fa-map-location-dot" />
               Obras y tiempos
-            </a>
+            </Link>
           </li>
           <li className="nav-item">
             <Link className="nav-link" to="/clientes">
