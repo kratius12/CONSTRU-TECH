@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import EmpleadoTable from "../components/EmpleadoTable";
 import { useEmpleados } from "../context/EmpleadosProvider";
@@ -38,7 +38,12 @@ function EmpleadosPage() {
             idProperty: 'idEmp'
         }
     ]
-    const {empleados, Empleados} = useEmpleados()
+    const [tableStatus, setTableStatus] = useState(0)
+    const handleChangeStatus = (newStatus) => {
+        setTableStatus(newStatus)
+
+    }
+    const {empleados, Empleados, toggleEmpleadoStatus} = useEmpleados()
     const navigate = useNavigate()
     useEffect(() =>{
     Empleados()  
@@ -50,7 +55,7 @@ function EmpleadosPage() {
             return <h1>Sin Empleados</h1>
             
         }else{
-            return <TableInfo dataHeader={dataHeader} dataBody={empleados} routeEdit={'editarObra'} viewDetail/>
+            return <TableInfo dataHeader={dataHeader} dataBody={empleados} routeEdit={'editarEmpleado'} viewDetail toggleApi={toggleEmpleadoStatus} onChangeStatus={handleChangeStatus}/>
             //return <EmpleadoTable empleados={empleados}/>
         }
     }

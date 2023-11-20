@@ -66,4 +66,23 @@ router.put("/obra/:id", updateObra)
 
 router.delete("/obra/:id", deleteObra)
 
+router.put("/obraStatus/:id", async (req, res) => {
+    try {
+        const {status} = req.body
+        const result = await prisma.obras.update({
+            where:{
+                idObra:parseInt(req.params.id)
+            },
+            data:{
+                estado:parseInt(status)
+            }
+        })        
+        console.log(status)
+        return res.status(200).json(result)
+
+    } catch (error) {
+        return res.status(500).json({message: error.message})
+    }
+})
+
  export default router

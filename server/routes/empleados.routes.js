@@ -133,4 +133,23 @@ router.get("/empleadosEsp", async (req, res) => {
         }
 })
 
+router.put("/empleadoStatus/:id", async (req, res) => {
+    try {
+        const {status} = req.body
+        const result = await prisma.empleado.update({
+            where:{
+                idEmp:parseInt(req.params.id)
+            },
+            data:{
+                estado:parseInt(status)
+            }
+        })        
+        console.log(status)
+        return res.status(200).json(result)
+
+    } catch (error) {
+        return res.status(500).json({message: error.message})
+    }
+})
+
 export default router
