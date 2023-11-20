@@ -3,54 +3,23 @@ import React from 'react';
 
 function AlertDetail({dataHeader, dataBody, entity}) {
 
-  console.log(dataBody)
+ const tableDetail = () =>{
+  let tableContent = '<table class="w-100">'
+    dataHeader.forEach((item)=> {
+      tableContent += `<tr><th>${item.header}</th><td>${dataBody[item]}</td></tr>`
+    })
+  tableContent += '</table>';
 
-  const head =
-  `<table className="text-center">
-    ` +
-      dataHeader.map(item => (
-        `<tr><th key=${item.header}>${item.header}</th>`
-      )).join('') +
-      Object.values(dataBody).map(value => (
-        `<td key=${value}>${value}</td></tr>`
-      )).join('') 
-      + `
-  </table>`;
-
-  // for (let index = 0; index < dataHeader.length; index++) {
-  //     console.log(dataHeader[index].header)
-  //     for (let index = 0; index < dataBody.length; index++) {
-  //       console.log(dataBody[index][0])
-  //     }
-  // }
-
-  // `<table className="text-center">
-  //   <thead>
-  //   <tr>`+
-  //   dataHeader.map(item => (
-  //     `<th key=${item.header}>${item.header}</th>`
-  //   )).join('')
-  //   +`</tr>
-  //   </thead>
-  //   <tbody>
-  //    <tr>
-  //    `+
-  //    dataBody.map(itemB => (
-  //     `<td key=${itemB.idEmp}>${itemB.idEmp}</td>`
-  //     `<td key=${itemB.idEmp}>${itemB.idEmp}</td>`
-  //    ))
-  //    +`
-  //    </tr>
-  //   </tbody>
-  // </table>`
+  return tableContent;
+ }
   
   const alertConfirm = () => {
-    const Div = document.createElement('div');
-    Div.innerHTML= head
+    const content = tableDetail()
+
     $.confirm({
       title: 'Detalle '+entity,
-      content: Div,
-      icon: 'fa fa-check-circle',
+      content: content,
+      icon: 'fa fa-info-circle',
       theme: 'modern',
       closeIcon: true,
       animation: 'zoom',
