@@ -52,24 +52,33 @@ function ClientPage() {
             return <h1>Sin Clientes</h1>
 
         } else {
-            return <TableInfo dataHeader={dataHeader} dataBody={clientes} routeEdit={"editarCliente"} viewDetail/>
+            return <TableInfo dataHeader={dataHeader} dataBody={clientes} routeEdit={"editarCliente"} viewDetail />
         }
     }
 
     return (
-        <div>
-            <h1 className="text-black font-bold text-left my-3">Clientes</h1>
-            <div className="table-responsive">
-                <div className="row">
-                    <div className="col-md-6 mb-3">
-                        <button className="btn btn-primary" onClick={() => navigate(`/agregarCliente`)}>
-                            Agregar cliente
-                        </button>
+        <>
+            <h1 className="h3 mb-2 text-gray-800">Gestión de clientes</h1>
+            <div className="card shadow mb-4">
+                <div className="card-header py-3">
+                    <h6 className="m-0 font-weight-bold text-primary">Listado de clientes</h6>
+                </div>
+                <div className="card-body">
+                    <div className="table-responsive">
+                        <div className="row">
+                            <div className="col-md-6">
+                                <div className="col-md-6 mb-3">
+                                    <button className="btn btn-primary" onClick={() => navigate(`/agregarCliente`)}>
+                                        Agregar
+                                    </button>
+                                </div>
+                            </div>
+                            {renderMain()}
+                        </div>
                     </div>
-                    {renderMain()}
                 </div>
             </div>
-        </div>
+        </>
     )
 }
 

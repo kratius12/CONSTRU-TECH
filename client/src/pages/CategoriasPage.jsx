@@ -46,22 +46,28 @@ function CategoriasPage() {
     }
 
     return(
-        <div>
-            <h1 className="text5-xl text-black font-bold text-left my-3">Categorias</h1>
-
-            <div className="table-responsive">
-                <div className="row">
-                    <div className="col-md-6 mb-3">
-                        <button className="btn btn-primary" onClick={ ()=> navigate(`/agregarCategoria`)}>
-                            Agregar categoria
-                        </button>
-                    </div>
-                    {renderMain()}
-                </div>
-
-            </div>
-
-        </div>
+        <>
+            <h1 className="h3 mb-2 text-gray-800">Gestión de categorias</h1>        
+                    <div className="card shadow mb-4">
+                        <div className="card-header py-3">
+                            <h6 className="m-0 font-weight-bold text-primary">Listado de categorias</h6>
+                        </div>
+                        <div className="card-body">
+                            <div className="table-responsive">
+                                <div className="row">
+                                    <div className="col-md-6">
+                                        <div className="col-md-6 mb-3">
+                                            <button className="btn btn-primary" onClick={ ()=> navigate(`/agregarCategoria`)}>
+                                                Agregar
+                                            </button>                      
+                                        </div>                                        
+                                    </div>
+                                    {renderMain()}
+                                </div>                               
+                            </div>
+                        </div>
+                    </div>                    
+        </>
     )
 }
 

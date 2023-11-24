@@ -6,8 +6,8 @@ function ObrasPage() {
 
     const dataHeader = [
         {
-           header: "ID",
-           accessorKey: 'idObra'
+            header: "ID",
+            accessorKey: 'idObra'
 
         },
         {
@@ -38,38 +38,45 @@ function ObrasPage() {
         }
     ]
 
-    const {obras, Obras} = useObras()
+    const { obras, Obras } = useObras()
     const navigate = useNavigate()
-    useEffect(() =>{
-    Obras()  
+    useEffect(() => {
+        Obras()
     }, [])
 
     function renderMain() {
         if (obras.length === 0) {
             return <h1>Sin Obras</h1>
-            
-        }else{
+
+        } else {
             return <TableInfo dataHeader={dataHeader} dataBody={obras} routeEdit={'editarObra'} />
             //return <EmpleadoTable empleados={empleados}/>
         }
     }
 
-    return(
-        <div>
-            <h1 className="text-white font-bold text-center">Obras</h1>
-
-            <div className="table-responsive">
-                <div className="row">
-                    <div className="col-md-6 mb-3">
-                        <button className="btn btn-primary" onClick={ ()=> navigate(`/agregarObra`)}>
-                            Agregar obra
-                        </button>                      
+    return (
+        <>
+            <h1 className="h3 mb-2 text-gray-800">Gestión de obras y tiempos</h1>
+            <div className="card shadow mb-4">
+                <div className="card-header py-3">
+                    <h6 className="m-0 font-weight-bold text-primary">Listado de obras y tiempos</h6>
+                </div>
+                <div className="card-body">
+                    <div className="table-responsive">
+                        <div className="row">
+                            <div className="col-md-6">
+                                <div className="col-md-6 mb-3">
+                                    <button className="btn btn-primary" onClick={() => navigate(`/agregarObra`)}>
+                                        Agregar
+                                    </button>
+                                </div>
+                            </div>
+                            {renderMain()}
+                        </div>
                     </div>
-                    {renderMain()}
                 </div>
             </div>
-
-        </div>
+        </>
     )
 }
 
