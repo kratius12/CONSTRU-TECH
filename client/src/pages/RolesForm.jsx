@@ -62,23 +62,19 @@ export default function RolesForm() {
                         }}
                     >
                         {({ handleChange, handleSubmit, values, isSubmitting, errors, touched }) => (
-                            <Form onSubmit={handleSubmit}>
+                            <Form onSubmit={handleSubmit} className="user">
                                 <div className="card text-center w-100">
-                                    <div className="card-header bg-primary text-white">
-                                        <h2>{params.id ? "Editar" : "Agregar"} Rol </h2>
-                                    </div>
+                                        <h2>{params.id ? "Editar" : "Agregar"} rol </h2>
                                     <div className="card-body">
                                         <div className="row">
                                             <div className="col-6 mt-3">
-                                                <label htmlFor="nombre" className="form-label">Nombre <span className="text-danger">*</span></label>
-                                                <input type="text" className="form-control" id="nombre" onChange={handleChange} value={values.nombre} />
+                                                <input type="text" className="form-control form-control-user" id="nombre" onChange={handleChange} value={values.nombre} placeholder="Nombre*"/>
                                                 {errors.nombre && touched.nombre ? (
                                                     <div className="alert alert-danger" role="alert">{errors.nombre}</div>
                                                 ) : null}
                                             </div>
                                             <div className="col-6 mt-3">
-                                                <label htmlFor="estado" className="form-label">Estado <span className="text-danger">*</span></label>
-                                                <select id="estado" className="form-select" onChange={handleChange} value={values.estado} >
+                                                <select id="estado" className="form-select form-control-user"  onChange={handleChange} value={values.estado} >
                                                     <option value="">Seleccione estado</option>
                                                     <option value="1">Activo</option>
                                                     <option value="0">Inactivo</option>
@@ -92,13 +88,19 @@ export default function RolesForm() {
                                     <div className="card-footer text-center">
                                         <div className="row">
                                             <div className="col-md-6">
-                                                <button type="submit" disabled={isSubmitting} className="btn btn-primary w-50">
-                                                    <h4>{params.id ? "Guardar" : "Agregar"}</h4>
+                                            <button type="submit" disabled={isSubmitting} className="btn btn-primary btn-icon-split w-50">
+                                                    <span className="icon text-white-50">
+                                                        <i className="fas fa-plus"></i>
+                                                    </span>
+                                                    <span className="text">{params.id ? "Editar" : "Agregar"}</span>
                                                 </button>
                                             </div>
                                             <div className="col-md-6">
-                                                <a type="button" href="" className="btn btn-danger w-50" onClick={() => navigate(`/roles`)}>
-                                                    <h4>Cancelar</h4>
+                                                <a type="button" href="" className="btn btn-danger btn-icon-split w-50" onClick={() => navigate(`/roles`)}>
+                                                    <span className="icon text-white-50">
+                                                        <i className="fas fa-trash"></i>
+                                                    </span>
+                                                    <span className="text">Cancelar</span>
                                                 </a>
                                             </div>
                                         </div>

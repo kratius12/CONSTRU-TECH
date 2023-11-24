@@ -165,12 +165,12 @@ export default function ComprasForm() {
                   <div className="card-footer text-center">
                     <div className="row">
                       <div className="col-md-6">
-                        <a type="submit" disabled={isSubmitting} className="btn btn-primary btn-icon-split w-50">
+                        <button type="submit" disabled={isSubmitting} className="btn btn-primary btn-icon-split w-50">
                           <span className="icon text-white-50">
                             <i className="fas fa-plus"></i>
                           </span>
                           <span className="text">{params.id ? "Editar" : "Agregar"}</span>
-                        </a>
+                        </button>
                       </div>
                       <div className="col-md-6">
                         <a type="button" href="" className="btn btn-danger btn-icon-split w-50" onClick={() => navigate(`/compras`)}>

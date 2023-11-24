@@ -150,13 +150,19 @@ export default function MaterialesForm() {
                   <div className="card-footer text-center">
                     <div className="row">
                       <div className="col-md-6">
-                        <button type="submit" disabled={isSubmitting} className="btn btn-primary w-50">
-                          <h4>{params.id ? "Editar" : "Agregar"}</h4>
+                      <button type="submit" disabled={isSubmitting} className="btn btn-primary btn-icon-split w-50">
+                          <span className="icon text-white-50">
+                            <i className="fas fa-plus"></i>
+                          </span>
+                          <span className="text">{params.id ? "Editar" : "Agregar"}</span>
                         </button>
                       </div>
                       <div className="col-md-6">
-                        <a type="button" className="btn btn-danger w-50" onClick={() => navigate(`/materiales`)}>
-                          <h4>Cancelar</h4>
+                        <a type="button" href="" className="btn btn-danger btn-icon-split w-50" onClick={() => navigate(`/materiales`)}>
+                          <span className="icon text-white-50">
+                            <i className="fas fa-trash"></i>
+                          </span>
+                          <span className="text">Cancelar</span>
                         </a>
                       </div>
                     </div>

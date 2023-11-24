@@ -112,11 +112,11 @@ export default function ProveedoresForm() {
 
                             <Form onSubmit={handleSubmit} className="user">
                                 <div className="card text-center w-100">
-                                        <h2>{params.id ? "Editar" : "Agregar"} proveedor</h2>
+                                    <h2>{params.id ? "Editar" : "Agregar"} proveedor</h2>
                                     <div className="card-body">
                                         <div className="row">
                                             <div className="col-6 mt-3">
-                                                <input type="text" className="form-control form-control-user" id="nombre" onChange={handleChange} value={values.nombre} placeholder="Nombre*"/>
+                                                <input type="text" className="form-control form-control-user" id="nombre" onChange={handleChange} value={values.nombre} placeholder="Nombre*" />
                                                 {errors.nombre && touched.nombre ? (
                                                     <div className="alert alert-danger" role="alert">{errors.nombre}</div>
                                                 ) : null}
@@ -128,13 +128,13 @@ export default function ProveedoresForm() {
                                                 ) : null}
                                             </div>
                                             <div className="col-6 mt-3">
-                                                <input type="text" className="form-control form-control-user" id="email" onChange={handleChange} value={values.email} placeholder="Correo electronico*"/>
+                                                <input type="text" className="form-control form-control-user" id="email" onChange={handleChange} value={values.email} placeholder="Correo electronico*" />
                                                 {errors.email && touched.email ? (
                                                     <div className="alert alert-danger" role="alert">{errors.email}</div>
                                                 ) : null}
                                             </div>
                                             <div className="col-6 mt-3">
-                                                <input type="text" className="form-control form-control-user" id="direccion" onChange={handleChange} value={values.direccion} placeholder="Dirección*"/>
+                                                <input type="text" className="form-control form-control-user" id="direccion" onChange={handleChange} value={values.direccion} placeholder="Dirección*" />
                                                 {errors.direccion && touched.direccion ? (
                                                     <div className="alert alert-danger" role="alert">{errors.direccion}</div>
                                                 ) : null}
@@ -156,7 +156,7 @@ export default function ProveedoresForm() {
                                                 ) : null}
                                             </div>
                                             <div className="col-6 mt-3">
-                                                <select id="tipo" className="form-select form-control-user" onChange={handleSelectChange}   value={values.tipo = tipo }>
+                                                <select id="tipo" className="form-select form-control-user" onChange={handleSelectChange} value={values.tipo = tipo}>
                                                     <option value="">Seleccione el tipo de proveedor*</option>
                                                     <option value="Natural">Natural</option>
                                                     <option value="Juridico">Juridico</option>
@@ -195,13 +195,19 @@ export default function ProveedoresForm() {
                                     <div className="card-footer text-center">
                                         <div className="row">
                                             <div className="col-md-6">
-                                                <button type="submit" disabled={isSubmitting} className="btn btn-primary w-50">
-                                                    <h4>{params.id ? "Editar" : "Agregar"}</h4>
+                                                <button type="submit" disabled={isSubmitting} className="btn btn-primary btn-icon-split w-50">
+                                                    <span className="icon text-white-50">
+                                                        <i className="fas fa-plus"></i>
+                                                    </span>
+                                                    <span className="text">{params.id ? "Editar" : "Agregar"}</span>
                                                 </button>
                                             </div>
                                             <div className="col-md-6">
-                                                <a type="button" href="" className="btn btn-danger w-50" onClick={() => navigate(`/proveedores`)}>
-                                                    <h4>Cancelar</h4>
+                                                <a type="button" href="" className="btn btn-danger btn-icon-split w-50" onClick={() => navigate(`/proveedores`)}>
+                                                    <span className="icon text-white-50">
+                                                        <i className="fas fa-trash"></i>
+                                                    </span>
+                                                    <span className="text">Cancelar</span>
                                                 </a>
                                             </div>
                                         </div>
