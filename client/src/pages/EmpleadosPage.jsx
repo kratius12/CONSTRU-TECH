@@ -61,21 +61,43 @@ function EmpleadosPage() {
     }
 
     return(
-        <div>
-            <h1 className="text-black font-bold text-left my-3">Empleados</h1>
+        <>
+            <h1 className="h3 mb-2 text-gray-800">Empeados</h1>        
+                    <div className="card shadow mb-4">
+                        <div className="card-header py-3">
+                            <h6 className="m-0 font-weight-bold text-primary">Listado de empleados</h6>
+                        </div>
+                        <div className="card-body">
+                            <div className="table-responsive">
+                                <div className="row">
+                                    <div className="col-md-6">
+                                        <div className="col-md-6 mb-3">
+                                            <button className="btn btn-primary" onClick={ ()=> navigate(`/agregarEmpleado`)}>
+                                                Agregar
+                                            </button>                      
+                                        </div>                                        
+                                    </div>
+                                    {renderMain()}
+                                </div>                               
+                            </div>
+                        </div>
+                    </div>                    
+        </>
+        // <div>
+        //     <h1 className="text-black font-bold text-left my-3">Empleados</h1>
                 
-            <div className="table-responsive">
-                <div className="row">
-                    <div className="col-md-6 mb-3">
-                        <button className="btn btn-primary" onClick={ ()=> navigate(`/agregarEmpleado`)}>
-                            Agregar empleado
-                        </button>                        
-                    </div>
-                    {renderMain()}
-                </div>
-            </div>
+        //     <div className="table-responsive">
+        //         <div className="row">
+        //             <div className="col-md-6 mb-3">
+        //                 <button className="btn btn-primary" onClick={ ()=> navigate(`/agregarEmpleado`)}>
+        //                     Agregar empleado
+        //                 </button>                        
+        //             </div>
+        //             {renderMain()}
+        //         </div>
+        //     </div>
 
-        </div>
+        // </div>
     )
 }
 
