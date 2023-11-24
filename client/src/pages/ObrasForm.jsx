@@ -66,10 +66,10 @@ function ObrasForm() {
                             })
                         }}>
                             {({handleChange, handleSubmit, values, isSubmitting, errors, touched}) => (
-                            <Form onSubmit={handleSubmit}>
+                            <Form onSubmit={handleSubmit} className="user">
                                 <div className="card text-center w-100">
                                     <div className="card-header bg-primary text-white">
-                                        <h2>{params.id ? "Editar":"Agregar"} Obra</h2>
+                                        <h2>{params.id ? "Editar":"Agregar"} obra</h2>
                                     </div>
                                     <div className="card-body">
                                         <div className="row">
@@ -78,8 +78,7 @@ function ObrasForm() {
                                             <>
                                             
                                             <div className="col-md-6 mt-3">
-                                                <label htmlFor="descripcion" className="form-label">Descripcion<span className="text-danger">*</span></label>
-                                                <input type="text" className="form-control" id="descripcion" onChange={handleChange} value={values.descripcion} />
+                                                <input type="text" className="form-control form-control-user" id="descripcion" onChange={handleChange} value={values.descripcion} placeholder="Descripción de la obra*"/>
                                                 {errors.descripcion && touched.descripcion ? (
                                                     <div className="alert alert-danger" role="alert">{errors.descripcion}</div>
                                                 ) : null} 

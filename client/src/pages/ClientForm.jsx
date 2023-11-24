@@ -1,17 +1,14 @@
 import { useEffect, useState } from "react";
-import  Select  from "react-select";
-import makeAnimated from 'react-select/animated';
 import { Form, Formik } from "formik";
 import { useParams, useNavigate } from "react-router-dom";
 import { useClients } from "../context/ClientesProvider";
 import  ClientSchema from "./ClientValidator";
 
 
-const animatedComponents = makeAnimated();
 
 
 export default function ClientsForm() {
-    const {createClient, getClient, updateClient, deleteClient} = useClients()
+    const {createClient, getClient, updateClient} = useClients()
 
     const [selectedOption, setSelectedOption] = useState("");
 
@@ -87,52 +84,45 @@ export default function ClientsForm() {
           }}
           >
             {({handleChange, handleSubmit, values, isSubmitting, errors, touched}) =>(
-              <Form onSubmit={handleSubmit}>
+              <Form onSubmit={handleSubmit} className="user">
                 <div className="card text-center w-100">
-                  <div className="card-header bg-primary text-white">
-                    <h2>{params.id ? "Editar": "Agregar"} Cliente</h2>
-                  </div>
+                  <br />
+                    <h1>{params.id ? "Editar": "Agregar"} cliente</h1>
                   <div className="card-body">
                     <div className="row">
                       <div className="col-6 mt-3">
-                        <label htmlFor="nombre" className="form-label">Nombres <span className="text-danger">*</span></label>
-                        <input type="text" className="form-control" id="nombre" onChange={handleChange} value={values.nombre} />
+                        <input type="text" className="form-control  form-control-user" id="nombre" onChange={handleChange} value={values.nombre} placeholder="Nombre*"/>
                           {errors.nombre && touched.nombre ? (
                           <div className="alert alert-danger" role="alert">{errors.nombre}</div>
                           ) : null}                        
                       </div>
                       <div className="col-6 mt-3">
-                        <label htmlFor="apellidos" className="form-label">Apellidos<span className="text-danger">*</span></label>
-                        <input type="text" className="form-control" id="apellidos" onChange={handleChange} value={values.apellidos} />
+                        <input type="text" className="form-control  form-control-user" id="apellidos" onChange={handleChange} value={values.apellidos} placeholder="Apellido*"/>
                           {errors.apellidos && touched.apellidos ? (
                           <div className="alert alert-danger" role="alert">{errors.apellidos}</div>
                           ) : null}                        
                       </div>
                       <div className="col-6 mt-3">
-                        <label htmlFor="email" className="form-label">Email <span className="text-danger">*</span></label>
-                        <input type="text" className="form-control" id="email" onChange={handleChange} value={values.email} />
+                        <input type="text" className="form-control  form-control-user" id="email" onChange={handleChange} value={values.email} placeholder="Correo electronico*"/>
                           {errors.email && touched.email ? (
                           <div className="alert alert-danger" role="alert">{errors.email}</div>
                           ) : null}                        
                       </div>
                       <div className="col-6 mt-3">
-                        <label htmlFor="direccion" className="form-label">Direccion <span className="text-danger">*</span></label>
-                        <input type="text" className="form-control" id="direccion" onChange={handleChange} value={values.direccion} />
+                        <input type="text" className="form-control  form-control-user" id="direccion" onChange={handleChange} value={values.direccion} placeholder="Dirección*" />
                           {errors.direccion && touched.direccion ? (
                           <div className="alert alert-danger" role="alert">{errors.direccion}</div>
                           ) : null}                        
                       </div>
                       <div className="col-6 mt-3">
-                        <label htmlFor="telefono" className="form-label">Telefono <span className="text-danger">*</span></label>
-                        <input type="text" className="form-control" id="telefono" onChange={handleChange} value={values.telefono} />
+                        <input type="text" className="form-control form-control-user" id="telefono" onChange={handleChange} value={values.telefono} placeholder="Teléfono*"/>
                           {errors.telefono && touched.telefono ? (
                           <div className="alert alert-danger" role="alert">{errors.telefono}</div>
                           ) : null}                        
                       </div>
                       <div className="col-6 mt-3">
-                        <label htmlFor="tipoDoc" className="form-label">Tipo documento <span className="text-danger">*</span></label>
-                        <select id="tipoDoc" className="form-select" onChange={handleChange} value={values.tipoDoc} >
-                          <option value="">Seleccione tipo documento</option>
+                        <select id="tipoDoc" className="form-select  form-control-user" onChange={handleChange} value={values.tipoDoc} >
+                          <option value="">Seleccione tipo documento*</option>
                           <option value="Cedula de ciudadania">Cedula de ciudadania</option>
                           <option value="Cedula de extranjeria">Cedula de extranjeria</option>
                           <option value="Pasaporte">Pasaporte</option>
@@ -142,29 +132,26 @@ export default function ClientsForm() {
                           ) : null}                         
                       </div>
                       <div className="col-6 mt-3">
-                        <label htmlFor="cedula" className="form-label">Cedula <span className="text-danger">*</span></label>
-                        <input type="text" className="form-control" id="cedula" onChange={handleChange} value={values.cedula} />
+                        <input type="text" className="form-control  form-control-user" id="cedula" onChange={handleChange} value={values.cedula} placeholder="Número de documento de identidad*" />
                           {errors.cedula && touched.cedula ? (
                           <div className="alert alert-danger" role="alert">{errors.cedula}</div>
                           ) : null}                        
                       </div>
                       <div className="col-6 mt-3">
-                        <label htmlFor="fecha_nac" className="form-label">Fecha de nacimiento <span className="text-danger">*</span></label>
-                        <input type="date" className="form-control" id="fecha_nac" onChange={handleChange} value={values.fecha_nac} />
+                        <label htmlFor="">Fecha de nacimiento</label>
+                        <input type="date" className="form-control  form-control-user" id="fecha_nac" onChange={handleChange} value={values.fecha_nac} />
                           {errors.fecha_nac && touched.fecha_nac ? (
                           <div className="alert alert-danger" role="alert">{errors.fecha_nac}</div>
                           ) : null}
                       </div>
                       <div className="col-6 mt-3">
-                        <label htmlFor="contrasena" className="form-label">Contraseña <span className="text-danger">*</span></label>
-                        <input type="password" className="form-control" id="contrasena" onChange={handleChange} value={values.contrasena} />
+                        <input type="password" className="form-control  form-control-user" id="contrasena" onChange={handleChange} value={values.contrasena} placeholder="Contraseña*"/>
                           {errors.contrasena && touched.contrasena ? (
                           <div className="alert alert-danger" role="alert">{errors.contrasena}</div>
                           ) : null}                        
                       </div>
                       <div className="col-6 mt-3">
-                        <label htmlFor="estado" className="form-label">Estado <span className="text-danger">*</span></label>
-                        <select id="estado" className="form-select" onChange={handleChange} value={values.estado} >
+                        <select id="estado" className="form-select  form-control-user" onChange={handleChange} value={values.estado} >
                           <option value="">Seleccione estado</option>
                           <option value="1">Activo</option>
                           <option value="0">Inactivo</option>

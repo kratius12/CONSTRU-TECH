@@ -55,24 +55,20 @@ export default function CategoriasForm() {
           }}
           >
             {({handleChange, handleSubmit, values, isSubmitting, errors, touched}) =>(
-              <Form onSubmit={handleSubmit}>
+              <Form onSubmit={handleSubmit} className="user">
                 <div className="card text-center w-100">
-                  <div className="card-header bg-primary text-white">
-                    <h2>{params.id ? "Editar": "Agregar"} Categoria</h2>
-                  </div>
+                    <h2>{params.id ? "Editar": "Agregar"} categoria</h2>
                   <div className="card-body">
                     <div className="row">
                       <div className="col-6 mt-3">
-                        <label htmlFor="nombre" className="form-label">Nombre <span className="text-danger">*</span></label>
-                        <input type="text" className="form-control" id="nombre" onChange={handleChange} value={values.nombre} />
+                        <input type="text" className="form-control form-control-user" id="nombre" onChange={handleChange} value={values.nombre} placeholder="Nombre*"/>
                           {errors.nombre && touched.nombre ? (
                           <div className="alert alert-danger" role="alert">{errors.nombre}</div>
                           ) : null}                        
                       </div>
                       <div className="col-6 mt-3">
-                        <label htmlFor="medida" className="form-label">Medida <span className="text-danger">*</span></label>
-                        <select id="medida" className="form-select" onChange={handleChange} value={values.medida} >
-                          <option value="">Seleccione medida</option>
+                        <select id="medida" className="form-select form-control-user" onChange={handleChange} value={values.medida} >
+                          <option value="">Seleccione la unidad de medida*</option>
                           <option value="m">Metro</option>
                           <option value="m2">Metro cuadrado</option>
                           <option value="kg">Kilogramo</option>
@@ -84,9 +80,8 @@ export default function CategoriasForm() {
                           ) : null}                       
                       </div>
                       <div className="col-6 mt-3">
-                        <label htmlFor="estado" className="form-label">Estado <span className="text-danger">*</span></label>
-                        <select id="estado" className="form-select" onChange={handleChange} value={values.estado} >
-                          <option value="">Seleccione estado</option>
+                        <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
+                          <option value="">Seleccione estado*</option>
                           <option value="1">Activo</option>
                           <option value="0">Inactivo</option>
                         </select>

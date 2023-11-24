@@ -10,9 +10,6 @@ export default function ComprasForm() {
   useEffect(() => {
     Compras()
   }, [])
-  const [formSections, setFormSections] = useState([
-    { categoria: '', precio: '', material: '', cantidad: ''},
-  ]);
 
   const params = useParams()
   const navigate = useNavigate()
@@ -28,10 +25,10 @@ export default function ComprasForm() {
     subtotal: ''
   })
 
-  const [material,setMaterial] = useState([])
-  const [categoria,setCategoria] = useState([])
-  const [materialSeleccionado,setMaterialSeleccionado] = useState('')
-  const [categoriaSeleccionada,setCategoriaSeleccionada] = useState('')
+  const [material, setMaterial] = useState([])
+  const [categoria, setCategoria] = useState([])
+  const [materialSeleccionado, setMaterialSeleccionado] = useState('')
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('')
   useEffect(() => {
     const loadCompras = async () => {
       if (params.id) {
@@ -43,17 +40,17 @@ export default function ComprasForm() {
         })
       }
       axios.get(`http://localhost:4000/materiales`)
-        .then((response)=>{
+        .then((response) => {
           setMaterial(response.data)
         })
-        .catch((error)=>{
+        .catch((error) => {
           console.error(error)
         })
       axios.get(`http://localhost:4000/categorias`)
-        .then((response)=>{
+        .then((response) => {
           setCategoria(response.data)
         })
-        .catch((error)=>{
+        .catch((error) => {
           console.error(error)
         })
     }
@@ -98,29 +95,27 @@ export default function ComprasForm() {
                 idMat: '',
                 cantidad: '',
                 subtotal: '',
-                precio:''
+                precio: ''
               })
             }}
           >
             {({ handleChange, handleSubmit, values, isSubmitting, errors, touched }) => (
 
-              <Form onSubmit={handleSubmit}>
+              <Form onSubmit={handleSubmit} className="user">
                 <div className="card text-center w-100">
-                  <div className="card-header bg-primary text-white">
-                    <h2>Agregar compra</h2>
-                  </div>
+
+                  <h2>Agregar compra</h2>
                   <div className="card-body">
                     <div className="row">
                       <div className="col-6 mt-3">
-                        <label htmlFor="fecha" className="form-label">Fecha de compra <span className="text-danger">*</span></label>
-                        <input type="date" className="form-control hasDatepicker" id="fecha" onChange={handleChange} value={values.fecha} />
+                        <input type="date" className="form-control hasDatepicker form-control-user" id="fecha" onChange={handleChange} value={values.fecha} />
                         {errors.fecha && touched.fecha ? (
                           <div className="alert alert-danger" role="alert">{errors.fecha}</div>
                         ) : null}
                       </div>
                       <div className="col-6 mt-3">
-                        <label htmlFor="imagen" className="form-label">Factura <span className="text-danger">*</span></label>
-                        <input type="file" className="form-control" id="imagen" onChange={handleChange} value={values.imagen} />
+
+                        <input type="file" className="form-control form-control-user" id="imagen" onChange={handleChange} value={values.imagen} placeholder="Seleccione la imagen de la factura de esta compra" />
                         {errors.imagen && touched.imagen ? (
                           <div className="alert alert-danger" role="alert">{errors.imagen}</div>
                         ) : null}
@@ -128,23 +123,21 @@ export default function ComprasForm() {
                       <hr className="mt-4" />
 
                       <div className="col-3 mt-3">
-                        <label htmlFor="categoria" className="form-label">Categoria <span className="text-danger">*</span></label>
-                        <select className="form-select" id="idCategoria" value={values.idCategoria= categoriaSeleccionada} onChange={(e) => { setCategoriaSeleccionada(e.target.value) }}>
-                          <option >Seleccione una categoria</option>
-                          {categoria.map((categoria,e) => (
+                        <select className="form-select form-control-user" id="idCategoria" value={values.idCategoria = categoriaSeleccionada} onChange={(e) => { setCategoriaSeleccionada(e.target.value) }}>
+                          <option >Seleccione una categoria*</option>
+                          {categoria.map((categoria, e) => (
                             <option key={e} value={categoria.idcat}>{categoria.nombre}</option>
                           ))}
                         </select>
-                          
+
                         {errors.categoria && touched.categoria ? (
                           <div className="alert alert-danger" role="alert">{errors.categoria}</div>
                         ) : null}
                       </div>
                       <div className="col-3 mt-3">
-                        <label htmlFor="estado" className="form-label">Material <span className="text-danger">*</span></label>
-                        <select className="form-select" id="idCategoria" value={values.idMat= materialSeleccionado} onChange={(e) => { setMaterialSeleccionado(e.target.value) }}>
+                        <select className="form-select form-control-user" id="idCategoria" value={values.idMat = materialSeleccionado} onChange={(e) => { setMaterialSeleccionado(e.target.value) }}>
                           <option >Seleccione un material</option>
-                          {material.map((material,e) => (
+                          {material.map((material, e) => (
                             <option key={e} value={material.idcat}>{material.nombre}</option>
                           ))}
                         </select>
@@ -153,15 +146,13 @@ export default function ComprasForm() {
                         ) : null}
                       </div>
                       <div className="col-3 mt-3">
-                        <label htmlFor="subtotal" className="form-label">Subtotal<span className="text-danger">*</span></label>
-                        <input type="text" className="form-control" id="subtotal" onChange={handleChange} value={values.subtotal} />
+                        <input type="text" className="form-control form-control-user" id="subtotal" onChange={handleChange} value={values.subtotal} placeholder="Cantidad*" />
                         {errors.subtotal && touched.subtotal ? (
                           <div className="alert alert-danger" role="alert">{errors.subtotal}</div>
                         ) : null}
                       </div>
                       <div className="col-3 mt-3">
-                        <label htmlFor="precio" className="form-label">Valor  unitario <span className="text-danger">*</span></label>
-                        <input type="text" className="form-control" id="precio" onChange={handleChange} value={values.precio} />
+                        <input type="text" className="form-control form-control-user" id="precio" onChange={handleChange} value={values.precio} placeholder="Valor unitario*" />
                         {errors.precio && touched.precio ? (
                           <div className="alert alert-danger" role="alert">{errors.precio}</div>
                         ) : null}
@@ -174,13 +165,19 @@ export default function ComprasForm() {
                   <div className="card-footer text-center">
                     <div className="row">
                       <div className="col-md-6">
-                        <button type="submit" disabled={isSubmitting} className="btn btn-primary w-50">
-                          <h4>{params.id ? "Editar" : "Agregar"}</h4>
-                        </button>
+                        <a type="submit" disabled={isSubmitting} className="btn btn-primary btn-icon-split w-50">
+                          <span className="icon text-white-50">
+                            <i className="fas fa-plus"></i>
+                          </span>
+                          <span className="text">{params.id ? "Editar" : "Agregar"}</span>
+                        </a>
                       </div>
                       <div className="col-md-6">
-                        <a type="button" href="" className="btn btn-danger w-50" onClick={() => navigate(`/compras`)}>
-                          <h4>Cancelar</h4>
+                        <a type="button" href="" className="btn btn-danger btn-icon-split w-50" onClick={() => navigate(`/compras`)}>
+                          <span className="icon text-white-50">
+                            <i className="fas fa-trash"></i>
+                          </span>
+                          <span className="text">Cancelar</span>
                         </a>
                       </div>
                     </div>

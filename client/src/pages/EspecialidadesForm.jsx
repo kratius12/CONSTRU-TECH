@@ -54,24 +54,20 @@ export default function EspecialidadesForm() {
           }}
           >
             {({handleChange, handleSubmit, values, isSubmitting, errors, touched}) =>(
-              <Form onSubmit={handleSubmit}>
+              <Form onSubmit={handleSubmit} className="user">
                 <div className="card text-center w-100">
-                  <div className="card-header bg-primary text-white">
                     <h2>{params.id ? "Editar": "Agregar"} especialidad</h2>
-                  </div>
                   <div className="card-body">
                     <div className="row">
                       <div className="col-6 mt-3">
-                        <label htmlFor="especialidad" className="form-label">Especialidad <span className="text-danger">*</span></label>
-                        <input type="text" className="form-control" id="especialidad" onChange={handleChange} value={values.especialidad} />
+                        <input type="text" className="form-control form-control-user" id="especialidad" onChange={handleChange} value={values.especialidad} placeholder="Nombre*" />
                           {errors.especialidad && touched.especialidad ? (
                           <div className="alert alert-danger" role="alert">{errors.especialidad}</div>
                           ) : null}                        
                       </div>
                       <div className="col-6 mt-3">
-                        <label htmlFor="estado" className="form-label">Estado <span className="text-danger">*</span></label>
-                        <select id="estado" className="form-select" onChange={handleChange} value={values.estado} >
-                          <option value="">Seleccione estado</option>
+                        <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
+                          <option value="">Seleccione estado*</option>
                           <option value="1">Activo</option>
                           <option value="0">Inactivo</option>
                         </select>

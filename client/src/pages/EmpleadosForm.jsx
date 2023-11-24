@@ -8,194 +8,185 @@ import EmpleadoSchema from "../components/ValidatorEmpleado";
 
 
 export default function EmpleadosForm() {
-//   const [agreed, setAgreed] = useState(false)
-    const {createEmpleado, getEmpleado, updateEmpleado, especialidades, Especialidades} = useEmpleados()
-    useEffect(() =>{
-      Especialidades()  
-      }, [])
+  //   const [agreed, setAgreed] = useState(false)
+  const { createEmpleado, getEmpleado, updateEmpleado, especialidades, Especialidades } = useEmpleados()
+  useEffect(() => {
+    Especialidades()
+  }, [])
 
-    // const options = especialidades.map(item => ({value:item.id, label:item.especialidad}))
-    // const [selectedOption, setSelectedOption] = useState("");
+  // const options = especialidades.map(item => ({value:item.id, label:item.especialidad}))
+  // const [selectedOption, setSelectedOption] = useState("");
 
-    // const handleClick = (selected) => {
-    //   setSelectedOption(selected.value);
-    //   console.log(selectedOption);
-    // };
-    const alertConfirm = (type) => {
-      var message =""
-      if (type == "update") {
-        message = "Actualizado"
-      }else{
-        message = "Agregado"
-      }
-      $.confirm({
-        title:`Empleado `+message+` con exito!`,
-        content:"Redirecionando a listado de empleados...",
-        icon: 'fa fa-check',
-        theme: 'modern',
-        closeIcon: true,
-        animation: 'zoom',
-        closeAnimation: 'scale',
-        animationSpeed: 1500,
-        type: 'green',
-        columnClass:'col-md-6 col-md-offset-3',
-        autoClose: 'okay|4000',
-        buttons: {
-            okay: function () {
-            },
-        }            
-    })
+  // const handleClick = (selected) => {
+  //   setSelectedOption(selected.value);
+  //   console.log(selectedOption);
+  // };
+  const alertConfirm = (type) => {
+    var message = ""
+    if (type == "update") {
+      message = "Actualizado"
+    } else {
+      message = "Agregado"
     }
-    const params = useParams()
-    const navigate = useNavigate()
-    const [empleado, setEmpleado] = useState({
-        nombre:"",
-        direccion:"",
-        estado:"",
-        email:"",
-        telefono:"",
-        tipoDoc:"",
-        cedula:"",
-        especialidad:[]
+    $.confirm({
+      title: `Empleado ` + message + ` con exito!`,
+      content: "Redirecionando a listado de empleados...",
+      icon: 'fa fa-check',
+      theme: 'modern',
+      closeIcon: true,
+      animation: 'zoom',
+      closeAnimation: 'scale',
+      animationSpeed: 1500,
+      type: 'green',
+      columnClass: 'col-md-6 col-md-offset-3',
+      autoClose: 'okay|4000',
+      buttons: {
+        okay: function () {
+        },
+      }
     })
-    
-    useEffect(() =>{
-        const loadEmpleados = async () => {
-            if (params.id) {
-                const empleado = await getEmpleado(params.id)
-                setEmpleado({
-                    nombre:empleado.nombre,
-                    direccion:empleado.direccion,
-                    estado:empleado.estado,
-                    email:empleado.email,
-                    telefono:empleado.telefono,
-                    tipoDoc:empleado.tipoDoc,
-                    cedula:empleado.cedula,
-                    especialidad:empleado.especialidad
-                })                
-            }
-        }
-        loadEmpleados()
-    }, [getEmpleado, params.id])
+  }
+  const params = useParams()
+  const navigate = useNavigate()
+  const [empleado, setEmpleado] = useState({
+    nombre: "",
+    direccion: "",
+    estado: "",
+    email: "",
+    telefono: "",
+    tipoDoc: "",
+    cedula: "",
+    especialidad: []
+  })
+
+  useEffect(() => {
+    const loadEmpleados = async () => {
+      if (params.id) {
+        const empleado = await getEmpleado(params.id)
+        setEmpleado({
+          nombre: empleado.nombre,
+          direccion: empleado.direccion,
+          estado: empleado.estado,
+          email: empleado.email,
+          telefono: empleado.telefono,
+          tipoDoc: empleado.tipoDoc,
+          cedula: empleado.cedula,
+          especialidad: empleado.especialidad
+        })
+      }
+    }
+    loadEmpleados()
+  }, [getEmpleado, params.id])
 
   return (
     <div className="container">
       <div className="row">
         <div className="col-md-12">
           <Formik initialValues={empleado}
-          enableReinitialize={true}
-          validationSchema={EmpleadoSchema}
-          onSubmit={ async (values) => {
-            console.log(values);
-            if (params.id) {
-              await updateEmpleado(params.id, values)
-              alertConfirm()
-              setTimeout(
-                navigate("/empleados"),
-                5000
-              )
-            } else {
-              await createEmpleado(values)
-              alertConfirm()
-              setTimeout(
-                navigate("/empleados"),
-                5000
-              )
+            enableReinitialize={true}
+            validationSchema={EmpleadoSchema}
+            onSubmit={async (values) => {
+              console.log(values);
+              if (params.id) {
+                await updateEmpleado(params.id, values)
+                alertConfirm()
+                setTimeout(
+                  navigate("/empleados"),
+                  5000
+                )
+              } else {
+                await createEmpleado(values)
+                alertConfirm()
+                setTimeout(
+                  navigate("/empleados"),
+                  5000
+                )
 
-            }
+              }
               setEmpleado({
-                  nombre:"",
-                  direccion:"",
-                  estado:"",
-                  email:"",
-                  telefono:"",
-                  tipoDoc:"",
-                  cedula:"",
-                  especialidad:[]
+                nombre: "",
+                direccion: "",
+                estado: "",
+                email: "",
+                telefono: "",
+                tipoDoc: "",
+                cedula: "",
+                especialidad: []
               })
-          }}
+            }}
           >
-            {({handleChange, handleSubmit, values, isSubmitting, errors, touched}) =>(
-              <Form onSubmit={handleSubmit}>
+            {({ handleChange, handleSubmit, values, isSubmitting, errors, touched }) => (
+              <Form onSubmit={handleSubmit} className="user">
                 <div className="card text-center w-100">
-                  <div className="card-header bg-primary text-white">
-                    <h2>{params.id ? "Editar": "Agregar"} empleado</h2>
-                  </div>
+                  <br />
+                  <h1 className="h4 text-gray-900 mb-4">{params.id ? "Editar": "Agregar"} empleado</h1>
                   <div className="card-body">
                     <div className="row">
                       <div className="col-6 mt-3">
-                        <label htmlFor="nombre" className="form-label">Nombres <span className="text-danger">*</span></label>
-                        <input type="text" className="form-control" id="nombre" onChange={handleChange} value={values.nombre} />
-                          {errors.nombre && touched.nombre ? (
+                        <input type="text" className="form-control form-control-user" id="nombre" onChange={handleChange} value={values.nombre} placeholder="Nombres*" />
+                        {errors.nombre && touched.nombre ? (
                           <div className="alert alert-danger" role="alert">{errors.nombre}</div>
-                          ) : null}                        
+                        ) : null}
                       </div>
                       <div className="col-6 mt-3">
-                        <label htmlFor="tipoDoc" className="form-label">Tipo documento<span className="text-danger">*</span></label>
-                        <select id="tipoDoc" className="form-select" onChange={handleChange} value={values.tipoDoc}>
-                          <option value="">Seleccione tipo documento</option>
+                        <select id="tipoDoc" className="form-select form-control-user" onChange={handleChange} value={values.tipoDoc}>
+                          <option value="">Seleccione tipo documento*</option>
                           <option value="CC">Cedula de ciudadania</option>
                           <option value="CE">Cedula de extranjeria</option>
                           <option value="PS">Pasaporte</option>
                         </select>
                         {errors.tipoDoc && touched.tipoDoc ? (
                           <div className="alert alert-danger" role="alert">{errors.tipoDoc}</div>
-                          ) : null}                         
+                        ) : null}
                       </div>
                       <div className="col-6 mt-3">
-                        <label htmlFor="cedula" className="form-label">Numero documento <span className="text-danger">*</span></label>
-                        <input type="text" className="form-control" id="cedula"  onChange={handleChange} value={values.cedula}/>
+                        <input type="text" className="form-control form-control-user" id="cedula" onChange={handleChange} value={values.cedula} placeholder="Número de documento*" />
                         {errors.cedula && touched.cedula ? (
                           <div className="alert alert-danger" role="alert">{errors.cedula}</div>
-                          ) : null} 
+                        ) : null}
                       </div>
                       <div className="col-6 mt-3">
-                        <label htmlFor="email" className="form-label">Correo electronico <span className="text-danger">*</span></label>
-                        <input type="text" className="form-control" id="email" onChange={handleChange} value={values.email} />
+                        <input type="text" className="form-control form-control-user" id="email" onChange={handleChange} value={values.email} placeholder="Correo electronico*" />
                         {errors.email && touched.email ? (
                           <div className="alert alert-danger" role="alert">{errors.email}</div>
-                          ) : null} 
+                        ) : null}
                       </div>
                       <div className="col-6 mt-3">
-                        <label htmlFor="telefono" className="form-label">Telefono <span className="text-danger">*</span></label>
-                        <input type="text" className="form-control" id="telefono" onChange={handleChange} value={values.telefono} />
+                        <input type="text" className="form-control form-control-user" id="telefono" onChange={handleChange} value={values.telefono} placeholder="Número telefonico*" />
                         {errors.telefono && touched.telefono ? (
                           <div className="alert alert-danger" role="alert">{errors.telefono}</div>
-                          ) : null} 
+                        ) : null}
                       </div>
                       <div className="col-6 mt-3">
-                        <label htmlFor="direccion" className="form-label">Direccion <span className="text-danger">*</span></label>
-                        <input type="text" className="form-control" id="direccion" onChange={handleChange} value={values.direccion} />
+                        <input type="text" className="form-control form-control-user" id="direccion" onChange={handleChange} value={values.direccion} placeholder="Dirección*" />
                         {errors.direccion && touched.direccion ? (
                           <div className="alert alert-danger" role="alert">{errors.direccion}</div>
-                          ) : null} 
+                        ) : null}
                       </div>
                       <div className="col-6 mt-3">
-
-                      <label>Selecciona especialidades:</label>
+                        <label>Selecciona especialidades:</label>
                         <Field
                           name="especialidad"
                           as="select"
                           multiple
-                          className="form-select"
+                          className="form-select "
                         >
                           {especialidades.map(item => (
                             <option key={item.id} value={item.id}>
                               {item.especialidad}
                             </option>
-                            ))}
+                          ))}
                         </Field>
                       </div>
                       <div className="col-6 mt-3">
-                        <label htmlFor="estado" className="form-label">Estado <span className="text-danger">*</span></label>
-                        <select id="estado" className="form-select" onChange={handleChange} value={values.estado} >
+                        <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
                           <option value="">Seleccione estado</option>
                           <option value="1">Activo</option>
                           <option value="0">Inactivo</option>
                         </select>
                         {errors.estado && touched.estado ? (
                           <div className="alert alert-danger" role="alert">{errors.estado}</div>
-                          ) : null}                         
+                        ) : null}
                       </div>
                     </div>
                   </div>
@@ -203,19 +194,19 @@ export default function EmpleadosForm() {
                     <div className="row">
                       <div className="col-md-6">
                         <button type="submit" disabled={isSubmitting} className="btn btn-primary w-50">
-                          <h4>{params.id ? "Editar": "Agregar"}</h4>
+                          <h4>{params.id ? "Editar" : "Agregar"}</h4>
                         </button>
                       </div>
                       <div className="col-md-6">
-                      <a type="button" href="" className="btn btn-danger w-50" onClick={()=> navigate(`/empleados`)}>
-                        <h4>Cancelar</h4>
-                      </a>
+                        <a type="button" href="" className="btn btn-danger w-50" onClick={() => navigate(`/empleados`)}>
+                          <h4>Cancelar</h4>
+                        </a>
                       </div>
                     </div>
                   </div>
                 </div>
               </Form>
-            )} 
+            )}
           </Formik>
         </div>
       </div>
