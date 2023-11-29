@@ -37,14 +37,7 @@ export default function EmpleadosForm() {
     useEffect(() =>{
       Especialidades()  
       }, [])
-
-    // const options = especialidades.map(item => ({value:item.id, label:item.especialidad}))
-    // const [selectedOption, setSelectedOption] = useState("");
-
-    // const handleClick = (selected) => {
-    //   setSelectedOption(selected.value);
-    //   console.log(selectedOption);
-    // };
+      
     const alertConfirm = (type) => {
       var message =""
       if (type == "update") {

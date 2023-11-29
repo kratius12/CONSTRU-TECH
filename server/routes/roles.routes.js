@@ -31,13 +31,24 @@ router.get('/roles/:id', async (req, res) =>{
 
 router.post('/roles', async (req, res) => {
         try{
-                const {nombre, estado} = req.body
+                const {nombre, estado, permiso} = req.body
                 const result = await prisma.rol.create({
                         data:{
                                 nombre: nombre,
                                 estado: parseInt(estado)
                         }
                 })
+                await Promise.all(
+                        permiso.map(async (idPer) => {
+                                console.log(result, permiso);
+                                await prisma.rol_permiso.create({
+                                        data:{
+                                                idUsu: result.idUsu,
+                                                idPer: parseInt(idPer)
+                                        }
+                                })
+                        })
+                )
                 console.log(result);
                 return res.status(200).json(result);
         }catch (error) {

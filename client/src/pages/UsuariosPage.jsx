@@ -22,6 +22,10 @@ function UsuariosPage() {
         {
             header: "Estado",
             accessorKey: 'estado'
+        },{
+            header: "Accion",
+            accessorKey: 'accion',
+            idProperty: 'idUsu'
         }
     ]
 
