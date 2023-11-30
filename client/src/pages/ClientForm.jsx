@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Form, Formik } from "formik";
 import { useParams, useNavigate } from "react-router-dom";
 import { useClients } from "../context/ClientesProvider";
-import ClientSchema from "./ClientValidator";
+import ClientSchema from "../components/ValidatorCliente";
 
 
 
