@@ -111,6 +111,21 @@ export default function RolesForm() {
                                                 ) : null}
                                             </div>
                                             <div className="col-6 mt-3">
+                                            <label>Selecciona permisos:</label>   
+                                                    <Field
+                                                          name="permiso"
+                                                          as="select"
+                                                          multiple
+                                                          className="form-select "
+                                                        >
+                                                          {permisos.map(item => (
+                                                            <option key={item.id} value={item.id}>
+                                                              {item.permiso}
+                                                            </option>
+                                                          ))}
+                                                    </Field>
+                                            </div>
+                                            <div className="col-6 mt-3">
                                                 <select id="estado" className="form-select form-control-user"  onChange={handleChange} value={values.estado} >
                                                     <option value="">Seleccione estado</option>
                                                     <option value="1">Activo</option>

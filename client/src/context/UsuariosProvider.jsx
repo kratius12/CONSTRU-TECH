@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { CreateUsuarioRequest,
         GetUsuarioRequest,
         UpdateUsuarioRequest,
@@ -6,8 +6,13 @@ import { CreateUsuarioRequest,
         DeleteUsuarioRequest,
         ToggleUsuarioStatusRequest
 } from "../api/Usuarios.api";
+import { GetRolesRequest,
+        GetRolRequest
+} from "../api/Roles.api";
+import { GetEmpleadosRequest,
+        GetEmpleadoRequest
+} from "../api/Empleados.api";
 import { UsuarioContext } from "./UsuariosContext";
-
 
 export const useUsuario = () => {
     const context = useContext(UsuarioContext)
@@ -16,7 +21,6 @@ export const useUsuario = () => {
     }   
     return context
 }
-
 
 export const UsuarioContextProvider = ({children}) => {
 
@@ -80,7 +84,7 @@ export const UsuarioContextProvider = ({children}) => {
         }
     }
     return (
-        <UsuarioContext.Provider value={{usuarios, Usuarios, deleteUsuario, createUsuario, getUsuario, updateUsuario, toggleUsuarioStatus}}>
+        <UsuarioContext.Provider value={{usuarios, roles, empleados, Roles, Empleados, Usuarios, deleteUsuario, createUsuario, getUsuario, updateUsuario, toggleUsuarioStatus}}>
             {children}
         </UsuarioContext.Provider>
     )
