@@ -39,13 +39,16 @@ import {
         header: 'Estado',
       },
     ];
-    const [estado, setEstado] = useState(0);
-    const handleCambioEstado = (nuevoEstado) => {
-        setEstado(nuevoEstado)
-        onChangeStatus(nuevoEstado)
+    const [estado, setEstado] = useState([]);
+    const handleCambioEstado = (id,nuevoEstado) => {
+      console.log(id,nuevoEstado);
+      setEstado((prevState) => ({...prevState, [id]: {id, estado:nuevoEstado}}))
+      onChangeStatus(id,nuevoEstado)
 
     }
-    const disabled = estado == 1 ? '':'disabled'
+    console.log(estado);
+    const isDisabled = (id) => estado[id] ==true ? 'enabled': 'disabled'
+    console.log(isDisabled());
     const [sorting, setSorting] = useState([]);
     const [filtering, setFiltering] = useState('');
     const table = useReactTable({
@@ -110,6 +113,7 @@ import {
                     {cell.column.id === 'accion' ? (
                       <>
                         {viewDetail ? (
+                          
                           <AlertDetail
                             dataHeader={dataHead}
                             dataBody={cell.row.original}
@@ -119,7 +123,7 @@ import {
                           ''
                         )}
                         <Link
-                          className={`btn bg-secondary text-white ${disabled}`}
+                          className={`btn bg-secondary text-white ${cell.row.original.estado === 0 ? 'disabled' : ''}`}
                           to={`/${routeEdit}/${cell.row.original[cell.column.columnDef.idProperty]}`}
                         >
                           Editar <i className="fa-solid fa-pencil" />
