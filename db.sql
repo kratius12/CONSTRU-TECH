@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 20-10-2023 a las 05:45:07
+-- Tiempo de generación: 30-11-2023 a las 21:30:01
 -- Versión del servidor: 10.4.27-MariaDB
 -- Versión de PHP: 8.2.0
 
@@ -54,22 +54,25 @@ INSERT INTO `categoria` (`idcat`, `nombre`, `estado`, `medida`) VALUES
 CREATE TABLE `cliente` (
   `idCli` int(11) NOT NULL,
   `nombre` varchar(70) DEFAULT NULL,
+  `apellidos` varchar(50) DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
   `direccion` varchar(50) DEFAULT NULL,
   `telefono` varchar(10) DEFAULT NULL,
+  `tipoDoc` varchar(50) DEFAULT NULL,
   `cedula` varchar(10) NOT NULL,
   `fecha_nac` date DEFAULT NULL,
-  `estado` int(1) DEFAULT NULL
+  `estado` int(1) DEFAULT NULL,
+  `contrasena` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `cliente`
 --
 
-INSERT INTO `cliente` (`idCli`, `nombre`, `email`, `direccion`, `telefono`, `cedula`, `fecha_nac`, `estado`) VALUES
-(22000, 'José Hernandez', 'hernanjo324@gmail.com', 'cra 5 b #2 a', '3225771077', '1924612312', '1998-05-12', 1),
-(22001, 'Santiago Sanchez', 'Santisanchez225@gmail.com', 'cll 6 c #25 b', '3297928732', '1235174219', '2000-02-19', 1),
-(22002, 'Kevin Fernandez', 'Kafz56@hotmail.com', 'cll2 aa #33 a', '3139821231', '1518231231', '1999-04-30', 1);
+INSERT INTO `cliente` (`idCli`, `nombre`, `apellidos`, `email`, `direccion`, `telefono`, `tipoDoc`, `cedula`, `fecha_nac`, `estado`, `contrasena`) VALUES
+(22000, 'José', 'Hernandez', 'hernanjo324@gmail.com', 'cra 5 b #2 a', '3225771077', 'Cedula de ciudadania', '1924612312', '1998-05-12', 1, 'hernandez2020'),
+(22001, 'Santiago', 'Perez', 'Santisanchez225@gmail.com', 'cll 6 c #25 b', '3297928732', 'Cedula de extranjeria', '1235174219', '2000-02-19', 1, 'santi1284'),
+(22002, 'Kevin', 'Castrillón', 'Kafz56@hotmail.com', 'cll2 aa #33 a', '3139821231', 'Pasaporte', '1518231231', '1999-04-30', 1, 'kafz5656');
 
 -- --------------------------------------------------------
 
@@ -128,23 +131,21 @@ CREATE TABLE `empleado` (
   `idEmp` int(11) NOT NULL,
   `nombre` varchar(50) DEFAULT NULL,
   `direccion` varchar(50) DEFAULT NULL,
-  `email` varchar(100) DEFAULT NULL,
+  `estado` int(1) DEFAULT NULL,
   `telefono` varchar(10) DEFAULT NULL,
-  `tipoDoc` varchar(10) DEFAULT NULL,
-  `cedula` varchar(10) DEFAULT NULL,
-  `estado` int(1) DEFAULT NULL
+  `cedula` varchar(10) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `empleado`
 --
 
-INSERT INTO `empleado` (`idEmp`, `nombre`, `direccion`, `estado`, `email`, `telefono`, `cedula`) VALUES
-(2000, 'Mario Ortiz', 'cr5 #7b sur 205', 1, 'ortizmario623@gmail.com', '3225478898', '9823122'),
-(2001, 'Fausto Flores', 'cr9 #8aa norte 101', 1, 'Flfaust88@gmail.com', '3058447152', '9852412'),
-(2002, 'Belarmino Zea', 'cr10 # 7b sur 405', 1, 'Zeabelar414@gmail.com', '3201547854', '9823123'),
-(2003, 'Marcos David', 'cll 58b # 7aa 201', 1, 'DavMarc223@gmail.com', '3256985251', '9862412'),
-(2004, 'Marcela henao', 'cll 44 ff # 3b 402', 1, 'Henmarce445@gmail.com', '3105475210', '3246584');
+INSERT INTO `empleado` (`idEmp`, `nombre`, `direccion`, `estado`, `telefono`, `cedula`) VALUES
+(2000, 'Mario Ortiz', 'cr5 #7b sur 205', 1, '3225478898', '9823122'),
+(2001, 'Fausto Flores', 'cr9 #8aa norte 101', 1, '3058447152', '9852412'),
+(2002, 'Belarmino Zea', 'cr10 # 7b sur 405', 1, '3201547854', '9823123'),
+(2003, 'Marcos David', 'cll 58b # 7aa 201', 1, '3256985251', '9862412'),
+(2004, 'Marcela henao', 'cll 44 ff # 3b 402', 1, '3105475210', '3246584');
 
 -- --------------------------------------------------------
 
@@ -229,7 +230,6 @@ CREATE TABLE `materiales` (
   `nombre` varchar(50) DEFAULT NULL,
   `idProveedor` int(11) DEFAULT NULL,
   `estado` int(1) DEFAULT NULL,
-  `precio` int(11) DEFAULT NULL,
   `cantidad` int(11) DEFAULT NULL,
   `idCategoria` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -238,11 +238,11 @@ CREATE TABLE `materiales` (
 -- Volcado de datos para la tabla `materiales`
 --
 
-INSERT INTO `materiales` (`idMat`, `nombre`, `idProveedor`, `estado`, `precio`, `cantidad`, `idCategoria`) VALUES
-(500, 'Baldosas', 700, 1, 7000, 30, 6000),
-(501, 'Arena', 700, 1, 16000, 10, 6000),
-(502, 'Tuvo pvc', 701, 1, 150000, 5, 6001),
-(503, 'Galón de pintura', 703, 1, 80000, 10, 6002);
+INSERT INTO `materiales` (`idMat`, `nombre`, `idProveedor`, `estado`, `cantidad`, `idCategoria`) VALUES
+(500, 'Baldosas', 700, 1, 30, 6000),
+(501, 'Arena', 700, 1, 10, 6000),
+(502, 'Tuvo pvc', 701, 1, 5, 6001),
+(503, 'Galón de pintura', 703, 1, 10, 6002);
 
 -- --------------------------------------------------------
 
@@ -275,8 +275,8 @@ INSERT INTO `materiales_obras` (`id`, `idMaterial`, `idObra`, `consumo`) VALUES
 CREATE TABLE `obras` (
   `idObra` int(11) NOT NULL,
   `descripcion` varchar(100) DEFAULT NULL,
-  `fechaini` date DEFAULT NULL,
-  `fechafin` date DEFAULT NULL,
+  `fechaini` varchar(50) DEFAULT NULL,
+  `fechafin` varchar(50) DEFAULT NULL,
   `area` int(11) DEFAULT NULL,
   `idCliente` int(11) DEFAULT NULL,
   `estado` varchar(50) DEFAULT NULL
@@ -366,7 +366,9 @@ CREATE TABLE `rol` (
 INSERT INTO `rol` (`idRol`, `nombre`, `estado`) VALUES
 (201, 'Administrador', 1),
 (202, 'Empleado', 1),
-(203, 'Secretaria', 1);
+(203, 'Secretaria', 1),
+(209, 'Test', 1),
+(210, 'Test2', 1);
 
 -- --------------------------------------------------------
 
@@ -377,28 +379,27 @@ INSERT INTO `rol` (`idRol`, `nombre`, `estado`) VALUES
 CREATE TABLE `rol_permiso` (
   `id` int(11) NOT NULL,
   `idRol` int(11) DEFAULT NULL,
-  `idPer` int(11) DEFAULT NULL,
-  `tipo` varchar(100) NOT NULL
+  `idPer` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `rol_permiso`
 --
 
-INSERT INTO `rol_permiso` (`id`, `idRol`, `idPer`, `tipo`) VALUES
-(300, 201, 100, '{\"consultar\",\"agregar\",\"editar\",\"eliminar\"}'),
-(319, 201, 101, '{\"consultar\",\"agregar\",\"editar\",\"eliminar\"}'),
-(320, 201, 102, '{\"consultar\",\"agregar\",\"editar\",\"eliminar\"}'),
-(321, 201, 103, '{\"consultar\",\"agregar\",\"editar\",\"eliminar\"}'),
-(322, 201, 104, '{\"consultar\",\"agregar\",\"editar\",\"eliminar\"}'),
-(323, 201, 105, '{\"consultar\",\"agregar\",\"editar\",\"eliminar\"}'),
-(324, 201, 106, '{\"consultar\",\"agregar\",\"editar\",\"eliminar\"}'),
-(325, 201, 107, '{\"consultar\",\"agregar\",\"editar\",\"eliminar\"}'),
-(326, 202, 103, '{\"consultar\",\"agregar\"}'),
-(327, 202, 104, '{\"consultar\",\"agregar\",\"eliminar\"}'),
-(328, 202, 105, '{\"consultar\",\"agregar\",\"eliminar\"}'),
-(329, 202, 106, '{\"consultar\",\"agregar\",\"editar\"}'),
-(330, 202, 107, '{\"agregar\",\"editar\"}');
+INSERT INTO `rol_permiso` (`id`, `idRol`, `idPer`) VALUES
+(300, 201, 100),
+(319, 201, 101),
+(320, 201, 102),
+(321, 201, 103),
+(322, 201, 104),
+(323, 201, 105),
+(324, 201, 106),
+(325, 201, 107),
+(326, 202, 103),
+(327, 202, 104),
+(328, 202, 105),
+(329, 202, 106),
+(330, 202, 107);
 
 -- --------------------------------------------------------
 
@@ -409,21 +410,23 @@ INSERT INTO `rol_permiso` (`id`, `idRol`, `idPer`, `tipo`) VALUES
 CREATE TABLE `usuario` (
   `idUsu` int(11) NOT NULL,
   `estado` int(2) NOT NULL,
+  `correo` varchar(50) DEFAULT NULL,
   `contrasena` varchar(20) DEFAULT NULL,
   `idRol` int(11) DEFAULT NULL,
-  `idEmp` int(11) NOT NULL
+  `idEmpl` int(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `usuario`
 --
 
-INSERT INTO `usuario` (`idUsu`, `estado`, `contrasena`, `idRol`, `idEmp`) VALUES
-(500, 1, 'mario123', 201, 2000),
-(501, 0, 'flores56', 202, 2001),
-(502, 1, 'belarzea32', 202, 2002),
-(503, 0, 'DavidMar45', 202, 2003),
-(504, 1, 'marce434', 203, 2004);
+INSERT INTO `usuario` (`idUsu`, `estado`, `correo`, `contrasena`, `idRol`, `idEmpl`) VALUES
+(500, 1, 'mario@gmail.com', 'mario123', 201, 0),
+(501, 0, 'flores@gmail.com', 'flores56', 202, 0),
+(502, 1, 'belarzea@gmail.com', 'belarzea32', 202, 0),
+(503, 0, 'davidmar@gmail.com', 'DavidMar45', 202, 0),
+(504, 1, 'marce434@gmail.com', 'marce434', 203, 0),
+(505, 1, 'mpcm2005pilar@gmail.com', '1021804043', 203, 2004);
 
 --
 -- Índices para tablas volcadas
@@ -538,7 +541,7 @@ ALTER TABLE `rol_permiso`
 ALTER TABLE `usuario`
   ADD PRIMARY KEY (`idUsu`),
   ADD KEY `idRol` (`idRol`),
-  ADD KEY `idEmp` (`idEmp`);
+  ADD KEY `idEmpl` (`idEmpl`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
@@ -554,7 +557,7 @@ ALTER TABLE `categoria`
 -- AUTO_INCREMENT de la tabla `cliente`
 --
 ALTER TABLE `cliente`
-  MODIFY `idCli` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22003;
+  MODIFY `idCli` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22013;
 
 --
 -- AUTO_INCREMENT de la tabla `compras`
@@ -626,7 +629,7 @@ ALTER TABLE `proveedor`
 -- AUTO_INCREMENT de la tabla `rol`
 --
 ALTER TABLE `rol`
-  MODIFY `idRol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=204;
+  MODIFY `idRol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=211;
 
 --
 -- AUTO_INCREMENT de la tabla `rol_permiso`
@@ -638,7 +641,7 @@ ALTER TABLE `rol_permiso`
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `idUsu` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=505;
+  MODIFY `idUsu` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=506;
 
 --
 -- Restricciones para tablas volcadas

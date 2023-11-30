@@ -50,9 +50,10 @@ export const ClientContextProvider=({children}) => {
             console.log(error)
         }
     }
-    const login = async (idUsu, newFields) => {
+    const login = async (usuario) => {
+        console.log(usuario);
         try {
-            const response = await loginRequest(usuario)
+             await loginRequest(usuario)
         } catch (error) {
             console.log(error)
         }

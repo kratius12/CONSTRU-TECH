@@ -96,13 +96,30 @@ router.delete('/cliente/:id', async (req, res) => {
             return res.status(500).json(error)
         }
     })
-    router.get('/login', async (req, res) =>{
+    router.post('/login', async (req, res) =>{
+        const {correo, contrasena} = req.body
         try {
+           const {correo, contrasena} = req.body
             const user = await prisma.usuario.findUnique({
-                where:{contrasena: contrasena},
-                select:{contrasena: true, correo: true},
+                where:{
+                        correo,
+                        contrasena,
+                },
+                include: {
+                        rol:true
+                }
+            })
+            const empleado = await prisma.empleado.findFirst({
+                where:{idEmp:user.idEmpl},
+                select:{
+                        cedula:true,
+                        direccion:true,
+                        nombre :true,
+                        telefono:true,
+                }
             })
             res.status(200).json(user)
+            console.log(user, empleado);
         } catch (error) {
             console.log(error);
             return res.status(500).json(error)

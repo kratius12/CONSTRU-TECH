@@ -16,5 +16,5 @@ export const getClientRequest = async (id) =>
 export const updateClientRequest = async (id, newFields) =>{
     await axios.put(`http://localhost:4000/cliente/${id}`, newFields);
 }
-export const loginRequest = async () =>
-    await axios.get(`http://localhost:4000/login`)
+export const loginRequest = async (user) =>
+    await axios.post(`http://localhost:4000/login`, user)
