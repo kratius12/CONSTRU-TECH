@@ -7,7 +7,6 @@ const EmpleadoSchema = Yup.object().shape({
     .required('El nombre es requerido'),
   tipoDoc: Yup.string()
     .required('Tipo de documento es requerido'),
-  email: Yup.string().email('Formato de correo electronico invalido').required('Correo electronico requerido'),
   cedula: Yup.string()
   .min(8, 'La cedula debe contener al menos 8 caracteres')
   .max(20, 'La cedula no puede contener mas de 20 caracteres')

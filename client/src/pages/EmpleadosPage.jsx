@@ -16,10 +16,6 @@ function EmpleadosPage() {
             accessorKey: 'nombre'
         },
         {
-            header: "Correo",
-            accessorKey: 'email'
-        },
-        {
             header: "Telefono",
             accessorKey: 'telefono'
         },

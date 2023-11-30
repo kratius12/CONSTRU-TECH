@@ -40,13 +40,12 @@ router.get("/empleado/:id", async (req, res) =>{
 
 router.post("/empleados", async (req, res) => {
     try {
-        const {nombre, direccion, estado, email, telefono, tipoDoc, cedula, especialidad
+        const {nombre, direccion, estado,  telefono, tipoDoc, cedula, especialidad
         } = req.body
         const result = await prisma.empleado.create({
             data:{
                 nombre: nombre,
                 direccion:direccion,
-                email:email,
                 telefono:telefono,
                 tipoDoc:tipoDoc,
                 cedula:cedula,
@@ -70,7 +69,7 @@ router.post("/empleados", async (req, res) => {
 
 router.put("/empleado/:id", async (req, res) => {
     try {
-        const {nombre, direccion, estado, email, telefono, tipoDoc, cedula} = req.body
+        const {nombre, direccion, estado, telefono, tipoDoc, cedula} = req.body
         const result = await prisma.empleado.update({
             where:{
                 idEmp:parseInt(req.params.id)
@@ -78,7 +77,6 @@ router.put("/empleado/:id", async (req, res) => {
             data:{
                 nombre: nombre,
                 direccion:direccion,
-                email:email,
                 telefono:telefono,
                 tipoDoc:tipoDoc,
                 cedula:cedula,
@@ -114,7 +112,6 @@ router.get("/empleadosEsp", async (req, res) => {
             select:{
                 idEmp:true,
                 nombre:true,
-                email:true,
                 telefono:true,
                 cedula:true,
                 estado:true,
