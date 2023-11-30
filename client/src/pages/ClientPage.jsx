@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useClients } from "../context/ClientesProvider";
 import TableInfo from "../components/TableInfo";
+
 function ClientPage() {
 
     const dataHeader = [
@@ -32,15 +33,19 @@ function ClientPage() {
         },
         {
             header: "Estado",
-            accessorKey: 'estado'
-        },
+            accessorKey: 'estado',
+            idProperty:'idCli'
+        },  
         {
             header: "Acción",
             accessorKey: 'accion',
             idProperty: 'idCli'
         }
     ]
-    const { clientes, Clients } = useClients()
+    const handleChangeStatus = (status) => {
+        console.log(status)
+    }
+    const { clientes, Clients, toggleClientStatus } = useClients()
     const navigate = useNavigate()
     useEffect(() => {
         Clients()
@@ -52,7 +57,7 @@ function ClientPage() {
             return <h1>Sin Clientes</h1>
 
         } else {
-            return <TableInfo dataHeader={dataHeader} dataBody={clientes} routeEdit={"editarCliente"} viewDetail />
+            return <TableInfo dataHeader={dataHeader} dataBody={clientes} routeEdit={"editarCliente"} viewDetail toggleApi={toggleClientStatus} onChangeStatus={handleChangeStatus} />
         }
     }
 
