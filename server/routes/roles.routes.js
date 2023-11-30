@@ -43,7 +43,7 @@ router.post('/roles', async (req, res) => {
                                 console.log(result, permiso);
                                 await prisma.rol_permiso.create({
                                         data:{
-                                                idUsu: result.idUsu,
+                                                idRol: result.idRol,
                                                 idPer: parseInt(idPer)
                                         }
                                 })

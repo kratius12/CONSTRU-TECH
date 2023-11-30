@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import RolTable  from "../components/RolesTable"
 import { useRol } from "../context/RolesProvider";
 import TableInfo from "../components/TableInfo";
 

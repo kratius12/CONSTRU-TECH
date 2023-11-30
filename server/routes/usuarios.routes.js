@@ -31,15 +31,35 @@ router.get('/usuarios/:id', async (req, res) =>{
 
 router.post('/usuarios', async (req, res) => {
         try{
-                const {estado, contrasena, idRol, idEmp} = req.body
+                const {contrasena, estado, rol, empleado} = req.body
                 const result = await prisma.usuario.create({
                         data:{
                                 contrasena: contrasena,
-                                idRol: idRol,
-                                idEmp: idEmp,
                                 estado: parseInt(estado)
                         }
                 })
+                await Promise.all(
+                        rol.map(async (idRol) => {
+                                console.log(result, rol);
+                                await prisma.rol.create({
+                                        data:{
+                                                idUsu: result.idUsu,
+                                                idRol: parseInt(idRol)
+                                        }
+                                })
+                        })
+                )
+                await Promise.all(
+                        empleado.map(async (idEmp) => {
+                                console.log(result, empleado);
+                                await prisma.empleado.create({
+                                        data: {
+                                                idUsu: result.idUsu,
+                                                idEmp: parseInt(idEmp)
+                                        }
+                                })
+                        })
+                )
                 console.log(result);
                 return res.status(200).json(result);
         }catch (error) {

@@ -20,16 +20,16 @@ export default function Sidebar() {
             </Link>
           </li>
           <li className="nav-item">
-            <a className="nav-link" aria-current="page" href="/usuarios">
-              <i className="fa-solid fa-users" />
+          <Link className="nav-link" to="/usuarios">
+              <i className="fa-solid fa-user-group" />
               Usuarios
-            </a>
+          </Link>
           </li>
           <li className="nav-item">
-            <a className="nav-link" href="/roles">
+          <Link className="nav-link" to="/roles">
               <i className="fa-solid fa-user-tie" />
               Roles
-            </a>
+          </Link>
           </li>
           <li className="nav-item">
           <Link className="nav-link" to="/empleados">
