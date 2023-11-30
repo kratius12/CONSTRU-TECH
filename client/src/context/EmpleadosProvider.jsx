@@ -82,16 +82,15 @@ export const EmpleadoContextProvider = ({children}) => {
         }
     }
 
-     const toggleEmpleadoStatus = async (idEmp) =>{
+     const toggleEmpleadoStatus = async (idEmp, status) =>{
         try {
-            const empleadoFound = empleados.find((empleado) => empleado.idEmp === idEmp)
-            let status  = ''
-            if (empleadoFound.estado === 1) {
+            // const empleadoFound = empleados.find((empleado) => empleado.idEmp === idEmp)
+            if (status == 1) {
                 status = 0
             }else{
                 status = 1
             }
-            await ToggleEmpleadoStatusRequest(idEmp, status)
+            await ToggleEmpleadoStatusRequest(idEmp, {status})
             // setObras(
             //     obras.map(obra => obra.idObra === idObra ? obra.estado = obra.estado === 0 ? 1 : 0 : obra.estado)
             // )

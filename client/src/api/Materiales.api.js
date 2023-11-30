@@ -5,7 +5,7 @@ export const GetMaterialesRequest = async () =>{
 }
 
 export const CreateMaterialRequest = async (materiales) => {
-    return await axios.post('http://localhost:4000/materiales', materiales)
+    return await axios.post('http://localhost:4000/materiales', materiales,{timeout:500})
 }
 
 export const DeleteMaterialRequest = async (idMat) =>{
@@ -22,4 +22,12 @@ export const UpdateMaterialRequest = async (idMat, newFields) =>{
 
 export const ToggleMaterialStatusRequest = async (idMat, status) =>{
     return await axios.put(`http://localhost:4000/material/${idMat}`, status)
+}
+
+export const GetProveedoresRequest = async()=>{
+    return await axios.get("http://localhost:4000/provs")
+}
+
+export const GetCategoriasRequest = async()=>{
+    return await axios.get("http://localhost:4000/categorias")
 }

@@ -12,7 +12,7 @@ router.get('/provs', async (req, res) => {
     } catch (error) {
         return res.status(500).json({ message: error.message })
     }
-})
+})  
 router.get('/prov/:idProv', async (req, res) => {
     try {
         const provFound = await prisma.proveedor.findFirst({
@@ -88,6 +88,21 @@ router.post('/newprov',async(req,res)=>{
         return res.json(newProv)
     } catch (error) {
         return res.status(500).json({message:error.message})
+    }
+})
+
+router.put("/proveedorEstado",async(req,res)=>{
+    try{
+        const estado = req.body
+        const newEstado = await prisma.proveedor.update({
+            where: {
+                idProv:req.params.id
+            },data:{
+                estado:estado
+            }
+        })
+    }catch(error){
+        console.error(error)
     }
 })
 

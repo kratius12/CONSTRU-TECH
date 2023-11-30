@@ -2,20 +2,7 @@ import { useEffect, useState } from "react";
 import { Form, Formik } from "formik";
 import { useParams, useNavigate } from "react-router-dom";
 import { useCategorias } from "../context/CategoriasProvider";
-import * as Yup from 'yup';
-
-const CategoriaSchema = Yup.object().shape({
-  nombre: Yup.string()
-    .min(3, 'El nombre debe contener al menos 3 caracteres')
-    .max(50, 'El nombre no puede contener mas de 50 caracteres')
-    .required('El nombre es requerido'),
-  medida: Yup.string()
-    .required('La medida es requerido'),    
-  estado: Yup.string()
-  .required('El estado es requerido')
-});
-
-
+import CategoriaSchema from "../components/ValidatorCategoria";
 
 
 export default function CategoriasForm() {
@@ -68,24 +55,20 @@ export default function CategoriasForm() {
           }}
           >
             {({handleChange, handleSubmit, values, isSubmitting, errors, touched}) =>(
-              <Form onSubmit={handleSubmit}>
+              <Form onSubmit={handleSubmit} className="user">
                 <div className="card text-center w-100">
-                  <div className="card-header bg-primary text-white">
-                    <h2>{params.id ? "Editar": "Agregar"} Categoria</h2>
-                  </div>
+                    <h2>{params.id ? "Editar": "Agregar"} categoria</h2>
                   <div className="card-body">
                     <div className="row">
                       <div className="col-6 mt-3">
-                        <label htmlFor="nombre" className="form-label">Nombre <span className="text-danger">*</span></label>
-                        <input type="text" className="form-control" id="nombre" onChange={handleChange} value={values.nombre} />
+                        <input type="text" className="form-control form-control-user" id="nombre" onChange={handleChange} value={values.nombre} placeholder="Nombre*"/>
                           {errors.nombre && touched.nombre ? (
                           <div className="alert alert-danger" role="alert">{errors.nombre}</div>
                           ) : null}                        
                       </div>
                       <div className="col-6 mt-3">
-                        <label htmlFor="medida" className="form-label">Medida <span className="text-danger">*</span></label>
-                        <select id="medida" className="form-select" onChange={handleChange} value={values.medida} >
-                          <option value="">Seleccione medida</option>
+                        <select id="medida" className="form-select form-control-user" onChange={handleChange} value={values.medida} >
+                          <option value="">Seleccione la unidad de medida*</option>
                           <option value="m">Metro</option>
                           <option value="m2">Metro cuadrado</option>
                           <option value="kg">Kilogramo</option>
@@ -97,9 +80,8 @@ export default function CategoriasForm() {
                           ) : null}                       
                       </div>
                       <div className="col-6 mt-3">
-                        <label htmlFor="estado" className="form-label">Estado <span className="text-danger">*</span></label>
-                        <select id="estado" className="form-select" onChange={handleChange} value={values.estado} >
-                          <option value="">Seleccione estado</option>
+                        <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
+                          <option value="">Seleccione estado*</option>
                           <option value="1">Activo</option>
                           <option value="0">Inactivo</option>
                         </select>
@@ -112,14 +94,20 @@ export default function CategoriasForm() {
                   <div className="card-footer text-center">
                     <div className="row">
                       <div className="col-md-6">
-                        <button type="submit" disabled={isSubmitting} className="btn btn-primary w-50">
-                          <h4>{params.id ? "Editar": "Agregar"}</h4>
+                      <button type="submit" disabled={isSubmitting} className="btn btn-primary btn-icon-split w-50">
+                          <span className="icon text-white-50">
+                            <i className="fas fa-plus"></i>
+                          </span>
+                          <span className="text">{params.id ? "Editar" : "Agregar"}</span>
                         </button>
                       </div>
                       <div className="col-md-6">
-                      <a type="button" href="" className="btn btn-danger w-50" onClick={()=> navigate(`/categorias`)}>
-                        <h4>Cancelar</h4>
-                      </a>
+                        <a type="button" href="" className="btn btn-danger btn-icon-split w-50" onClick={() => navigate(`/categorias`)}>
+                          <span className="icon text-white-50">
+                            <i className="fas fa-trash"></i>
+                          </span>
+                          <span className="text">Cancelar</span>
+                        </a>
                       </div>
                     </div>
                   </div>

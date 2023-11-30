@@ -123,8 +123,8 @@ model materiales_obras {
 model obras {
   idObra           Int                @id @default(autoincrement())
   descripcion      String?            @db.VarChar(100)
-  fechaini         DateTime?          @db.Date
-  fechafin         DateTime?          @db.Date
+  fechaini         String?            @db.VarChar(50)
+  fechafin         String?            @db.VarChar(50)
   area             Int?
   idCliente        Int?
   estado           String?            @db.VarChar(50)
