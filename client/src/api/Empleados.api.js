@@ -33,5 +33,5 @@ export const UpdateEmpleadoRequest = async (idEmp, newFields) =>{
 }
 
 export const ToggleEmpleadoStatusRequest = async (idEmp, status) =>{
-    return await axios.put(`http://localhost:4000/empleado/${idEmp}`, status)
+    return await axios.put(`http://localhost:4000/empleadoStatus/${idEmp}`, status)
 }

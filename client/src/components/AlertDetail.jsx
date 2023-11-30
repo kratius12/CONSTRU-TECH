@@ -1,30 +1,44 @@
 import React from 'react';
-import $ from 'jquery'; // Asegúrate de tener la librería jQuery instalada
 
-function AlertDetail() {
+
+function AlertDetail({dataHeader, dataBody, entity}) {
+
+ const tableDetail = () =>{
+  let tableContent = '<table class="w-100">'
+    dataHeader.forEach((item)=> {
+      tableContent += `<tr><th>${item.header}</th><td>${dataBody[item]}</td></tr>`
+    })
+  tableContent += '</table>';
+
+  return tableContent;
+ }
+  
   const alertConfirm = () => {
+    const content = tableDetail()
+
     $.confirm({
-      title: 'Test con éxito!',
-      content: 'Test',
-      icon: 'fa fa-check',
+      title: 'Detalle '+entity,
+      content: content,
+      icon: 'fa fa-info-circle',
       theme: 'modern',
       closeIcon: true,
       animation: 'zoom',
       closeAnimation: 'scale',
-      animationSpeed: 1500,
-      type: 'green',
-      columnClass: 'col-md-6 col-md-offset-3',
-      autoClose: 'okay|4000',
+      animationSpeed: 500,
+      type: 'orange',
+      columnClass: 'col-md-8 offset-md-1',
       buttons: {
-        okay: function () {},
+        Cerrar: function () {},
       },
     });
   };
 
   return (
-    <div>
-      {/* Contenido de tu componente */}
-    </div>
+    <>
+    <button onClick={() => alertConfirm()} className="btn bg-secondary text-white mx-3">
+      Ver <i className="fa-solid fa-eye"></i>
+    </button>    
+    </>
   );
 }
 

@@ -6,6 +6,9 @@ import { GetObrasRequest,
     UpdateObraRequest, 
     ToggleObraStatusRequest
 } from "../api/Obras.api";
+import {getClientsRequest} from "../api/Clientes.api";
+import {GetEmpleadosRequest} from "../api/Empleados.api";
+import {GetMaterialesRequest} from "../api/Materiales.api"
 import { ObraContext } from "./ObrasContext";
 
 
@@ -21,13 +24,30 @@ export const useObras = () => {
 export const ObraContextProvider = ({children}) => {
 
     const [obras, setObras] = useState([])
-
+    const [clientes, setClientes] = useState([])
+    const [empleados, setEmpleados] = useState([])
+    const [materiales, setMateriales] = useState([])
     async function Obras() {
         const response = await GetObrasRequest()
         console.log(response.data)  
         setObras(response.data)          
     }  
 
+    async function Clientes(){
+        const response = await getClientsRequest()
+        console.log(response)
+        setClientes(response.data)
+    }
+    async function Empleados(){
+        const response = await GetEmpleadosRequest()
+        console.log(response)
+        setEmpleados(response.data)
+    }
+    async function Materiales(){
+        const response = await GetMaterialesRequest()
+        console.log(response)
+        setMateriales(response.data)
+    }
     const createObra = async (obra) => {
         try {
             const response = await CreateObraRequest(obra)
@@ -82,7 +102,7 @@ export const ObraContextProvider = ({children}) => {
         }
     }
     return (
-        <ObraContext.Provider value={{obras, Obras, deleteObra, createObra, getObra, updateObra, toggleObraStatus}}>
+        <ObraContext.Provider value={{obras, Obras, clientes, Clientes, empleados, Empleados, materiales, Materiales, deleteObra, createObra, getObra, updateObra, toggleObraStatus}}>
             {children}
         </ObraContext.Provider>
     )

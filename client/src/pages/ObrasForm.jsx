@@ -1,100 +1,228 @@
-import { Form, Formik } from "formik";
+import { Form, Formik, Field } from "formik";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useObras } from "../context/ObrasProvider";
+import ObraSchema from "../components/ValidatorObra";
 function ObrasForm() {
 
-    const {createObra, getObra, updateObra} = useObras()
+    const { createObra, getObra, updateObra, clientes, Clientes, materiales, Materiales, empleados, Empleados } = useObras()
     const params = useParams()
     const navigate = useNavigate()
     const [obra, setObra] = useState({
-        descripcion:"",
-        cantidad:"",
-        estado:"",
-        fechaini:"",
-        fechafin:"",
-        cliente:"",
-        empleado:""
+        descripcion: "",
+        cantidad: "",
+        estado: "",
+        fechaini: "",
+        fechafin: "",
+        cliente: "",
+        empleados: "",
+        material: ""
     })
-    
-    const inputFechafinDisabled = {
-        display: "none"
-    }
-    const inputFechafinEnabled ={
-        color:"red"
-    }
-    useEffect(() =>{
+
+    useEffect(() => {
         const loadObras = async () => {
             if (params.id) {
                 const obra = await getObra(params.id)
                 setObra({
-                    descripcion:obra.descripcion,
-                    cantidad:obra.cantidad,
-                    estado:obra.estado,
-                    fechaini:obra.fechaini,
-                    fechafin:obra.fechafin,
-                    cliente:obra.idCliente,
-                    empleado:obra.idEmpl
-                })                
+                    descripcion: obra.descripcion,
+                    cantidad: obra.cantidad,
+                    estado: obra.estado,
+                    fechaini: obra.fechaini,
+                    fechafin: obra.fechafin,
+                    cliente: obra.idCliente,
+                })
             }
         }
+        Clientes()
+        Materiales()
+        Empleados()
         loadObras()
     }, [params.id])
 
-    return(
-        <div className="">
-            <Formik initialValues={obra}
-            enableReinitialize={true}
-            onSubmit={ async (values) =>{
-                console.log(values)
-                if (params.id) {
-                   await updateObra(params.id, values)
-                   navigate("/")
-                }else{
-                   await createObra(values)
-                   navigate("/")
-                }
-                setObra({
-                    descripcion:"",
-                    cantidad:"",
-                    estado:"",
-                    fechaini:"",
-                    fechafin:"",
-                    cliente:"",
-                    empleado:""
-                })
-            }}>
-                {({handleChange, handleSubmit, values, isSubmitting}) => (
-                <Form onSubmit={handleSubmit} className="bg-slate-300 max-w-sm rounded-md p-4 mx-auto mt-5">
-                    <h1 className="text-xl font-bold uppercase text-center m-5">{params.id ? "Actualizar obra" :"Agregar obra"}</h1>                    
-                    <label className="block">Obra Descripcion</label>
-                    <input className="px-2 py-1 rounded-sm w-full"  name="descripcion" id="descripcion" type="text" placeholder="Descripcion de la obra" onChange={handleChange} value={values.descripcion} />
+    return (
+        <div className="container">
+            <div className="row">
+                <div className="col-md-12">
+                    <Formik initialValues={obra}
+                        enableReinitialize={true}
+                        validationSchema={ObraSchema}
+                        onSubmit={async (values) => {
+                            console.log(values)
+                            if (params.id) {
+                                await updateObra(params.id, values)
+                                navigate("/obras")
+                            } else {
+                                await createObra(values)
+                                navigate("/obras")
+                            }
+                            setObra({
+                                descripcion: "",
+                                cantidad: "",
+                                estado: "",
+                                fechaini: "",
+                                fechafin: "",
+                                cliente: "",
+                                empleado: ""
+                            })
+                        }}>
+                        {({ handleChange, handleSubmit, values, isSubmitting, errors, touched }) => (
+                            <Form onSubmit={handleSubmit} className="user">
+                                <div className="card text-center w-100">
+                                    <div className="card-header bg-primary text-white">
+                                        <h2>{params.id ? "Editar" : "Agregar"} obra</h2>
+                                    </div>
+                                    <div className="card-body">
+                                        <div className="row">
+                                            {
+                                                params.id ? (
+                                                    <>
 
-                    <label className="block">Cliente</label>
-                    <input className="px-2 py-1 rounded-sm w-full" name="cliente" id="cliente" type="text" placeholder="Cliente" onChange={handleChange} value={values.cliente} />
+                                                        <div className="col-md-6 mt-3">
+                                                            <input type="text" className="form-control form-control-user" id="descripcion" onChange={handleChange} value={values.descripcion} placeholder="Descripción de la obra*" />
+                                                            {errors.descripcion && touched.descripcion ? (
+                                                                <div className="alert alert-danger" role="alert">{errors.descripcion}</div>
+                                                            ) : null}
+                                                        </div>
+                                                        <div className="col-md-6 mt-3">
+                                                            <label htmlFor="cliente" className="form-label">Cliente<span className="text-danger">*</span></label>
+                                                            <Field className="form-select"
+                                                                name="cliente"
+                                                                as="select"
+                                                            >
 
-                    <label className="block">Empleado</label>
-                    <input className="px-2 py-1 rounded-sm w-full" name="empleado" id="empleado" type="text" placeholder="Empleado" onChange={handleChange} value={values.empleado} />                    
-
-                    <label className="block">Cantidad consumo material</label>
-                    <input className="px-2 py-1 rounded-sm w-full" name="cantidad" id="cantidad" type="text" placeholder="Cantidad consumo de materiales" onChange={handleChange} value={values.cantidad} />
-
-                    <label className="block">Estado de la obra</label>
-                    <input className="px-2 py-1 rounded-sm w-full" name="estado" id="estado" type="text" placeholder="Estado de obra" onChange={handleChange} value={values.estado} />       
-
-                    <label className="block">Fecha de inicio</label>
-                    <input className="px-2 py-1 rounded-sm w-full" name="fechaini" id="fechaini" type="text" placeholder="Fecha de inicio de obra" onChange={handleChange} value={values.fechaini} />
-                    
-
-                        <label className="block" style={params.id ? inputFechafinDisabled:inputFechafinEnabled}>Fecha fin</label>
-                        <input className="px-2 py-1 rounded-sm w-full" style={params.id ? inputFechafinDisabled:inputFechafinEnabled} name="fechafin" id="fechafin" type="text" placeholder="Fecha de finalizacion de obra" onChange={handleChange} value={values.fechafin} />
-
-                    <button type="submit" disabled={isSubmitting} className="block bg-indigo-500 px-2 py-1 text-white w-full rounded-md mt-3">
-                        {params.id ? "Actualizar": "Guardar"}
-                    </button>               
-                </Form>
-                )}
-            </Formik>
+                                                                {clientes.map(item => (
+                                                                    <option key={item.idCli} value={item.idCli}>
+                                                                        {item.nombre}
+                                                                    </option>
+                                                                ))}
+                                                            </Field>
+                                                            {errors.cliente && touched.cliente ? (
+                                                                <div className="alert alert-danger" role="alert">{errors.cliente}</div>
+                                                            ) : null}
+                                                        </div>
+                                                        <div className="col-md-6 mt-3">
+                                                            <label htmlFor="empleados" className="form-label">Empleados<span className="text-danger">*</span></label>
+                                                            <Field className="form-select"
+                                                                name="empleados"
+                                                                as="select"
+                                                                multiple
+                                                            >
+                                                                {empleados.map(item => (
+                                                                    <option key={item.idEmp} value={item.idEmp}>
+                                                                        {item.nombre} - {item.cedula}
+                                                                    </option>
+                                                                ))}
+                                                            </Field>
+                                                            {errors.empleados && touched.empleados ? (
+                                                                <div className="alert alert-danger" role="alert">{errors.empleados}</div>
+                                                            ) : null}
+                                                        </div>
+                                                        <div className="col-md-6 mt-3">
+                                                            <label htmlFor="material" className="form-label">Materiales<span className="text-danger">*</span></label>
+                                                            <Field className="form-select"
+                                                                name="material"
+                                                                as="select"
+                                                                multiple
+                                                            >
+                                                                {materiales.map(item => (
+                                                                    <option key={item.idMat} value={item.idMat}>
+                                                                        {item.nombre}
+                                                                    </option>
+                                                                ))}
+                                                            </Field>
+                                                            {errors.material && touched.material ? (
+                                                                <div className="alert alert-danger" role="alert">{errors.material}</div>
+                                                            ) : null}
+                                                        </div>
+                                                        <div className="col-md-6 mt-3">
+                                                            <label htmlFor="fechaini" className="form-label">Fecha inicio<span className="text-danger">*</span></label>
+                                                            <input type="date" className="form-control" id="fechaini" onChange={handleChange} value={values.fechaini} />
+                                                            {errors.fechaini && touched.fechaini ? (
+                                                                <div className="alert alert-danger" role="alert">{errors.fechaini}</div>
+                                                            ) : null}
+                                                        </div>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <div className="col-md-6 mt-3">
+                                                            <label htmlFor="descripcion" className="form-label">Descripcion<span className="text-danger">*</span></label>
+                                                            <input type="text" className="form-control" id="descripcion" onChange={handleChange} value={values.descripcion} />
+                                                            {errors.descripcion && touched.descripcion ? (
+                                                                <div className="alert alert-danger" role="alert">{errors.descripcion}</div>
+                                                            ) : null}
+                                                        </div>
+                                                        <div className="col-md-6 mt-3">
+                                                            <label htmlFor="cliente" className="form-label">Cliente<span className="text-danger">*</span></label>
+                                                            <Field className="form-select"
+                                                                name="cliente"
+                                                                as="select"
+                                                            >
+                                                                <option value="">Seleccione Cliente</option>
+                                                                {clientes.map(item => (
+                                                                    <option key={item.idCli} value={item.idCli}>
+                                                                        {item.nombre}
+                                                                    </option>
+                                                                ))}
+                                                            </Field>
+                                                            {errors.cliente && touched.cliente ? (
+                                                                <div className="alert alert-danger" role="alert">{errors.cliente}</div>
+                                                            ) : null}
+                                                        </div>
+                                                        <div className="col-md-6 mt-3">
+                                                            <label htmlFor="empleados" className="form-label">Asignar asesor<span className="text-danger">*</span></label>
+                                                            <Field className="form-select"
+                                                                name="empleados"
+                                                                as="select"
+                                                            >
+                                                                <option value="">Seleccione asesor</option>
+                                                                {empleados.map(item => (
+                                                                    <option key={item.idEmp} value={item.idEmp}>
+                                                                        {item.nombre} - {item.cedula}
+                                                                    </option>
+                                                                ))}
+                                                            </Field>
+                                                            {errors.empleados && touched.empleados ? (
+                                                                <div className="alert alert-danger" role="alert">{errors.empleados}</div>
+                                                            ) : null}
+                                                        </div>
+                                                        <div className="col-md-6 mt-3">
+                                                            <label htmlFor="fechaini" className="form-label">Fecha inicio<span className="text-danger">*</span></label>
+                                                            <input type="date" className="form-control" id="fechaini" onChange={handleChange} value={values.fechaini} />
+                                                            {errors.fechaini && touched.fechaini ? (
+                                                                <div className="alert alert-danger" role="alert">{errors.fechaini}</div>
+                                                            ) : null}
+                                                        </div>
+                                                    </>
+                                                )
+                                            }
+                                        </div>
+                                    </div>
+                                    <div className="card-footer text-center">
+                                        <div className="row">
+                                            <div className="col-md-6">
+                                                <button type="submit" disabled={isSubmitting} className="btn btn-primary btn-icon-split w-50">
+                                                    <span className="icon text-white-50">
+                                                        <i className="fas fa-plus"></i>
+                                                    </span>
+                                                    <span className="text">{params.id ? "Editar" : "Agregar"}</span>
+                                                </button>
+                                            </div>
+                                            <div className="col-md-6">
+                                                <a type="button" href="" className="btn btn-danger btn-icon-split w-50" onClick={() => navigate(`/obras`)}>
+                                                    <span className="icon text-white-50">
+                                                        <i className="fas fa-trash"></i>
+                                                    </span>
+                                                    <span className="text">Cancelar</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </Form>
+                        )}
+                    </Formik>
+                </div>
+            </div>
         </div>
     )
 }
