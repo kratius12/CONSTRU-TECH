@@ -24,6 +24,7 @@ import ProveedoresPage from './pages/proveedores/ProveedorPage'
 import ProveedoresForm from "./pages/proveedores/ProveedoresForm";
 import RolesForm from "./pages/RolesForm";
 import RolesPage from "./pages/RolesPage";
+import LoginPage from "./pages/LoginPage";"./pages/LoginPage";
 // import UsuariosPage from "./pages/UsuariosPage";
 
 import ComprasPage from "./pages/compras/Compraspage";
@@ -91,6 +92,7 @@ function App() {
                     <Route path="/clientes" element={<ClientPage />}></Route>
                     <Route path="/agregarCliente" element={<ClientForm />}></Route>
                     <Route path="/editarCliente/:id" element={<ClientForm />}></Route>
+                    <Route path="/login" element={<LoginPage />}></Route>
                   </Routes>
                 </ClientContextProvider>
                 <CompraContextProvider>

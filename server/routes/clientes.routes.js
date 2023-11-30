@@ -96,5 +96,17 @@ router.delete('/cliente/:id', async (req, res) => {
             return res.status(500).json(error)
         }
     })
+    router.get('/login', async (req, res) =>{
+        try {
+            const user = await prisma.usuario.findUnique({
+                where:{contrasena: contrasena},
+                select:{contrasena: true, correo: true},
+            })
+            res.status(200).json(user)
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json(error)
+        }
+    });
 
 export default router

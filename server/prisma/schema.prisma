@@ -56,7 +56,6 @@ model empleado {
   nombre                String?                 @db.VarChar(50)
   direccion             String?                 @db.VarChar(50)
   estado                Int?
-  email                 String?                 @db.VarChar(100)
   telefono              String?                 @db.VarChar(10)
   cedula                String?                 @db.VarChar(10)
   empleado_especialidad empleado_especialidad[]
@@ -169,7 +168,6 @@ model rol_permiso {
   id      Int      @id @default(autoincrement())
   idRol   Int?
   idPer   Int?
-  tipo    String   @db.VarChar(100)
   rol     rol?     @relation(fields: [idRol], references: [idRol], onDelete: Restrict, onUpdate: Restrict, map: "rol_permiso_ibfk_1")
   permiso permiso? @relation(fields: [idPer], references: [idPer], onDelete: Restrict, onUpdate: Restrict, map: "rol_permiso_ibfk_2")
 
@@ -180,11 +178,10 @@ model rol_permiso {
 model usuario {
   idUsu      Int     @id @default(autoincrement())
   estado     Int
+  correo     String? @db.VarChar(50)
   contrasena String? @db.VarChar(20)
   idRol      Int?
-  idEmp      Int
   rol        rol?    @relation(fields: [idRol], references: [idRol], onDelete: Restrict, onUpdate: Restrict, map: "usuario_ibfk_1")
 
-  @@index([idEmp], map: "idEmp")
   @@index([idRol], map: "idRol")
 }
