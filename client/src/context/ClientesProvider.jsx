@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { getClientsRequest, deleteClientRequest, createClientRequest, getClientRequest, updateClientRequest } from "../api/clientes.api";
+import { getClientsRequest, deleteClientRequest, createClientRequest, getClientRequest, updateClientRequest, loginRequest } from "../api/clientes.api";
 import { ClientsContext } from "./ClientesContext"
 
 export const useClients =() => {
@@ -50,8 +50,16 @@ export const ClientContextProvider=({children}) => {
             console.log(error)
         }
     }
+    const login = async (usuario) => {
+        console.log(usuario);
+        try {
+             await loginRequest(usuario)
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
-    return <ClientsContext.Provider value={{clientes,Clients,deleteClient,createClient,getClient,updateClient}}>
+    return <ClientsContext.Provider value={{clientes,Clients,deleteClient,createClient,getClient,updateClient,login}}>
         {children}
     </ClientsContext.Provider>
 }
