@@ -6,6 +6,7 @@ import { CreateUsuarioRequest,
         DeleteUsuarioRequest,
         ToggleUsuarioStatusRequest
 } from "../api/Usuarios.api";
+import { GetRolesRequest } from "../api/Usuarios.api";
 import { UsuarioContext } from "./UsuariosContext";
 
 
@@ -23,9 +24,13 @@ export const UsuarioContextProvider = ({children}) => {
     const [usuarios, setUsuarios] = useState([])
 
     async function Usuarios() {
-        const response = await GetUsuariosRequest()
-        console.log(response.data)  
-        setUsuarios(response.data)          
+        try {
+            const response = await GetUsuariosRequest()
+            console.log(response.data)  
+            setUsuarios(response.data)
+        } catch (error) {
+            console.log(error)
+        }         
     }
 
     const createUsuario = async (usuario) => {
@@ -34,6 +39,16 @@ export const UsuarioContextProvider = ({children}) => {
             console.log(response)
         } catch (error) {
             console.error(error)
+        }
+    }
+
+    const Roles = async () => {
+        try {
+            const response = await GetRolesRequest()
+            console.log(response.data)  
+            setUsuarios(response.data)
+        } catch (error) {
+            console.log(error)
         }
     }
 
@@ -80,7 +95,7 @@ export const UsuarioContextProvider = ({children}) => {
         }
     }
     return (
-        <UsuarioContext.Provider value={{usuarios, Usuarios, deleteUsuario, createUsuario, getUsuario, updateUsuario, toggleUsuarioStatus}}>
+        <UsuarioContext.Provider value={{usuarios, Usuarios, Roles, deleteUsuario, createUsuario, getUsuario, updateUsuario, toggleUsuarioStatus}}>
             {children}
         </UsuarioContext.Provider>
     )

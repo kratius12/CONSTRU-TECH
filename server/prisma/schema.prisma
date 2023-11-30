@@ -178,7 +178,6 @@ model rol_permiso {
 model usuario {
   idUsu      Int     @id @default(autoincrement())
   estado     Int
-  correo     String? @db.VarChar(50) @unique
   contrasena String? @db.VarChar(20)
   idRol      Int?
   idEmpl     Int

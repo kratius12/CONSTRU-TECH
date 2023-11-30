@@ -6,8 +6,20 @@ const router = Router();
 
 router.get('/usuarios', async (req, res) =>{
         try {
-            const result = await prisma.usuario.findMany()
-            return res.status(200).json(result)
+            const result = await prisma.usuario.findMany({
+                select: {
+                        idUsu: true,
+                        correo: true,
+                        estado: true,
+                        rol:{
+                                select: {
+                                        nombre: true
+                                }
+                        }
+                }
+            })
+            console.log(result)
+            return res.send(result);
         } catch (error) {
             console.log(error);
             return res.status(500).json(error)
@@ -34,9 +46,10 @@ router.post('/usuarios', async (req, res) => {
                 const {estado, contrasena, idRol, idEmp} = req.body
                 const result = await prisma.usuario.create({
                         data:{
+                                correo: correo,
                                 contrasena: contrasena,
-                                idRol: idRol,
-                                idEmp: idEmp,
+                                idRol: parseInt(idRol),
+                                idEmp: parseInt(idEmp),
                                 estado: parseInt(estado)
                         }
                 })
