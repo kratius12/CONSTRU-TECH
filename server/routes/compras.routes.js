@@ -2,6 +2,10 @@ import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
 import multer from "multer";
 import path from "path";
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const router = Router();
 const prisma = new PrismaClient()
@@ -30,38 +34,40 @@ router.get('/compra', async (req, res) => {
     }
 });
 
-// const diskstorage = multer.diskStorage({
-//     destination: path.join(__dirname, '../images'),
-//     filename: (req,file,cb)=>{
-//         cb(null,Date.now()+'-construtech-'+file.originalname)
-//     }
-// })
+const diskstorage = multer.diskStorage({
+    destination: path.join(__dirname, '../images'),
+    filename: (req,file,cb)=>{
+        cb(null,Date.now()+'-construtech-'+file.originalname)
+    }
+})
 
-// const fileUpload = multer({
-//     storage: diskstorage
-// }).single('imagen')
+const fileUpload = multer({
+    storage: diskstorage
+}).single('image')
 
 
-router.post('/compra', async (req, res) => {
+router.post('/compra',fileUpload,async (req, res) => {
     try {
-        const { fecha, imagen, total_compra, idMat, cantidad, Precio } = req.body
-        const date = new Date(fecha)
+        const imagen = fileUpload()
+        const { fecha, idMat, cantidad, Precio } = req.body
+        const date = new Date()
         const response = await prisma.compras.create({
             data: {
-                fecha: date,
+                fecha:date,
                 imagen: imagen,
                 total_compra: parseInt(cantidad * Precio),
             },
         })
-        await prisma.compras_detalle.createMany({
-            data: {
-                idCompra: response.idCom,
-                idMat: parseInt(idMat),
-                cantidad: parseInt(cantidad),
-                Precio: parseInt(Precio),
-                subtotal: parseInt(Precio * cantidad)
-            }
-        })
+        // await prisma.compras_detalle.createMany({
+        //     data: {
+        //         idCompra: response.idCom,
+        //         idMat: parseInt(idMat),
+        //         cantidad: parseInt(cantidad),
+        //         Precio: parseInt(Precio),
+        //         subtotal: parseInt(Precio * cantidad)
+        //     }
+        // })
+        console.log(response)
 
     } catch (error) {
         console.error(error)
