@@ -125,5 +125,24 @@ router.delete('/cliente/:id', async (req, res) => {
             return res.status(500).json(error)
         }
     });
+    router.put("/clientStatus/:id", async (req, res) => {
+        try {
+            const {status} = req.body
+            const result = await prisma.cliente.update({
+                where:{
+                    idCli:parseInt(req.params.id)
+                },
+                data:{
+                    estado:parseInt(status)
+                }
+            })        
+            console.log(status)
+            return res.status(200).json(result)
+    
+        } catch (error) {
+            return res.status(500).json({message: error.message})
+        }
+    })
+    
 
 export default router
