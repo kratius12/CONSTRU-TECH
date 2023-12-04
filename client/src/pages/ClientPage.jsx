@@ -45,7 +45,7 @@ function ClientPage() {
     const handleChangeStatus = (status) => {
         console.log(status)
     }
-    const { clientes, Clients, toggleClientStatus } = useClients()
+    const { clientes, Clients, toggleClientStatus,getClient } = useClients()
     const navigate = useNavigate()
     useEffect(() => {
         Clients()
@@ -57,7 +57,7 @@ function ClientPage() {
             return <h1>Sin Clientes</h1>
 
         } else {
-            return <TableInfo dataHeader={dataHeader} dataBody={clientes} routeEdit={"editarCliente"} viewDetail toggleApi={toggleClientStatus} onChangeStatus={handleChangeStatus} />
+            return <TableInfo dataHeader={dataHeader} dataBody={clientes} routeEdit={"editarCliente"} viewDetail toggleApi={toggleClientStatus} getApi={getClient} entity={'Cliente'} onChangeStatus={handleChangeStatus} />
         }
     }
 
