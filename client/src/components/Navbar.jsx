@@ -189,11 +189,10 @@ function Navbar() {
                             Activity Log
                         </a>
                         <hr className="sidebar-divider my-0" />
-                        <li className="nav-item">
+                    
                             <Link className="nav-link" to="/login">
                                 Log out
                             </Link>
-                        </li>
                     </div>
                 </li>
 

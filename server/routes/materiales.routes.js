@@ -97,4 +97,19 @@ router.delete("/material/:id", async (req, res) => {
     }
 })
 
+router.put("/materialEstado",async(req,res)=>{
+    try{
+        const {estado} = req.body
+        const newEstado = await prisma.materiales.update({
+            where:{
+                idMat: parseInt(req.params.id)
+            },data:{
+                estado: parseInt(estado)
+            }
+        })
+    }catch(error){
+        console.error(error)
+    }
+})
+
 export default router
