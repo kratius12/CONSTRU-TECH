@@ -2,28 +2,8 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ComprasTable from "../../components/compras/ComprasTable"
 import { useCompras } from "../../context/compras/ComprasProvider";
-import TableInfo from "../../components/TableInfo";
 function ComprasPage() {
-    const dataHeader = [
-        {
-            header: "ID",
-            accessorKey: 'idCom'
-
-        },
-        {
-            header: "Fecha",
-            accessorKey: 'fecha'
-        },
-        {
-            header: "Factura",
-            accessorKey: 'imagen'
-        },
-        {
-            header:"Ver detalle",
-            accessorKey: 'accion',
-            idProperty:"idMat"
-        }
-    ]
+    
     const { compras, Compras } = useCompras()
     const navigate = useNavigate()
     useEffect(() => {
@@ -36,7 +16,7 @@ function ComprasPage() {
 
         }
         else{
-        return <TableInfo dataHeader={dataHeader} dataBody={compras}  viewDetail/>
+        return <ComprasTable/>
         }
     }
 

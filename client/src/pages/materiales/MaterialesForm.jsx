@@ -113,12 +113,12 @@ export default function MaterialesForm() {
                           <div className="alert alert-danger" role="alert">{errors.nombre}</div>
                         ) : null}
                       </div>
-                      <div className="col-6 mt-3">
+                      {/* <div className="col-6 mt-3">
                         <input type="number" className="form-control form-control-user" id="cantidad" onChange={handleChange} value={values.cantidad} placeholder="Cantidad*"/>
                         {errors.cantidad && touched.cantidad ? (
                           <div className="alert alert-danger" role="alert">{errors.cantidad}</div>
                         ) : null}
-                      </div>
+                      </div> */}
                       <div className="col-6 mt-3">
                         <select className="form-select form-control-user" id="idCategoria" value={values.idCategoria } onChange={handleChange}>
                           <option >Seleccione una categoria*</option>
@@ -126,6 +126,9 @@ export default function MaterialesForm() {
                             <option key={e} value={categoria.idcat}>{categoria.nombre}</option>
                           ))}
                         </select>
+                        {errors.idCategoria && touched.idCategoria?(
+                          <div className="alert alert-danger" role="alert">{errors.idCategoria}</div>
+                        ):null}
                       </div>
                       <div className="col-6 mt-3">
                         <select className="form-select form-control-user" id="idProveedor" value={values.idProveedor } onChange={handleChange}>
@@ -134,6 +137,9 @@ export default function MaterialesForm() {
                             <option key={i} value={proveedor.idProv}>{proveedor.nombre}</option>
                           ))}
                         </select>
+                        {errors.idProveedor && touched.idProveedor?(
+                          <div className="alert alert-danger" role="alert">{errors.idProveedor}</div>
+                        ):null}
                       </div>
                       <div className="col-6 mt-3">
                         <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
@@ -151,7 +157,7 @@ export default function MaterialesForm() {
                     <div className="row">
                       <div className="col-md-6">
                       <button type="submit" disabled={isSubmitting} className="btn btn-primary btn-icon-split w-50">
-                          <span className="icon text-white-50">
+                          <span className="text-white-50">
                             <i className="fas fa-plus"></i>
                           </span>
                           <span className="text">{params.id ? "Editar" : "Agregar"}</span>
@@ -159,7 +165,7 @@ export default function MaterialesForm() {
                       </div>
                       <div className="col-md-6">
                         <a type="button" href="" className="btn btn-danger btn-icon-split w-50" onClick={() => navigate(`/materiales`)}>
-                          <span className="icon text-white-50">
+                          <span className="text-white-50">
                             <i className="fas fa-trash"></i>
                           </span>
                           <span className="text">Cancelar</span>

@@ -4,7 +4,7 @@ import {
     DeleteProveedorRequest,
     GetProveedorRequest,
     GetProveedoresRequest,
-    UpdateProveedorRequest,ToggleProveedorStatusRequest
+    UpdateProveedorRequest, ToggleProveedorStatusRequest
 
 } from "../../api/Proveedores.api";
 import { ProveedorContext } from "./ProveedorContext";
@@ -16,19 +16,19 @@ export const useProveedores = () => {
     const context = useContext(ProveedorContext)
     if (!context) {
         throw new Error("UseEmpleados debe estar en contexto con EmpleadoContext Provider")
-    }   
+    }
     return context
 }
 
 
-export const ProveedorContextProvider = ({children}) => {
+export const ProveedorContextProvider = ({ children }) => {
 
     const [proveedores, setProveedores] = useState([])
 
     async function Proveedores() {
         const response = await GetProveedoresRequest()
-        setProveedores(response.data)          
-    }  
+        setProveedores(response.data)
+    }
 
     const createProveedor = async (proveedor) => {
         try {
@@ -39,7 +39,7 @@ export const ProveedorContextProvider = ({children}) => {
         }
     }
 
-    const getProveedor = async (idProv) =>{
+    const getProveedor = async (idProv) => {
         try {
             const result = await GetProveedorRequest(idProv)
             return result.data
@@ -58,7 +58,7 @@ export const ProveedorContextProvider = ({children}) => {
         }
     }
 
-    const updateProveedor = async (idProv, newfields) =>{
+    const updateProveedor = async (idProv, newfields) => {
         try {
             const response = await UpdateProveedorRequest(idProv, newfields)
             console.log(response)
@@ -66,17 +66,23 @@ export const ProveedorContextProvider = ({children}) => {
             console.error(error)
         }
     }
-    const toggleStado = async(idProv,newEstado)=>{
-        try{
-            const response = await ToggleProveedorStatusRequest(idProv,newEstado)
-            console.log(response)
-        }catch(error){
+    const toggleStado = async (idProv, estado) => {
+        try {
+            // const empleadoFound = empleados.find((empleado) => empleado.idEmp === idEmp)
+            if (estado == 1) {
+                estado = 0
+            } else {
+                estado = 1
+            }
+            await ToggleProveedorStatusRequest(idProv, { estado })
+            
+        } catch (error) {
             console.error(error)
         }
     }
 
     return (
-        <ProveedorContext.Provider value={{proveedores, Proveedores, deleteProveedor,toggleStado, createProveedor, getProveedor, updateProveedor}}>
+        <ProveedorContext.Provider value={{ proveedores, Proveedores, deleteProveedor, toggleStado, createProveedor, getProveedor, updateProveedor }}>
             {children}
         </ProveedorContext.Provider>
     )

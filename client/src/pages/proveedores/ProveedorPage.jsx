@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ComprasTable from "../../components/compras/ComprasTable"
 import { useProveedores } from "../../context/proveedores/ProveedorProvider";
@@ -28,7 +28,8 @@ function ProveedoresPage() {
         },
         {
             header: "Estado",
-            accessorKey: 'estado'
+            accessorKey: 'estado',
+            idProperty:"idProv"
         },
         {
             header: "Acciones",
@@ -36,7 +37,11 @@ function ProveedoresPage() {
             idProperty: "idProv"
         },
     ]
-    const { proveedores, Proveedores } = useProveedores()
+    const [tableStatus, setTableStatus] = useState(0)
+    const handleChangeStatus = (newStatus) => {
+        setTableStatus(newStatus)
+    }
+    const { proveedores, Proveedores, toggleStado, getProveedor } = useProveedores()
     const navigate = useNavigate()
     useEffect(() => {
         Proveedores()
@@ -47,7 +52,9 @@ function ProveedoresPage() {
             return <h1>Sin proveedores</h1>
 
         }
-        return <TableInfo dataHeader={dataHeader} dataBody={proveedores} routeEdit={'editarProveedor'} viewDetail />
+        return <TableInfo dataHeader={dataHeader} dataBody={proveedores} routeEdit={'editarProveedor'} viewDetail
+            toggleApi={toggleStado} getApi={getProveedor} entity={"proveedor"} onChangeStatus={handleChangeStatus}
+        />
 
     }
 
@@ -63,7 +70,7 @@ function ProveedoresPage() {
                         <div className="row">
                             <div className="col-md-6">
                                 <div className="col-md-6 mb-3">
-                                    <button className="btn btn-primary" onClick={() => navigate(`/agregarEmpleado`)}>
+                                    <button className="btn btn-primary" onClick={() => navigate(`/agregarProveedor`)}>
                                         Agregar
                                     </button>
                                 </div>

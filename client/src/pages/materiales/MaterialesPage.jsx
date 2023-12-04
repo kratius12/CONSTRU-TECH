@@ -15,28 +15,33 @@ function MaterialesPage() {
             header: "Nombre",
             accessorKey: 'nombre'
         },
-        {
-            header: "Cantidad",
-            accessorKey: 'cantidad'
-        },
+        // {
+        //     header: "Cantidad",
+        //     accessorKey: 'cantidad'
+        // },
         {
             header: "Categoria",
             accessorKey: 'categoria.nombre',
         }, {
             header: "Proveedor",
             accessorKey: "proveedor.nombre"
-        }, {
+        }, 
+        {
+            header:"Estado",
+            accessorKey:"estado",
+            idProperty:"idMat"
+        }
+        
+        ,{
             header: "Acciones",
             accessorKey: "accion",
             idProperty: "idMat"
         }
     ]
-
-
-
-
-
-    const { materiales, Materiales } = useMateriales()
+    const handleChangeStatus = (newStatus) => {
+        setTableStatus(newStatus)
+    }
+    const { materiales, Materiales,toggleMaterialEstado,getMaterial } = useMateriales()
     const navigate = useNavigate()
     useEffect(() => {
         Materiales()
@@ -49,10 +54,9 @@ function MaterialesPage() {
 
         }
         else {
-            return <TableInfo dataHeader={dataHeader} dataBody={materiales} routeEdit={"editarMaterial"} />
+            return <TableInfo dataHeader={dataHeader} dataBody={materiales} routeEdit={"editarMaterial"}  toggleApi={toggleMaterialEstado} getApi={getMaterial} entity={"material"} onChangeStatus={handleChangeStatus} />
         }
     }
-
     return (
         <>
             <h1 className="h3 mb-2 text-gray-800">Gestión de materiales</h1>
