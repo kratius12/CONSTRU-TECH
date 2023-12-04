@@ -188,9 +188,9 @@ function Navbar() {
                             <i className="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
                             Activity Log
                         </a>
-                        <hr className="sidebar-divider my-0" />
-                    
-                            <Link className="nav-link" to="/login">
+
+                        <hr className="sidebar-divider my-0" />                            
+                        <Link className="nav-link" to="/login">
                                 Log out
                             </Link>
                     </div>
