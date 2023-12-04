@@ -28,6 +28,9 @@ router.get("/empleado/:id", async (req, res) =>{
         const result = await prisma.empleado.findFirst({
             where: {
                 idEmp:parseInt(req.params.id)
+            },
+            include:{
+                empleado_especialidad:true
             }
         })
         console.log(result);
