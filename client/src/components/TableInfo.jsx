@@ -13,7 +13,7 @@ import {
   import StatusToggle from '../components/StatusToggle';
   import AlertDetail from '../components/AlertDetail';
   
-  function TableInfo({ dataHeader, dataBody, routeEdit, viewDetail, entity, toggleApi, onChangeStatus }) {
+  function TableInfo({ dataHeader, dataBody, routeEdit, viewDetail, entity, toggleApi, onChangeStatus, getApi }) {
 
     const data = dataBody;
     const header = dataHeader;
@@ -115,9 +115,9 @@ import {
                         {viewDetail ? (
                           
                           <AlertDetail
-                            dataHeader={dataHead}
-                            dataBody={cell.row.original}
+                            id={cell.row.original[cell.column.columnDef.idProperty]}
                             entity={entity}
+                            getApi={getApi}
                           />
                         ) : (
                           ''
