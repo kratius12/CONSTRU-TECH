@@ -33,13 +33,13 @@ router.post("/roles", async (req, res) => {
         try {
                 const { nombre, estado, permiso
                 } = req.body
-                const result = await prisma.empleado.create({
+                const result = await prisma.rol.create({
                         data: {
                                 nombre: nombre,
                                 estado: parseInt(estado)
                         }
                 })
-                await Promise.all(permiso.map(async (idEsp) => {
+                await Promise.all(permiso.map(async (idRol) => {
                         console.log(result, especialidad);
                         await prisma.rol_permiso.create({
                                 data: {

@@ -112,7 +112,7 @@ export default function RolesForm() {
                                                     <span className="icon text-white-50">
                                                         <i className="fas fa-plus"></i>
                                                     </span>
-                                                    <span className="text">{params.id ? "Editar" : "Agregar"}</span>
+                                                    <span className="text">{params.id ? "Guardar" : "Agregar"}</span>
                                                 </button>
                                             </div>
                                             <div className="col-md-6">
