@@ -36,110 +36,56 @@ router.get('/compra', async (req, res) => {
 
 const diskstorage = multer.diskStorage({
     destination: path.join(__dirname, '../images'),
-    filename: (req,file,cb)=>{
-        cb(null,Date.now()+'-construtech-'+file.originalname)
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + '-construtech-' + file.originalname)
     }
 })
 
 const fileUpload = multer({
     storage: diskstorage
-}).single('image')
+}).single('imagen')  // Usar 'imagen' como el nombre del campo en el formulario
 
-
-router.post('/compra',fileUpload,async (req, res) => {
+router.post('/compra', fileUpload, async (req, res) => {
     try {
-        const imagen = fileUpload()
-        const { fecha, idMat, cantidad, Precio } = req.body
+        // Utilizar req.file para obtener la información de la imagen
+        const imagen = req.file.filename;
+        const { fecha, cantidad, precio, total, materiales, subtotal } = req.body
         const date = new Date()
         const response = await prisma.compras.create({
             data: {
-                fecha:date,
+                fecha: date,
                 imagen: imagen,
-                total_compra: parseInt(cantidad * Precio),
+                total_compra: total,
             },
         })
-        // await prisma.compras_detalle.createMany({
-        //     data: {
-        //         idCompra: response.idCom,
-        //         idMat: parseInt(idMat),
-        //         cantidad: parseInt(cantidad),
-        //         Precio: parseInt(Precio),
-        //         subtotal: parseInt(Precio * cantidad)
-        //     }
-        // })
+
+        await Promise.all(materiales.map(async (idMat) => {
+            console.log(response, materiales);
+            await prisma.compras_detalle.create({
+                data: {
+                    idCompra: response.idCom,
+                    idMat: parseInt(idMat),
+                    cantidad: cantidad,
+                    precio: precio,
+                    subtotal: subtotal
+                }
+            })
+        }))
         console.log(response)
 
+        res.json({ success: true, message: 'Compra creada con éxito' });
+
     } catch (error) {
         console.error(error)
+        res.status(500).json({ success: false, message: 'Error en el servidor' });
     }
 })
 
-router.put('/compra', async (req, res) => {
-    try {
-        const { fecha, imagen, total_compra } = req.body
-        const result = await prisma.compras.update({
-            where: {
-                idCom: req.params.id
-            }, data: {
-                fecha: fecha,
-                imagen: imagen,
-                total_compra: total_compra
-            }
-        })
-    } catch (error) {
-        console.error(error)
-    }
-})
 
-router.delete('/compra', async (req, res) => {
-    try {
-        const response = await prisma.compras.delete({
-            where: {
-                idCom: req.params.id
-            }
-        })
-    } catch (error) {
-        console.error(error)
-    }
-})
 
-router.post('/detalle', async (req, res) => {
-    try {
-        const { cantidad, precio } = req.body
-        const subtotal = cantidad * precio
-        const response = await prisma.compras_detalle.createMany({
-            data: {
-                compras: {
-                    connect: {
-                        idCom: req.body.idCom
-                    }
-                },
-                materiales: {
-                    connect: {
-                        idMat: req.body.idMat
-                    }
-                },
-                cantidad: cantidad,
-                subtotal: subtotal,
-                precio: precio
-            }
-        })
-        console.log(response)
-    } catch (error) {
-        console.error(error)
-    }
-})
 
-router.get('/detalle', async (req, res) => {
-    try {
-        const response = await prisma.compras_detalle.findFirst({
-            where: {
-                idCompra: req.params.id
-            }
-        })
-    } catch (error) {
-        console.error(error)
-    }
-})
+
+
+
 
 export default router
