@@ -7,7 +7,7 @@ function MaterialesPage() {
 
     const dataHeader = [
         {
-            header: "#",
+            header: "ID",
             accessorKey: 'idMat'
 
         },
