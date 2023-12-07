@@ -9,7 +9,6 @@ router.get("/materiales", async (req, res) => {
         const materiales = await prisma.materiales.findMany({
             select: {
                 idMat: true,
-                cantidad: true,
                 estado: true,
                 nombre: true,
                 proveedor: {
@@ -98,7 +97,7 @@ router.delete("/material/:id", async (req, res) => {
     }
 })
 
-router.put("/materialEstado",async(req,res)=>{
+router.put("/materialEstado/:id",async(req,res)=>{
     try{
         const {estado} = req.body
         const newEstado = await prisma.materiales.update({
@@ -108,6 +107,7 @@ router.put("/materialEstado",async(req,res)=>{
                 estado: parseInt(estado)
             }
         })
+        console.log(newEstado)
     }catch(error){
         console.error(error)
     }

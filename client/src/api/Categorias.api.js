@@ -20,6 +20,6 @@ export const UpdateCategoriaRequest = async (idcat, newFields) =>{
     return await axios.put(`http://localhost:4000/categoria/${idcat}`, newFields)
 }
 
-export const ToggleCategoriaStatusRequest = async (idcat, status) =>{
-    return await axios.put(`http://localhost:4000/categoria/${idcat}`, status)
+export const ToggleCategoriaStatusRequest = async (idcat, estado) =>{
+    return await axios.put(`http://localhost:4000/estadoCategoria/${idcat}`, estado)
 }

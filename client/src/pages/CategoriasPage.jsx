@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CategoriaTable  from "../components/CategoriaTable"
 import { useCategorias } from "../context/CategoriasProvider";
@@ -29,8 +29,11 @@ function CategoriasPage() {
             idProperty: 'idcat'
         }
     ]
-
-    const {categorias, Categorias} = useCategorias()
+    const [tableStatus, setTableStatus] = useState(0)
+    const handleChangeStatus = (newStatus) => {
+        setTableStatus(newStatus)
+    }
+    const {categorias, Categorias, getCategoria,toggleCategoriaStatus} = useCategorias()
     const navigate = useNavigate()
     useEffect(() =>{
     Categorias()  
@@ -41,8 +44,8 @@ function CategoriasPage() {
             return <h1>Sin Categorias</h1>
             
         }
-        return <TableInfo dataHeader={dataHeader} dataBody={categorias} routeEdit={'editarCategoria'}/>
-        // return <CategoriaTable categorias={categorias}/>
+        return <TableInfo dataHeader={dataHeader} dataBody={categorias} routeEdit={'editarCategoria'} onChangeStatus={handleChangeStatus} getApi={getCategoria} toggleApi={toggleCategoriaStatus} entity={"categoria"}/>
+        
     }
 
     return(

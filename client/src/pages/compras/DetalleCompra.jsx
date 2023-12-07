@@ -34,10 +34,10 @@ export default function ProveedorDetalle() {
             <div className="row">
                 <div className="col-md-12">
                     <div className="card" id="card">
-                        <h1 >INFORMACIÓN DEL PROVEEDOR</h1>
+                        <h1 >DETALLE DE COMPRA</h1>
                         
                         <div className="col-md-6">
-                            <a type="button" href="" className="btn btn-danger w-50" onClick={() => navigate(`/proveedores`)}>
+                            <a type="button" href="" className="btn btn-danger w-50" onClick={() => navigate(`/compras`)}>
                                 <h4>Regresar</h4>
                             </a>
                         </div> 

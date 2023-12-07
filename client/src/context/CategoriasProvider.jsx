@@ -65,16 +65,15 @@ export const CategoriaContextProvider = ({children}) => {
         }
     }
 
-     const toggleCategoriaStatus = async (idcat) =>{
+     const toggleCategoriaStatus = async (idcat,estado) =>{
         try {
-            const categoriaFound = categorias.find((categoria) => categoria.idcat === idcat)
-            let status  = ''
-            if (categoriaFound.estado === 1) {
-                status = 0
-            }else{
-                status = 1
+            if (estado == 1) {
+                estado = 0
+            } else {
+                estado = 1
             }
-            await ToggleCategoriaStatusRequest(idcat, status)
+            await ToggleCategoriaStatusRequest(idcat, { estado })
+            
         } catch (error) {
             console.error(error)
         }

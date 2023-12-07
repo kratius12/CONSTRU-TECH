@@ -56,6 +56,7 @@ model compras_detalle {
 model empleado {
   idEmp                 Int                     @id @default(autoincrement())
   nombre                String?                 @db.VarChar(50)
+  apellido              String?                 @db.VarChar(50)
   direccion             String?                 @db.VarChar(50)
   estado                Int?
   email                 String?                 @db.VarChar(100)
@@ -99,7 +100,6 @@ model materiales {
   nombre           String?            @db.VarChar(50)
   idProveedor      Int?
   estado           Int?
-  cantidad         Int?
   idCategoria      Int?
   compras_detalle  compras_detalle[]
   proveedor        proveedor?         @relation(fields: [idProveedor], references: [idProv], onDelete: Restrict, onUpdate: Restrict, map: "materiales_ibfk_1")
@@ -185,7 +185,7 @@ model usuario {
   estado     Int
   contrasena String? @db.VarChar(20)
   idRol      Int?
-  idEmp     Int
+  idEmp      Int
   rol        rol?    @relation(fields: [idRol], references: [idRol], onDelete: Restrict, onUpdate: Restrict, map: "usuario_ibfk_1")
 
   @@index([idRol], map: "idRol")
