@@ -5,6 +5,10 @@ const EmpleadoSchema = Yup.object().shape({
     .min(3, 'El nombre debe contener al menos 3 caracteres')
     .max(50, 'El nombre no puede contener mas de 50 caracteres')
     .required('El nombre es requerido'),
+  apellido: Yup.string()
+  .min(3, 'El apellido debe contener al menos 3 caracteres')
+  .max(50, 'El apellido no puede contener mas de 50 caracteres')
+  .required('El apellido es requerido'),
   tipoDoc: Yup.string()
     .required('Tipo de documento es requerido'),
   cedula: Yup.string()

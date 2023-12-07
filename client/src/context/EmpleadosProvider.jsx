@@ -33,7 +33,8 @@ export const EmpleadoContextProvider = ({children}) => {
 
     async function Especialidades(){
         const response = await GetEspecialidadesRequest()
-        setEspecialidades(response.data)     
+        setEspecialidades(response.data) 
+        return response.data    
     }
 
     const createEmpleado = async (empleado) => {
