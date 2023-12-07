@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUsuario } from "../context/UsuariosProvider";
+import { useUsuarios } from "../context/UsuariosProvider";
 import TableInfo from "../components/TableInfo";
 function UsuariosPage() {
 
@@ -8,7 +8,6 @@ function UsuariosPage() {
         {
            header: "ID",
            accessorKey: 'idUsu'
-
         },
         {
             header: "Correo",
@@ -18,10 +17,10 @@ function UsuariosPage() {
             header: "Rol",
             accessorKey: 'rol.nombre'
         },
-        // {
-        //     header: "Empleado",
-        //     accessorKey: 'idEMp'
-        // },
+        {
+            header: "Empleado",
+            accessorKey: 'idEmp'
+        },
         {
             header: "Estado",
             accessorKey: 'estado',
@@ -38,11 +37,12 @@ function UsuariosPage() {
         setTableStatus(newStatus)
 
     }
-    const {usuarios, Usuarios} = useUsuario()
+    const {usuarios, Usuarios,ToggleUsuarioStatus, getUsuario} = useUsuarios()
     const navigate = useNavigate()
     useEffect(() =>{
     Usuarios()  
     }, [])
+    console.log(tableStatus)
 
     function renderMain() {
 
@@ -50,8 +50,7 @@ function UsuariosPage() {
             return <h1>Sin usuarios</h1>
             
         }else{
-            return <TableInfo dataHeader={dataHeader} dataBody={usuarios} routeEdit={'editarUsuario'} viewDetail/>
-            //return <EmpleadoTable usuarios={usuarios}/>
+            return <TableInfo dataHeader={dataHeader} dataBody={usuarios} routeEdit={'editarUsuario'} viewDetail toggleApi={ToggleUsuarioStatus} getApi={getUsuario} entity={"Usuario"} onChangeStatus={handleChangeStatus}/>
         }
     }
 

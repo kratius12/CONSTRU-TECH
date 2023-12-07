@@ -1,40 +1,29 @@
 import axios from "axios";
 
-export const GetUsuariosRequest = async () =>{
-    return await axios.get('http://localhost:4000/usuarios')
+export const GetUsuariosRequest = async()=>{
+    return await  axios.get(`http://localhost:4000/usuarios`)
 }
 
-export const CreateUsuarioRequest = async (usuario) => {
-    return await axios.post('http://localhost:4000/usuarios', usuario)
+export const GetUsuarioRequest = async(idUsu)=>{
+    return await axios.get(`http://localhost:4000/usuario/${idUsu}`)
 }
 
-export const GetRolesRequest = async () => {
-    return await axios.get('http://localhost:4000/roles')
+export const UpdateUsuarioRequest = async(idUsu,newFields)=>{
+    return await axios.put(`http://localhost:4000/usuario/${idUsu}`,newFields)
 }
 
-export const GetEmpleadosRequest = async () => {
-    return await axios.get('http://localhost:4000/empleados')
+export const CreateUsuarioRequest = async(usuario)=>{
+    return await axios.post(`http://localhost:4000/usuario/`,usuario,{timeout:500})
 }
 
-// export const CreateRolesRequest = async (rol) =>{
-//     return await axios.post('http://localhost:4000/roles', rol, {timeout: 5000})
-// }
-// export const CreateEmpleadosRequest = async (empleado) =>{
-//     return await axios.post('http://localhost:4000/empleados', empleado, {timeout: 5000})
-// }
-
-export const DeleteUsuarioRequest = async (idUsu) =>{
-    return await axios.delete(`http://localhost:4000/usuarios/${idUsu}`)
+export const ToggleUsuarioStatusRequest = async(idUsu,estado)=>{
+    return await axios.put(`http://localhost:4000/estadoUsuario/${idUsu}`,estado)
 }
 
-export const GetUsuarioRequest = async (idUsu) => {
-    return await axios.get(`http://localhost:4000/usuarios/${idUsu}`, {timeout: 5000}   )
+export const GetRolesRequest = async()=>{
+    return await axios.get(`http://localhost:4000/roles`)
 }
 
-export const UpdateUsuarioRequest = async (idUsu, newFields) =>{
-    return await axios.put(`http://localhost:4000/usuarios/${idUsu}`, newFields)
-}
-
-export const ToggleUsuarioStatusRequest = async (idUsu, status) =>{
-    return await axios.put(`http://localhost:4000/usuarios/${idUsu}`, status)
+export const GetEmpleadosRequest = async()=>{
+    return await axios.get(`http://localhost:4000/empleados`)
 }

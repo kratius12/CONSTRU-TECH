@@ -39,6 +39,7 @@ router.get("/material/:id", async (req, res) => {
             }
         })
         console.log(material)
+        return res.send(material)
     } catch (error) {
         console.error(error)
     }
