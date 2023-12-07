@@ -108,8 +108,10 @@ router.put("/empleado/:id", async (req, res) => {
                 })
             }))
             res.status(200).json(result)            
+        }else{
+            console.log("Ha ocurrido un error...");
         }
-        console.log("Ha ocurrido un error...");
+
     } catch (error) {
         console.log(error);
         return res.status(500).json({message: error.message})
