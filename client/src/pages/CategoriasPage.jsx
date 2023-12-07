@@ -24,7 +24,7 @@ function CategoriasPage() {
             accessorKey: 'estado'
         },
         {
-            header: "Accion",
+            header: "Acción",
             accessorKey: 'accion',
             idProperty: 'idcat'
         }
@@ -50,7 +50,7 @@ function CategoriasPage() {
 
     return(
         <>
-            <h1 className="h3 mb-2 text-gray-800">Gestión de categorias</h1>        
+            <h1 className="h3 mb-2 text-gray-800">Gestión de categorías</h1>        
                     <div className="card shadow mb-4">
                         <div className="card-header py-3">
                             <h6 className="m-0 font-weight-bold text-primary">Listado de categorias</h6>

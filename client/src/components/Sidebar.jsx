@@ -70,7 +70,7 @@ export default function Sidebar() {
       <li className="nav-item">
         <Link className="nav-link" to="/categorias">
           <i className="fa-solid fa-book" />&nbsp;
-          Categorias
+          Categorías
         </Link>
       </li>
       <hr className="sidebar-divider my-0" />

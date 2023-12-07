@@ -150,7 +150,7 @@ console.log(defaultOptionsCli);
                                                     ) : null}
                                                 </div>
                                                 <div className="col-md-6 mt-3">
-                                                <label htmlFor="area" className="form-label">Area de la obra<span className="text-danger">*</span></label>
+                                                <label htmlFor="area" className="form-label">Área de la obra<span className="text-danger">*</span></label>
                                                     <input type="text" className="form-control form-control-user" id="area" onChange={handleChange} value={values.area} placeholder="Descripción de la obra*" />
                                                     {errors.area && touched.area ? (
                                                         <div className="alert alert-danger" role="alert">{errors.area}</div>
@@ -244,7 +244,7 @@ console.log(defaultOptionsCli);
                                             ) : (
                                                 <>
                                                 <div className="col-md-6 mt-3">
-                                                    <label htmlFor="descripcion" className="form-label">Descripcion<span className="text-danger">*</span></label>
+                                                    <label htmlFor="descripcion" className="form-label">Descripción<span className="text-danger">*</span></label>
                                                     <input type="text" className="form-control" id="descripcion" onChange={handleChange} value={values.descripcion} />
                                                     {errors.descripcion && touched.descripcion ? (
                                                         <div className="alert alert-danger" role="alert">{errors.descripcion}</div>

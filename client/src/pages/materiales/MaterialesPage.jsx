@@ -20,7 +20,7 @@ function MaterialesPage() {
         //     accessorKey: 'cantidad'
         // },
         {
-            header: "Categoria",
+            header: "Categoría",
             accessorKey: 'categoria.nombre',
         }, {
             header: "Proveedor",

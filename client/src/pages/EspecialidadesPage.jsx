@@ -21,7 +21,7 @@ function EspecialidadesPage() {
             accessorKey: 'estado'
         },
         {
-            header: "Accion",
+            header: "Acción",
             accessorKey: 'accion',
             idProperty: 'id'
         }

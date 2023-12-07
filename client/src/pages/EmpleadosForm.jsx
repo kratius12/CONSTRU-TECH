@@ -170,7 +170,7 @@ export default function EmpleadosForm() {
                         ) : null}
                       </div>
                       <div className="col-md-6 mt-3">
-                        <input type="text" className="form-control form-control-user" id="telefono" onChange={handleChange} value={values.telefono} placeholder="Número telefonico*" />
+                        <input type="text" className="form-control form-control-user" id="telefono" onChange={handleChange} value={values.telefono} placeholder="Número telefónico*" />
                         {errors.telefono && touched.telefono ? (
                           <div className="alert alert-danger" role="alert">{errors.telefono}</div>
                         ) : null}

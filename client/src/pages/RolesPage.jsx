@@ -22,7 +22,7 @@ function RolesPage() {
             idProperty: 'idRol'
         },
         {
-            header: "Accion",
+            header: "Acción",
             accessorKey: 'accion',
             idProperty: 'idRol'
         }

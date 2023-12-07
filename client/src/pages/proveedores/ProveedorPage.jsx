@@ -15,7 +15,7 @@ function ProveedoresPage() {
             accessorKey: 'nombre'
         },
         {
-            header: "Telefono",
+            header: "Teléfono",
             accessorKey: 'telefono'
         },
         {
@@ -23,7 +23,7 @@ function ProveedoresPage() {
             accessorKey: 'nombreContacto'
         },
         {
-            header: "Telefono contacto",
+            header: "Teléfono contacto",
             accessorKey: 'telefonoContacto'
         },
         {
