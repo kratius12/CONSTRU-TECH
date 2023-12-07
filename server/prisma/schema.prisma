@@ -177,13 +177,13 @@ model rol_permiso {
 
 model usuario {
   idUsu      Int     @id @default(autoincrement())
+  correo     String? @db.VarChar(100)
   estado     Int
-  correo     String? @db.VarChar(50) @unique
   contrasena String? @db.VarChar(20)
   idRol      Int?
-  idEmpl     Int
+  idEmp     Int
   rol        rol?    @relation(fields: [idRol], references: [idRol], onDelete: Restrict, onUpdate: Restrict, map: "usuario_ibfk_1")
 
   @@index([idRol], map: "idRol")
-  @@index([idEmpl], map: "idEmpl")
+  @@index([idEmp], map: "idEmp")
 }

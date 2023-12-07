@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Form, Formik } from "formik";
+import { Form, Formik, Field } from "formik";
 import { useParams, useNavigate } from "react-router-dom";
 import { useRol } from "../context/RolesProvider";
 import * as Yup from 'yup';
@@ -14,16 +14,20 @@ const rolSchema = Yup.object().shape({
 });
 export default function RolesForm() {
     //   const [agreed, setAgreed] = useState(false)
-    const { createRol, getRol, updateRol, Roles } = useRol()
+    const { createRol, getRol, updateRol, Roles, permisos, Permisos} = useRol()
     useEffect(() => {
         Roles()
+    }, [])
+    useEffect(() => {
+        Permisos()
     }, [])
 
     const params = useParams()
     const navigate = useNavigate()
     const [rol, setRol] = useState({
         nombre: "",
-        estado: ""
+        estado: "",
+        rol_permiso:[]
     })
 
     useEffect(() => {
@@ -32,7 +36,8 @@ export default function RolesForm() {
                 const rol = await getRol(params.id)
                 setRol({
                     nombre: rol.nombre,
-                    estado: rol.estado
+                    estado: rol.estado,
+                    rol_permiso: rol_permiso.permiso
                     })
             }
         }
@@ -83,6 +88,21 @@ export default function RolesForm() {
                                                     <div className="alert alert-danger" role="alert">{errors.estado}</div>
                                                 ) : null}
                                             </div>
+                                            <div className="col-6 mt-3">
+                                            <label>Selecciona permisos:</label>   
+                                                    <Field
+                                                          name="permiso"
+                                                          as="select"
+                                                          multiple
+                                                          className="form-select "
+                                                        >
+                                                          {permisos.map(item => (
+                                                            <option key={item.id} value={item.id}>
+                                                              {item.permiso}
+                                                            </option>
+                                                          ))}
+                                                    </Field>
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="card-footer text-center">
@@ -92,7 +112,7 @@ export default function RolesForm() {
                                                     <span className="icon text-white-50">
                                                         <i className="fas fa-plus"></i>
                                                     </span>
-                                                    <span className="text">{params.id ? "Editar" : "Agregar"}</span>
+                                                    <span className="text">{params.id ? "Guardar" : "Agregar"}</span>
                                                 </button>
                                             </div>
                                             <div className="col-md-6">
