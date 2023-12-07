@@ -41,14 +41,11 @@ function TableInfo({ dataHeader, dataBody, routeEdit, viewDetail, entity, toggle
   ];
   const [estado, setEstado] = useState([]);
   const handleCambioEstado = (id, nuevoEstado) => {
-    console.log(id, nuevoEstado);
     setEstado((prevState) => ({ ...prevState, [id]: { id, estado: nuevoEstado } }))
     onChangeStatus(id, nuevoEstado)
 
   }
-  console.log(estado);
   const isDisabled = (id) => estado[id] == true ? 'enabled' : 'disabled'
-  console.log(isDisabled());
   const [sorting, setSorting] = useState([]);
   const [filtering, setFiltering] = useState('');
   const table = useReactTable({
@@ -170,7 +167,7 @@ function TableInfo({ dataHeader, dataBody, routeEdit, viewDetail, entity, toggle
           >
             
              Siguiente &nbsp;
-            <i class="fa-solid fa-arrow-right"></i>
+            <i className="fa-solid fa-arrow-right"></i>
           </a>
         </div>
       </div>
