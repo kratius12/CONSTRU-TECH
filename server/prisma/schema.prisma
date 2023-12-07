@@ -24,7 +24,7 @@ model cliente {
   telefono   String?   @db.VarChar(10)
   tipoDoc    String?   @db.VarChar(50)
   cedula     String    @db.VarChar(10)
-  fecha_nac  DateTime? @db.Date
+  fecha_nac   String?      @db.VarChar(50)
   estado     Int?
   contrasena String?   @db.VarChar(50)
   obras      obras[]
@@ -41,8 +41,8 @@ model compras {
 model compras_detalle {
   id         Int         @id @default(autoincrement())
   idCompra   Int?
+  idCat      Int
   idMat      Int?
-  idCat      Int?
   cantidad   Int?
   Precio     Int?
   subtotal   Int?
@@ -51,17 +51,19 @@ model compras_detalle {
 
   @@index([idCompra], map: "idCompra")
   @@index([idMat], map: "idMat")
+  @@index([idCat], map: "idCat")
 }
 
 model empleado {
   idEmp                 Int                     @id @default(autoincrement())
   nombre                String?                 @db.VarChar(50)
-  apellido              String?                 @db.VarChar(50)
+  apellido              String                  @db.VarChar(50)
   direccion             String?                 @db.VarChar(50)
   estado                Int?
   email                 String?                 @db.VarChar(100)
   telefono              String?                 @db.VarChar(10)
   cedula                String?                 @db.VarChar(10)
+  tipoDoc               String                  @db.VarChar(10)
   empleado_especialidad empleado_especialidad[]
   empleado_obra         empleado_obra[]
 }
@@ -100,6 +102,7 @@ model materiales {
   nombre           String?            @db.VarChar(50)
   idProveedor      Int?
   estado           Int?
+  cantidad         Int?
   idCategoria      Int?
   compras_detalle  compras_detalle[]
   proveedor        proveedor?         @relation(fields: [idProveedor], references: [idProv], onDelete: Restrict, onUpdate: Restrict, map: "materiales_ibfk_1")
@@ -181,7 +184,7 @@ model rol_permiso {
 
 model usuario {
   idUsu      Int     @id @default(autoincrement())
-  correo     String? @db.VarChar(100)
+  correo     String  @db.VarChar(100)
   estado     Int
   contrasena String? @db.VarChar(20)
   idRol      Int?

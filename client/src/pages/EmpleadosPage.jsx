@@ -16,10 +16,6 @@ function EmpleadosPage() {
             accessorKey: 'nombre'
         },
         {
-            header: "Apellido",
-            accessorKey: 'apellido'
-        },
-        {
             header: "Teléfono",
             accessorKey: 'telefono'
         },
