@@ -23,7 +23,7 @@ function ObrasPage() {
 
         },
         {
-            header: "Descripcion",
+            header: "Descripción",
             accessorKey: 'descripcion'
         },
         {
@@ -44,7 +44,7 @@ function ObrasPage() {
             idProperty: 'idCliente'
         },
         {
-            header: "Accion",
+            header: "Acción",
             accessorKey: 'accion',
             idProperty: 'idObra'
         }

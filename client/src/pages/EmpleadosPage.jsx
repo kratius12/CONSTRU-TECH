@@ -20,11 +20,11 @@ function EmpleadosPage() {
             accessorKey: 'apellido'
         },
         {
-            header: "Telefono",
+            header: "Teléfono",
             accessorKey: 'telefono'
         },
         {
-            header: "Cedula",
+            header: "Cédula",
             accessorKey: 'cedula'
         },
         {
@@ -33,7 +33,7 @@ function EmpleadosPage() {
             idProperty: 'idEmp'
         },
         {
-            header: "Accion",
+            header: "Acción",
             accessorKey: 'accion',
             idProperty: 'idEmp'
         }

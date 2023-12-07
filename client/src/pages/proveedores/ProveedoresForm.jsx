@@ -128,7 +128,7 @@ export default function ProveedoresForm() {
                                                 ) : null}
                                             </div>
                                             <div className="col-6 mt-3">
-                                                <input type="text" className="form-control form-control-user" id="email" onChange={handleChange} value={values.email} placeholder="Correo electronico*" />
+                                                <input type="text" className="form-control form-control-user" id="email" onChange={handleChange} value={values.email} placeholder="Correo electrónico*" />
                                                 {errors.email && touched.email ? (
                                                     <div className="alert alert-danger" role="alert">{errors.email}</div>
                                                 ) : null}
