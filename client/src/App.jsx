@@ -19,13 +19,18 @@ import { ProveedorContextProvider } from './context/proveedores/ProveedorProvide
 import { ClientContextProvider } from "./context/ClientesProvider";
 import { CompraContextProvider } from './context/compras/ComprasProvider'
 import { RolContextProvider } from "./context/RolesProvider";
-// import { UsuarioContextProvider } from "./context/UsuariosProvider";
+import { UsuariosContextProvider } from "./context/UsuariosProvider";
+
 import ProveedoresPage from './pages/proveedores/ProveedorPage'
 import ProveedoresForm from "./pages/proveedores/ProveedoresForm";
 import RolesForm from "./pages/RolesForm";
 import RolesPage from "./pages/RolesPage";
+
 import LoginPage from "./pages/LoginPage";"./pages/LoginPage";
-// import UsuariosPage from "./pages/UsuariosPage";
+
+import UsuariosPage from "./pages/UsuariosPage";
+import UsuariosForm from "./pages/UsuariosForm";
+
 
 import ComprasPage from "./pages/compras/Compraspage";
 import ComprasForm from "./pages/compras/ComprasForm";
@@ -110,6 +115,14 @@ function App() {
                     <Route path="/editarRol/:id" element={<RolesForm />} />
                   </Routes>
                 </RolContextProvider>
+                <UsuariosContextProvider>
+                  <Routes>
+                    <Route path="/usuarios" element={<UsuariosPage/>} />
+                    <Route path="/agregarUsuario" element={<UsuariosForm />} />
+                    <Route path="/editarUsuario/:id" element={<UsuariosForm />} />
+                  </Routes>
+                </UsuariosContextProvider> 
+
               </div>
             </div>
           </div>
