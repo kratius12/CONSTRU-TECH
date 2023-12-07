@@ -42,6 +42,7 @@ model compras_detalle {
   id         Int         @id @default(autoincrement())
   idCompra   Int?
   idMat      Int?
+  idCat      Int?
   cantidad   Int?
   Precio     Int?
   subtotal   Int?
@@ -180,6 +181,7 @@ model rol_permiso {
 
 model usuario {
   idUsu      Int     @id @default(autoincrement())
+  email      String? @db.VarChar(100)
   estado     Int
   contrasena String? @db.VarChar(20)
   idRol      Int?

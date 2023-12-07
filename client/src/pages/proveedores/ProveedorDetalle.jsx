@@ -64,7 +64,7 @@ export default function ProveedorDetalle() {
                             <a type="button" href="" className="btn btn-danger w-50" onClick={() => navigate(`/proveedores`)}>
                                 <h4>Regresar</h4>
                             </a>
-                        </div>
+                        </div> 
                     </div>
                 </div>
             </div>
