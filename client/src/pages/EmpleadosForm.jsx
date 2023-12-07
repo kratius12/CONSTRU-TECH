@@ -1,26 +1,69 @@
 import { useEffect, useState } from "react";
-// import  Select  from "react-select";
+import  Select  from "react-select";
 // import makeAnimated from 'react-select/animated';
 import { Form, Formik, Field } from "formik";
-import { useParams, useNavigate } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { useEmpleados } from "../context/EmpleadosProvider";
 import EmpleadoSchema from "../components/ValidatorEmpleado";
 
 
 export default function EmpleadosForm() {
-  //   const [agreed, setAgreed] = useState(false)
+
   const { createEmpleado, getEmpleado, updateEmpleado, especialidades, Especialidades } = useEmpleados()
+  const params = useParams()
+  const navigate = useNavigate()
+  const [key, setKey] = useState(0)
+  const [options, setOptions] = useState([]);
+  const [defaultOptions, setDefaultOptions] = useState([]);  
+  const [selectedEsp, setSelectedEsp] = useState(defaultOptions)
+  const [empleado, setEmpleado] = useState({
+    nombre: "",
+    apellido:"",
+    direccion: "",
+    estado: "",
+    telefono: "",
+    tipoDoc: "",
+    cedula: "",
+    especialidad: []
+  })  
+  const estadoOptions = [
+    {
+      value: 1, label: "Activo",
+    },{
+      value: 0, label: "Inactivo"
+    }
+  ]
   useEffect(() => {
-    Especialidades()
+    const loadEmpleados = async () => {
+      if (params.id) {
+        const empleado = await getEmpleado(params.id)
+        if (empleado) {
+          setEmpleado({
+            nombre: empleado.nombre,
+            apellido: empleado.apellido,
+            direccion: empleado.direccion,
+            estado: empleado.estado,
+            email: empleado.email,
+            telefono: empleado.telefono,
+            tipoDoc: empleado.tipoDoc,
+            cedula: empleado.cedula,
+            especialidad: empleado.empleado_especialidad
+          })
+          const defaultOpts = empleado.empleado_especialidad.map(item => ({value: item.especialidad.id, label:item.especialidad.especialidad}))
+          setDefaultOptions(defaultOpts)
+          setKey(prevKey => prevKey + 1)
+        }
+      }
+    }
+    const fetchData = async () =>{
+      const especialidadesData = await Especialidades()
+      const opciones = especialidadesData.map(item => ({value:item.id, label:item.especialidad}))
+      setOptions(opciones)
+    }
+    fetchData()    
+    loadEmpleados()
   }, [])
 
-  // const options = especialidades.map(item => ({value:item.id, label:item.especialidad}))
-  // const [selectedOption, setSelectedOption] = useState("");
-
-  // const handleClick = (selected) => {
-  //   setSelectedOption(selected.value);
-  //   console.log(selectedOption);
-  // };
   const alertConfirm = (type) => {
     var message = ""
     if (type == "update") {
@@ -46,36 +89,7 @@ export default function EmpleadosForm() {
       }
     })
   }
-  const params = useParams()
-  const navigate = useNavigate()
-  const [empleado, setEmpleado] = useState({
-    nombre: "",
-    direccion: "",
-    estado: "",
-    telefono: "",
-    tipoDoc: "",
-    cedula: "",
-    especialidad: []
-  })
 
-  useEffect(() => {
-    const loadEmpleados = async () => {
-      if (params.id) {
-        const empleado = await getEmpleado(params.id)
-        setEmpleado({
-          nombre: empleado.nombre,
-          direccion: empleado.direccion,
-          estado: empleado.estado,
-          email: empleado.email,
-          telefono: empleado.telefono,
-          tipoDoc: empleado.tipoDoc,
-          cedula: empleado.cedula,
-          especialidad: empleado.especialidad
-        })
-      }
-    }
-    loadEmpleados()
-  }, [getEmpleado, params.id])
 
   return (
     <div className="container">
@@ -86,15 +100,19 @@ export default function EmpleadosForm() {
             validationSchema={EmpleadoSchema}
             onSubmit={async (values) => {
               console.log(values);
+              const empleadoObject = {
+                ...values,
+                especialidad:selectedEsp
+              }
               if (params.id) {
-                await updateEmpleado(params.id, values)
+                await updateEmpleado(params.id, empleadoObject)
                 alertConfirm()
                 setTimeout(
                   navigate("/empleados"),
                   5000
                 )
               } else {
-                await createEmpleado(values)
+                await createEmpleado(empleadoObject)
                 alertConfirm()
                 setTimeout(
                   navigate("/empleados"),
@@ -104,6 +122,7 @@ export default function EmpleadosForm() {
               }
               setEmpleado({
                 nombre: "",
+                apellido: "",
                 direccion: "",
                 estado: "",
                 email: "",
@@ -121,13 +140,19 @@ export default function EmpleadosForm() {
                   <h1 className="h4 text-gray-900 mb-4">{params.id ? "Editar": "Agregar"} empleado</h1>
                   <div className="card-body">
                     <div className="row">
-                      <div className="col-6 mt-3">
+                      <div className="col-md-6 mt-3">
                         <input type="text" className="form-control form-control-user" id="nombre" onChange={handleChange} value={values.nombre} placeholder="Nombres*" />
                         {errors.nombre && touched.nombre ? (
                           <div className="alert alert-danger" role="alert">{errors.nombre}</div>
                         ) : null}
                       </div>
-                      <div className="col-6 mt-3">
+                      <div className="col-md-6 mt-3">
+                        <input type="text" className="form-control form-control-user" id="apellido" onChange={handleChange} value={values.apellido} placeholder="Apellidos*" />
+                        {errors.apellido && touched.apellido ? (
+                          <div className="alert alert-danger" role="alert">{errors.apellido}</div>
+                        ) : null}
+                      </div>                      
+                      <div className="col-md-6 mt-3">
                         <select id="tipoDoc" className="form-select form-control-user" onChange={handleChange} value={values.tipoDoc}>
                           <option value="">Seleccione tipo documento*</option>
                           <option value="CC">Cedula de ciudadania</option>
@@ -138,49 +163,56 @@ export default function EmpleadosForm() {
                           <div className="alert alert-danger" role="alert">{errors.tipoDoc}</div>
                         ) : null}
                       </div>
-                      <div className="col-6 mt-3">
+                      <div className="col-md-6 mt-3">
                         <input type="text" className="form-control form-control-user" id="cedula" onChange={handleChange} value={values.cedula} placeholder="Número de documento*" />
                         {errors.cedula && touched.cedula ? (
                           <div className="alert alert-danger" role="alert">{errors.cedula}</div>
                         ) : null}
                       </div>
-                      <div className="col-6 mt-3">
+                      <div className="col-md-6 mt-3">
                         <input type="text" className="form-control form-control-user" id="telefono" onChange={handleChange} value={values.telefono} placeholder="Número telefonico*" />
                         {errors.telefono && touched.telefono ? (
                           <div className="alert alert-danger" role="alert">{errors.telefono}</div>
                         ) : null}
                       </div>
-                      <div className="col-6 mt-3">
+                      <div className="col-md-6 mt-3">
                         <input type="text" className="form-control form-control-user" id="direccion" onChange={handleChange} value={values.direccion} placeholder="Dirección*" />
                         {errors.direccion && touched.direccion ? (
                           <div className="alert alert-danger" role="alert">{errors.direccion}</div>
                         ) : null}
                       </div>
-                      <div className="col-6 mt-3">
-                        <label>Selecciona especialidades:</label>
-                        <Field
-                          name="especialidad"
-                          as="select"
-                          multiple
-                          className="form-select "
-                        >
-                          {especialidades.map(item => (
-                            <option key={item.id} value={item.id}>
-                              {item.especialidad}
-                            </option>
-                          ))}
-                        </Field>
-                      </div>
-                      <div className="col-6 mt-3">
-                        <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
+                      <div className="col-md-6 mt-3">
+                        {/* <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
                           <option value="">Seleccione estado</option>
                           <option value="1">Activo</option>
                           <option value="0">Inactivo</option>
-                        </select>
+                        </select> */}
+                        <label>Estado</label>
+                        <Select
+                        placeholder={<div>Selecciona estado</div>}
+                        value={values.estado}
+                        name="estado"
+                        options={estadoOptions}
+                        className="basic-multi-select"
+                        classNamePrefix="select"
+                        />
                         {errors.estado && touched.estado ? (
                           <div className="alert alert-danger" role="alert">{errors.estado}</div>
                         ) : null}
                       </div>
+                      <div className="col-md-6 mt-3">
+                        <label>Selecciona especialidades:</label>
+                        <Select
+                          key={key}
+                          defaultValue={defaultOptions}
+                          isMulti
+                          name="especialidad"
+                          options={options}
+                          className="basic-multi-select"
+                          classNamePrefix="select"
+                          onChange={(selectedEsp) => setSelectedEsp(selectedEsp)}
+                        />
+                      </div>                      
                     </div>
                   </div>
                   <div className="card-footer text-center">

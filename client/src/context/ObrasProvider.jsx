@@ -35,18 +35,18 @@ export const ObraContextProvider = ({children}) => {
 
     async function Clientes(){
         const response = await getClientsRequest()
-        console.log(response)
         setClientes(response.data)
+        return response.data
     }
     async function Empleados(){
         const response = await GetEmpleadosRequest()
-        console.log(response)
         setEmpleados(response.data)
+        return response.data
     }
     async function Materiales(){
         const response = await GetMaterialesRequest()
-        console.log(response)
         setMateriales(response.data)
+        return response.data
     }
     const createObra = async (obra) => {
         try {
