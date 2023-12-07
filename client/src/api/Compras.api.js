@@ -20,9 +20,6 @@ export const DeleteCompraRequest = async(idCom)=>{
     return await axios.delete(`http://localhost:4000/compra/${idCom}`)
 }
 
-export const DetalleCompraRequest = async(detalle)=>{
-    return await axios.post(`http://localhost:4000/compra`,detalle)
-}
 
 export const GetDetalleReques = async(idCom)=>{
     return await axios.get(`http://localhost:4000/detalle/${idCom}`)

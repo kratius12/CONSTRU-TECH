@@ -40,6 +40,7 @@ import EspecialidadesForm from "./pages/EspecialidadesForm";
 import CategoriasPage from "./pages/CategoriasPage";
 import CategoriasForm from "./pages/CategoriasForm";
 import Navbar from "./components/Navbar"
+import DetalleCompra from "./pages/compras/DetalleCompra";
 function App() {
   return (
     <>
@@ -104,6 +105,7 @@ function App() {
                   <Routes>
                     <Route path="/compras" element={<ComprasPage />}></Route>
                     <Route path="/agregarCompras" element={<ComprasForm />}></Route>
+                    <Route path="/verDetalle/:id" element={<DetalleCompra />}></Route>
                   </Routes>
                 </CompraContextProvider>
                 <RolContextProvider>

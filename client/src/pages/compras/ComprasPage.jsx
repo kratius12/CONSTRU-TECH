@@ -16,7 +16,7 @@ function ComprasPage() {
 
         }
         else{
-        return <ComprasTable/>
+        return <ComprasTable compras={compras}/>
         }
     }
 

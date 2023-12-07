@@ -5,7 +5,6 @@ import {
     GetCompraRequest,
     GetComprasRequest,
     UpdateCompraRequest,
-    DetalleCompraRequest,
     GetDetalleReques
 } from '../../api/Compras.api'
 import { ComprasContext } from './ComprasContext'
@@ -13,7 +12,7 @@ import { ComprasContext } from './ComprasContext'
 export const useCompras = () => {
     const context = useContext(ComprasContext)
     if (!context) {
-        throw new Error('useCompras must be used within a ComprasProvider')
+        throw new Error('useCompras no está en ComprasProvider')
     }
     return context;
 }
@@ -58,14 +57,7 @@ export const CompraContextProvider = ({ children }) => {
             console.error(error)
         }
     }
-    const createDetalle = async(detalle)=>{
-        try{
-            const response = await DetalleCompraRequest(detalle)
-            console.log(response)
-        }catch(error){
-            console.error(error)
-        }
-    }
+    
     const getDetalle = async(idCom)=>{
         try{
             const response = await GetDetalleReques(idCom)
@@ -75,7 +67,7 @@ export const CompraContextProvider = ({ children }) => {
         }
     }
     return (
-        <ComprasContext.Provider value={{ compras, Compras, deleteCompra, createCompra, updateCompra, getCompra,createDetalle,getDetalle }}
+        <ComprasContext.Provider value={{ compras, Compras, deleteCompra, createCompra, updateCompra, getCompra,getDetalle }}
         >
             {children}
         </ComprasContext.Provider>

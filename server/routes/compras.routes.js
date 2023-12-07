@@ -13,7 +13,6 @@ const prisma = new PrismaClient()
 router.get("/compras", async (req, res) => {
     try {
         const compras = await prisma.compras.findMany({
-
         })
         return res.send(compras)
     } catch (error) {
@@ -21,125 +20,75 @@ router.get("/compras", async (req, res) => {
     }
 })
 
-router.get('/compra', async (req, res) => {
+router.get('/compra/:id', async (req, res) => {
     try {
         const compra = await prisma.compras.findFirst({
             where: {
-                idCom: req.params.id
+                idCom: parseInt(req.params.id)
             }
         })
-        return res.send(compra)
+        const detalles = await prisma.compras_detalle.findMany({
+            where:{
+                idCompra: parseInt(req.params.id)
+            }
+        })
+        const body ={
+            compra: compra,
+            detalles: detalles,
+        }
+        return res.status(200).send(body)
     } catch (error) {
         console.error(error);
     }
 });
-
 const diskstorage = multer.diskStorage({
     destination: path.join(__dirname, '../images'),
-    filename: (req,file,cb)=>{
-        cb(null,Date.now()+'-construtech-'+file.originalname)
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + '-construtech-' + file.originalname)
     }
 })
 
 const fileUpload = multer({
     storage: diskstorage
-}).single('image')
+}).single('imagen');  // Use 'imagen' as the name of the field in the form
 
-
-router.post('/compra',fileUpload,async (req, res) => {
+router.post("/compra", fileUpload, async (req, res) => {
     try {
-        const imagen = fileUpload()
-        const { fecha, idMat, cantidad, Precio } = req.body
-        const date = new Date()
-        const response = await prisma.compras.create({
+        const { detalles, totalCompra, fecha } = req.body;
+
+        // Create a record in the purchases table
+        let date = new Date(fecha)
+        const nuevaCompra = await prisma.compras.create({
             data: {
-                fecha:date,
-                imagen: imagen,
-                total_compra: parseInt(cantidad * Precio),
-            },
-        })
-        // await prisma.compras_detalle.createMany({
-        //     data: {
-        //         idCompra: response.idCom,
-        //         idMat: parseInt(idMat),
-        //         cantidad: parseInt(cantidad),
-        //         Precio: parseInt(Precio),
-        //         subtotal: parseInt(Precio * cantidad)
-        //     }
-        // })
-        console.log(response)
-
-    } catch (error) {
-        console.error(error)
-    }
-})
-
-router.put('/compra', async (req, res) => {
-    try {
-        const { fecha, imagen, total_compra } = req.body
-        const result = await prisma.compras.update({
-            where: {
-                idCom: req.params.id
-            }, data: {
-                fecha: fecha,
-                imagen: imagen,
-                total_compra: total_compra
+                total_compra: totalCompra,
+                imagen: req.file ? req.file.path : null,
+                fecha: date,
             }
-        })
-    } catch (error) {
-        console.error(error)
-    }
-})
+        });
 
-router.delete('/compra', async (req, res) => {
-    try {
-        const response = await prisma.compras.delete({
-            where: {
-                idCom: req.params.id
-            }
-        })
-    } catch (error) {
-        console.error(error)
-    }
-})
+        
+        await Promise.all(detalles.map(async detalle => {
+            const { idCat, idMat, cantidad, precio, subtotal } = req.body;
+            await prisma.compras_detalle.createMany({
+                data: {
+                    cantidad: parseInt(cantidad),
+                    idCompra: nuevaCompra.idCom,
+                    idMat: parseInt(idMat),
+                    idCat: parseInt(idCat),
+                    Precio: parseInt(precio),
+                    subtotal: parseInt(subtotal)
+                }
+            });
+        }));
 
-router.post('/detalle', async (req, res) => {
-    try {
-        const { cantidad, precio } = req.body
-        const subtotal = cantidad * precio
-        const response = await prisma.compras_detalle.createMany({
-            data: {
-                compras: {
-                    connect: {
-                        idCom: req.body.idCom
-                    }
-                },
-                materiales: {
-                    connect: {
-                        idMat: req.body.idMat
-                    }
-                },
-                cantidad: cantidad,
-                subtotal: subtotal,
-                precio: precio
-            }
-        })
-        console.log(response)
+        return res.status(201).send({ message: "Compra creada exitosamente" });
     } catch (error) {
-        console.error(error)
+        console.error(error);
+        return res.status(500).send({ error: "Internal Server Error" });
     }
-})
+});
 
-router.get('/detalle', async (req, res) => {
-    try {
-        const response = await prisma.compras_detalle.findFirst({
-            where: {
-                idCompra: req.params.id
-            }
-        })
-    } catch (error) {
-        console.error(error)
-    }
-})
+
 
 export default router
+

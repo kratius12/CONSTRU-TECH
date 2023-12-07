@@ -42,7 +42,9 @@ model compras_detalle {
   id         Int         @id @default(autoincrement())
   idCompra   Int?
   idMat      Int?
+  idCat      Int?
   cantidad   Int?
+  Precio     Int?
   subtotal   Int?
   compras    compras?    @relation(fields: [idCompra], references: [idCom], onDelete: Restrict, onUpdate: Restrict, map: "compras_detalle_ibfk_1")
   materiales materiales? @relation(fields: [idMat], references: [idMat], onDelete: Restrict, onUpdate: Restrict, map: "compras_detalle_ibfk_2")
@@ -56,6 +58,7 @@ model empleado {
   nombre                String?                 @db.VarChar(50)
   direccion             String?                 @db.VarChar(50)
   estado                Int?
+  email                 String?                 @db.VarChar(100)
   telefono              String?                 @db.VarChar(10)
   cedula                String?                 @db.VarChar(10)
   empleado_especialidad empleado_especialidad[]
@@ -168,6 +171,7 @@ model rol_permiso {
   id      Int      @id @default(autoincrement())
   idRol   Int?
   idPer   Int?
+  tipo    String   @db.VarChar(100)
   rol     rol?     @relation(fields: [idRol], references: [idRol], onDelete: Restrict, onUpdate: Restrict, map: "rol_permiso_ibfk_1")
   permiso permiso? @relation(fields: [idPer], references: [idPer], onDelete: Restrict, onUpdate: Restrict, map: "rol_permiso_ibfk_2")
 
