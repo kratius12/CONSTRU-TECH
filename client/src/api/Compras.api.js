@@ -8,8 +8,8 @@ export const GetCompraRequest = async()=>{
     return await axios.get('http://localhost:4000/compra')
 }
 
-export const CreateCompraRequest = async(compra,detalle)=>{
-    return await axios.post('http://localhost:4000/compra',compra,detalle)
+export const CreateCompraRequest = async(compra)=>{
+    return await axios.post('http://localhost:4000/compra',compra)
 }
 
 export const UpdateCompraRequest = async(idCom,newCom)=>{

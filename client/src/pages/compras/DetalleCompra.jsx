@@ -1,70 +1,50 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from "react-router-dom"
+import { useCompras } from "../../context/compras/ComprasProvider"
+import { useEffect, useState } from "react"
 
-const DetalleCompra = () => {
-  const { id } = useParams();
-  const [compra, setCompra] = useState({});
-  const [detalleCompras, setDetalleCompras] = useState([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const responseCompra = await axios.get(`http://localhost:4000/compra/${id}`);
-        setCompra(responseCompra.data);
+export default function ProveedorDetalle() {
+    const { getCompra, Compras } = useCompras()
+    useEffect(() => {
+        Compras()
+    }, [])
+    const [compra, setCompra] = useState({
+        fecha:"",
+        total_compra:"",
+        imagen:""
+    })
+    const params = useParams()
+    const navigate = useNavigate()
+    useState(() => {
+        const loadCompra = async () => {
+            if (params.id) {
+                const compra = await getCompra(params.id)
+                setCompra({
+                    fecha:compra.fecha,
+                    imagen:compra.imagen,
+                    total_compra:compra.total_compra
+                })
+            }
+        }
+        loadCompra()
+    }), [getCompra, params.id]
 
-        const responseDetalle = await axios.get(`http://localhost:4000/detalle/${id}`);
-        setDetalleCompras(responseDetalle.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+    return (
+        <div className="container">
+            <div className="row">
+                <div className="col-md-12">
+                    <div className="card" id="card">
+                        <h1 >INFORMACIÓN DEL PROVEEDOR</h1>
+                        
+                        <div className="col-md-6">
+                            <a type="button" href="" className="btn btn-danger w-50" onClick={() => navigate(`/proveedores`)}>
+                                <h4>Regresar</h4>
+                            </a>
+                        </div> 
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
 
-    fetchData();
-  }, [id]);
-
-  return (
-    <div>
-      <h2>Detalles de la Compra</h2>
-
-      <div>
-        <strong>ID de Compra:</strong> {compra.idCom}
-      </div>
-      <div>
-        <strong>Fecha:</strong> {compra.fecha}
-      </div>
-      <div>
-        <strong>Imagen:</strong> <img src={`http://localhost:4000/images/${compra.imagen}`} alt="Factura" />
-      </div>
-      <div>
-        <strong>Total de Compra:</strong> {compra.total_compra}
-      </div>
-
-      <h3>Detalle de Compras</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>ID Detalle</th>
-            <th>Material</th>
-            <th>Cantidad</th>
-            <th>Precio</th>
-            <th>Subtotal</th>
-          </tr>
-        </thead>
-        <tbody>
-          {detalleCompras.map((detalle) => (
-            <tr key={detalle.id}>
-              <td>{detalle.id}</td>
-              <td>{detalle.materiales.nombre}</td>
-              <td>{detalle.cantidad}</td>
-              <td>{detalle.precio}</td>
-              <td>{detalle.subtotal}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-};
-
-export default DetalleCompra;
+}

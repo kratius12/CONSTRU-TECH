@@ -16,7 +16,8 @@ export default function ComprasForm() {
   const [compra, setCompra] = useState({
     fecha: '',
     imagen: '',
-    total_compra: ''
+    total_compra: '',
+    detalle: []
   })
   const [detalle, setDetalle] = useState({
     idCompra: '',
@@ -26,20 +27,20 @@ export default function ComprasForm() {
   })
   const [products, setProducts] = useState([
     {
-      category: '',
-      provider: '',
-      unitPrice: 0,
-      quantity: 0,
+      categoria: '',
+      material: '',
+      precio: 0,
+      cantidad: 0,
     },
   ]);
   const addProduct = () => {
     setProducts([
       ...products,
       {
-        category: '',
-        provider: '',
-        unitPrice: 0,
-        quantity: 0,
+        categoria: '',
+        material: '',
+        precio: 0,
+        cantidad: 0,
       },
     ]);
   };
@@ -60,7 +61,7 @@ export default function ComprasForm() {
 
   const calculateSubtotal = () => {
     return products.reduce((total, product) => {
-      return total + product.unitPrice * product.quantity;
+      return total + product.precio * product.cantidad;
     }, 0);
   };
 
@@ -71,7 +72,8 @@ export default function ComprasForm() {
         setCompra({
           fecha: compra.fecha,
           imagen: compra.imagen,
-          total_compra: compra.total_compra
+          total_compra: compra.total_compra,
+          detalle: compra.detalle
         })
       }
       axios.get(`http://localhost:4000/materiales`)
@@ -115,7 +117,7 @@ export default function ComprasForm() {
         <div className="col-md-12">
           <Formik initialValues={compra}
             enableReinitialize={true}
-            validationSchema={comprasSchema}
+            // validationSchema={comprasSchema}
             onSubmit={async (values) => {
               console.log(values);
               await createCompra(values)
@@ -123,16 +125,16 @@ export default function ComprasForm() {
               setCompra({
                 fecha: '',
                 imagen: '',
-                total_compra: ''
+                total_compra: '',
+                detalle: [{
+                  idCat: "",
+                  idMat: "",
+                  cantidad: "",
+                  Precio: "",
+                  subtotal: ""
+                }]
               })
-              await createDetalle(values)
-              setDetalle({
-                idCompra: '',
-                idMat: '',
-                cantidad: '',
-                subtotal: '',
-                precio: ''
-              })
+
             }}
           >
             {({ handleChange, handleSubmit, values, isSubmitting, errors, touched }) => (
@@ -158,83 +160,83 @@ export default function ComprasForm() {
                       </div>
                       <hr className="mt-4" />
 
-                        {products.map((product, index) => (
-        <div key={index} className="row mt-3">
-          <div className="col-md-3">
-            <label>
-              <select
-                className="form-select form-control-user"
-                id={`category-${index}`}
-                value={product.category}
-                onChange={(e) => handleInputChange(index, 'category', e.target.value)}
-              >
-                <option>Seleccione una categoria*</option>
-                {categoria.map((categoriaItem, e) => (
-                  <option key={e} value={categoriaItem.idcat}>{categoriaItem.nombre}</option>
-                ))}
-              </select>
-            </label>
-          </div>
-          <div className="col-md-3">
-            <label>
-              <select
-                className="form-select form-control-user"
-                id={`material-${index}`}
-                value={product.idMat}
-                onChange={(e) => handleInputChange(index, 'idMat', e.target.value)}
-              >
-                <option>Seleccione un material</option>
-                {material.map((materialItem, e) => (
-                  <option key={e} value={materialItem.idcat}>{materialItem.nombre}</option>
-                ))}
-              </select>
-            </label>
-          </div>
-          <div className="col-md-2">
-            <label>
-              Precio unitario
-              <input
-                type="number"
-                className="form-control form-control-user"
-                value={product.unitPrice}
-                onChange={(e) => handleInputChange(index, 'unitPrice', parseFloat(e.target.value))}
-              />
-            </label>
-          </div>
-          <div className="col-md-2">
-            <label>
-              Cantidad
-              <input
-                type="number"
-                className="form-control form-control-user"
-                value={product.quantity}
-                onChange={(e) => handleInputChange(index, 'quantity', parseInt(e.target.value))}
-              />
-            </label>
-          </div>
-          <div className="col-md-2">
-            <label>
-              Subtotal
-              <input
-                disabled
-                type="number"
-                className="form-control form-control-user"
-                value={product.unitPrice * product.quantity}
-                onChange={(e) => handleInputChange(index, 'quantity', parseInt(e.target.value))}
-              />
-            </label>
-          </div>
-          <div className="col-md-1 text-right">
-            <button
-              type="button"
-              className="btn btn-danger"
-              onClick={() => removeProduct(index)}
-            >
-              <i className="fa-solid fa-trash"></i>
-            </button>
-          </div>
-        </div>
-      ))}
+                      {products.map((product, index) => (
+                        <div key={index} className="row mt-3">
+                          <div className="col-md-3">
+                            <label>
+                              <select
+                                className="form-select form-control-user"
+                                id={`categoria-${index}`}
+                                value={product.categoria}
+                                onChange={(e) => handleInputChange(index, 'categoria', e.target.value)}
+                              >
+                                <option>Seleccione una categoria*</option>
+                                {categoria.map((categoriaItem, e) => (
+                                  <option key={e} value={categoriaItem.idcat}>{categoriaItem.nombre}</option>
+                                ))}
+                              </select>
+                            </label>
+                          </div>
+                          <div className="col-md-3">
+                            <label>
+                              <select
+                                className="form-select form-control-user"
+                                id={`material-${index}`}
+                                value={product.idMat}
+                                onChange={(e) => handleInputChange(index, 'idMat', e.target.value)}
+                              >
+                                <option>Seleccione un material</option>
+                                {material.map((materialItem, e) => (
+                                  <option key={e} value={materialItem.idcat}>{materialItem.nombre}</option>
+                                ))}
+                              </select>
+                            </label>
+                          </div>
+                          <div className="col-md-2">
+                            <label>
+                              Precio unitario
+                              <input
+                                type="number"
+                                className="form-control form-control-user"
+                                value={product.unitPrice}
+                                onChange={(e) => handleInputChange(index, 'unitPrice', parseFloat(e.target.value))}
+                              />
+                            </label>
+                          </div>
+                          <div className="col-md-2">
+                            <label>
+                              Cantidad
+                              <input
+                                type="number"
+                                className="form-control form-control-user"
+                                value={product.cantidad}
+                                onChange={(e) => handleInputChange(index, 'cantidad', parseInt(e.target.value))}
+                              />
+                            </label>
+                          </div>
+                          <div className="col-md-2">
+                            <label>
+                              Subtotal
+                              <input
+                                disabled
+                                type="number"
+                                className="form-control form-control-user"
+                                value={product.unitPrice * product.cantidad}
+                                onChange={(e) => handleInputChange(index, 'cantidad', parseInt(e.target.value))}
+                              />
+                            </label>
+                          </div>
+                          <div className="col-md-1 text-right">
+                            <button
+                              type="button"
+                              className="btn btn-danger"
+                              onClick={() => removeProduct(index)}
+                            >
+                              <i className="fa-solid fa-trash"></i>
+                            </button>
+                          </div>
+                        </div>
+                      ))}
                       <div className="col-md-12 my-4">
                         <a id="" onClick={addProduct} className="btn btn-success">Agregar fila <i className="fa fa-plus"></i></a>
                       </div>
