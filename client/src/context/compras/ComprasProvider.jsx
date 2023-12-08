@@ -21,14 +21,12 @@ export const CompraContextProvider = ({ children }) => {
 
     async function Compras() {
         const response = await GetComprasRequest()
-        console.log(response.data)
         setCompras(response.data)
     }
 
     const createCompra = async (compra) => {
         try {
             const response = await CreateCompraRequest(compra)
-            console.log(response)
         } catch (error) {
             console.error(error)
         }
@@ -44,15 +42,13 @@ export const CompraContextProvider = ({ children }) => {
     const deleteCompra = async (idCom) => {
         try {
             const result = await DeleteCompraRequest(idCom)
-            console.log(result);
         } catch (error) {
-            console.log(error)
+            console.error(error)
         }
     }
     const updateCompra = async (idCom, newFields) => {
         try {
             const response = await UpdateCompraRequest(idCom, newFields)
-            console.log(response)
         } catch (error) {
             console.error(error)
         }
@@ -61,7 +57,6 @@ export const CompraContextProvider = ({ children }) => {
     const getDetalle = async(idCom)=>{
         try{
             const response = await GetDetalleReques(idCom)
-            console.log(response)
         }catch(error){
             console.error(error)
         }

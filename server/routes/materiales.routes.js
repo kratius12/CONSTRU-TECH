@@ -37,7 +37,6 @@ router.get("/material/:id", async (req, res) => {
                 idMat: parseInt(req.params.id)
             }
         })
-        console.log(material)
         return res.send(material)
     } catch (error) {
         console.error(error)
@@ -57,7 +56,6 @@ router.post("/materiales", async (req, res) => {
             },
             
         })
-        console.log(result)
     } catch (error) {
         console.error(error)
     }
@@ -79,7 +77,6 @@ router.put("/material/:id", async (req, res) => {
                 idCategoria: idCategoria
             }
         })
-        console.log(response)
     } catch (error) {
         console.error(error)
     }
@@ -107,7 +104,6 @@ router.put("/materialEstado/:id",async(req,res)=>{
                 estado: parseInt(estado)
             }
         })
-        console.log(newEstado)
     }catch(error){
         console.error(error)
     }
