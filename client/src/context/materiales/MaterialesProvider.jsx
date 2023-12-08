@@ -30,14 +30,12 @@ export const MaterialContextProvider = ({children}) => {
     const [materiales, setMateriales] = useState([])
     async function Materiales() {
         const response = await GetMaterialesRequest()
-        console.log(response.data)  
         setMateriales(response.data)          
     }  
 
     const createMaterial = async (material) => {
         try {
             const response = await CreateMaterialRequest(material)
-            console.log(response)
         } catch (error) {
             console.error(error)
         }
@@ -57,7 +55,6 @@ export const MaterialContextProvider = ({children}) => {
         try {
             const response = await DeleteMaterialRequest(idMat)
             setMateriales(materiales.filter(material => material.idMat !== idMat))
-            console.log(response)
         } catch (error) {
             console.error(error)
         }
@@ -66,7 +63,6 @@ export const MaterialContextProvider = ({children}) => {
     const updateMaterial = async (idMat, newfields) =>{
         try {
             const response = await UpdateMaterialRequest(idMat, newfields)
-            console.log(response)
         } catch (error) {
             console.error(error)
         }
@@ -75,7 +71,6 @@ export const MaterialContextProvider = ({children}) => {
     async function getProveedores(){
         try{
             const response = await GetProveedoresRequest()
-            console.log(response.data)
             setProveedores(response.data)
         }catch(error){
             console.error(error)
@@ -85,7 +80,6 @@ export const MaterialContextProvider = ({children}) => {
     async function getCategorias(){
         try{
             const response = await GetCategoriasRequest()
-            console.log(response.data)
             setCategorias(response.data)
         }catch(error){
             console.error(error)

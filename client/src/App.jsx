@@ -1,44 +1,42 @@
 import { Route, Routes } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import ObrasPage from "./pages/ObrasPage";
-import ObrasForm from "./pages/ObrasForm";
+import ObrasPage from "./pages/obras/ObrasPage";
+import ObrasForm from "./pages/obras/ObrasForm";
 import MaterialesPage from "./pages/materiales/MaterialesPage";
-import EmpleadosPage from "./pages/EmpleadosPage";
-import ClientPage from "./pages/ClientPage";
+import EmpleadosPage from "./pages/empleados/EmpleadosPage";
+import ClientPage from "./pages/clientes/ClientPage";
 import MaterialesForm from "./pages/materiales/MaterialesForm";
-import FormTemplate from "./pages/FormTemplate";
-import EmpleadosForm from "./pages/EmpleadosForm";
-import ClientForm from "./pages/ClientForm";
-import Header from "./components/Header";
-import { CategoriaContextProvider } from "./context/CategoriasProvider";
-import { EspecialidadContextProvider } from "./context/EspecialidadesProvider";
+import EmpleadosForm from "./pages/empleados/EmpleadosForm";
+import ClientForm from "./pages/clientes/ClientForm";
+import { CategoriaContextProvider } from "./context/categorias/CategoriasProvider";
+import { EspecialidadContextProvider } from "./context/especialidades/EspecialidadesProvider";
 import { MaterialContextProvider } from "./context/materiales/MaterialesProvider";
-import { ObraContextProvider } from "./context/ObrasProvider";
-import { EmpleadoContextProvider } from "./context/EmpleadosProvider";
+import { ObraContextProvider } from "./context/obras/ObrasProvider";
+import { EmpleadoContextProvider } from "./context/empleados/EmpleadosProvider";
 import { ProveedorContextProvider } from './context/proveedores/ProveedorProvider'
-import { ClientContextProvider } from "./context/ClientesProvider";
+import { ClientContextProvider } from "./context/clientes/ClientesProvider";
 import { CompraContextProvider } from './context/compras/ComprasProvider'
-import { RolContextProvider } from "./context/RolesProvider";
-import { UsuariosContextProvider } from "./context/UsuariosProvider";
+import { RolContextProvider } from "./context/roles/RolesProvider";
+import { UsuariosContextProvider } from "./context/usuarios/UsuariosProvider";
 
 import ProveedoresPage from './pages/proveedores/ProveedorPage'
 import ProveedoresForm from "./pages/proveedores/ProveedoresForm";
-import RolesForm from "./pages/RolesForm";
-import RolesPage from "./pages/RolesPage";
+import RolesForm from "./pages/roles/RolesForm";
+import RolesPage from "./pages/roles/RolesPage";
 
-import LoginPage from "./pages/LoginPage";"./pages/LoginPage";
+import LoginPage from "./pages/usuarios/LoginPage";"./pages/LoginPage";
 
-import UsuariosPage from "./pages/UsuariosPage";
-import UsuariosForm from "./pages/UsuariosForm";
+import UsuariosPage from "./pages/usuarios/UsuariosPage";
+import UsuariosForm from "./pages/usuarios/UsuariosForm";
 
 
 import ComprasPage from "./pages/compras/Compraspage";
 import ComprasForm from "./pages/compras/ComprasForm";
 import Sidebar from "./components/Sidebar";
-import EspecialidadesPage from "./pages/EspecialidadesPage";
-import EspecialidadesForm from "./pages/EspecialidadesForm";
-import CategoriasPage from "./pages/CategoriasPage";
-import CategoriasForm from "./pages/CategoriasForm";
+import EspecialidadesPage from "./pages/especialidades/EspecialidadesPage";
+import EspecialidadesForm from "./pages/especialidades/EspecialidadesForm";
+import CategoriasPage from "./pages/categorias/CategoriasPage";
+import CategoriasForm from "./pages/categorias/CategoriasForm";
 import Navbar from "./components/Navbar"
 import DetalleCompra from "./pages/compras/DetalleCompra";
 function App() {
