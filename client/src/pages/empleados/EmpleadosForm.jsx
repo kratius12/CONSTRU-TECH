@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import  Select  from "react-select";
+import Select from "react-select";
 // import makeAnimated from 'react-select/animated';
 import { Form, Formik, Field } from "formik";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
@@ -14,22 +14,22 @@ export default function EmpleadosForm() {
   const navigate = useNavigate()
   const [key, setKey] = useState(0)
   const [options, setOptions] = useState([]);
-  const [defaultOptions, setDefaultOptions] = useState([]);  
+  const [defaultOptions, setDefaultOptions] = useState([]);
   const [selectedEsp, setSelectedEsp] = useState(defaultOptions)
   const [empleado, setEmpleado] = useState({
     nombre: "",
-    apellido:"",
+    apellido: "",
     direccion: "",
     estado: "",
     telefono: "",
     tipoDoc: "",
     cedula: "",
     especialidad: []
-  })  
+  })
   const estadoOptions = [
     {
       value: 1, label: "Activo",
-    },{
+    }, {
       value: 0, label: "Inactivo"
     }
   ]
@@ -49,18 +49,18 @@ export default function EmpleadosForm() {
             cedula: empleado.cedula,
             especialidad: empleado.empleado_especialidad
           })
-          const defaultOpts = empleado.empleado_especialidad.map(item => ({value: item.especialidad.id, label:item.especialidad.especialidad}))
+          const defaultOpts = empleado.empleado_especialidad.map(item => ({ value: item.especialidad.id, label: item.especialidad.especialidad }))
           setDefaultOptions(defaultOpts)
           setKey(prevKey => prevKey + 1)
         }
       }
     }
-    const fetchData = async () =>{
+    const fetchData = async () => {
       const especialidadesData = await Especialidades()
-      const opciones = especialidadesData.map(item => ({value:item.id, label:item.especialidad}))
+      const opciones = especialidadesData.map(item => ({ value: item.id, label: item.especialidad }))
       setOptions(opciones)
     }
-    fetchData()    
+    fetchData()
     loadEmpleados()
   }, [])
 
@@ -102,7 +102,7 @@ export default function EmpleadosForm() {
               console.log(values);
               const empleadoObject = {
                 ...values,
-                especialidad:selectedEsp
+                especialidad: selectedEsp
               }
               if (params.id) {
                 await updateEmpleado(params.id, empleadoObject)
@@ -137,7 +137,7 @@ export default function EmpleadosForm() {
               <Form onSubmit={handleSubmit} className="user">
                 <div className="card text-center w-100">
                   <br />
-                  <h1 className="h4 text-gray-900 mb-4">{params.id ? "Editar": "Agregar"} empleado</h1>
+                  <h1 className="h4 text-gray-900 mb-4">{params.id ? "Editar" : "Agregar"} empleado</h1>
                   <div className="card-body">
                     <div className="row">
                       <div className="col-md-6 mt-3">
@@ -151,7 +151,7 @@ export default function EmpleadosForm() {
                         {errors.apellido && touched.apellido ? (
                           <div className="alert alert-danger" role="alert">{errors.apellido}</div>
                         ) : null}
-                      </div>                      
+                      </div>
                       <div className="col-md-6 mt-3">
                         <select id="tipoDoc" className="form-select form-control-user" onChange={handleChange} value={values.tipoDoc}>
                           <option value="">Seleccione tipo documento*</option>
@@ -189,12 +189,12 @@ export default function EmpleadosForm() {
                         </select> */}
                         <label>Estado</label>
                         <Select
-                        placeholder={<div>Selecciona estado</div>}
-                        value={values.estado}
-                        name="estado"
-                        options={estadoOptions}
-                        className="basic-multi-select"
-                        classNamePrefix="select"
+                          placeholder={<div>Selecciona estado</div>}
+                          value={values.estado}
+                          name="estado"
+                          options={estadoOptions}
+                          className="basic-multi-select"
+                          classNamePrefix="select"
                         />
                         {errors.estado && touched.estado ? (
                           <div className="alert alert-danger" role="alert">{errors.estado}</div>
@@ -212,14 +212,14 @@ export default function EmpleadosForm() {
                           classNamePrefix="select"
                           onChange={(selectedEsp) => setSelectedEsp(selectedEsp)}
                         />
-                      </div>                      
+                      </div>
                     </div>
                   </div>
                   <div className="card-footer text-center">
                     <div className="row">
                       <div className="col-md-6">
-                      <button type="submit" disabled={isSubmitting} className="btn btn-primary btn-icon-split w-50">
-                          <span className="icon text-white-50">
+                        <button type="submit" disabled={isSubmitting} className="btn btn-primary btn-icon-split w-50">
+                          <span className="text-white-50">
                             <i className="fas fa-plus"></i>
                           </span>
                           <span className="text">{params.id ? "Editar" : "Agregar"}</span>
@@ -227,8 +227,8 @@ export default function EmpleadosForm() {
                       </div>
                       <div className="col-md-6">
                         <a type="button" href="" className="btn btn-danger btn-icon-split w-50" onClick={() => navigate(`/empleados`)}>
-                          <span className="icon text-white-50">
-                            <i className="fas fa-trash"></i>
+                          <span className="text-white-50">
+                            <i className="fa-solid fa-x"></i>
                           </span>
                           <span className="text">Cancelar</span>
                         </a>

@@ -81,7 +81,7 @@ export default function EspecialidadesForm() {
                     <div className="row">
                       <div className="col-md-6">
                         <button type="submit" disabled={isSubmitting} className="btn btn-primary btn-icon-split w-50">
-                          <span className="icon text-white-50">
+                          <span className="text-white-50">
                             <i className="fas fa-plus"></i>
                           </span>
                           <span className="text">{params.id ? "Editar" : "Agregar"}</span>
@@ -89,8 +89,8 @@ export default function EspecialidadesForm() {
                       </div>
                       <div className="col-md-6">
                         <a type="button" href="" className="btn btn-danger btn-icon-split w-50" onClick={() => navigate(`/especialidades`)}>
-                          <span className="icon text-white-50">
-                            <i className="fas fa-trash"></i>
+                          <span className="text-white-50">
+                            <i className="fa-solid fa-x"></i>
                           </span>
                           <span className="text">Cancelar</span>
                         </a>
