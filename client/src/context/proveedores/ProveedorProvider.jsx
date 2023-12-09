@@ -33,7 +33,6 @@ export const ProveedorContextProvider = ({ children }) => {
     const createProveedor = async (proveedor) => {
         try {
             const response = await CreateProveedorRequest(proveedor)
-            console.log(response)
         } catch (error) {
             console.error(error)
         }
@@ -52,7 +51,6 @@ export const ProveedorContextProvider = ({ children }) => {
         try {
             const response = await DeleteProveedorRequest(idProv)
             setProveedores(proveedores.filter(proveedor => proveedor.idProv !== idProv))
-            console.log(response)
         } catch (error) {
             console.error(error)
         }
@@ -61,14 +59,12 @@ export const ProveedorContextProvider = ({ children }) => {
     const updateProveedor = async (idProv, newfields) => {
         try {
             const response = await UpdateProveedorRequest(idProv, newfields)
-            console.log(response)
         } catch (error) {
             console.error(error)
         }
     }
     const toggleStado = async (idProv, estado) => {
         try {
-            // const empleadoFound = empleados.find((empleado) => empleado.idEmp === idEmp)
             if (estado == 1) {
                 estado = 0
             } else {

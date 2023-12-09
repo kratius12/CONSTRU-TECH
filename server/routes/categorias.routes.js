@@ -83,5 +83,22 @@ router.delete("/categoria/:id", async (req, res) => {
     }
 })
 
+router.put("/estadoCategoria/:id",async(req,res)=>{
+    try{
+        const {estado} = req.body
+        const categor = req.params.id
+        const newEstado = await prisma.categoria.update({
+            where:{
+                idcat: parseInt(categor)
+            },data:{
+                estado: parseInt(estado)
+            }
+        })
+        console.log(newEstado)
+    }catch(error){
+        console.error(error)
+    }
+})
+
 
 export default router

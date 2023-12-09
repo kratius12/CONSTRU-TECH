@@ -30,7 +30,12 @@ router.get("/empleado/:id", async (req, res) =>{
                 idEmp:parseInt(req.params.id)
             },
             include:{
-                empleado_especialidad:true
+                empleado_especialidad:{
+                    select:{
+                        id:true,
+                        especialidad:true
+                    }
+                }
             }
         })
         console.log(result);
@@ -43,7 +48,7 @@ router.get("/empleado/:id", async (req, res) =>{
 
 router.post("/empleados", async (req, res) => {
     try {
-        const {nombre, direccion, estado,  telefono, tipoDoc, cedula, especialidad
+        const {nombre, apellido, direccion, estado,  telefono, tipoDoc, cedula, especialidad
         } = req.body
         const result = await prisma.empleado.create({
             data:{
@@ -60,7 +65,7 @@ router.post("/empleados", async (req, res) => {
             await prisma.empleado_especialidad.create({
                 data:{
                     idEmp:result.idEmp,
-                    idEsp:parseInt(idEsp)
+                    idEsp:parseInt(idEsp.value)
                 }
             })
         }))
@@ -72,7 +77,7 @@ router.post("/empleados", async (req, res) => {
 
 router.put("/empleado/:id", async (req, res) => {
     try {
-        const {nombre, direccion, estado, telefono, tipoDoc, cedula} = req.body
+        const {nombre, apellido, direccion, estado, telefono, tipoDoc, cedula, especialidad} = req.body
         const result = await prisma.empleado.update({
             where:{
                 idEmp:parseInt(req.params.id)
@@ -86,8 +91,25 @@ router.put("/empleado/:id", async (req, res) => {
                 estado:parseInt(estado)
             }
         })
+        if (result) {
+            const result2 = await prisma.empleado_especialidad.deleteMany({
+                where:{
+                    idEmp:parseInt(req.params.id)
+                }
+            })
+            await Promise.all(especialidad.map(async (idEsp) => {
+                await prisma.empleado_especialidad.create({
+                    data:{
+                        idEmp:parseInt(req.params.id),
+                        idEsp:parseInt(idEsp.value)
+                    }
+                })
+            }))
+            res.status(200).json(result)            
+        }else{
+            console.log("Ha ocurrido un error...");
+        }
 
-        res.status(200).json(result)
     } catch (error) {
         console.log(error);
         return res.status(500).json({message: error.message})
@@ -126,11 +148,9 @@ router.get("/empleadosEsp", async (req, res) => {
             }
         })   
         res.json(result)
-        console.log(result);
-            
-        } catch (error) {
-            return res.status(500).json({message: error.message})
-        }
+    } catch (error) {
+        return res.status(500).json({message: error.message})
+    }
 })
 
 router.put("/empleadoStatus/:id", async (req, res) => {

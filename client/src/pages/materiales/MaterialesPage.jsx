@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMateriales } from "../../context/materiales/MaterialesProvider";
 import MaterialTable from "../../components/materiales/MaterialesTable";
@@ -7,7 +7,7 @@ function MaterialesPage() {
 
     const dataHeader = [
         {
-            header: "#",
+            header: "ID",
             accessorKey: 'idMat'
 
         },
@@ -20,7 +20,7 @@ function MaterialesPage() {
         //     accessorKey: 'cantidad'
         // },
         {
-            header: "Categoria",
+            header: "Categoría",
             accessorKey: 'categoria.nombre',
         }, {
             header: "Proveedor",
@@ -38,6 +38,7 @@ function MaterialesPage() {
             idProperty: "idMat"
         }
     ]
+    const [tableStatus, setTableStatus] = useState(0)
     const handleChangeStatus = (newStatus) => {
         setTableStatus(newStatus)
     }
@@ -54,7 +55,8 @@ function MaterialesPage() {
 
         }
         else {
-            return <TableInfo dataHeader={dataHeader} dataBody={materiales} routeEdit={"editarMaterial"}  toggleApi={toggleMaterialEstado} getApi={getMaterial} entity={"material"} onChangeStatus={handleChangeStatus} />
+            return <TableInfo dataHeader={dataHeader} dataBody={materiales} routeEdit={"editarMaterial"}  viewDetail
+            toggleApi={toggleMaterialEstado} getApi={getMaterial} entity={"material"} onChangeStatus={handleChangeStatus} />
         }
     }
     return (

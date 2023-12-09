@@ -16,7 +16,8 @@ export default function ComprasForm() {
   const [compra, setCompra] = useState({
     fecha: '',
     imagen: '',
-    total_compra: ''
+    total_compra: '',
+    detalle: []
   })
   const [detalle, setDetalle] = useState({
     idCompra: '',
@@ -24,11 +25,46 @@ export default function ComprasForm() {
     cantidad: '',
     subtotal: ''
   })
-
+  const [products, setProducts] = useState([
+    {
+      categoria: '',
+      material: '',
+      precio: 0,
+      cantidad: 0,
+    },
+  ]);
+  const addProduct = () => {
+    setProducts([
+      ...products,
+      {
+        categoria: '',
+        material: '',
+        precio: 0,
+        cantidad: 0,
+      },
+    ]);
+  };
+  const removeProduct = (index) => {
+    const updatedProducts = [...products];
+    updatedProducts.splice(index, 1);
+    setProducts(updatedProducts);
+  };
   const [material, setMaterial] = useState([])
   const [categoria, setCategoria] = useState([])
   const [materialSeleccionado, setMaterialSeleccionado] = useState('')
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('')
+  const handleInputChange = (index, key, value) => {
+    const updatedProducts = [...products];
+    updatedProducts[index][key] = value;
+    setProducts(updatedProducts);
+  };
+
+  const calculateSubtotal = () => {
+    return products.reduce((total, product) => {
+      return total + product.precio * product.cantidad;
+    }, 0);
+  };
+
   useEffect(() => {
     const loadCompras = async () => {
       if (params.id) {
@@ -36,7 +72,8 @@ export default function ComprasForm() {
         setCompra({
           fecha: compra.fecha,
           imagen: compra.imagen,
-          total_compra: compra.total_compra
+          total_compra: compra.total_compra,
+          detalle: compra.detalle
         })
       }
       axios.get(`http://localhost:4000/materiales`)
@@ -72,6 +109,7 @@ export default function ComprasForm() {
     }
     loadDetalle()
   }, [getDetalle, params.id]
+
   )
   return (
     <div className="container">
@@ -79,7 +117,7 @@ export default function ComprasForm() {
         <div className="col-md-12">
           <Formik initialValues={compra}
             enableReinitialize={true}
-            validationSchema={comprasSchema}
+            // validationSchema={comprasSchema}
             onSubmit={async (values) => {
               console.log(values);
               await createCompra(values)
@@ -87,16 +125,16 @@ export default function ComprasForm() {
               setCompra({
                 fecha: '',
                 imagen: '',
-                total_compra: ''
+                total_compra: '',
+                detalle: [{
+                  idCat: "",
+                  idMat: "",
+                  cantidad: "",
+                  Precio: "",
+                  subtotal: ""
+                }]
               })
-              await createDetalle(values)
-              setDetalle({
-                idCompra: '',
-                idMat: '',
-                cantidad: '',
-                subtotal: '',
-                precio: ''
-              })
+
             }}
           >
             {({ handleChange, handleSubmit, values, isSubmitting, errors, touched }) => (
@@ -122,51 +160,94 @@ export default function ComprasForm() {
                       </div>
                       <hr className="mt-4" />
 
-                      <div className="col-3 mt-3">
-                        <select className="form-select form-control-user" id="idCategoria" value={values.idCategoria = categoriaSeleccionada} onChange={(e) => { setCategoriaSeleccionada(e.target.value) }}>
-                          <option >Seleccione una categoria*</option>
-                          {categoria.map((categoria, e) => (
-                            <option key={e} value={categoria.idcat}>{categoria.nombre}</option>
-                          ))}
-                        </select>
-
-                        {errors.categoria && touched.categoria ? (
-                          <div className="alert alert-danger" role="alert">{errors.categoria}</div>
-                        ) : null}
-                      </div>
-                      <div className="col-3 mt-3">
-                        <select className="form-select form-control-user" id="idCategoria" value={values.idMat = materialSeleccionado} onChange={(e) => { setMaterialSeleccionado(e.target.value) }}>
-                          <option >Seleccione un material</option>
-                          {material.map((material, e) => (
-                            <option key={e} value={material.idcat}>{material.nombre}</option>
-                          ))}
-                        </select>
-                        {errors.estado && touched.estado ? (
-                          <div className="alert alert-danger" role="alert">{errors.estado}</div>
-                        ) : null}
-                      </div>
-                      <div className="col-3 mt-3">
-                        <input type="text" className="form-control form-control-user" id="subtotal" onChange={handleChange} value={values.subtotal} placeholder="Cantidad*" />
-                        {errors.subtotal && touched.subtotal ? (
-                          <div className="alert alert-danger" role="alert">{errors.subtotal}</div>
-                        ) : null}
-                      </div>
-                      <div className="col-3 mt-3">
-                        <input type="text" className="form-control form-control-user" id="precio" onChange={handleChange} value={values.precio} placeholder="Valor unitario*" />
-                        {errors.precio && touched.precio ? (
-                          <div className="alert alert-danger" role="alert">{errors.precio}</div>
-                        ) : null}
-                      </div>
+                      {products.map((product, index) => (
+                        <div key={index} className="row mt-3">
+                          <div className="col-md-3">
+                            <label>
+                              <select
+                                className="form-select form-control-user"
+                                id={`categoria-${index}`}
+                                value={product.categoria}
+                                onChange={(e) => handleInputChange(index, 'categoria', e.target.value)}
+                              >
+                                <option>Seleccione una categoria*</option>
+                                {categoria.map((categoriaItem, e) => (
+                                  <option key={e} value={categoriaItem.idcat}>{categoriaItem.nombre}</option>
+                                ))}
+                              </select>
+                            </label>
+                          </div>
+                          <div className="col-md-3">
+                            <label>
+                              <select
+                                className="form-select form-control-user"
+                                id={`material-${index}`}
+                                value={product.idMat}
+                                onChange={(e) => handleInputChange(index, 'idMat', e.target.value)}
+                              >
+                                <option>Seleccione un material</option>
+                                {material.map((materialItem, e) => (
+                                  <option key={e} value={materialItem.idcat}>{materialItem.nombre}</option>
+                                ))}
+                              </select>
+                            </label>
+                          </div>
+                          <div className="col-md-2">
+                            <label>
+                              Precio unitario
+                              <input
+                                type="number"
+                                className="form-control form-control-user"
+                                value={product.unitPrice}
+                                onChange={(e) => handleInputChange(index, 'unitPrice', parseFloat(e.target.value))}
+                              />
+                            </label>
+                          </div>
+                          <div className="col-md-2">
+                            <label>
+                              Cantidad
+                              <input
+                                type="number"
+                                className="form-control form-control-user"
+                                value={product.cantidad}
+                                onChange={(e) => handleInputChange(index, 'cantidad', parseInt(e.target.value))}
+                              />
+                            </label>
+                          </div>
+                          <div className="col-md-2">
+                            <label>
+                              Subtotal
+                              <input
+                                disabled
+                                type="number"
+                                className="form-control form-control-user"
+                                value={product.unitPrice * product.cantidad}
+                                onChange={(e) => handleInputChange(index, 'cantidad', parseInt(e.target.value))}
+                              />
+                            </label>
+                          </div>
+                          <div className="col-md-1 text-right">
+                            <button
+                              type="button"
+                              className="btn btn-danger"
+                              onClick={() => removeProduct(index)}
+                            >
+                              <i className="fa-solid fa-trash"></i>
+                            </button>
+                          </div>
+                        </div>
+                      ))}
                       <div className="col-md-12 my-4">
-                        <button id="" className="btn btn-success duplicate">Agregar fila <i className="fa fa-plus"></i></button>
+                        <a id="" onClick={addProduct} className="btn btn-success">Agregar fila <i className="fa fa-plus"></i></a>
                       </div>
+                      <p>Total:{calculateSubtotal()}</p>
                     </div>
                   </div>
                   <div className="card-footer text-center">
                     <div className="row">
                       <div className="col-md-6">
                         <button type="submit" disabled={isSubmitting} className="btn btn-primary btn-icon-split w-50">
-                          <span className="icon text-white-50">
+                          <span className="text-white-50">
                             <i className="fas fa-plus"></i>
                           </span>
                           <span className="text">{params.id ? "Editar" : "Agregar"}</span>
@@ -174,8 +255,8 @@ export default function ComprasForm() {
                       </div>
                       <div className="col-md-6">
                         <a type="button" href="" className="btn btn-danger btn-icon-split w-50" onClick={() => navigate(`/compras`)}>
-                          <span className="icon text-white-50">
-                            <i className="fas fa-trash"></i>
+                          <span className="text-white-50">
+                            <i className="fa-solid fa-x"></i>
                           </span>
                           <span className="text">Cancelar</span>
                         </a>

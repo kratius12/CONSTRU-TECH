@@ -5,7 +5,6 @@ import {
     GetCompraRequest,
     GetComprasRequest,
     UpdateCompraRequest,
-    DetalleCompraRequest,
     GetDetalleReques
 } from '../../api/Compras.api'
 import { ComprasContext } from './ComprasContext'
@@ -13,7 +12,7 @@ import { ComprasContext } from './ComprasContext'
 export const useCompras = () => {
     const context = useContext(ComprasContext)
     if (!context) {
-        throw new Error('useCompras must be used within a ComprasProvider')
+        throw new Error('useCompras no está en ComprasProvider')
     }
     return context;
 }
@@ -22,14 +21,12 @@ export const CompraContextProvider = ({ children }) => {
 
     async function Compras() {
         const response = await GetComprasRequest()
-        console.log(response.data)
         setCompras(response.data)
     }
 
     const createCompra = async (compra) => {
         try {
             const response = await CreateCompraRequest(compra)
-            console.log(response)
         } catch (error) {
             console.error(error)
         }
@@ -45,37 +42,27 @@ export const CompraContextProvider = ({ children }) => {
     const deleteCompra = async (idCom) => {
         try {
             const result = await DeleteCompraRequest(idCom)
-            console.log(result);
         } catch (error) {
-            console.log(error)
+            console.error(error)
         }
     }
     const updateCompra = async (idCom, newFields) => {
         try {
             const response = await UpdateCompraRequest(idCom, newFields)
-            console.log(response)
         } catch (error) {
             console.error(error)
         }
     }
-    const createDetalle = async(detalle)=>{
-        try{
-            const response = await DetalleCompraRequest(detalle)
-            console.log(response)
-        }catch(error){
-            console.error(error)
-        }
-    }
+    
     const getDetalle = async(idCom)=>{
         try{
             const response = await GetDetalleReques(idCom)
-            console.log(response)
         }catch(error){
             console.error(error)
         }
     }
     return (
-        <ComprasContext.Provider value={{ compras, Compras, deleteCompra, createCompra, updateCompra, getCompra,createDetalle,getDetalle }}
+        <ComprasContext.Provider value={{ compras, Compras, deleteCompra, createCompra, updateCompra, getCompra,getDetalle }}
         >
             {children}
         </ComprasContext.Provider>

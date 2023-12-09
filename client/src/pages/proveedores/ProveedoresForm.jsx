@@ -65,6 +65,10 @@ export default function ProveedoresForm() {
         }
         loadProveedores()
     }, [getProveedor, params.id])
+    const [placeholders, setPlaceholders] = useState({
+        nit: "Número de identificación*",
+        nombre: "Nombre*",
+    });
     const [tipo, setOpcionSeleccionada] = useState(''); // Estado para la opción seleccionada
     const [mostrarContacto, setMostrarContacto] = useState(false);
     const handleSelectChange = (event) => {
@@ -72,9 +76,17 @@ export default function ProveedoresForm() {
         setOpcionSeleccionada(seleccion);
         if (seleccion === 'Juridico') {
             setMostrarContacto(true)
-        } else (
+            setPlaceholders({
+                nit: "Nit*",
+                nombre: "Razón social*",
+            });
+        } else {
             setMostrarContacto(false)
-        )
+            setPlaceholders({
+                nit: "Número de identificación*",
+                nombre: "Nombre*",
+            });
+        }
     }
     return (
         <div className="container">
@@ -116,19 +128,33 @@ export default function ProveedoresForm() {
                                     <div className="card-body">
                                         <div className="row">
                                             <div className="col-6 mt-3">
-                                                <input type="text" className="form-control form-control-user" id="nombre" onChange={handleChange} value={values.nombre} placeholder="Nombre*" />
-                                                {errors.nombre && touched.nombre ? (
-                                                    <div className="alert alert-danger" role="alert">{errors.nombre}</div>
+                                                <select  id="tipo" className="form-select form-control-user" onChange={handleSelectChange} value={values.tipo = tipo}
+                                                 
+                                                >
+                                                    <option value="0">Seleccione el tipo de proveedor*</option>
+                                                    <option value="Natural">Natural</option>
+                                                    <option value="Juridico">Juridico</option>
+                                                </select>
+                                                {errors.tipo && touched.tipo ? (
+                                                    <div className="alert alert-danger" role="alert">{errors.tipo}</div>
                                                 ) : null}
+                                                
                                             </div>
                                             <div className="col-6 mt-3">
-                                                <input type="text" className="form-control form-control-user" id="nit" onChange={handleChange} value={values.nit} placeholder="Número de identificación*" />
+                                                <input type="text" className="form-control form-control-user" id="nit" onChange={handleChange} value={values.nit}  placeholder={placeholders.nit} />
                                                 {errors.nit && touched.nit ? (
                                                     <div className="alert alert-danger" role="alert">{errors.nit}</div>
                                                 ) : null}
                                             </div>
                                             <div className="col-6 mt-3">
-                                                <input type="text" className="form-control form-control-user" id="email" onChange={handleChange} value={values.email} placeholder="Correo electronico*" />
+                                                <input type="text" className="form-control form-control-user" id="nombre" onChange={handleChange} value={values.nombre}  placeholder={placeholders.nombre} />
+                                                {errors.nombre && touched.nombre ? (
+                                                    <div className="alert alert-danger" role="alert">{errors.nombre}</div>
+                                                ) : null}
+                                            </div>
+
+                                            <div className="col-6 mt-3">
+                                                <input type="text" className="form-control form-control-user" id="email" onChange={handleChange} value={values.email} placeholder="Correo electrónico*" />
                                                 {errors.email && touched.email ? (
                                                     <div className="alert alert-danger" role="alert">{errors.email}</div>
                                                 ) : null}
@@ -146,7 +172,7 @@ export default function ProveedoresForm() {
                                                 ) : null}
                                             </div>
                                             <div className="col-6 mt-3">
-                                                <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
+                                                <select id="estado" name="estado" defaultValue="1" className="form-select form-control-user" onChange={handleChange}  >
                                                     <option value="">Seleccione estado</option>
                                                     <option value="1">Activo</option>
                                                     <option value="0">Inactivo</option>
@@ -155,16 +181,7 @@ export default function ProveedoresForm() {
                                                     <div className="alert alert-danger" role="alert">{errors.estado}</div>
                                                 ) : null}
                                             </div>
-                                            <div className="col-6 mt-3">
-                                                <select id="tipo" className="form-select form-control-user" onChange={handleSelectChange} value={values.tipo = tipo}>
-                                                    <option value="">Seleccione el tipo de proveedor*</option>
-                                                    <option value="Natural">Natural</option>
-                                                    <option value="Juridico">Juridico</option>
-                                                </select>
-                                                {errors.tipo && touched.tipo ? (
-                                                    <div className="alert alert-danger" role="alert">{errors.tipo}</div>
-                                                ) : null}
-                                            </div>
+
                                         </div>
                                     </div>
                                     {mostrarContacto && (
@@ -196,7 +213,7 @@ export default function ProveedoresForm() {
                                         <div className="row">
                                             <div className="col-md-6">
                                                 <button type="submit" disabled={isSubmitting} className="btn btn-primary btn-icon-split w-50">
-                                                    <span className="icon text-white-50">
+                                                    <span className="text-white-50">
                                                         <i className="fas fa-plus"></i>
                                                     </span>
                                                     <span className="text">{params.id ? "Editar" : "Agregar"}</span>
@@ -204,8 +221,8 @@ export default function ProveedoresForm() {
                                             </div>
                                             <div className="col-md-6">
                                                 <a type="button" href="" className="btn btn-danger btn-icon-split w-50" onClick={() => navigate(`/proveedores`)}>
-                                                    <span className="icon text-white-50">
-                                                        <i className="fas fa-trash"></i>
+                                                    <span className="text-white-50">
+                                                        <i className="fa-solid fa-x"></i>
                                                     </span>
                                                     <span className="text">Cancelar</span>
                                                 </a>

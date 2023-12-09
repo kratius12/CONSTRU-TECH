@@ -15,16 +15,16 @@ function ProveedoresPage() {
             accessorKey: 'nombre'
         },
         {
-            header: "Telefono",
+            header: "Teléfono",
             accessorKey: 'telefono'
         },
         {
-            header: "Nombre contacto",
-            accessorKey: 'nombreContacto'
+            header: "Correo electronico",
+            accessorKey: 'email'
         },
         {
-            header: "Telefono contacto",
-            accessorKey: 'telefonoContacto'
+            header: "Tipo de proveedor",
+            accessorKey: 'tipo'
         },
         {
             header: "Estado",

@@ -10,17 +10,32 @@ const ObraSchema = Yup.object().shape({
    .max(100, 'La descripcion no puede contener mas de 100 caracteres')
    .required('La descripcion es requerida')
    .trim(),
-  cliente: Yup.string()
-   .required('El cliente es requerido'),
+   cliente: Yup.object().shape({
+    value: Yup.string(),
+    label: Yup.string()
+  }).nullable().required('El cliente es requerido, seleccione uno'),
   fechaini: Yup.date()
-   .min(minFecha, "La fecha no puede ser anterior al dia de hoy")
+  //  .min(minFecha, "La fecha de inicio no puede ser anterior al dia de hoy")
+   .max(Yup.ref('fechafin'), "La fecha de inicio no puede ser superior a la fecha final")
    .required('La fecha de inicio es requerida'),
-  empleados: Yup.string()
+  fechafin: Yup.date()
+  .min(Yup.ref('fechaini'), "La fecha final no puede ser anterior a la fecha de inicio"),
+  empleados: Yup.array()
    .required('El empleado es requerido'),
-//   material: Yup.string()
-//    .required('El material es requerido, seleccione al menos uno'),
-//   estado: Yup.string()
-//    .required('El estado es requerido')
+  material: Yup.array()
+  .min(1, 'Selecciona al menos un material')
+  .of(
+    Yup.object().shape({
+      value: Yup.string().required(),
+      label: Yup.string().required(),
+    })
+  )
+  .nullable()
+  .required('El material es requerido, selecciona al menos uno'),
+  estado:  Yup.object().shape({
+    value: Yup.string(),
+    label: Yup.string()
+  }).nullable().required('El estado es requerido, seleccione uno')
 });
 
 export default ObraSchema

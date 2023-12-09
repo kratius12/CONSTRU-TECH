@@ -24,7 +24,7 @@ model cliente {
   telefono   String?   @db.VarChar(10)
   tipoDoc    String?   @db.VarChar(50)
   cedula     String    @db.VarChar(10)
-  fecha_nac  DateTime? @db.Date
+  fecha_nac   String?      @db.VarChar(50)
   estado     Int?
   contrasena String?   @db.VarChar(50)
   obras      obras[]
@@ -41,23 +41,29 @@ model compras {
 model compras_detalle {
   id         Int         @id @default(autoincrement())
   idCompra   Int?
+  idCat      Int
   idMat      Int?
   cantidad   Int?
+  Precio     Int?
   subtotal   Int?
   compras    compras?    @relation(fields: [idCompra], references: [idCom], onDelete: Restrict, onUpdate: Restrict, map: "compras_detalle_ibfk_1")
   materiales materiales? @relation(fields: [idMat], references: [idMat], onDelete: Restrict, onUpdate: Restrict, map: "compras_detalle_ibfk_2")
 
   @@index([idCompra], map: "idCompra")
   @@index([idMat], map: "idMat")
+  @@index([idCat], map: "idCat")
 }
 
 model empleado {
   idEmp                 Int                     @id @default(autoincrement())
   nombre                String?                 @db.VarChar(50)
+  apellido              String                  @db.VarChar(50)
   direccion             String?                 @db.VarChar(50)
   estado                Int?
+  email                 String?                 @db.VarChar(100)
   telefono              String?                 @db.VarChar(10)
   cedula                String?                 @db.VarChar(10)
+  tipoDoc               String                  @db.VarChar(10)
   empleado_especialidad empleado_especialidad[]
   empleado_obra         empleado_obra[]
 }
@@ -168,6 +174,7 @@ model rol_permiso {
   id      Int      @id @default(autoincrement())
   idRol   Int?
   idPer   Int?
+  tipo    String   @db.VarChar(100)
   rol     rol?     @relation(fields: [idRol], references: [idRol], onDelete: Restrict, onUpdate: Restrict, map: "rol_permiso_ibfk_1")
   permiso permiso? @relation(fields: [idPer], references: [idPer], onDelete: Restrict, onUpdate: Restrict, map: "rol_permiso_ibfk_2")
 
@@ -177,11 +184,11 @@ model rol_permiso {
 
 model usuario {
   idUsu      Int     @id @default(autoincrement())
-  correo     String? @db.VarChar(100)
+  correo     String  @db.VarChar(100)
   estado     Int
   contrasena String? @db.VarChar(20)
   idRol      Int?
-  idEmp     Int
+  idEmp      Int
   rol        rol?    @relation(fields: [idRol], references: [idRol], onDelete: Restrict, onUpdate: Restrict, map: "usuario_ibfk_1")
 
   @@index([idRol], map: "idRol")
