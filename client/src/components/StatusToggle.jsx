@@ -21,11 +21,15 @@ function StatusToggle({id, initialStatus, toggleApi, onCambioEstado}) {
             buttons: {
                 confirmar: {
                     btnClass: 'btn-danger',
-                    action: function () {
+                    action: async function () {
                         setStatus(status ? 0 :1)
                         toggleApi(id,status)
-                        onCambioEstado(!status)
+                        onCambioEstado(id,!status)
                         $.alert('Se ha cambiado el estado!');
+                        setTimeout(() => {
+                            window.location.reload(false);
+                        }, 2000)
+                        
                     }                    
                 },
                 cancelar: {

@@ -96,5 +96,53 @@ router.delete('/cliente/:id', async (req, res) => {
             return res.status(500).json(error)
         }
     })
+    router.post('/login', async (req, res) =>{
+        const {correo, contrasena} = req.body
+        try {
+           const {correo, contrasena} = req.body
+            const user = await prisma.usuario.findUnique({
+                where:{
+                        correo,
+                        contrasena,
+                },
+                include: {
+                        rol:true
+                }
+            })
+            const empleado = await prisma.empleado.findFirst({
+                where:{idEmp:user.idEmpl},
+                select:{
+                        cedula:true,
+                        direccion:true,
+                        nombre :true,
+                        telefono:true,
+                }
+            })
+            res.status(200).json(user)
+            console.log(user, empleado);
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json(error)
+        }
+    });
+    router.put("/clientStatus/:id", async (req, res) => {
+        try {
+            const {status} = req.body
+            const result = await prisma.cliente.update({
+                where:{
+                    idCli:parseInt(req.params.id)
+                },
+                data:{
+                    estado:parseInt(status)
+                }
+            })        
+            console.log(status)
+            return res.status(200).json(result)
+    
+        } catch (error) {
+            return res.status(500).json({message: error.message})
+        }
+    })
+    
 
 export default router

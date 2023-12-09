@@ -7,6 +7,7 @@ import {
     UpdateMaterialRequest,
     GetProveedoresRequest,
     GetCategoriasRequest,
+    ToggleMaterialStatusRequest,
 
 } from "../../api/Materiales.api";
 import { MaterialContext } from "./MaterialesContext";
@@ -90,28 +91,25 @@ export const MaterialContextProvider = ({children}) => {
             console.error(error)
         }
     }
+    const toggleMaterialEstado = async (idProv, estado) => {
+        try {
+            if (estado == 1) {
+                estado = 0
+            } else {
+                estado = 1
+            }
+            await ToggleMaterialStatusRequest(idProv, { estado })
+            
+        } catch (error) {
+            console.error(error)
+        }
+    }
 
 
 
-    //  const toggleObraStatus = async (idObra) =>{
-    //     try {
-    //         const obraFound = obras.find((obra) => obra.idObra === idObra)
-    //         let status  = ''
-    //         if (obraFound.estado === 1) {
-    //             status = 0
-    //         }else{
-    //             status = 1
-    //         }
-    //         await ToggleObraStatusRequest(idObra, status)
-    //         // setObras(
-    //         //     obras.map(obra => obra.idObra === idObra ? obra.estado = obra.estado === 0 ? 1 : 0 : obra.estado)
-    //         // )
-    //     } catch (error) {
-    //         console.error(error)
-    //     }
-    // }
+    
     return (
-        <MaterialContext.Provider value={{materiales, Materiales, deleteMaterial, createMaterial, getMaterial, updateMaterial,getCategorias,getProveedores,proveedores,categorias,setProveedores,setCategorias}}>
+        <MaterialContext.Provider value={{materiales, Materiales, deleteMaterial, createMaterial, getMaterial, updateMaterial,getCategorias,getProveedores,proveedores,categorias,setProveedores,setCategorias,toggleMaterialEstado}}>
             {children}
         </MaterialContext.Provider>
     )

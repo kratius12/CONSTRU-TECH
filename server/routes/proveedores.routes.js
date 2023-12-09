@@ -91,16 +91,19 @@ router.post('/newprov',async(req,res)=>{
     }
 })
 
-router.put("/proveedorEstado",async(req,res)=>{
+router.put("/proveedorEstado/:id",async(req,res)=>{
     try{
-        const estado = req.body
+        const {estado} = req.body
         const newEstado = await prisma.proveedor.update({
             where: {
-                idProv:req.params.id
+                idProv: parseInt(req.params.id)
             },data:{
-                estado:estado
+                estado: parseInt(estado)
             }
         })
+        console.log(newEstado)
+        console.log(req.body)
+        return res.status(200).json(newEstado)
     }catch(error){
         console.error(error)
     }

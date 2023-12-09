@@ -1,91 +1,96 @@
-import { useContext, useEffect, useState } from "react";
-import { CreateUsuarioRequest,
-        GetUsuarioRequest,
-        UpdateUsuarioRequest,
-        GetUsuariosRequest,
-        DeleteUsuarioRequest,
-        ToggleUsuarioStatusRequest
-} from "../api/Usuarios.api";
-import { GetRolesRequest,
-        GetRolRequest
-} from "../api/Roles.api";
-import { GetEmpleadosRequest,
-        GetEmpleadoRequest
-} from "../api/Empleados.api";
+import { useContext, useState } from "react";
+import {
+    CreateUsuarioRequest,
+    GetEmpleadosRequest,
+    GetRolesRequest,
+    GetUsuarioRequest,
+    GetUsuariosRequest,
+    ToggleUsuarioStatusRequest,
+    UpdateUsuarioRequest
+} from '../api/Usuarios.api'
 import { UsuarioContext } from "./UsuariosContext";
 
-export const useUsuario = () => {
+export const useUsuarios = ()=>{
     const context = useContext(UsuarioContext)
-    if (!context) {
-        throw new Error("UseUsuarios debe estar en contexto con UsuariosContextProvider")
-    }   
+    if(!context){
+        throw new Error("useUsuarios no esta en el usuariosContextProvider")
+    }
     return context
 }
 
-export const UsuarioContextProvider = ({children}) => {
+export const UsuariosContextProvider = ({children})=>{
+    
+    const [roles, setRoles] = useState([])
+    const [empleados,setEmpleados] = useState([])
+    const [usuarios,setUsuarios] = useState([])
 
-    const [usuarios, setUsuarios] = useState([])
-
-    async function Usuarios() {
+    async function Usuarios(){
         const response = await GetUsuariosRequest()
-        console.log(response.data)  
-        setUsuarios(response.data)          
+        console.log(response.data)
+        setUsuarios(response.data)
     }
-
-    const createUsuario = async (usuario) => {
-        try {
+    const createUsuario = async(usuario)=>{
+        try{
             const response = await CreateUsuarioRequest(usuario)
-            console.log(response)
-        } catch (error) {
+            console.log(response.data)
+        }catch(error){
             console.error(error)
         }
     }
 
-    const getUsuario = async (idUsu) =>{
-        try {
-            const result = await GetUsuarioRequest(idUsu)
-            return result.data
-        } catch (error) {
+    const getUsuario = async(idUsu)=>{
+        try{
+            const response = await GetUsuarioRequest(idUsu)
+            return response.data
+        }catch(error){
             console.error(error)
         }
     }
 
-    const deleteUsuario = async (idUsu) => {
-        try {
-            const response = await DeleteUsuarioRequest(idUsu)
-            setUsuarios(usuarios.filter(usuario => usuario.idUsu !== idUsu))
-            console.log(response);
-        } catch (error) {
+    const updateUsuario = async(idUsu,newfields)=>{
+        try{
+            const response = await UpdateUsuarioRequest(idUsu,newfields)
+            console.log(response.data)
+        }catch(error){
             console.error(error)
         }
     }
 
-    const updateUsuario = async (idUsu, newfields) =>{
-        try {
-            const response = await UpdateUsuarioRequest(idUsu, newfields)
-            console.log(response)
-        } catch (error) {
+    async function getRoles(){
+        try{
+            const response = await GetRolesRequest()
+            console.log(response.data)
+            setRoles(response.data)
+        }catch(error){
             console.error(error)
         }
     }
 
-     const toggleUsuarioStatus = async (idUsu) =>{
+    async function getEmpleados(){
+        try{
+            const response = await GetEmpleadosRequest()
+            console.log(response.data)
+            setEmpleados(response.data)
+        }catch(error){
+            console.error(error)
+        }
+    }
+
+    const ToggleUsuarioStatus = async(idUsu,estado)=>{
         try {
-            const usuarioFound = usuarios.find((usuario) => usuario.idUsu === idUsu)
-            let status  = ''
-            if (usuarioFound.estado === 1) {
-                status = 0
-            }else{
-                status = 1
+            if (estado == 1) {
+                estado = 0
+            } else {
+                estado = 1
             }
-            await ToggleUsuarioStatusRequest(idUsu, status)
-        } catch (error) {
+            await ToggleUsuarioStatusRequest(idUsu,{estado})
+        }catch(error){
             console.error(error)
         }
     }
-    return (
-        <UsuarioContext.Provider value={{usuarios, roles, empleados, Roles, Empleados, Usuarios, deleteUsuario, createUsuario, getUsuario, updateUsuario, toggleUsuarioStatus}}>
+    return(
+        <UsuarioContext.Provider value={{usuarios,Usuarios,getEmpleados,getRoles,createUsuario,updateUsuario,ToggleUsuarioStatus,getUsuario,roles,empleados}}>
             {children}
-        </UsuarioContext.Provider>
+        </UsuarioContext.Provider> 
     )
 }

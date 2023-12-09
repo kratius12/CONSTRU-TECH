@@ -52,7 +52,6 @@ export default function EmpleadosForm() {
     nombre: "",
     direccion: "",
     estado: "",
-    email: "",
     telefono: "",
     tipoDoc: "",
     cedula: "",
@@ -143,12 +142,6 @@ export default function EmpleadosForm() {
                         <input type="text" className="form-control form-control-user" id="cedula" onChange={handleChange} value={values.cedula} placeholder="Número de documento*" />
                         {errors.cedula && touched.cedula ? (
                           <div className="alert alert-danger" role="alert">{errors.cedula}</div>
-                        ) : null}
-                      </div>
-                      <div className="col-6 mt-3">
-                        <input type="text" className="form-control form-control-user" id="email" onChange={handleChange} value={values.email} placeholder="Correo electronico*" />
-                        {errors.email && touched.email ? (
-                          <div className="alert alert-danger" role="alert">{errors.email}</div>
                         ) : null}
                       </div>
                       <div className="col-6 mt-3">
