@@ -53,22 +53,17 @@ const fileUpload = multer({
 }).single('imagen');  // Use 'imagen' as the name of the field in the form
 
 router.post("/compra", fileUpload, async (req, res) => {
-    try {
-        const { detalles, totalCompra, fecha } = req.body;
+    // try {
+        const { detalles, totalCompra, fecha, idCat, idMat, cantidad, precio, subtotal} = req.body;
 
         // Create a record in the purchases table
-        let date = new Date(fecha)
         const nuevaCompra = await prisma.compras.create({
             data: {
                 total_compra: totalCompra,
                 imagen: req.file ? req.file.path : null,
-                fecha: date,
+                fecha: fecha,
             }
         });
-
-        
-        await Promise.all(detalles.map(async detalle => {
-            const { idCat, idMat, cantidad, precio, subtotal } = req.body;
             await prisma.compras_detalle.createMany({
                 data: {
                     cantidad: parseInt(cantidad),
@@ -79,13 +74,13 @@ router.post("/compra", fileUpload, async (req, res) => {
                     subtotal: parseInt(subtotal)
                 }
             });
-        }));
+        
 
         return res.status(201).send({ message: "Compra creada exitosamente" });
-    } catch (error) {
-        console.error(error);
-        return res.status(500).send({ error: "Internal Server Error" });
-    }
+    // } catch (error) {
+    //     console.error(error);
+    //     return res.status(500).send({ error: "Internal Server Error" });
+    // }
 });
 
 

@@ -32,7 +32,7 @@ model cliente {
 
 model compras {
   idCom           Int               @id @default(autoincrement())
-  fecha           DateTime?         @db.Date
+  fecha           String?           @db.VarChar(50)
   imagen          String?           @db.VarChar(100)
   total_compra    Int?
   compras_detalle compras_detalle[]

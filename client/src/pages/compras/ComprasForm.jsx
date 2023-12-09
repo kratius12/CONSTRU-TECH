@@ -19,49 +19,49 @@ export default function ComprasForm() {
     total_compra: '',
     detalle: []
   })
-  const [detalle, setDetalle] = useState({
-    idCompra: '',
-    idMat: '',
-    cantidad: '',
-    subtotal: ''
-  })
-  const [products, setProducts] = useState([
+  const [detalle, setDetalle] = useState([
+
     {
-      categoria: '',
-      material: '',
-      precio: 0,
+      
+      idMat: '',
+      idCat: "",
       cantidad: 0,
-    },
-  ]);
-  const addProduct = () => {
-    setProducts([
-      ...products,
-      {
-        categoria: '',
-        material: '',
-        precio: 0,
-        cantidad: 0,
-      },
-    ]);
+      precio: 0,
+      subtotal: ''
+    }]
+  )
+  const formatNumber = (number) => {
+    return number.toLocaleString('es-ES');
   };
-  const removeProduct = (index) => {
-    const updatedProducts = [...products];
-    updatedProducts.splice(index, 1);
-    setProducts(updatedProducts);
+
+  const addMaterial = () => {
+    setDetalle([{
+      ...detalle,
+      idMat: "",
+      idCat: "",
+      precio: "",
+      cantidad: "",
+      subtotal: "",
+    }]
+    )
+  };
+  const removeMaterial = (index) => {
+    const updateMaterial = [...detalle];
+    updateMaterial.splice(index, 1);
+    setDetalle(updateMaterial);
   };
   const [material, setMaterial] = useState([])
   const [categoria, setCategoria] = useState([])
-  const [materialSeleccionado, setMaterialSeleccionado] = useState('')
-  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('')
+
   const handleInputChange = (index, key, value) => {
-    const updatedProducts = [...products];
-    updatedProducts[index][key] = value;
-    setProducts(updatedProducts);
+    const updateMaterial = [...detalle];
+    updateMaterial[index][key] = value;
+    setDetalle(updateMaterial);
   };
 
   const calculateSubtotal = () => {
-    return products.reduce((total, product) => {
-      return total + product.precio * product.cantidad;
+    return detalle.reduce((total, detalle) => {
+      return total + detalle.precio * detalle.cantidad;
     }, 0);
   };
 
@@ -69,11 +69,22 @@ export default function ComprasForm() {
     const loadCompras = async () => {
       if (params.id) {
         const compra = await getCompra(params.id)
+        const detalle = await getDetalle(compra.idCom)
         setCompra({
           fecha: compra.fecha,
           imagen: compra.imagen,
           total_compra: compra.total_compra,
-          detalle: compra.detalle
+          detalle: [
+            setDetalle({
+              ...detalle,
+              idMat: detalle.idMat,
+              idCat: detalle.idCat,
+              precio: detalle.precio,
+              cantidad: detalle.cantidad,
+              subtotal: detalle.subtotal,
+            }
+            )
+          ]
         })
       }
       axios.get(`http://localhost:4000/materiales`)
@@ -92,25 +103,9 @@ export default function ComprasForm() {
         })
     }
     loadCompras()
-  }, [getCompra, params.id])
+  }, [getCompra, getDetalle, params.id])
 
-  useEffect(() => {
-    const loadDetalle = async () => {
-      if (params.id) {
-        const detalle = await getDetalle(params.id)
 
-        setDetalle({
-          idCompra: detalle.idCompra,
-          idMat: detalle.idMat,
-          cantidad: detalle.cantidad,
-          subtotal: detalle.subtotal
-        })
-      }
-    }
-    loadDetalle()
-  }, [getDetalle, params.id]
-
-  )
   return (
     <div className="container">
       <div className="row">
@@ -126,13 +121,7 @@ export default function ComprasForm() {
                 fecha: '',
                 imagen: '',
                 total_compra: '',
-                detalle: [{
-                  idCat: "",
-                  idMat: "",
-                  cantidad: "",
-                  Precio: "",
-                  subtotal: ""
-                }]
+                detalle: []
               })
 
             }}
@@ -160,15 +149,15 @@ export default function ComprasForm() {
                       </div>
                       <hr className="mt-4" />
 
-                      {products.map((product, index) => (
+                      {detalle.map((detalle, index) => (
                         <div key={index} className="row mt-3">
                           <div className="col-md-3">
                             <label>
                               <select
                                 className="form-select form-control-user"
                                 id={`categoria-${index}`}
-                                value={product.categoria}
-                                onChange={(e) => handleInputChange(index, 'categoria', e.target.value)}
+                                value={detalle.idCat = values.idCat}
+                                onChange={handleChange}
                               >
                                 <option>Seleccione una categoria*</option>
                                 {categoria.map((categoriaItem, e) => (
@@ -182,12 +171,12 @@ export default function ComprasForm() {
                               <select
                                 className="form-select form-control-user"
                                 id={`material-${index}`}
-                                value={product.idMat}
-                                onChange={(e) => handleInputChange(index, 'idMat', e.target.value)}
+                                value={detalle.idMat = values.idMat}
+                                onChange={handleChange}
                               >
                                 <option>Seleccione un material</option>
                                 {material.map((materialItem, e) => (
-                                  <option key={e} value={materialItem.idcat}>{materialItem.nombre}</option>
+                                  <option key={e} value={materialItem.idMat}>{materialItem.nombre}</option>
                                 ))}
                               </select>
                             </label>
@@ -196,10 +185,10 @@ export default function ComprasForm() {
                             <label>
                               Precio unitario
                               <input
-                                type="number"
+                                type="text"
                                 className="form-control form-control-user"
-                                value={product.unitPrice}
-                                onChange={(e) => handleInputChange(index, 'unitPrice', parseFloat(e.target.value))}
+                                value={formatNumber(detalle.precio)}
+                                onChange={(e) => handleInputChange(index, 'precio', e.target.value)}
                               />
                             </label>
                           </div>
@@ -209,8 +198,8 @@ export default function ComprasForm() {
                               <input
                                 type="number"
                                 className="form-control form-control-user"
-                                value={product.cantidad}
-                                onChange={(e) => handleInputChange(index, 'cantidad', parseInt(e.target.value))}
+                                value={formatNumber(detalle.cantidad)}
+                                onChange={(e) => handleInputChange(index, 'cantidad', e.target.value)}
                               />
                             </label>
                           </div>
@@ -219,10 +208,9 @@ export default function ComprasForm() {
                               Subtotal
                               <input
                                 disabled
-                                type="number"
+                                type="text"
                                 className="form-control form-control-user"
-                                value={product.unitPrice * product.cantidad}
-                                onChange={(e) => handleInputChange(index, 'cantidad', parseInt(e.target.value))}
+                                value={formatNumber(detalle.precio * detalle.cantidad)}
                               />
                             </label>
                           </div>
@@ -230,7 +218,7 @@ export default function ComprasForm() {
                             <button
                               type="button"
                               className="btn btn-danger"
-                              onClick={() => removeProduct(index)}
+                              onClick={() => removeMaterial(index)}
                             >
                               <i className="fa-solid fa-trash"></i>
                             </button>
@@ -238,10 +226,12 @@ export default function ComprasForm() {
                         </div>
                       ))}
                       <div className="col-md-12 my-4">
-                        <a id="" onClick={addProduct} className="btn btn-success">Agregar fila <i className="fa fa-plus"></i></a>
+                        <a id="" onClick={addMaterial} className="btn btn-success">Agregar fila <i className="fa fa-plus"></i></a>
                       </div>
-                      <p>Total:{calculateSubtotal()}</p>
+                      <p
+                      >Total:{values.total_compra = formatNumber(calculateSubtotal())}</p>
                     </div>
+
                   </div>
                   <div className="card-footer text-center">
                     <div className="row">
