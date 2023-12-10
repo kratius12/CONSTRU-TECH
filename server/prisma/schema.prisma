@@ -24,7 +24,7 @@ model cliente {
   telefono   String?   @db.VarChar(10)
   tipoDoc    String?   @db.VarChar(50)
   cedula     String    @db.VarChar(10)
-  fecha_nac   String?      @db.VarChar(50)
+  fecha_nac  DateTime? @db.Date
   estado     Int?
   contrasena String?   @db.VarChar(50)
   obras      obras[]

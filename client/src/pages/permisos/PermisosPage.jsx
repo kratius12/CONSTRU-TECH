@@ -1,62 +1,73 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import RolTable  from "../components/RolesTable"
-import { usePermiso } from "../context/RolesProvider";
-import TableInfo from "../components/TableInfo";
+// import RolTable  from "../components/RolesTable"
+import { usePermiso } from "../../context/permisos/PermisosProvider";
+import TableInfo from "../../components/TableInfo";
 
-function RolesPage() {
+function PermisosPage() {
 
     const dataHeader = [
         {
            header: "ID",
-           accessorKey: 'idRol'
+           accessorKey: 'idPer'
 
         },
         {
             header: "Nombre",
-            accessorKey: 'nombre'
+            accessorKey: 'permiso'
         },
         {
             header: "Estado",
-            accessorKey: 'estado'
+            accessorKey: 'estado',
+            idProperty: 'idPer'
         },
         {
-            header: "Accion",
-            accessorKey: 'accion'
+            header: "Acción",
+            accessorKey: 'accion',
+            idProperty: 'idPer'
         }
     ]
 
-    const {permisos, Roles} = useRol()
+    const {permisos, Permisos} = usePermiso()
     const navigate = useNavigate()
     useEffect(() =>{
-    Roles()  
+    Permisos()  
     }, [])
 
     function renderMain() {
         if (permisos.length === 0) {
-            return <h1>Sin permisos</h1>
+            return <h1>Sin Permisos</h1>
             
         }else{
-            return <TableInfo dataHeader={dataHeader} dataBody={permisos}/>
+            return <TableInfo dataHeader={dataHeader} dataBody={permisos} routeEdit={'editarPermiso'} viewDetail/>
         }
+        // return <RolTable permisos={permisos}/>
     }
 
     return(
-        <div>
-            <h1 className="text5-xl text-black font-bold text-left my-3">Roles</h1>
-                <button className="btn btn-primary" onClick={ ()=> navigate(`/agregarRol`)}>
-                    Agregar rol
-                </button>
-            <div>
-                <button className="btn btn-secondary" onClick={ () => navigate(`/permisos`)}>
-                    Permisos
-                </button>
-            </div>
-            <div className="table-responsive">
-                {renderMain()}
-            </div>
-        </div>
+        <>
+        <h1 className="h3 mb-2 text-gray-800">Gestión de permisos</h1>        
+                <div className="card shadow mb-4">
+                    <div className="card-header py-3">
+                        <h6 className="m-0 font-weight-bold text-primary">Listado de permisos</h6>
+                    </div>
+                    <div className="card-body">
+                        <div className="table-responsive">
+                            <div className="row">
+                                <div className="col-md-6">
+                                    <div className="col-md-6 mb-3">
+                                        <button className="btn btn-primary" onClick={ ()=> navigate(`/agregarPermiso`)}>
+                                            Agregar
+                                        </button>
+                                    </div>                                        
+                                </div>
+                                {renderMain()}
+                            </div>                               
+                        </div>
+                    </div>
+                </div>                    
+    </>
     )
 }
 
-export default RolesPage
+export default PermisosPage

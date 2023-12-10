@@ -58,7 +58,10 @@ function RolesPage() {
                                     <div className="col-md-6 mb-3">
                                         <button className="btn btn-primary" onClick={ ()=> navigate(`/agregarRol`)}>
                                             Agregar
-                                        </button>                      
+                                        </button>
+                                        <button className="btn btn-secondary" onClick={ () => navigate(`/permisos`)}>
+                                            Permisos
+                                        </button>
                                     </div>                                        
                                 </div>
                                 {renderMain()}

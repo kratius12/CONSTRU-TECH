@@ -1,16 +1,16 @@
 import { useContext, useState } from "react";
 import { CreatePermisoRequest,
         GetPermisoRequest,
-        UpdatePermisoRequest,
         GetPermisosRequest,
         DeletePermisoRequest,
+        UpdatePermisoRequest,
         TogglePermisoStatusRequest
-} from "../api/Permisos.api";
-import { PermisoContext } from "./PermisosContext";
+} from "../../api/Permisos.api";
+import { PermisosContext } from "./PermisosContext";
 
 
 export const usePermiso = () => {
-    const context = useContext(PermisoContext)
+    const context = useContext(PermisosContext)
     if (!context) {
         throw new Error("UsePermisos debe estar en contexto con PermisosContext Provider")
     }   
@@ -37,7 +37,7 @@ export const PermisoContextProvider = ({children}) => {
         }
     }
 
-    const getRol = async (idPer) =>{
+    const getPermiso = async (idPer) =>{
         try {
             const result = await GetPermisoRequest(idPer)
             return result.data
@@ -46,41 +46,41 @@ export const PermisoContextProvider = ({children}) => {
         }
     }
 
-    const deleteRol = async (idPer) => {
+    const deletePermiso = async (idPer) => {
         try {
-            const response = await DeleteRolRequest(idPer)
-            setRoles(roles.filter(permiso => permiso.idPer !== idPer))
+            const response = await DeletePermisoRequest(idPer)
+            setPermisos(permisos.filter(permiso => permiso.idPer !== idPer))
             console.log(response);
         } catch (error) {
             console.error(error)
         }
     }
 
-    const updateRol = async (idPer, newfields) =>{
+    const updatePermiso = async (idPer, newfields) =>{
         try {
-            const response = await UpdateRolRequest(idPer, newfields)
+            const response = await UpdatePermisoRequest(idPer, newfields)
             console.log(response)
         } catch (error) {
             console.error(error)
         }
     }
 
-     const toggleRolStatus = async (idPer) =>{
+     const togglePermisoStatus = async (idPer) =>{
         try {
-            const rolFound = roles.find((permiso) => permiso.idPer === idPer)
+            const permisoFound = permisos.find((permiso) => permiso.idPer === idPer)
             let status  = ''
-            if (rolFound.estado === 1) {
+            if (permisoFound.estado === 1) {
                 status = 0
             }else{
                 status = 1
             }
-            await ToggleRolStatusRequest(idPer, status)
+            await TogglePermisoStatusRequest(idPer, status)
         } catch (error) {
             console.error(error)
         }
     }
     return (
-        <PermisosContext.Provider value={{roles, Roles, deleteRol, createRol, getRol, updateRol, toggleRolStatus}}>
+        <PermisosContext.Provider value={{permisos, Permisos, createPermiso, getPermiso, togglePermisoStatus, deletePermiso, updatePermiso}}>
             {children}
         </PermisosContext.Provider>
     )
