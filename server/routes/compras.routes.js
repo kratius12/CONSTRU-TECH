@@ -22,25 +22,31 @@ router.get("/compras", async (req, res) => {
 
 router.get('/compra/:id', async (req, res) => {
     try {
-        const compra = await prisma.compras.findFirst({
+        const compra = await prisma.compras.findUnique({
             where: {
                 idCom: parseInt(req.params.id)
+            },include:{
+                compras_detalle:{
+                    include:{
+                        materiales:true,
+                         categoria:true
+                    }
+                }
             }
-        })
-        const detalles = await prisma.compras_detalle.findMany({
-            where:{
-                idCompra: parseInt(req.params.id)
-            }
-        })
-        const body ={
-            compra: compra,
-            detalles: detalles,
+        });
+
+        if (!compra) {
+            return res.status(404).send({ message: 'Compra no encontrada' });
         }
-        return res.status(200).send(body)
+
+
+        return res.status(200).send(compra);
     } catch (error) {
         console.error(error);
+        return res.status(500).send({ message: 'Error interno del servidor' });
     }
 });
+
 const diskstorage = multer.diskStorage({
     destination: path.join(__dirname, '../images'),
     filename: (req, file, cb) => {
@@ -53,36 +59,34 @@ const fileUpload = multer({
 }).single('imagen');  // Use 'imagen' as the name of the field in the form
 
 router.post("/compra", fileUpload, async (req, res) => {
-    // try {
-        const { detalles, totalCompra, fecha, idCat, idMat, cantidad, precio, subtotal} = req.body;
 
-        // Create a record in the purchases table
+        const { detalles, total_compra,imagen, fecha,codigoFactura } = req.body;
         const nuevaCompra = await prisma.compras.create({
             data: {
-                total_compra: totalCompra,
-                imagen: req.file ? req.file.path : null,
+                total_compra: parseInt(total_compra).toLocaleString(),
+                imagen: imagen,
                 fecha: fecha,
+                codigoFactura: codigoFactura
             }
         });
+        for (const detalle of detalles) {
+            const {idCat, idMat, cantidad, precio,} = detalle;
+
             await prisma.compras_detalle.createMany({
                 data: {
                     cantidad: parseInt(cantidad),
                     idCompra: nuevaCompra.idCom,
                     idMat: parseInt(idMat),
                     idCat: parseInt(idCat),
-                    Precio: parseInt(precio),
-                    subtotal: parseInt(subtotal)
+                    precio: parseInt(precio),
+                    subtotal: parseInt(precio*cantidad)
                 }
             });
-        
+        }
 
         return res.status(201).send({ message: "Compra creada exitosamente" });
-    // } catch (error) {
-    //     console.error(error);
-    //     return res.status(500).send({ error: "Internal Server Error" });
-    // }
-});
 
+});
 
 
 export default router

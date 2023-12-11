@@ -27,6 +27,7 @@ export const CompraContextProvider = ({ children }) => {
     const createCompra = async (compra) => {
         try {
             const response = await CreateCompraRequest(compra)
+            console.log(response)
         } catch (error) {
             console.error(error)
         }

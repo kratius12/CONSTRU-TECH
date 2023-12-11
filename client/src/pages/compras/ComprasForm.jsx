@@ -1,264 +1,327 @@
-import { useEffect, useState } from "react";
-import { Form, Formik } from "formik";
-import { useParams, useNavigate } from "react-router-dom";
-import { useCompras } from "../../context/compras/ComprasProvider";
-import comprasSchema from './ComprasSchema'
+import { useState, useEffect } from "react";
+import { Formik, Field, Form, FieldArray, ErrorMessage } from "formik";
+import { useNavigate } from "react-router-dom";
+import { useCompras } from "../../context/compras/ComprasProvider"
 import axios from "axios";
-export default function ComprasForm() {
-  //   const [agreed, setAgreed] = useState(false)
-  const { createCompra, getCompra, Compras, createDetalle, getDetalle } = useCompras()
-  useEffect(() => {
-    Compras()
-  }, [])
+import comprasSchema from "./ComprasSchema"
 
-  const params = useParams()
+
+const fetchData = async (url) => {
+  try {
+    const response = await axios.get(url);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    return [];
+  }
+};
+
+const ComprasForm = () => {
+  const { createCompra } = useCompras()
+  const [categorias, setCategorias] = useState([]);
+  const [materiales, setMateriales] = useState([]);
+  const [proveedores, setProveedores] = useState([])
   const navigate = useNavigate()
-  const [compra, setCompra] = useState({
-    fecha: '',
-    imagen: '',
-    total_compra: '',
-    detalle: []
-  })
-  const [detalle, setDetalle] = useState([
+  const [field, setFieldValue] = useState()
+  const [totalGeneral, setTotalGeneral] = useState(0);
 
-    {
-      
-      idMat: '',
-      idCat: "",
-      cantidad: 0,
-      precio: 0,
-      subtotal: ''
-    }]
-  )
-  const formatNumber = (number) => {
-    return number.toLocaleString('es-ES');
+  const calcularTotalGeneral = (detalles) => {
+    let total = 0;
+    detalles.forEach((detalle) => {
+      const subtotal = detalle.cantidad * detalle.precio;
+      total += subtotal;
+    });
+    setTotalGeneral(total.toLocaleString());
   };
+  
+  const initialValues = {
+    fecha: "",
+    imagen: "",
+    idProv: "",
+    codigoFactura: "",
+    total_compra: 0,
+    detalles: [
+      {
+        idCat: "",
+        idMat: "",
+        cantidad: "",
+        precio: "",
+        subtotal: ""
+      },
+    ],
+  }; 
 
-  const addMaterial = () => {
-    setDetalle([{
-      ...detalle,
-      idMat: "",
-      idCat: "",
-      precio: "",
-      cantidad: "",
-      subtotal: "",
-    }]
-    )
-  };
-  const removeMaterial = (index) => {
-    const updateMaterial = [...detalle];
-    updateMaterial.splice(index, 1);
-    setDetalle(updateMaterial);
-  };
-  const [material, setMaterial] = useState([])
-  const [categoria, setCategoria] = useState([])
-
-  const handleInputChange = (index, key, value) => {
-    const updateMaterial = [...detalle];
-    updateMaterial[index][key] = value;
-    setDetalle(updateMaterial);
-  };
-
-  const calculateSubtotal = () => {
-    return detalle.reduce((total, detalle) => {
-      return total + detalle.precio * detalle.cantidad;
-    }, 0);
-  };
 
   useEffect(() => {
-    const loadCompras = async () => {
-      if (params.id) {
-        const compra = await getCompra(params.id)
-        const detalle = await getDetalle(compra.idCom)
-        setCompra({
-          fecha: compra.fecha,
-          imagen: compra.imagen,
-          total_compra: compra.total_compra,
-          detalle: [
-            setDetalle({
-              ...detalle,
-              idMat: detalle.idMat,
-              idCat: detalle.idCat,
-              precio: detalle.precio,
-              cantidad: detalle.cantidad,
-              subtotal: detalle.subtotal,
-            }
-            )
-          ]
-        })
-      }
-      axios.get(`http://localhost:4000/materiales`)
-        .then((response) => {
-          setMaterial(response.data)
-        })
-        .catch((error) => {
-          console.error(error)
-        })
-      axios.get(`http://localhost:4000/categorias`)
-        .then((response) => {
-          setCategoria(response.data)
-        })
-        .catch((error) => {
-          console.error(error)
-        })
-    }
-    loadCompras()
-  }, [getCompra, getDetalle, params.id])
+    fetchData("http://localhost:4000/categorias").then((data) => {
+      setCategorias(data);
+    });
+    fetchData("http://localhost:4000/materiales").then((data) => {
+      setMateriales(data);
+    });
+    fetchData("http://localhost:4000/provs").then((data) => {
+      setProveedores(data)
+    })
+  }, []);
+  useEffect(() => {
+    const calcularTotalGeneral = (detalles) => {
+      let total = 0;
+      detalles.forEach((detalle) => {
+        const subtotal = detalle.cantidad * detalle.precio;
+        total += subtotal;
+      });
+      setTotalGeneral(total);
+    };
 
+    calcularTotalGeneral(initialValues.detalles);
+  }, [initialValues.detalles]);
 
   return (
     <div className="container">
-      <div className="row">
-        <div className="col-md-12">
-          <Formik initialValues={compra}
-            enableReinitialize={true}
-            // validationSchema={comprasSchema}
-            onSubmit={async (values) => {
-              console.log(values);
-              await createCompra(values)
-              navigate("/compras")
-              setCompra({
-                fecha: '',
-                imagen: '',
-                total_compra: '',
-                detalle: []
-              })
+      <Formik
+        initialValues={initialValues}
+        validationSchema={comprasSchema}
+        enableReinitialize={true}
+        onSubmit={async (values) => {
+          console.log(values);
+          await createCompra(values)
+          navigate("/compras")
 
-            }}
-          >
-            {({ handleChange, handleSubmit, values, isSubmitting, errors, touched }) => (
+        }}
+      >
 
-              <Form onSubmit={handleSubmit} className="user">
-                <div className="card text-center w-100">
+        {({ handleSubmit, values, isSubmitting, errors, touched }) => (
+          <Form onSubmit={handleSubmit} className="user" encType="multipart/form-data">
+            <div className="card text-center w-100">
+              <h2>Agregar compra</h2>
+              <div className="card-body">
+                <div className="row">
+                  <div className="col-3 mt-3 mx-auto">
+                    <label htmlFor="fecha">Fecha:</label>
+                    <Field className="form-control " type="date" id="fecha" name="fecha" />
+                    {errors.fecha && touched.fecha ? (
+                      <div className="alert alert-danger" role="alert">{errors.fecha}</div>
+                    ) : null}
+                  </div>
+                  <div className="col-3 mt-3 mx-auto">
+                    <label htmlFor="imagen">Factura:</label>
+                    <Field className="form-control" type="file" id="imagen" name="imagen"
+                      value={values.imagen}
 
-                  <h2>Agregar compra</h2>
-                  <div className="card-body">
-                    <div className="row">
-                      <div className="col-6 mt-3">
-                        <input type="date" className="form-control hasDatepicker form-control-user" id="fecha" onChange={handleChange} value={values.fecha} />
-                        {errors.fecha && touched.fecha ? (
-                          <div className="alert alert-danger" role="alert">{errors.fecha}</div>
-                        ) : null}
-                      </div>
-                      <div className="col-6 mt-3">
+                    />
+                    {errors.imagen && touched.imagen ? (
+                      <div className="alert alert-danger" role="alert">{errors.imagen}</div>
+                    ) : null}
+                  </div>
+                  <div className="col-3 mt-3 mx-auto">
+                    <label htmlFor={`idProv`}>
+                      Proveedor:
+                    </label>
+                    <Field
+                      as="select"
+                      id={`idProv`}
+                      name={`idProv`}
+                      value={values.idProv}
+                      className="form-select"
+                    >
+                      <option value="">Seleccione un proveedor</option>
+                      {proveedores.map((proveedor) => (
+                        <option key={proveedor.idProv} value={proveedor.idProv}>
+                          {proveedor.nombre}
+                        </option>
+                      ))}
+                    </Field>
+                    {errors.idProv && touched.idProv ? (
+                      <div className="alert alert-danger" role="alert">{errors.idProv}</div>
+                    ) : null}
+                  </div>
+                  <div className="col-3 mt-3 mx-auto">
+                    <label htmlFor="codigoFactura">Código de Factura:</label>
+                    <Field className="form-control" type="text" id="codigoFactura" name="codigoFactura" />
+                    {errors.codigoFactura && touched.codigoFactura ? (
+                      <div className="alert alert-danger" role="alert">{errors.codigoFactura}</div>
+                    ) : null}
+                  </div>
 
-                        <input type="file" className="form-control form-control-user" id="imagen" onChange={handleChange} value={values.imagen} placeholder="Seleccione la imagen de la factura de esta compra" />
-                        {errors.imagen && touched.imagen ? (
-                          <div className="alert alert-danger" role="alert">{errors.imagen}</div>
-                        ) : null}
-                      </div>
-                      <hr className="mt-4" />
+                </div>
+                <hr className="mt-3 mx-auto" />
+                <div>
+                  <FieldArray
+                    name="detalles"
+                    render={(arrayHelpers) => (
+                      <div>
+                        {values.detalles.map((detalle, index) => (
+                          <div key={index} className="row">
 
-                      {detalle.map((detalle, index) => (
-                        <div key={index} className="row mt-3">
-                          <div className="col-md-3">
-                            <label>
-                              <select
-                                className="form-select form-control-user"
-                                id={`categoria-${index}`}
-                                value={detalle.idCat = values.idCat}
-                                onChange={handleChange}
+                            <div className="col-3 mt-3 mx-auto">
+                              <label htmlFor={`detalles.${index}.idCat`}>Categoría:</label>
+                              <Field
+                                as="select"
+                                className="form-select"
+                                id={`detalles.${index}.idCat`}
+                                name={`detalles.${index}.idCat`}
+                                value={values.detalles.idCat}
+                                key={`detalles.${index}.idCat`}
                               >
-                                <option>Seleccione una categoria*</option>
-                                {categoria.map((categoriaItem, e) => (
-                                  <option key={e} value={categoriaItem.idcat}>{categoriaItem.nombre}</option>
+                                <option value="">Seleccione una categoría</option>
+                                {categorias.map((categoria) => (
+                                  <option key={categoria.idcat} value={categoria.idcat}>
+                                    {categoria.nombre}
+                                  </option>
                                 ))}
-                              </select>
-                            </label>
-                          </div>
-                          <div className="col-md-3">
-                            <label>
-                              <select
-                                className="form-select form-control-user"
-                                id={`material-${index}`}
-                                value={detalle.idMat = values.idMat}
-                                onChange={handleChange}
+                              </Field>
+                              <ErrorMessage
+                                name={`detalles.${index}.idCat`}
+                                component="div"
+                                className="alert alert-danger"
+                              />
+                            </div>
+                            <div className="col-3 mt-3 mx-auto">
+                              <label htmlFor={`detalles.${index}.idMat`}>Material:</label>
+                              <Field
+                                as="select"
+                                className="form-select"
+                                id={`detalles.${index}.idMat`}
+                                name={`detalles.${index}.idMat`}
+                                value={detalle.idMat}
+                                key={`detalles.${index}.idMat`}
                               >
-                                <option>Seleccione un material</option>
-                                {material.map((materialItem, e) => (
-                                  <option key={e} value={materialItem.idMat}>{materialItem.nombre}</option>
+                                <option value="">Seleccione un material</option>
+                                {materiales.map((material) => (
+                                  <option key={material.idMat} value={material.idMat}>
+                                    {material.nombre}
+                                  </option>
                                 ))}
-                              </select>
-                            </label>
-                          </div>
-                          <div className="col-md-2">
-                            <label>
-                              Precio unitario
-                              <input
+                              </Field>
+                              <ErrorMessage
+                                name={`detalles.${index}.idMat`}
+                                component="div"
+                                className="alert alert-danger"
+                              />
+                            </div>
+                            <div className="col-2 mt-3 mx-auto">
+                              <label htmlFor={`detalles.${index}.cantidad`}>Cantidad:</label>
+                              <Field
                                 type="text"
-                                className="form-control form-control-user"
-                                value={formatNumber(detalle.precio)}
-                                onChange={(e) => handleInputChange(index, 'precio', e.target.value)}
+                                className="form-control"
+                                id={`detalles.${index}.cantidad`}
+                                name={`detalles.${index}.cantidad`}
+                                key={`detalles.${index}.cantidad`}
                               />
-                            </label>
-                          </div>
-                          <div className="col-md-2">
-                            <label>
-                              Cantidad
-                              <input
-                                type="number"
-                                className="form-control form-control-user"
-                                value={formatNumber(detalle.cantidad)}
-                                onChange={(e) => handleInputChange(index, 'cantidad', e.target.value)}
+                              <ErrorMessage
+                                name={`detalles.${index}.cantidad`}
+                                component="div"
+                                className="alert alert-danger"
                               />
-                            </label>
-                          </div>
-                          <div className="col-md-2">
-                            <label>
-                              Subtotal
-                              <input
-                                disabled
+                            </div>
+                            <div className="col-2 mt-3 mx-auto">
+                              <label htmlFor={`detalles.${index}.precio`}>Precio:</label>
+                              <Field
                                 type="text"
-                                className="form-control form-control-user"
-                                value={formatNumber(detalle.precio * detalle.cantidad)}
+                                className="form-control"
+                                id={`detalles.${index}.precio`}
+                                name={`detalles.${index}.precio`}
+                                key={`detalles.${index}.precio`}
                               />
-                            </label>
+                              <ErrorMessage
+                                name={`detalles.${index}.precio`}
+                                component="div"
+                                className="alert alert-danger"
+                              />
+                            </div>
+                            <div className="col-2 mt-3 mx-auto">
+
+                              <label htmlFor={`detalles.${index}.subtotal`}>Subtotal:</label>
+                              <div className="input-group">
+                                <div className="input-group-prepend">
+                                  <span className="input-group-text">$</span>
+                                </div>
+                                <Field
+                                  type="text"
+                                  className="form-control"
+                                  id={`detalles.${index}.subtotal`}
+                                  name={`detalles.${index}.subtotal`}
+                                  key={`detalles.${index}.subtotal`}
+                                  disabled
+                                  value={(detalle.cantidad * detalle.precio).toLocaleString()}
+                                />
+                              </div>
+                            </div>
+                            <div className="col-12 mt-3 mx-auto">
+                              <button
+                                type="button"
+                                className="btn btn-danger"
+                                onClick={() => arrayHelpers.remove(index)}
+                              >
+                                Eliminar detalle
+                              </button>
+                              <p {...calcularTotalGeneral(values.detalles)}></p>
+                            </div>
+                            <hr className="mt-2" />
+                            <p {...values.total_compra = totalGeneral} ></p>
                           </div>
-                          <div className="col-md-1 text-right">
-                            <button
-                              type="button"
-                              className="btn btn-danger"
-                              onClick={() => removeMaterial(index)}
-                            >
-                              <i className="fa-solid fa-trash"></i>
-                            </button>
+                        ))}
+                        <button
+                          type="button"
+                          className="btn btn-success mt-3"
+                          onClick={() => {
+                            arrayHelpers.push({
+                              idCat: "",
+                              idMat: "",
+                              cantidad: "",
+                              precio: "",
+                              subtotal: ""
+                            });
+                          }}
+                        >
+                          Agregar detalle
+                        </button>
+                        <div className="mt-3 col-3 mx-auto">
+                          <label htmlFor={`total_compra`}>Total:</label>
+                          <div className="input-group">
+                            <div className="input-group-prepend">
+                              <span className="input-group-text">$</span>
+                            </div>
+                            <Field
+                              type="text"
+                              className="form-control"
+                              disabled
+                              value={( values.total_compra).toLocaleString()}
+                            />
                           </div>
                         </div>
-                      ))}
-                      <div className="col-md-12 my-4">
-                        <a id="" onClick={addMaterial} className="btn btn-success">Agregar fila <i className="fa fa-plus"></i></a>
                       </div>
-                      <p
-                      >Total:{values.total_compra = formatNumber(calculateSubtotal())}</p>
-                    </div>
+                    )}
+                  />
 
+                </div>
+              </div>
+              <div className="card-footer text-center">
+                <div className="row">
+                  <div className="col-md-6">
+                    <button type="submit" disabled={isSubmitting} className="btn btn-primary btn-icon-split w-50">
+                      <span className="text-white-50">
+                        <i className="fas fa-plus"></i>
+                      </span>
+                      <span className="text">Agregar</span>
+                    </button>
                   </div>
-                  <div className="card-footer text-center">
-                    <div className="row">
-                      <div className="col-md-6">
-                        <button type="submit" disabled={isSubmitting} className="btn btn-primary btn-icon-split w-50">
-                          <span className="text-white-50">
-                            <i className="fas fa-plus"></i>
-                          </span>
-                          <span className="text">{params.id ? "Editar" : "Agregar"}</span>
-                        </button>
-                      </div>
-                      <div className="col-md-6">
-                        <a type="button" href="" className="btn btn-danger btn-icon-split w-50" onClick={() => navigate(`/compras`)}>
-                          <span className="text-white-50">
-                            <i className="fa-solid fa-x"></i>
-                          </span>
-                          <span className="text">Cancelar</span>
-                        </a>
-                      </div>
-                    </div>
+                  <div className="col-md-6">
+                    <a type="button" href="" className="btn btn-danger btn-icon-split w-50" onClick={() => navigate(`/compras`)}>
+                      <span className="text-white-50">
+                        <i className="fa-solid fa-x"></i>
+                      </span>
+                      <span className="text">Cancelar</span>
+                    </a>
                   </div>
                 </div>
-              </Form>
-            )}
-          </Formik>
-        </div>
-      </div>
+              </div>
+            </div>
+          </Form>
+        )}
+      </Formik>
     </div>
-  )
-}
+  );
+};
+
+export default ComprasForm;

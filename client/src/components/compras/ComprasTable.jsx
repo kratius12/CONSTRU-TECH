@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 import {
     useReactTable,
     getCoreRowModel,
-    flexRender,
     getPaginationRowModel,
     getSortedRowModel,
     getFilteredRowModel,
@@ -38,7 +37,7 @@ export default function ComprasTable({ compras }) {
                                 <td>{fecha}</td>
                                 <td>{total_compra}</td>
                                 <td>
-                                    <button className="btn btn-secondary" onClick={()=>navigate(`/verDetalle/${idCom}`)}>
+                                    <button className="btn btn-secondary" onClick={()=>navigate(`/compra/${idCom}`)}>
                                         Ver <i className="fa-solid fa-eye"></i>
                                     </button>
                                 </td>
@@ -65,7 +64,7 @@ export default function ComprasTable({ compras }) {
                     >
 
                         Siguiente &nbsp;
-                        <i class="fa-solid fa-arrow-right"></i>
+                        <i className="fa-solid fa-arrow-right"></i>
                     </a>
                 </div>
             </div>
