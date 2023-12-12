@@ -4,8 +4,9 @@ export const proveedorSchema = Yup.object().shape({
     nombre: Yup.string()
         .min(3, 'El nombre debe contener al menos 3 caracteres')
         .max(50, 'El nombre no puede contener mas de 50 caracteres')
-        .required('El nombre es requerido'),
-    email: Yup.string().email('Formato de correo electronico invalido').required('Correo electronico requerido'),
+        .required('El nombre es requerido').trim()
+        ,
+    email: Yup.string().email('Formato de correo electronico invalido').required('Correo electronico requerido').trim(),
     telefono: Yup.string()
         .min(7, 'El telefono debe contener al menos 7 caracteres')
         .max(12, 'El telefono no puede contener mas de 12 caracteres')

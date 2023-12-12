@@ -29,7 +29,6 @@ import LoginPage from "./pages/usuarios/LoginPage";"./pages/LoginPage";
 import UsuariosPage from "./pages/usuarios/UsuariosPage";
 import UsuariosForm from "./pages/usuarios/UsuariosForm";
 
-
 import ComprasPage from "./pages/compras/Compraspage";
 import ComprasForm from "./pages/compras/ComprasForm";
 import Sidebar from "./components/Sidebar";
@@ -103,7 +102,7 @@ function App() {
                   <Routes>
                     <Route path="/compras" element={<ComprasPage />}></Route>
                     <Route path="/agregarCompras" element={<ComprasForm />}></Route>
-                    <Route path="/verDetalle/:id" element={<DetalleCompra />}></Route>
+                    <Route path="/compra/:id" element={<DetalleCompra />}></Route>
                   </Routes>
                 </CompraContextProvider>
                 <RolContextProvider>

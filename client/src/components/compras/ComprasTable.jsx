@@ -2,13 +2,12 @@ import { useNavigate } from "react-router-dom";
 import {
     useReactTable,
     getCoreRowModel,
-    flexRender,
     getPaginationRowModel,
     getSortedRowModel,
     getFilteredRowModel,
   } from '@tanstack/react-table';
 import { Table as BTable } from 'react-bootstrap';
-export default function ComprasTable({ compras }) {
+export default function ComprasTable({ compras, proveedores }) {
     const comprasData = compras
     const navigate = useNavigate()
     const table = useReactTable({
@@ -27,18 +26,20 @@ export default function ComprasTable({ compras }) {
                         <th scope="col">ID</th>
                         <th scope="col">Fecha de compra</th>
                         <th scope="col">Total de la compra</th>
+                        <th scope="col">Codigo de factura</th>
                         <th scope="col">Ver detalle</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {comprasData.map(({ idCom, fecha, total_compra }) => {
+                    {comprasData.map(({ idCom, fecha, total_compra,codigoFactura}) => {
                         return (
                             <tr key={idCom}>
                                 <td>{idCom}</td>
                                 <td>{fecha}</td>
                                 <td>{total_compra}</td>
+                                <td>{codigoFactura}</td>
                                 <td>
-                                    <button className="btn btn-secondary" onClick={()=>navigate(`/verDetalle/${idCom}`)}>
+                                    <button className="btn btn-secondary" onClick={()=>navigate(`/compra/${idCom}`)}>
                                         Ver <i className="fa-solid fa-eye"></i>
                                     </button>
                                 </td>
@@ -65,7 +66,7 @@ export default function ComprasTable({ compras }) {
                     >
 
                         Siguiente &nbsp;
-                        <i class="fa-solid fa-arrow-right"></i>
+                        <i className="fa-solid fa-arrow-right"></i>
                     </a>
                 </div>
             </div>

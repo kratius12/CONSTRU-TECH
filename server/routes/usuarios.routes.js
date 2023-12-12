@@ -32,6 +32,13 @@ router.get("/usuario/:id",async(req,res)=>{
         const usuario = await prisma.usuario.findFirst({
             where: {
                 idUsu: parseInt(req.params.id)
+            },
+            include:{
+                rol:{
+                    select:{
+                        nombre:true
+                    }
+                }
             }
         })
         console.log(usuario)

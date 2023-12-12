@@ -1,0 +1,19 @@
+/* Alinea los strong con el texto */
+strong {
+  display: inline-block;
+  width: 120px; /* Ajusta según sea necesario */
+}
+
+/* Alinea las tarjetas en una fila */
+.detalle-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px; /* Espaciado entre tarjetas */
+}
+
+.detalle-card {
+  /* Estilos de las tarjetas */
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}

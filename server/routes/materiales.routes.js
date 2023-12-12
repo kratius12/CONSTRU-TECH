@@ -67,7 +67,7 @@ router.put("/material/:id", async (req, res) => {
         const { nombre, cantidad, idProveedor, idCategoria, estado } = req.body
         const response = await prisma.materiales.update({
             where: {
-                idMat: idMat
+                idMat: parseInt(idMat)
             },
             data: {
                 nombre: nombre,
