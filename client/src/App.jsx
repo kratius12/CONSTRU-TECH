@@ -29,7 +29,6 @@ import LoginPage from "./pages/usuarios/LoginPage";"./pages/LoginPage";
 import UsuariosPage from "./pages/usuarios/UsuariosPage";
 import UsuariosForm from "./pages/usuarios/UsuariosForm";
 
-
 import ComprasPage from "./pages/compras/Compraspage";
 import ComprasForm from "./pages/compras/ComprasForm";
 import Sidebar from "./components/Sidebar";

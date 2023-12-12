@@ -197,3 +197,10 @@ model usuario {
   @@index([idRol], map: "idRol")
   @@index([idEmp], map: "idEmp")
 }
+
+model imagenfactura {
+  idImg Int    @id @default(autoincrement())
+  type  String @db.VarChar(200)
+  name  String @db.VarChar(200)
+  data  Bytes
+}

@@ -2,34 +2,49 @@ import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
 import multer from "multer";
 import path from "path";
+import fs from "fs";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const router = Router();
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        // Utiliza una ruta absoluta en lugar de una ruta relativa
+        const absolutePath = path.join(__dirname, '..', 'images');
+        cb(null, absolutePath);
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+    },
+});
+
 
 router.get("/compras", async (req, res) => {
     try {
-        const compras = await prisma.compras.findMany({
-        })
-        return res.send(compras)
+        const compras = await prisma.compras.findMany({});
+        return res.send(compras);
     } catch (error) {
-        console.error(error)
+        console.error(error);
+        return res.status(500).send({ message: 'Error interno del servidor' });
     }
-})
+});
 
 router.get('/compra/:id', async (req, res) => {
     try {
         const compra = await prisma.compras.findUnique({
             where: {
                 idCom: parseInt(req.params.id)
-            },include:{
-                compras_detalle:{
-                    include:{
-                        materiales:true,
-                         categoria:true
+            },
+            include: {
+                compras_detalle: {
+                    include: {
+                        materiales: true,
+                        categoria: true
                     }
                 }
             }
@@ -39,7 +54,6 @@ router.get('/compra/:id', async (req, res) => {
             return res.status(404).send({ message: 'Compra no encontrada' });
         }
 
-
         return res.status(200).send(compra);
     } catch (error) {
         console.error(error);
@@ -47,30 +61,26 @@ router.get('/compra/:id', async (req, res) => {
     }
 });
 
-const diskstorage = multer.diskStorage({
-    destination: path.join(__dirname, '../images'),
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + '-construtech-' + file.originalname)
-    }
-})
+const upload = multer({ storage: storage });
 
-const fileUpload = multer({
-    storage: diskstorage
-}).single('imagen');  // Use 'imagen' as the name of the field in the form
 
-router.post("/compra", fileUpload, async (req, res) => {
+router.post("/compra", upload.single("image"), async (req, res) => {
 
-        const { detalles, total_compra,imagen, fecha,codigoFactura } = req.body;
+    const imageUrl = req.file ? `../images/${req.file.filename}` : null;
+    const imagen = imageUrl
+    try {
+        const { detalles, total_compra, fecha, codigoFactura } = req.body;
         const nuevaCompra = await prisma.compras.create({
             data: {
-                total_compra: parseInt(total_compra).toLocaleString(),
+                total_compra: parseInt(total_compra),
                 imagen: imagen,
                 fecha: fecha,
                 codigoFactura: codigoFactura
             }
         });
+
         for (const detalle of detalles) {
-            const {idCat, idMat, cantidad, precio,} = detalle;
+            const { idCat, idMat, cantidad, precio } = detalle;
 
             await prisma.compras_detalle.createMany({
                 data: {
@@ -79,15 +89,16 @@ router.post("/compra", fileUpload, async (req, res) => {
                     idMat: parseInt(idMat),
                     idCat: parseInt(idCat),
                     precio: parseInt(precio),
-                    subtotal: parseInt(precio*cantidad)
+                    subtotal: parseInt(precio * cantidad)
                 }
             });
         }
 
         return res.status(201).send({ message: "Compra creada exitosamente" });
-
+    } catch (error) {
+        console.error(error);
+        return res.status(201).send({ message: 'Error interno del servidor' });
+    }
 });
 
-
-export default router
-
+export default router;

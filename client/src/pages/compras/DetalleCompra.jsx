@@ -26,7 +26,7 @@ const CompraDetalle = () => {
     if (!compra) {
         return <div>Cargando...</div>;
     }
-
+   
     return (
         <div>
 
@@ -34,33 +34,33 @@ const CompraDetalle = () => {
                 <h2>Detalle de Compra</h2>
                 <div className="card-body">
                     <div className="row">
-                        <div className="col-2 mt-3 mx-auto">
+                        <div className="col-md-2 mt-3 mx-auto">
                             <label htmlFor="fecha">ID compra:</label>
                             <input className="form-control form-control-user" type="text" id="fecha" name="fecha" value={compra.idCom} disabled/>
                         </div>
-                        <div className="col-3 mt-3 mx-auto">
+                        <div className="col-md-3 mt-3 mx-auto">
                         <label htmlFor="fecha">Fecha de compra:</label>
                             <input className="form-control form-control-user" type="text" id="fecha" name="fecha" value={compra.fecha} disabled/>
                         </div>
-                        <div className="col-3 mt-3 mx-auto">
+                        <div className="col-md-3 mt-3 mx-auto">
                         <label htmlFor="fecha">Codigo de factura:</label>
                             <input className="form-control form-control-user" type="text" id="fecha" name="fecha" value={compra.codigoFactura} disabled/>
                         </div>
-                        <div className="col-3 mt-3 mx-auto">
+                        <div className="col-md-3 mt-3 mx-auto">
                         <label htmlFor="fecha">Total de la compra:</label>
-                            <input className="form-control form-control-user" type="text" id="fecha" name="fecha" value={compra.total_compra} disabled/>
+                            <input className="form-control form-control-user" type="text" id="fecha" name="fecha" value={(compra.total_compra)} disabled/>
                         </div>
                     </div>
                 </div>
                 <div>
                     <strong>Imagen de la factura:</strong><br />
-                    <img src={compra.imagen} alt="imagen" />
+                    <img src={`http://localhost:4000${compra.image}`} alt="imagen" />
                 </div>
                 <hr />
                 <h3>Materiales:</h3>
                 <div className="detalle-container">
-                    {compra.compras_detalle.map((detalle,e) => (
-                        <><div key={e}>
+                    {compra.compras_detalle.map((detalle) => (
+                        <><div key={detalle.id}>
                             <Card className="detalle-card">
                                 <div><strong>Material: </strong> {detalle.materiales.nombre}</div>
                                 <div><strong>Categoria:</strong> {detalle.categoria.nombre}</div>

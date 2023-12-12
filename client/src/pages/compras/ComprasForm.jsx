@@ -1,10 +1,9 @@
-import { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 import { Formik, Field, Form, FieldArray, ErrorMessage } from "formik";
 import { useNavigate } from "react-router-dom";
-import { useCompras } from "../../context/compras/ComprasProvider"
+import { useCompras } from "../../context/compras/ComprasProvider";
 import axios from "axios";
-import comprasSchema from "./ComprasSchema"
-
+import comprasSchema from "./ComprasSchema";
 
 const fetchData = async (url) => {
   try {
@@ -17,12 +16,50 @@ const fetchData = async (url) => {
 };
 
 const ComprasForm = () => {
-  const { createCompra } = useCompras()
+  const { createCompra } = useCompras();
   const [categorias, setCategorias] = useState([]);
   const [materiales, setMateriales] = useState([]);
-  const [proveedores, setProveedores] = useState([])
-  const navigate = useNavigate()
-  const [field, setFieldValue] = useState()
+  const [proveedores, setProveedores] = useState([]);
+  const navigate = useNavigate();
+  const [file, setFile] = useState(null);
+
+  const selectedHandler = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  const sendHandler = async () => {
+    if (!file) {
+      alert("you must upload file");
+      return;
+    }
+
+    const formdata = new FormData();
+    formdata.append("image", file);
+
+    const response = await fetch("http://localhost:4000/compra", {
+      method: "POST",
+      body: formdata,
+    });
+    const result = await response.text();
+
+    console.log(result);
+
+    try {
+      const parsedResult = JSON.parse(result);
+      console.log(parsedResult);
+    } catch (error) {
+      console.error(error);
+    }
+
+    // Verificar si el elemento 'fileinput' existe antes de acceder a sus propiedades
+    const fileInput = document.getElementById("fileinput");
+    if (fileInput) {
+      fileInput.value = null;
+    }
+
+    setFile(null);
+  };
+
   const [totalGeneral, setTotalGeneral] = useState(0);
 
   const calcularTotalGeneral = (detalles) => {
@@ -31,9 +68,9 @@ const ComprasForm = () => {
       const subtotal = detalle.cantidad * detalle.precio;
       total += subtotal;
     });
-    setTotalGeneral(total.toLocaleString());
+    setTotalGeneral(total);
   };
-  
+
   const initialValues = {
     fecha: "",
     imagen: "",
@@ -46,11 +83,10 @@ const ComprasForm = () => {
         idMat: "",
         cantidad: "",
         precio: "",
-        subtotal: ""
+        subtotal: "",
       },
     ],
-  }; 
-
+  };
 
   useEffect(() => {
     fetchData("http://localhost:4000/categorias").then((data) => {
@@ -60,9 +96,10 @@ const ComprasForm = () => {
       setMateriales(data);
     });
     fetchData("http://localhost:4000/provs").then((data) => {
-      setProveedores(data)
-    })
+      setProveedores(data);
+    });
   }, []);
+
   useEffect(() => {
     const calcularTotalGeneral = (detalles) => {
       let total = 0;
@@ -84,36 +121,35 @@ const ComprasForm = () => {
         enableReinitialize={true}
         onSubmit={async (values) => {
           console.log(values);
-          await createCompra(values)
-          navigate("/compras")
-
+          await createCompra(values);
+          navigate("/compras");
         }}
       >
-
         {({ handleSubmit, values, isSubmitting, errors, touched }) => (
-          <Form onSubmit={handleSubmit} className="user" encType="multipart/form-data">
+          <Form
+            onSubmit={handleSubmit}
+            className="user"
+            encType="multipart/form-data"
+          >
             <div className="card text-center w-100">
               <h2>Agregar compra</h2>
               <div className="card-body">
                 <div className="row">
-                  <div className="col-3 mt-3 mx-auto">
+                  <div className="col-md-3 mt-3 mx-auto">
                     <label htmlFor="fecha">Fecha:</label>
                     <Field className="form-control " type="date" id="fecha" name="fecha" />
                     {errors.fecha && touched.fecha ? (
                       <div className="alert alert-danger" role="alert">{errors.fecha}</div>
                     ) : null}
                   </div>
-                  <div className="col-3 mt-3 mx-auto">
+                  <div className="col-md-3 mt-3 mx-auto">
                     <label htmlFor="imagen">Factura:</label>
-                    <Field className="form-control" type="file" id="imagen" name="imagen"
-                      value={values.imagen}
-
-                    />
+                    <input id="fileinput" onChange={selectedHandler} className="form-control" type="file" />
                     {errors.imagen && touched.imagen ? (
                       <div className="alert alert-danger" role="alert">{errors.imagen}</div>
                     ) : null}
                   </div>
-                  <div className="col-3 mt-3 mx-auto">
+                  <div className="col-md-3 mt-3 mx-auto">
                     <label htmlFor={`idProv`}>
                       Proveedor:
                     </label>
@@ -135,7 +171,7 @@ const ComprasForm = () => {
                       <div className="alert alert-danger" role="alert">{errors.idProv}</div>
                     ) : null}
                   </div>
-                  <div className="col-3 mt-3 mx-auto">
+                  <div className="col-md-3 mt-3 mx-auto">
                     <label htmlFor="codigoFactura">Código de Factura:</label>
                     <Field className="form-control" type="text" id="codigoFactura" name="codigoFactura" />
                     {errors.codigoFactura && touched.codigoFactura ? (
@@ -144,7 +180,7 @@ const ComprasForm = () => {
                   </div>
 
                 </div>
-                <hr className="mt-3 mx-auto" />
+                <hr className="mt-md-3 mx-auto" />
                 <div>
                   <FieldArray
                     name="detalles"
@@ -153,7 +189,7 @@ const ComprasForm = () => {
                         {values.detalles.map((detalle, index) => (
                           <div key={index} className="row">
 
-                            <div className="col-3 mt-3 mx-auto">
+                            <div className="col-md-3 mt-3 mx-auto">
                               <label htmlFor={`detalles.${index}.idCat`}>Categoría:</label>
                               <Field
                                 as="select"
@@ -176,7 +212,7 @@ const ComprasForm = () => {
                                 className="alert alert-danger"
                               />
                             </div>
-                            <div className="col-3 mt-3 mx-auto">
+                            <div className="col-md-3 mt-3 mx-auto">
                               <label htmlFor={`detalles.${index}.idMat`}>Material:</label>
                               <Field
                                 as="select"
@@ -199,7 +235,7 @@ const ComprasForm = () => {
                                 className="alert alert-danger"
                               />
                             </div>
-                            <div className="col-2 mt-3 mx-auto">
+                            <div className="col-md-2 mt-3 mx-auto">
                               <label htmlFor={`detalles.${index}.cantidad`}>Cantidad:</label>
                               <Field
                                 type="text"
@@ -214,7 +250,7 @@ const ComprasForm = () => {
                                 className="alert alert-danger"
                               />
                             </div>
-                            <div className="col-2 mt-3 mx-auto">
+                            <div className="col-md-2 mt-3 mx-auto">
                               <label htmlFor={`detalles.${index}.precio`}>Precio:</label>
                               <Field
                                 type="text"
@@ -229,7 +265,7 @@ const ComprasForm = () => {
                                 className="alert alert-danger"
                               />
                             </div>
-                            <div className="col-2 mt-3 mx-auto">
+                            <div className="col-md-2 mt-3 mx-auto">
 
                               <label htmlFor={`detalles.${index}.subtotal`}>Subtotal:</label>
                               <div className="input-group">
@@ -247,7 +283,7 @@ const ComprasForm = () => {
                                 />
                               </div>
                             </div>
-                            <div className="col-12 mt-3 mx-auto">
+                            <div className="col-md-12 mt-3 mx-auto">
                               <button
                                 type="button"
                                 className="btn btn-danger"
@@ -261,6 +297,11 @@ const ComprasForm = () => {
                             <p {...values.total_compra = totalGeneral} ></p>
                           </div>
                         ))}
+                        {/* {errors.detalles && (
+                          <div className="alert alert-danger" role="alert">
+                            {errors.detalles}
+                          </div>
+                        )} */}
                         <button
                           type="button"
                           className="btn btn-success mt-3"
@@ -274,9 +315,9 @@ const ComprasForm = () => {
                             });
                           }}
                         >
-                          Agregar detalle
+                          Agregar material
                         </button>
-                        <div className="mt-3 col-3 mx-auto">
+                        <div className="col-md-2 mt-3 mx-auto">
                           <label htmlFor={`total_compra`}>Total:</label>
                           <div className="input-group">
                             <div className="input-group-prepend">
@@ -286,7 +327,7 @@ const ComprasForm = () => {
                               type="text"
                               className="form-control"
                               disabled
-                              value={( values.total_compra).toLocaleString()}
+                              value={(values.total_compra).toLocaleString()}
                             />
                           </div>
                         </div>
@@ -299,7 +340,7 @@ const ComprasForm = () => {
               <div className="card-footer text-center">
                 <div className="row">
                   <div className="col-md-6">
-                    <button type="submit" disabled={isSubmitting} className="btn btn-primary btn-icon-split w-50">
+                    <button type="submit" onClick={sendHandler} disabled={isSubmitting} className="btn btn-primary btn-icon-split w-50">
                       <span className="text-white-50">
                         <i className="fas fa-plus"></i>
                       </span>
