@@ -65,22 +65,20 @@ export const PermisoContextProvider = ({children}) => {
         }
     }
 
-     const togglePermisoStatus = async (idPer) =>{
+    const TogglePermisoStatus = async(idPer,estado)=>{
         try {
-            const permisoFound = permisos.find((permiso) => permiso.idPer === idPer)
-            let status  = ''
-            if (permisoFound.estado === 1) {
-                status = 0
-            }else{
-                status = 1
+            if (estado == 1) {
+                estado = 0
+            } else {
+                estado = 1
             }
-            await TogglePermisoStatusRequest(idPer, status)
-        } catch (error) {
+            await TogglePermisoStatusRequest(idPer,{estado})
+        }catch(error){
             console.error(error)
         }
     }
     return (
-        <PermisosContext.Provider value={{permisos, Permisos, createPermiso, getPermiso, togglePermisoStatus, deletePermiso, updatePermiso}}>
+        <PermisosContext.Provider value={{permisos, Permisos, createPermiso, getPermiso, TogglePermisoStatus, deletePermiso, updatePermiso}}>
             {children}
         </PermisosContext.Provider>
     )

@@ -6,7 +6,9 @@ import { CreateRolRequest,
         DeleteRolRequest,
         ToggleRolStatusRequest
 } from "../../api/Roles.api";
-import{ GetPermisosRequest } from "../../api/Permisos.api"
+import{ GetPermisosRequest,
+            CreatePermisoRequest
+} from "../../api/Permisos.api"
 import { RolesContext } from "./RolesContext";
 
 
@@ -28,6 +30,15 @@ export const RolContextProvider = ({children}) => {
         const response = await GetRolesRequest()
         console.log(response.data)  
         setRoles(response.data)          
+    }
+
+    const createPermiso = async (permiso) => {
+        try {
+            const response = await CreatePermisoRequest(permiso)
+            console.log(response)
+        } catch (error) {
+            console.error(error)
+        }
     }
 
     async function Permisos() {
@@ -73,22 +84,20 @@ export const RolContextProvider = ({children}) => {
         }
     }
 
-     const toggleRolStatus = async (idRol) =>{
+    const ToggleRolStatus = async(idRol,estado)=>{
         try {
-            const rolFound = roles.find((rol) => rol.idRol === idRol)
-            let status  = ''
-            if (rolFound.estado === 1) {
-                status = 0
-            }else{
-                status = 1
+            if (estado == 1) {
+                estado = 0
+            } else {
+                estado = 1
             }
-            await ToggleRolStatusRequest(idRol, status)
-        } catch (error) {
+            await ToggleRolStatusRequest(idRol,{estado})
+        }catch(error){
             console.error(error)
         }
     }
     return (
-        <RolesContext.Provider value={{roles, permisos, Permisos, Roles, deleteRol, createRol, getRol, updateRol, toggleRolStatus}}>
+        <RolesContext.Provider value={{roles, permisos, Permisos, createPermiso, Roles, deleteRol, createRol, getRol, updateRol, ToggleRolStatus}}>
             {children}
         </RolesContext.Provider>
     )

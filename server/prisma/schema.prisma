@@ -16,17 +16,17 @@ model categoria {
 }
 
 model cliente {
-  idCli      Int       @id @default(autoincrement())
-  nombre     String?   @db.VarChar(70)
-  apellidos  String?   @db.VarChar(50)
-  email      String?   @db.VarChar(100)
-  direccion  String?   @db.VarChar(50)
-  telefono   String?   @db.VarChar(10)
-  tipoDoc    String?   @db.VarChar(50)
-  cedula     String    @db.VarChar(10)
-  fecha_nac  DateTime? @db.Date
+  idCli      Int     @id @default(autoincrement())
+  nombre     String? @db.VarChar(70)
+  apellidos  String? @db.VarChar(50)
+  email      String? @db.VarChar(100)
+  direccion  String? @db.VarChar(50)
+  telefono   String? @db.VarChar(10)
+  tipoDoc    String? @db.VarChar(50)
+  cedula     String  @db.VarChar(10)
+  fecha_nac  String? @db.VarChar(50)
   estado     Int?
-  contrasena String?   @db.VarChar(50)
+  contrasena String? @db.VarChar(50)
   obras      obras[]
 }
 

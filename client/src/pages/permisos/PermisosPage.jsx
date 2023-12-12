@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 // import RolTable  from "../components/RolesTable"
 import { usePermiso } from "../../context/permisos/PermisosProvider";
@@ -28,7 +28,13 @@ function PermisosPage() {
         }
     ]
 
-    const {permisos, Permisos} = usePermiso()
+    const [tableStatus, setTableStatus] = useState(0)
+    const handleChangeStatus = (newStatus) => {
+        setTableStatus(newStatus)
+
+    }
+
+    const {permisos, Permisos, TogglePermisoStatus, getPermiso} = usePermiso()
     const navigate = useNavigate()
     useEffect(() =>{
     Permisos()  
@@ -39,7 +45,7 @@ function PermisosPage() {
             return <h1>Sin Permisos</h1>
             
         }else{
-            return <TableInfo dataHeader={dataHeader} dataBody={permisos} routeEdit={'editarPermiso'} viewDetail/>
+            return <TableInfo dataHeader={dataHeader} dataBody={permisos} routeEdit={'editarPermiso'} viewDetail toggleApi={TogglePermisoStatus} getApi={getPermiso} entity={"Permiso"} onChangeStatus={handleChangeStatus}/>
         }
         // return <RolTable permisos={permisos}/>
     }
