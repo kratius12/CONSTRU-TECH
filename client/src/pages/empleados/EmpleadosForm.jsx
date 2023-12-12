@@ -16,16 +16,17 @@ export default function EmpleadosForm() {
   const [options, setOptions] = useState([]);
   const [defaultOptions, setDefaultOptions] = useState([]);
   const [selectedEsp, setSelectedEsp] = useState(defaultOptions)
-  const [empleado, setEmpleado] = useState({
+  const initialState = {
     nombre: "",
     apellido: "",
     direccion: "",
-    estado: "",
+    estado: 1,
     telefono: "",
     tipoDoc: "",
     cedula: "",
     especialidad: []
-  })
+  }
+  const [empleado, setEmpleado] = useState(initialState)
   const estadoOptions = [
     {
       value: 1, label: "Activo",
@@ -42,7 +43,7 @@ export default function EmpleadosForm() {
             nombre: empleado.nombre,
             apellido: empleado.apellido,
             direccion: empleado.direccion,
-            estado: empleado.estado,
+            estado: empleado.estado === "0" ? "0" : "1",
             email: empleado.email,
             telefono: empleado.telefono,
             tipoDoc: empleado.tipoDoc,
@@ -53,6 +54,8 @@ export default function EmpleadosForm() {
           setDefaultOptions(defaultOpts)
           setKey(prevKey => prevKey + 1)
         }
+      }else{
+        setEmpleado(initialState)
       }
     }
     const fetchData = async () => {
@@ -182,20 +185,27 @@ export default function EmpleadosForm() {
                         ) : null}
                       </div>
                       <div className="col-md-6 mt-3">
-                        {/* <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
-                          <option value="">Seleccione estado</option>
-                          <option value="1">Activo</option>
-                          <option value="0">Inactivo</option>
-                        </select> */}
-                        <label>Estado</label>
-                        <Select
+                        {params.id ? 
+                        (
+                          <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
+                            <option value="">Seleccione estado</option>
+                            <option value="1">Activo</option>
+                            <option value="0">Inactivo</option>
+                          </select>                          
+                        ): (
+                          <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} disabled>
+                            <option value="1">Activo</option>
+                          </select>
+                        )
+                        }
+                        {/* <select
                           placeholder={<div>Selecciona estado</div>}
                           value={values.estado}
                           name="estado"
                           options={estadoOptions}
                           className="basic-multi-select"
                           classNamePrefix="select"
-                        />
+                        /> */}
                         {errors.estado && touched.estado ? (
                           <div className="alert alert-danger" role="alert">{errors.estado}</div>
                         ) : null}

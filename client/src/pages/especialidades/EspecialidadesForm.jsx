@@ -13,10 +13,12 @@ export default function EspecialidadesForm() {
 
   const params = useParams()
   const navigate = useNavigate()
-  const [especialidad, setEspecialidad] = useState({
+  const initialState = {
     especialidad: "",
-    estado: ""
-  })
+    estado: "1", // Valor predeterminado
+  };
+
+  const [especialidad, setEspecialidad] = useState(initialState)
 
   useEffect(() => {
     const loadEspecialidades = async () => {
@@ -24,8 +26,10 @@ export default function EspecialidadesForm() {
         const especialidad = await getEspecialidad(params.id)
         setEspecialidad({
           especialidad: especialidad.especialidad,
-          estado: especialidad.estado
+          estado: especialidad.estado === "0" ? "0" : "1"
         })
+      }else{
+        setEspecialidad(initialState)
       }
     }
     loadEspecialidades()
@@ -39,12 +43,17 @@ export default function EspecialidadesForm() {
             enableReinitialize={true}
             validationSchema={EspecialidadSchema}
             onSubmit={async (values) => {
-              console.log(values);
+              const cleannedName = values.especialidad.replace(/\s{2,}/g, ' ').trim()
+              const especialidadObject = {
+                ...values,
+                especialidad:cleannedName
+              }
+              console.log(especialidadObject);
               if (params.id) {
-                await updateEspecialidad(params.id, values)
+                await updateEspecialidad(params.id, especialidadObject)
                 navigate("/especialidades")
               } else {
-                await createEspecialidad(values)
+                await createEspecialidad(especialidadObject)
                 navigate("/especialidades")
               }
               setEspecialidad({
@@ -66,11 +75,19 @@ export default function EspecialidadesForm() {
                         ) : null}
                       </div>
                       <div className="col-6 mt-3">
-                        <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
-                          <option value="">Seleccione estado*</option>
-                          <option value="1">Activo</option>
-                          <option value="0">Inactivo</option>
-                        </select>
+                        {params.id ?
+                        (
+                          <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
+                            <option value="">Seleccione estado*</option>
+                            <option value="1">Activo</option>
+                            <option value="0">Inactivo</option>
+                          </select>                          
+                        ):(
+                          <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} disabled>
+                            <option value="1">Activo</option>
+                          </select>                          
+                        )
+                        }
                         {errors.estado && touched.estado ? (
                           <div className="alert alert-danger" role="alert">{errors.estado}</div>
                         ) : null}
