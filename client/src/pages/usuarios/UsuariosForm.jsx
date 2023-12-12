@@ -3,12 +3,23 @@ import { Form, Formik } from "formik";
 import { useParams, useNavigate } from "react-router-dom";
 import { useUsuarios } from "../../context/usuarios/UsuariosProvider";
 import UsuarioSchema from './UsuariosValidator'
+import axios from "axios";
+
+const fetchData = async (url) => {
+    try {
+        const response = await axios.get(url);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching data:", error);
+        return [];
+    }
+};
 
 export default function UsuariosForm() {
-    const { createUsuario, getUsuario, updateUsuario, getRoles, getEmpleados, roles, empleados } = useUsuarios();
+    const { createUsuario, getUsuario, updateUsuario, getRoles, getEmpleados, } = useUsuarios();
     useEffect(() => {
         getEmpleados()
-            getRoles()
+        getRoles()
     }, [])
     const alertConfirm = (type) => {
         var message = ""
@@ -35,8 +46,9 @@ export default function UsuariosForm() {
             }
         })
     }
-
     const params = useParams()
+    const [rol, setRol] = useState([])
+    const [empleados, setEmpleado] = useState([])
     const navigate = useNavigate()
     const [usuario, setUsuario] = useState({
         correo: "",
@@ -45,6 +57,14 @@ export default function UsuariosForm() {
         idRol: "",
         idEmp: ""
     })
+    useEffect(() => {
+        fetchData("http://localhost:4000/roles").then((data) => {
+            setRol(data);
+        });
+        fetchData("http://localhost:4000/empleados").then((data) => {
+            setEmpleado(data);
+        });
+    }, []);
     useEffect(() => {
         const loadUsuarios = async () => {
             if (params.id) {
@@ -119,28 +139,24 @@ export default function UsuariosForm() {
                                             <div className="col-6 mt-3">
                                                 <select className="form-select form-control-user" id="idRol" value={values.idRol} onChange={handleChange}>
                                                     <option>Seleccione un rol*</option>
-                                                    {roles.map((roles, e) => {
-                                                        <option key={e} value={roles.idRol}>{roles.nombre}</option>
-                                                    })}
+                                                    {rol.map((rol) => (
+                                                        <option key={rol.idRol} value={rol.idRol}>{rol.nombre}</option>
+                                                    ))}
                                                 </select>
-                                                {
-                                                    errors.idRol && touched.idRol ? (
-                                                        <div className="alert alert-danger" role="alert">{errors.idRol}</div>
-                                                    ) : null
-                                                }
+                                                {errors.idRol && touched.idRol ? (
+                                                    <div className="alert alert-danger" role="alert">{errors.idRol}</div>
+                                                ) : null}
                                             </div>
                                             <div className="col-6 mt-3">
                                                 <select className="form-select form-control-user" id="idEmp" value={values.idEmp} onChange={handleChange}>
                                                     <option>Seleccione un empleado*</option>
-                                                    {empleados.map((empleados, e) => {
-                                                        <option key={e} value={empleados.idEmp}>{empleados.nombre}</option>
-                                                    })}
+                                                    {empleados.map((empleado) => (
+                                                        <option key={empleado.idEmp} value={empleado.idEmp}>{empleado.nombre}</option>
+                                                    ))}
                                                 </select>
-                                                {
-                                                    errors.idEmp && touched.idEmp ? (
-                                                        <div className="alert alert-danger" role="alert">{errors.idEmp}</div>
-                                                    ) : null
-                                                }
+                                                {errors.idEmp && touched.idEmp ? (
+                                                    <div className="alert alert-danger" role="alert">{errors.idEmp}</div>
+                                                ) : null}
                                             </div>
                                             <div className="col-6 mt-3">
                                                 <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >

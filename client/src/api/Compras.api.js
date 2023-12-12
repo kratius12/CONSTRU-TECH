@@ -4,8 +4,8 @@ export const GetComprasRequest = async()=>{
     return await axios.get('http://localhost:4000/compras')
 }
 
-export const GetCompraRequest = async()=>{
-    return await axios.get('http://localhost:4000/compra')
+export const GetCompraRequest = async(idCom)=>{
+    return await axios.get(`http://localhost:4000/compra/${idCom}`)
 }
 
 export const CreateCompraRequest = async(compra)=>{

@@ -29,7 +29,6 @@ export const ObraContextProvider = ({children}) => {
     const [materiales, setMateriales] = useState([])
     async function Obras() {
         const response = await GetObrasRequest()
-        console.log(response.data)  
         setObras(response.data)          
     }  
 
@@ -51,7 +50,6 @@ export const ObraContextProvider = ({children}) => {
     const createObra = async (obra) => {
         try {
             const response = await CreateObraRequest(obra)
-            console.log(response)
         } catch (error) {
             console.error(error)
         }
@@ -78,7 +76,6 @@ export const ObraContextProvider = ({children}) => {
     const updateObra = async (idObra, newfields) =>{
         try {
             const response = await UpdateObraRequest(idObra, newfields)
-            console.log(response)
         } catch (error) {
             console.error(error)
         }
