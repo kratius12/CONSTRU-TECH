@@ -1,9 +1,10 @@
-import { Form, Formik, Field } from "formik";
+import { Form, Formik, Field, ErrorMessage } from "formik";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Select from "react-select";
 import { useObras } from "../../context/obras/ObrasProvider";
-import ObraSchema from "../../components/ValidatorObra";
+import {ObraSchema, getValidate} from "../../components/ValidatorObra";
+import * as Yup from 'yup';
 function ObrasForm() {
 
     const { createObra, getObra, updateObra, clientes, Clientes, materiales, Materiales, empleados, Empleados } = useObras()
@@ -12,26 +13,30 @@ function ObrasForm() {
     const [keyMat, setKeyMat] = useState(0)
     const [keyEmp, setKeyEmp] = useState(0)
     const [keyCli, setKeyCli] = useState(0)
-    const [keyEstado, setKeyEstado] = useState(0)
+
 
     const [optionsMat, setOptionsMat] = useState([])
     const [defaultOptionsMat, setDefaultOptionsMat] = useState([])
-    const [selectedMat, setSelectedMat] = useState(defaultOptionsMat)
+    const [selectedMat, setSelectedMat] = useState([])
 
     const [optionsEmp, setOptionsEmp] = useState([])
     const [defaultOptionsEmp, setDefaultOptionsEmp] = useState([])
-    const [selectedEmp, setSelectedEmp] = useState(defaultOptionsEmp)
+    const [selectedEmp, setSelectedEmp] = useState([])
 
     const [optionsCli, setOptionsCli] = useState([]);
     const [defaultOptionsCli, setDefaultOptionsCli] = useState([]);
-    const [selectedCli, setSelectedCli] = useState(defaultOptionsCli)
+    const [selectedCli, setSelectedCli] = useState(null)
 
-    const optionsEstado = [
-        { value: 1, label: 'En asesoria' },
-        { value: 0, label: 'Pendiente' },
-        { value: 2, label: 'En construcción' },
-        { value: 3, label: 'Terminado' }
+    const optsEstado = [
+        { value: 'En asesoria', label: 'En asesoria' },
+        { value: 'Pendiente', label: 'Pendiente' },
+        { value: 'En construcción', label: 'En construcción' },
+        { value: 'Terminado', label: 'Terminado' }
     ]
+
+    // const [optionsEstado, setOptionsEstado] = useState(optsEstado);
+    // const [defaultOptionsEstado, setDefaultOptionsEstado] = useState([]);
+    // const [selectedEstado, setSelectedEstado] = useState(defaultOptionsEstado)
 
     const [obra, setObra] = useState({
         descripcion: "",
@@ -39,7 +44,7 @@ function ObrasForm() {
         estado: "",
         fechaini: "",
         fechafin: "",
-        cliente: "",
+        cliente: [],
         empleados: [],
         material: []
     })
@@ -60,10 +65,12 @@ function ObrasForm() {
                 })
                 const defaultOptsEmp = obra.empleado_obra.map(item => ({ value: item.empleado.idEmp, label: item.empleado.nombre }))
                 setDefaultOptionsEmp(defaultOptsEmp)
+                setSelectedEmp(defaultOptsEmp)
                 setKeyEmp(prevKey => prevKey + 1)
 
                 const defaultOptsMat = obra.materiales_obras.map(item => ({ value: item.materiales.idMat, label: item.materiales.nombre }))
                 setDefaultOptionsMat(defaultOptsMat)
+                setSelectedMat(defaultOptsMat)
                 setKeyMat(prevKey => prevKey + 1)
 
                 const defaultOptionsCli = [
@@ -72,8 +79,8 @@ function ObrasForm() {
                     }
                 ]
                 setDefaultOptionsCli(defaultOptionsCli)
+                setSelectedCli(defaultOptionsCli)
                 setKeyCli(prevKey => prevKey + 1)
-                setKeyEstado(prevKey => prevKey + 1)
             }
         }
         const fetchData = async () => {
@@ -88,28 +95,48 @@ function ObrasForm() {
             const clientesData = await Clientes()
             const opcionesClientes = clientesData.map(item => ({ value: item.idCli, label: item.nombre }))
             setOptionsCli(opcionesClientes)
-            setKeyEstado(prevKey => prevKey + 1)
+            
         }
         fetchData()
-        // Clientes()
-        // Materiales()
-        // Empleados()
         loadObras()
     }, [])
-    console.log(defaultOptionsCli);
+
+    useEffect(() => {
+        setKeyCli((prevKey) => prevKey + 1)
+    }, [])
+
+    const validate = (values) =>{
+        console.log(values);
+        const hasId = params.id ? params.id : ''
+        const errors = getValidate(values, hasId)
+
+        return errors
+    }
+
+    const handleMenuClose = () =>{
+        const focusHelper = document.getElementById('focusHelper')
+        if (focusHelper) {
+            focusHelper.focus()
+        }
+    }
+
+console.log(selectedCli);
     return (
         <div className="container">
             <div className="row">
                 <div className="col-md-12">
                     <Formik initialValues={obra}
                         enableReinitialize={true}
-                        validationSchema={ObraSchema}
+                        // validationSchema={ObraSchema}
+                        validate={validate}
                         onSubmit={async (values) => {
-
+                            console.log(values);
+                            const cleannedDescription = values.descripcion.replace(/\s{2,}/g, ' ').trim()
                             const obraObject = {
                                 ...values,
-                                empleados: defaultOptionsEmp,
-                                cliente: defaultOptionsCli,
+                                descripcion: cleannedDescription,
+                                empleados: selectedEmp,
+                                cliente: selectedCli,
                                 material: selectedMat
                             }
                             console.log(obraObject)
@@ -126,34 +153,21 @@ function ObrasForm() {
                                 estado: "",
                                 fechaini: "",
                                 fechafin: "",
-                                cliente: "",
+                                cliente: [],
                                 empleados: [],
                                 material: []
                             })
                         }}>
-                        {({ handleChange, handleSubmit, handleBlur, setFieldValue, setFieldTouched, values, isSubmitting, errors, touched }) => (
+                        {({ handleChange, handleSubmit, setFieldValue, setFieldTouched, values, isSubmitting, errors, touched }) => (
                             <Form onSubmit={handleSubmit} className="user">
                                 <div className="card text-center w-100">
                                     <h2>{params.id ? "Editar" : "Agregar"} obra</h2>
                                     <div className="card-body">
                                         <div className="row">
+                                        <div id="focusHelper"></div>
                                             {
                                                 params.id ? (
-                                                    <>
-                                                        <div className="col-md-6 mt-3">
-                                                            <label htmlFor="descripcion" className="form-label">Descripcion de la obra<span className="text-danger">*</span></label>
-                                                            <input type="text" className="form-control form-control-user" id="descripcion" onChange={handleChange} value={values.descripcion} placeholder="Descripción de la obra*" />
-                                                            {errors.descripcion && touched.descripcion ? (
-                                                                <div className="alert alert-danger" role="alert">{errors.descripcion}</div>
-                                                            ) : null}
-                                                        </div>
-                                                        <div className="col-md-6 mt-3">
-                                                            <label htmlFor="area" className="form-label">Área de la obra<span className="text-danger">*</span></label>
-                                                            <input type="text" className="form-control form-control-user" id="area" onChange={handleChange} value={values.area} placeholder="Descripción de la obra*" />
-                                                            {errors.area && touched.area ? (
-                                                                <div className="alert alert-danger" role="alert">{errors.area}</div>
-                                                            ) : null}
-                                                        </div>
+                                                    <>  
                                                         <div className="col-md-6 mt-3">
                                                             <label htmlFor="cliente" className="form-label">Cliente<span className="text-danger">*</span></label>
                                                             <Select
@@ -164,25 +178,12 @@ function ObrasForm() {
                                                                 options={optionsCli}
                                                                 className="basic-multi-select"
                                                                 classNamePrefix="select"
-                                                                onChange={(selectedCli) => setSelectedCli(selectedCli)}
+                                                                onChange={(selectedCli) => {
+                                                                    setSelectedCli(selectedCli)
+                                                                    setFieldValue('cliente', selectedCli)
+                                                                    handleMenuClose
+                                                                }}
                                                                 onBlur={(selectedCli) => setSelectedCli(selectedCli)}
-                                                            />
-                                                            {errors.cliente && touched.cliente ? (
-                                                                <div className="alert alert-danger" role="alert">{errors.cliente}</div>
-                                                            ) : null}
-                                                        </div>
-                                                        <div className="col-md-6 mt-3">
-                                                            <label htmlFor="cliente" className="form-label">Estado<span className="text-danger">*</span></label>
-                                                            <Select
-                                                                key={keyEstado}
-                                                                placeholder={<div>Selecciona estado</div>}
-                                                                name="cliente"
-                                                                value={values.estado}
-                                                                options={optionsEstado}
-                                                                className="basic-multi-select"
-                                                                classNamePrefix="select"
-                                                                onChange={(selectedOption) => setFieldValue('estado', selectedOption)}
-                                                                onBlur={() => setFieldTouched('estado', true)}
                                                             />
                                                             {errors.cliente && touched.cliente ? (
                                                                 <div className="alert alert-danger" role="alert">{errors.cliente}</div>
@@ -199,7 +200,11 @@ function ObrasForm() {
                                                                 options={optionsEmp}
                                                                 className="basic-multi-select"
                                                                 classNamePrefix="select"
-                                                                onChange={(selectedOption) => setFieldValue('empleados', selectedOption)}
+                                                                onChange={(selectedEmp) => {
+                                                                    setFieldValue('empleados', selectedEmp);
+                                                                    setSelectedEmp(selectedEmp)
+                                                                    handleMenuClose
+                                                                }}
                                                                 onBlur={() => setFieldTouched('empleados', true)}
                                                             />
                                                             {errors.empleados && touched.empleados ? (
@@ -207,23 +212,49 @@ function ObrasForm() {
                                                             ) : null}
                                                         </div>
                                                         <div className="col-md-6 mt-3">
-                                                            <label htmlFor="material" className="form-label">Materiales<span className="text-danger">*</span></label>
+                                                            <label htmlFor="material">Material</label>
                                                             <Select
                                                                 placeholder={<div>Selecciona Materiales</div>}
                                                                 key={keyMat}
                                                                 defaultValue={defaultOptionsMat}
                                                                 isMulti
-                                                                name="material"
                                                                 options={optionsMat}
                                                                 className="basic-multi-select"
                                                                 classNamePrefix="select"
-                                                                onChange={(selectedMat) => setFieldValue('material', selectedMat)}
-                                                                onBlur={() => setFieldTouched('material', true)}
+                                                                onChange={(selectedMat) => {
+                                                                setFieldValue('material', selectedMat);
+                                                                setSelectedMat(selectedMat);
+                                                                handleMenuClose
+                                                                }}
+                                                                onBlur={() => setFieldTouched('material', true)} 
                                                             />
                                                             {errors.material && touched.material ? (
                                                                 <div className="alert alert-danger" role="alert">{errors.material}</div>
                                                             ) : null}
                                                         </div>
+                                                        <div className="col-md-6 mt-3">
+                                                            <label htmlFor="estado" className="form-label">Estado<span className="text-danger">*</span></label>
+                                                            <Select
+                                                                id="estado"
+                                                                className="basic-multi-select"
+                                                                classNamePrefix="select"
+                                                                options={[
+                                                                    { value: 'En sesoria', label: 'En sesoria' },
+                                                                    { value: 'Pendiente', label: 'Pendiente' },
+                                                                    { value: 'En construccion', label: 'En construccion' },
+                                                                    { value: 'Terminado', label: 'Terminado' },
+                                                                ]}
+                                                                value={{ value: values.estado, label: values.estado === '' ? 'Seleccione estado*' : values.estado }}
+                                                                onChange={(selectedOption) => {
+                                                                    setFieldValue('estado', selectedOption.value);
+                                                                    setFieldTouched('estado', true);
+                                                                }}
+                                                                onBlur={() => setFieldTouched('estado', true)}
+                                                            />
+                                                            {errors.estado && touched.estado ? (
+                                                            <div className="alert alert-danger" role="alert">{errors.estado}</div>
+                                                            ) : null}
+                                                        </div>                                                        
                                                         <div className="col-md-6 mt-3">
                                                             <label htmlFor="fechaini" className="form-label">Fecha inicio<span className="text-danger">*</span></label>
                                                             <input type="date" className="form-control" id="fechaini" onChange={handleChange} value={values.fechaini} />
@@ -238,46 +269,42 @@ function ObrasForm() {
                                                                 <div className="alert alert-danger" role="alert">{errors.fechafin}</div>
                                                             ) : null}
                                                         </div>
+                                                        <div className="col-md-6 mt-3">
+                                                            <label htmlFor="area" className="form-label">Área de la obra<span className="text-danger">*</span></label>
+                                                            <input type="text" className="form-control form-control-user" id="area" onChange={handleChange} value={values.area || ''} placeholder="Area de la obra*" />
+                                                            {errors.area && touched.area ? (
+                                                                <div className="alert alert-danger" role="alert">{errors.area}</div>
+                                                            ) : null}
+                                                        </div>                                                        
+                                                        <div className="col-md-12 mt-3">
+                                                            <label htmlFor="descripcion" className="form-label">Descripcion de la obra<span className="text-danger">*</span></label>
+                                                            <textarea type="text" className="form-control form-control-user" id="descripcion" onChange={handleChange} value={values.descripcion} placeholder="Descripción de la obra*" />
+                                                            {errors.descripcion && touched.descripcion ? (
+                                                                <div className="alert alert-danger" role="alert">{errors.descripcion}</div>
+                                                            ) : null}
+                                                        </div>                                                        
                                                     </>
                                                 ) : (
                                                     <>
                                                         <div className="col-md-6 mt-3">
-                                                            <label htmlFor="descripcion" className="form-label">Descripción<span className="text-danger">*</span></label>
-                                                            <input type="text" className="form-control" id="descripcion" onChange={handleChange} value={values.descripcion} />
-                                                            {errors.descripcion && touched.descripcion ? (
-                                                                <div className="alert alert-danger" role="alert">{errors.descripcion}</div>
-                                                            ) : null}
-                                                        </div>
-                                                        <div className="col-md-6 mt-3">
                                                             <label htmlFor="cliente" className="form-label">Cliente<span className="text-danger">*</span></label>
                                                             <Select
                                                                 placeholder={<div>Selecciona cliente</div>}
-                                                                defaultValue={defaultOptionsCli}
                                                                 name="cliente"
+                                                                value={selectedCli}
                                                                 options={optionsCli}
                                                                 className="basic-multi-select"
                                                                 classNamePrefix="select"
-                                                                onChange={(selectedCli) => setSelectedCli(selectedCli)}
+                                                                onChange={(selectedCli) => {
+                                                                    setFieldValue('cliente', selectedCli)
+                                                                    setSelectedCli(selectedCli)
+                                                                    handleMenuClose
+                                                                }}
+                                                                onBlur={() => setFieldTouched('cliente', true)}
+                                                                onMenuClose={handleMenuClose}
                                                             />
                                                             {errors.cliente && touched.cliente ? (
                                                                 <div className="alert alert-danger" role="alert">{errors.cliente}</div>
-                                                            ) : null}
-                                                        </div>
-                                                        <div className="col-md-6 mt-3">
-                                                            <label htmlFor="estado" className="form-label">Estado<span className="text-danger">*</span></label>
-                                                            <Select
-                                                                key={keyEstado}
-                                                                placeholder={<div>Selecciona estado</div>}
-                                                                defaultValue={optionsEstado}
-                                                                name="estado"
-                                                                options={[{ value: 1, label: 'En Asesoría' }, { value: 0, label: 'Pendiente' }]}
-                                                                className="basic-multi-select"
-                                                                classNamePrefix="select"
-                                                                onChange={(selectedOption) => setFieldValue('estado', selectedOption)}
-                                                                onBlur={() => setFieldTouched('estado', true)}
-                                                            />
-                                                            {errors.estado && touched.estado ? (
-                                                                <div className="alert alert-danger" role="alert">{errors.estado}</div>
                                                             ) : null}
                                                         </div>
                                                         <div className="col-md-6 mt-3">
@@ -285,18 +312,31 @@ function ObrasForm() {
                                                             <Select
                                                                 key={keyEmp}
                                                                 placeholder={<div>Asignar asesor</div>}
-                                                                value={values.empleados}
                                                                 name="empleados"
                                                                 options={optionsEmp}
                                                                 className="basic-multi-select"
                                                                 classNamePrefix="select"
-                                                                onChange={(selectedEmp) => setSelectedEmp(selectedEmp)}
-
+                                                                onChange={(selectedEmp) => {
+                                                                    setFieldValue('empleados', selectedEmp);
+                                                                    setSelectedEmp(selectedEmp)
+                                                                    handleMenuClose
+                                                                }}
+                                                                onBlur={() => setFieldTouched('empleados', true)}                                                                
                                                             />
                                                             {errors.empleados && touched.empleados ? (
                                                                 <div className="alert alert-danger" role="alert">{errors.empleados}</div>
                                                             ) : null}
+                                                        </div>                                                        
+                                                        <div className="col-md-6 mt-3">
+                                                            <label htmlFor="estado" className="form-label">Estado<span className="text-danger">*</span></label>
+                                                            <select id="estado" className="form-select form-control-user" onChange={handleChange} defaultValue={values.estado} disabled>
+                                                                <option value="Pendiente">Pendiente</option>
+                                                            </select>
+                                                            {errors.estado && touched.estado ? (
+                                                                <div className="alert alert-danger" role="alert">{errors.estado}</div>
+                                                            ) : null}
                                                         </div>
+                                                        
                                                         <div className="col-md-6 mt-3">
                                                             <label htmlFor="fechaini" className="form-label">Fecha inicio<span className="text-danger">*</span></label>
                                                             <input type="date" className="form-control" id="fechaini" onChange={handleChange} value={values.fechaini} />
@@ -304,6 +344,13 @@ function ObrasForm() {
                                                                 <div className="alert alert-danger" role="alert">{errors.fechaini}</div>
                                                             ) : null}
                                                         </div>
+                                                        <div className="col-md-12 mt-3">
+                                                            <label htmlFor="descripcion" className="form-label">Descripcion de la obra<span className="text-danger">*</span></label>
+                                                            <textarea type="text" className="form-control form-control-user" id="descripcion" onChange={handleChange} value={values.descripcion} placeholder="Descripción de la obra*" />
+                                                            {errors.descripcion && touched.descripcion ? (
+                                                                <div className="alert alert-danger" role="alert">{errors.descripcion}</div>
+                                                            ) : null}
+                                                        </div>                                                        
                                                     </>
                                                 )
                                             }
@@ -320,7 +367,7 @@ function ObrasForm() {
                                                 </button>
                                             </div>
                                             <div className="col-md-6">
-                                                <a type="button" href="" className="btn btn-danger btn-icon-split w-50" onClick={() => navigate(`/proveedores`)}>
+                                                <a type="button" href="" className="btn btn-danger btn-icon-split w-50" onClick={() => navigate(`/obras`)}>
                                                     <span className="text-white-50">
                                                         <i className="fa-solid fa-x"></i>
                                                     </span>
