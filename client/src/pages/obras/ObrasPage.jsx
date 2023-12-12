@@ -72,6 +72,7 @@ function ObrasPage() {
       onSortingChange: setSorting,
       onGlobalFilterChange: setFiltering,
     });
+    const maxLength = 15;
     return (
         <>
             <h1 className="h3 mb-2 text-gray-800">Gestión de obras y tiempos</h1>
@@ -129,8 +130,10 @@ function ObrasPage() {
                                 <tbody>
                                 {table.getRowModel().rows.map((row) => (
                                     <tr key={row.id}>
+
                                     {row.getVisibleCells().map((cell) => (
                                         <td key={cell.id}>
+                                        {console.log(cell.row.original)}
                                         {cell.column.id === 'accion' ? (
                                             <>
                                             <AlertDetail
@@ -144,6 +147,14 @@ function ObrasPage() {
                                             >
                                                 Editar <i className="fa-solid fa-pencil" />
                                             </Link>
+                                            </>
+                                        ):cell.column.id === 'idCliente' ? (
+                                            <>
+                                                {cell.row.original.cliente.nombre.length > maxLength ? cell.row.original.cliente.nombre.substring(0, maxLength)+ '...': cell.row.original.cliente.nombre}
+                                            </>
+                                        ): cell.column.id === 'descripcion'? (
+                                            <>
+                                                {cell.row.original.descripcion.length > maxLength ? cell.row.original.descripcion.substring(0, maxLength)+ '...': cell.row.original.descripcion}
                                             </>
                                         ) : (
                                             flexRender(

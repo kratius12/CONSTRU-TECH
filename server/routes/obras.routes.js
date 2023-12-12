@@ -14,7 +14,13 @@ const router = Router()
 
 router.get("/obras", async (req, res) =>{
     try {
-        const result = await prisma.obras.findMany()
+        const result = await prisma.obras.findMany({
+            include:{
+                cliente:true,
+                empleado_obra:true,
+                materiales_obras:true
+            }
+        })
         res.status(200).json(result)
     } catch (error) {
         console.log(json({message: error.message}))
@@ -57,13 +63,13 @@ router.post("/obras", async (req, res) =>{
             data:{
                 descripcion:descripcion,
                 fechaini:fechaini,
-                estado:"1",
-                idCliente:parseInt(cliente)
+                estado:"Pendiente",
+                idCliente:parseInt(cliente.value)
             }
         })
         await prisma.empleado_obra.create({
             data:{
-                idEmp:parseInt(empleados),
+                idEmp:parseInt(empleados.value),
                 idObra:parseInt(result.idObra)
             }
         })
@@ -85,7 +91,7 @@ router.put("/obra/:id", async (req, res) =>{
             data:{
                 descripcion:descripcion,
                 area:area,
-                estado:String(estado.value),
+                estado:estado,
                 fechaini:fechaini,
                 fechafin:fechafin,
                 idCliente:cliente.value
