@@ -129,7 +129,7 @@ export default function ProveedoresForm() {
                                         <div className="row">
                                             <div className="col-6 mt-3">
                                                 <select  id="tipo" className="form-select form-control-user" onChange={handleSelectChange} value={values.tipo = tipo}
-                                                style={{height:30}}
+                                                   
                                                 >
                                                     <option value="0">Seleccione el tipo de proveedor*</option>
                                                     <option value="Natural">Natural</option>
