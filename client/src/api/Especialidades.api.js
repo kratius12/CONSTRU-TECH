@@ -21,5 +21,5 @@ export const UpdateEspecialidadRequest = async (id, newFields) =>{
 }
 
 export const ToggleEspecialidadStatusRequest = async (id, status) =>{
-    return await axios.put(`http://localhost:4000/especialidad/${id}`, status)
+    return await axios.put(`http://localhost:4000/especialidadStatus/${id}`, status)
 }

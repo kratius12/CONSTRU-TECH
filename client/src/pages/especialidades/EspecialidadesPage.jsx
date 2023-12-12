@@ -27,7 +27,7 @@ function EspecialidadesPage() {
         }
     ]
 
-    const {especialidades, Especialidades} = useEspecialidades()
+    const {especialidades, Especialidades, toggleEspecialidadStatus, getEspecialidad} = useEspecialidades()
     const navigate = useNavigate()
     useEffect(() =>{
     Especialidades()  
@@ -39,7 +39,7 @@ function EspecialidadesPage() {
             
         }
 
-        return <TableInfo dataHeader={dataHeader} dataBody={especialidades} routeEdit={'editarEspecialidad'}/>
+        return <TableInfo dataHeader={dataHeader} dataBody={especialidades} routeEdit={'editarEspecialidad'} toggleApi={toggleEspecialidadStatus} getApi={getEspecialidad} entity={'Especialidad'}/>
         // return <EspecialidadTable especialidades={especialidades}/>
     }
 
