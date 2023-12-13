@@ -107,19 +107,19 @@ export default function MaterialesForm() {
                   <h2>{params.id ? "Editar" : "Agregar"} material</h2>
                   <div className="card-body">
                     <div className="row">
-                      <div className="col-6 mt-3">
+                      <div className="col-md-6 mt-3">
                         <input type="text" className="form-control form-control-user" id="nombre" onChange={handleChange} value={values.nombre} placeholder="Nombre*" />
                         {errors.nombre && touched.nombre ? (
                           <div className="alert alert-danger" role="alert">{errors.nombre}</div>
                         ) : null}
                       </div>
-                      {/* <div className="col-6 mt-3">
+                      {/* <div className="col-md-6 mt-3">
                         <input type="number" className="form-control form-control-user" id="cantidad" onChange={handleChange} value={values.cantidad} placeholder="Cantidad*"/>
                         {errors.cantidad && touched.cantidad ? (
                           <div className="alert alert-danger" role="alert">{errors.cantidad}</div>
                         ) : null}
                       </div> */}
-                      <div className="col-6 mt-3">
+                      <div className="col-md-6 mt-3">
                         <select className="form-select form-control-user" id="idCategoria" value={values.idCategoria} onChange={handleChange}>
                           <option >Seleccione una categoria*</option>
                           {categorias.map((categoria, e) => (
@@ -130,7 +130,7 @@ export default function MaterialesForm() {
                           <div className="alert alert-danger" role="alert">{errors.idCategoria}</div>
                         ) : null}
                       </div>
-                      <div className="col-6 mt-3">
+                      <div className="col-md-6 mt-3">
                         <select className="form-select form-control-user" id="idProveedor" value={values.idProveedor} onChange={handleChange}>
                           <option value="">Seleccione un proveedor*</option>
                           {proveedores.map((proveedor, i) => (
@@ -141,7 +141,7 @@ export default function MaterialesForm() {
                           <div className="alert alert-danger" role="alert">{errors.idProveedor}</div>
                         ) : null}
                       </div>
-                      <div className="col-6 mt-3">
+                      <div className="col-md-6 mt-3">
                         <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
                           <option value="">Seleccione estado</option>
                           <option value="1">Activo</option>
