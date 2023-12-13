@@ -21,7 +21,8 @@ function CategoriasPage() {
         },
         {
             header: "Estado",
-            accessorKey: 'estado'
+            accessorKey: 'estado',
+            idProperty: 'idcat'
         },
         {
             header: "Acción",

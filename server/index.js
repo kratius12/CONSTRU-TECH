@@ -36,7 +36,9 @@ app.use(rolesRoutes)
 app.use(usuariosRoutes)
 app.use(permisosRoutes)
 app.use(comprasRoutes)
+
 app.use(dashboardRoutes)
+
 app.use(express.static(join(_dirname,"../client/dist")))
 app.listen(PORT)
 console.log("server listeing in port: "+PORT)

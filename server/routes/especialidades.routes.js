@@ -83,16 +83,16 @@ router.delete("/especialidad/:id", async (req, res) => {
 
 router.put("/especialidadStatus/:id", async (req, res) => {
     try {
-        const {status} = req.body
+        const {estado} = req.body
         const result = await prisma.especialidad.update({
             where:{
                 id:parseInt(req.params.id)
             },
             data:{
-                estado:parseInt(status)
+                estado:parseInt(estado)
             }
         })        
-        console.log(status)
+        console.log(estado)
         return res.status(200).json(result)
 
     } catch (error) {

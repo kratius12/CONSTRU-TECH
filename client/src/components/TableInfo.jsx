@@ -8,10 +8,11 @@ import {
 } from '@tanstack/react-table';
 import { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Table as BTable } from 'react-bootstrap';
+import { Table as BTable, Card } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import StatusToggle from '../components/StatusToggle';
 import AlertDetail from '../components/AlertDetail';
+import "./Tableinfo.css"
 
 function TableInfo({ dataHeader, dataBody, routeEdit, viewDetail, entity, toggleApi, onChangeStatus, getApi }) {
 
@@ -76,6 +77,7 @@ function TableInfo({ dataHeader, dataBody, routeEdit, viewDetail, entity, toggle
           onChange={(e) => setFiltering(e.target.value)}
         />
       </div>
+      <div className='d-none d-md-block'>
       <BTable striped bordered hover responsive size="sm">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -149,6 +151,52 @@ function TableInfo({ dataHeader, dataBody, routeEdit, viewDetail, entity, toggle
           ))}
         </tbody>
       </BTable>
+      </div>
+      <div className="d-md-none">
+        {table.getRowModel().rows.map((row) => (
+          <Card key={row.id} className="mb-3">
+            <Card.Body>
+              {row.getVisibleCells().map((cell) => (
+                <div key={cell.id} className="mb-2">
+                  <strong>{cell.column.columnDef.header}:</strong>&nbsp;
+                  {cell.column.id === 'accion' ? (
+                    <>
+                      {viewDetail ? (
+                        <AlertDetail
+                          id={cell.row.original[cell.column.columnDef.idProperty]}
+                          entity={entity}
+                          getApi={getApi}
+                        />
+                      ) : (
+                        ''
+                      )}
+                      <Link
+                        className={`btn bg-secondary text-white ${cell.row.original.estado === 0 ? 'disabled' : ''}`}
+                        to={`/${routeEdit}/${cell.row.original[cell.column.columnDef.idProperty]}`}
+                      >
+                        Editar <i className="fa-solid fa-pencil" />
+                      </Link>
+                    </>
+                  ) : cell.column.id === 'estado' ? (
+                    <StatusToggle
+                      onCambioEstado={handleCambioEstado}
+                      id={cell.row.original[cell.column.columnDef.idProperty]}
+                      initialStatus={cell.row.original.estado}
+                      toggleApi={toggleApi}
+                    >
+                      <Link
+                        to={`/${routeEdit}/${cell.row.original[cell.column.columnDef.idProperty]}`}
+                      ></Link>
+                    </StatusToggle>
+                  ) : (
+                    flexRender(cell.column.columnDef.cell, cell.getContext())
+                  )}
+                </div>
+              ))}
+            </Card.Body>
+          </Card>
+        ))}
+      </div>
       <div className="row">
         <div className="col-md-2 offset-md-4">
           <a
@@ -165,9 +213,9 @@ function TableInfo({ dataHeader, dataBody, routeEdit, viewDetail, entity, toggle
             className="btn bg-transparent"
             onClick={() => table.nextPage()}
           >
-            
              Siguiente &nbsp;
-            <i className="fa-solid fa-arrow-right"></i>
+             <i className="fa-solid fa-arrow-right"></i>
+            &nbsp;
           </a>
         </div>
       </div>

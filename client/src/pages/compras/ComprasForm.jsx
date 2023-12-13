@@ -1,274 +1,409 @@
-import { useEffect, useState } from "react";
-import { Form, Formik } from "formik";
-import { useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Formik, Field, Form, FieldArray, ErrorMessage } from "formik";
+import { useNavigate } from "react-router-dom";
 import { useCompras } from "../../context/compras/ComprasProvider";
-import comprasSchema from './ComprasSchema'
 import axios from "axios";
-export default function ComprasForm() {
-  //   const [agreed, setAgreed] = useState(false)
-  const { createCompra, getCompra, Compras, createDetalle, getDetalle } = useCompras()
-  useEffect(() => {
-    Compras()
-  }, [])
+import comprasSchema from "./ComprasSchema";
 
-  const params = useParams()
-  const navigate = useNavigate()
-  const [compra, setCompra] = useState({
-    fecha: '',
-    imagen: '',
-    total_compra: '',
-    detalle: []
-  })
-  const [detalle, setDetalle] = useState({
-    idCompra: '',
-    idMat: '',
-    cantidad: '',
-    subtotal: ''
-  })
-  const [products, setProducts] = useState([
-    {
-      categoria: '',
-      material: '',
-      precio: 0,
-      cantidad: 0,
-    },
-  ]);
-  const addProduct = () => {
-    setProducts([
-      ...products,
+const fetchData = async (url) => {
+  try {
+    const response = await axios.get(url);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    return [];
+  }
+};
+
+const ComprasForm = () => {
+  const { createCompra } = useCompras();
+  const [categorias, setCategorias] = useState([]);
+  const [materiales, setMateriales] = useState([]);
+  const [proveedores, setProveedores] = useState([]);
+  const navigate = useNavigate();
+  const [file, setFile] = useState(null);
+
+  const selectedHandler = (e) => {
+    setFile(e.target.files[0]);
+  }; const alertConfirm = (type) => {
+    var message = ""
+    if (type == "update") {
+      message = "Actualizado"
+    } else {
+      message = "Agregado"
+    }
+    $.confirm({
+      title: `Compra ` + message + ` con exito!`,
+      content: "Redirecionando a listado de compras...",
+      icon: 'fa fa-check',
+      theme: 'modern',
+      closeIcon: true,
+      animation: 'zoom',
+      closeAnimation: 'scale',
+      animationSpeed: 1500,
+      type: 'green',
+      columnClass: 'col-md-6 col-md-offset-3',
+      autoClose: 'okay|4000',
+      buttons: {
+        okay: function () {
+        },
+      }
+    })
+  }
+
+  const sendHandler = async (values) => {
+    if (!file) {
+      alert("You must upload a file");
+      return;
+    }
+
+    const formdata = new FormData();
+
+    // Agregar campos del formulario al FormData
+    Object.keys(values).forEach((key) => {
+      if (key === "detalles") {
+        // Iterar sobre los detalles y agregar sus campos al FormData
+        values.detalles.forEach((detalle, index) => {
+          Object.keys(detalle).forEach((detalleKey) => {
+            formdata.append(`detalles.${index}.${detalleKey}`, detalle[detalleKey]);
+          });
+        });
+      } else {
+        formdata.append(key, values[key]);
+      }
+    });
+
+    // Agregar el archivo al FormData
+    formdata.append("image", file);
+
+    try {
+      const response = await fetch("http://localhost:4000/compra", {
+        method: "POST",
+        body: formdata,
+      });
+
+      const result = await response.text();
+
+      console.log(result);
+
+      try {
+        const parsedResult = JSON.parse(result);
+        console.log(parsedResult);
+      } catch (error) {
+        console.error(error);
+      }
+
+      // Limpiar el campo de archivo después de enviar la solicitud
+      const fileInput = document.getElementById("fileinput");
+      if (fileInput) {
+        fileInput.value = null;
+      }
+
+      setFile(null);
+    } catch (error) {
+      console.error("Error sending request:", error);
+    }
+  };
+
+  const [totalGeneral, setTotalGeneral] = useState(0);
+
+  const calcularTotalGeneral = (detalles) => {
+    let total = 0;
+    detalles.forEach((detalle) => {
+      const subtotal = detalle.cantidad * detalle.precio;
+      total += subtotal;
+    });
+    setTotalGeneral(total);
+  };
+
+  const initialValues = {
+    fecha: "",
+    imagen: "",
+    idProv: "",
+    codigoFactura: "",
+    total_compra: 0,
+    detalles: [
       {
-        categoria: '',
-        material: '',
-        precio: 0,
-        cantidad: 0,
+        idCat: "",
+        idMat: "",
+        cantidad: "",
+        precio: "",
+        subtotal: "",
       },
-    ]);
-  };
-  const removeProduct = (index) => {
-    const updatedProducts = [...products];
-    updatedProducts.splice(index, 1);
-    setProducts(updatedProducts);
-  };
-  const [material, setMaterial] = useState([])
-  const [categoria, setCategoria] = useState([])
-  const [materialSeleccionado, setMaterialSeleccionado] = useState('')
-  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('')
-  const handleInputChange = (index, key, value) => {
-    const updatedProducts = [...products];
-    updatedProducts[index][key] = value;
-    setProducts(updatedProducts);
-  };
-
-  const calculateSubtotal = () => {
-    return products.reduce((total, product) => {
-      return total + product.precio * product.cantidad;
-    }, 0);
+    ],
   };
 
   useEffect(() => {
-    const loadCompras = async () => {
-      if (params.id) {
-        const compra = await getCompra(params.id)
-        setCompra({
-          fecha: compra.fecha,
-          imagen: compra.imagen,
-          total_compra: compra.total_compra,
-          detalle: compra.detalle
-        })
-      }
-      axios.get(`http://localhost:4000/materiales`)
-        .then((response) => {
-          setMaterial(response.data)
-        })
-        .catch((error) => {
-          console.error(error)
-        })
-      axios.get(`http://localhost:4000/categorias`)
-        .then((response) => {
-          setCategoria(response.data)
-        })
-        .catch((error) => {
-          console.error(error)
-        })
-    }
-    loadCompras()
-  }, [getCompra, params.id])
+    fetchData("http://localhost:4000/categorias").then((data) => {
+      setCategorias(data);
+    });
+    fetchData("http://localhost:4000/materiales").then((data) => {
+      setMateriales(data);
+    });
+    fetchData("http://localhost:4000/provs").then((data) => {
+      setProveedores(data);
+    });
+  }, []);
 
   useEffect(() => {
-    const loadDetalle = async () => {
-      if (params.id) {
-        const detalle = await getDetalle(params.id)
+    calcularTotalGeneral(initialValues.detalles);
+  }, [initialValues.detalles]);
 
-        setDetalle({
-          idCompra: detalle.idCompra,
-          idMat: detalle.idMat,
-          cantidad: detalle.cantidad,
-          subtotal: detalle.subtotal
-        })
-      }
-    }
-    loadDetalle()
-  }, [getDetalle, params.id]
-
-  )
   return (
     <div className="container">
-      <div className="row">
-        <div className="col-md-12">
-          <Formik initialValues={compra}
-            enableReinitialize={true}
-            // validationSchema={comprasSchema}
-            onSubmit={async (values) => {
-              console.log(values);
-              await createCompra(values)
-              navigate("/compras")
-              setCompra({
-                fecha: '',
-                imagen: '',
-                total_compra: '',
-                detalle: [{
-                  idCat: "",
-                  idMat: "",
-                  cantidad: "",
-                  Precio: "",
-                  subtotal: ""
-                }]
-              })
-
-            }}
-          >
-            {({ handleChange, handleSubmit, values, isSubmitting, errors, touched }) => (
-
-              <Form onSubmit={handleSubmit} className="user">
-                <div className="card text-center w-100">
-
-                  <h2>Agregar compra</h2>
-                  <div className="card-body">
-                    <div className="row">
-                      <div className="col-6 mt-3">
-                        <input type="date" className="form-control hasDatepicker form-control-user" id="fecha" onChange={handleChange} value={values.fecha} />
-                        {errors.fecha && touched.fecha ? (
-                          <div className="alert alert-danger" role="alert">{errors.fecha}</div>
-                        ) : null}
-                      </div>
-                      <div className="col-6 mt-3">
-
-                        <input type="file" className="form-control form-control-user" id="imagen" onChange={handleChange} value={values.imagen} placeholder="Seleccione la imagen de la factura de esta compra" />
-                        {errors.imagen && touched.imagen ? (
-                          <div className="alert alert-danger" role="alert">{errors.imagen}</div>
-                        ) : null}
-                      </div>
-                      <hr className="mt-4" />
-
-                      {products.map((product, index) => (
-                        <div key={index} className="row mt-3">
-                          <div className="col-md-3">
-                            <label>
-                              <select
-                                className="form-select form-control-user"
-                                id={`categoria-${index}`}
-                                value={product.categoria}
-                                onChange={(e) => handleInputChange(index, 'categoria', e.target.value)}
-                              >
-                                <option>Seleccione una categoria*</option>
-                                {categoria.map((categoriaItem, e) => (
-                                  <option key={e} value={categoriaItem.idcat}>{categoriaItem.nombre}</option>
-                                ))}
-                              </select>
-                            </label>
-                          </div>
-                          <div className="col-md-3">
-                            <label>
-                              <select
-                                className="form-select form-control-user"
-                                id={`material-${index}`}
-                                value={product.idMat}
-                                onChange={(e) => handleInputChange(index, 'idMat', e.target.value)}
-                              >
-                                <option>Seleccione un material</option>
-                                {material.map((materialItem, e) => (
-                                  <option key={e} value={materialItem.idcat}>{materialItem.nombre}</option>
-                                ))}
-                              </select>
-                            </label>
-                          </div>
-                          <div className="col-md-2">
-                            <label>
-                              Precio unitario
-                              <input
-                                type="number"
-                                className="form-control form-control-user"
-                                value={product.unitPrice}
-                                onChange={(e) => handleInputChange(index, 'unitPrice', parseFloat(e.target.value))}
-                              />
-                            </label>
-                          </div>
-                          <div className="col-md-2">
-                            <label>
-                              Cantidad
-                              <input
-                                type="number"
-                                className="form-control form-control-user"
-                                value={product.cantidad}
-                                onChange={(e) => handleInputChange(index, 'cantidad', parseInt(e.target.value))}
-                              />
-                            </label>
-                          </div>
-                          <div className="col-md-2">
-                            <label>
-                              Subtotal
-                              <input
-                                disabled
-                                type="number"
-                                className="form-control form-control-user"
-                                value={product.unitPrice * product.cantidad}
-                                onChange={(e) => handleInputChange(index, 'cantidad', parseInt(e.target.value))}
-                              />
-                            </label>
-                          </div>
-                          <div className="col-md-1 text-right">
-                            <button
-                              type="button"
-                              className="btn btn-danger"
-                              onClick={() => removeProduct(index)}
-                            >
-                              <i className="fa-solid fa-trash"></i>
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                      <div className="col-md-12 my-4">
-                        <a id="" onClick={addProduct} className="btn btn-success">Agregar fila <i className="fa fa-plus"></i></a>
-                      </div>
-                      <p>Total:{calculateSubtotal()}</p>
-                    </div>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={comprasSchema}
+        enableReinitialize={true}
+        onSubmit={async (values) => {
+          values.imagen = file;
+          console.log(values.imagen)
+          // Agregar la imagen a los valores del formulario
+          console.log(values);
+          await createCompra(values);
+          alertConfirm()
+          setTimeout(
+            navigate("/compras"),
+            5000
+          )
+        }}
+      >
+        {({ handleSubmit, values, isSubmitting, errors, touched }) => (
+          <Form onSubmit={handleSubmit} className="user" encType="multipart/form-data">
+            <div className="card text-center w-100">
+              <h2>Agregar compra</h2>
+              <div className="card-body">
+                <div className="row">
+                  <div className="col-md-3 mt-3 mx-auto">
+                    <label htmlFor="fecha">Fecha:</label>
+                    <Field className="form-control " type="date" id="fecha" name="fecha" />
+                    {errors.fecha && touched.fecha ? (
+                      <div className="alert alert-danger" role="alert">{errors.fecha}</div>
+                    ) : null}
                   </div>
-                  <div className="card-footer text-center">
-                    <div className="row">
-                      <div className="col-md-6">
-                        <button type="submit" disabled={isSubmitting} className="btn btn-primary btn-icon-split w-50">
-                          <span className="text-white-50">
-                            <i className="fas fa-plus"></i>
-                          </span>
-                          <span className="text">{params.id ? "Editar" : "Agregar"}</span>
-                        </button>
-                      </div>
-                      <div className="col-md-6">
-                        <a type="button" href="" className="btn btn-danger btn-icon-split w-50" onClick={() => navigate(`/compras`)}>
-                          <span className="text-white-50">
-                            <i className="fa-solid fa-x"></i>
-                          </span>
-                          <span className="text">Cancelar</span>
-                        </a>
-                      </div>
-                    </div>
+                  <div className="col-md-3 mt-3 mx-auto">
+                    <label htmlFor="imagen">Factura:</label>
+                    <input id="fileinput" onChange={selectedHandler} className="form-control" type="file" />
+                    {errors.imagen && touched.imagen ? (
+                      <div className="alert alert-danger" role="alert">{errors.imagen}</div>
+                    ) : null}
+                  </div>
+                  <div className="col-md-3 mt-3 mx-auto">
+                    <label htmlFor={`idProv`}>
+                      Proveedor:
+                    </label>
+                    <Field
+                      as="select"
+                      id={`idProv`}
+                      name={`idProv`}
+                      value={values.idProv}
+                      className="form-select"
+                    >
+                      <option value="">Seleccione un proveedor</option>
+                      {proveedores.map((proveedor) => (
+                        <option key={proveedor.idProv} value={proveedor.idProv}>
+                          {proveedor.nombre}
+                        </option>
+                      ))}
+                    </Field>
+                    {errors.idProv && touched.idProv ? (
+                      <div className="alert alert-danger" role="alert">{errors.idProv}</div>
+                    ) : null}
+                  </div>
+                  <div className="col-md-3 mt-3 mx-auto">
+                    <label htmlFor="codigoFactura">Código de Factura:</label>
+                    <Field className="form-control" type="text" id="codigoFactura" name="codigoFactura" />
+                    {errors.codigoFactura && touched.codigoFactura ? (
+                      <div className="alert alert-danger" role="alert">{errors.codigoFactura}</div>
+                    ) : null}
                   </div>
                 </div>
-              </Form>
-            )}
-          </Formik>
-        </div>
-      </div>
+                <hr className="mt-md-3 mx-auto" />
+                <div>
+                  <FieldArray
+                    name="detalles"
+                    render={(arrayHelpers) => (
+                      <div>
+                        {values.detalles.map((detalle, index) => (
+                          <div key={index} className="row">
+                            <div className="col-md-3 mt-3 mx-auto">
+                              <label htmlFor={`detalles.${index}.idCat`}>Categoría:</label>
+                              <Field
+                                as="select"
+                                className="form-select"
+                                id={`detalles.${index}.idCat`}
+                                name={`detalles.${index}.idCat`}
+                                value={values.detalles.idCat}
+                                key={`detalles.${index}.idCat`}
+                              >
+                                <option value="">Seleccione una categoría</option>
+                                {categorias.map((categoria) => (
+                                  <option key={categoria.idcat} value={categoria.idcat}>
+                                    {categoria.nombre}
+                                  </option>
+                                ))}
+                              </Field>
+                              <ErrorMessage
+                                name={`detalles.${index}.idCat`}
+                                component="div"
+                                className="alert alert-danger"
+                              />
+                            </div>
+                            <div className="col-md-3 mt-3 mx-auto">
+                              <label htmlFor={`detalles.${index}.idMat`}>Material:</label>
+                              <Field
+                                as="select"
+                                className="form-select"
+                                id={`detalles.${index}.idMat`}
+                                name={`detalles.${index}.idMat`}
+                                value={detalle.idMat}
+                                key={`detalles.${index}.idMat`}
+                              >
+                                <option value="">Seleccione un material</option>
+                                {materiales.map((material) => (
+                                  <option key={material.idMat} value={material.idMat}>
+                                    {material.nombre}
+                                  </option>
+                                ))}
+                              </Field>
+                              <ErrorMessage
+                                name={`detalles.${index}.idMat`}
+                                component="div"
+                                className="alert alert-danger"
+                              />
+                            </div>
+                            <div className="col-md-2 mt-3 mx-auto">
+                              <label htmlFor={`detalles.${index}.cantidad`}>Cantidad:</label>
+                              <Field
+                                type="text"
+                                className="form-control"
+                                id={`detalles.${index}.cantidad`}
+                                name={`detalles.${index}.cantidad`}
+                                key={`detalles.${index}.cantidad`}
+                              />
+                              <ErrorMessage
+                                name={`detalles.${index}.cantidad`}
+                                component="div"
+                                className="alert alert-danger"
+                              />
+                            </div>
+                            <div className="col-md-2 mt-3 mx-auto">
+                              <label htmlFor={`detalles.${index}.precio`}>Precio:</label>
+                              <Field
+                                type="text"
+                                className="form-control"
+                                id={`detalles.${index}.precio`}
+                                name={`detalles.${index}.precio`}
+                                key={`detalles.${index}.precio`}
+                              />
+                              <ErrorMessage
+                                name={`detalles.${index}.precio`}
+                                component="div"
+                                className="alert alert-danger"
+                              />
+                            </div>
+                            <div className="col-md-2 mt-3 mx-auto">
+                              <label htmlFor={`detalles.${index}.subtotal`}>Subtotal:</label>
+                              <div className="input-group">
+                                <div className="input-group-prepend">
+                                  <span className="input-group-text">$</span>
+                                </div>
+                                <Field
+                                  type="text"
+                                  className="form-control"
+                                  id={`detalles.${index}.subtotal`}
+                                  name={`detalles.${index}.subtotal`}
+                                  key={`detalles.${index}.subtotal`}
+                                  disabled
+                                  value={(detalle.cantidad * detalle.precio).toLocaleString()}
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-12 mt-3 mx-auto">
+                              <button
+                                type="button"
+                                className="btn btn-danger"
+                                onClick={() => arrayHelpers.remove(index)}
+                              >
+                                Eliminar detalle
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                        <hr className="mt-3" />
+                        <button
+                          type="button"
+                          className="btn btn-success mt-3"
+                          onClick={() => {
+                            arrayHelpers.push({
+                              idCat: "",
+                              idMat: "",
+                              cantidad: "",
+                              precio: "",
+                              subtotal: "",
+                            });
+                          }}
+                        >
+                          Agregar material
+                        </button>
+                        <div className="col-md-2 mt-3 mx-auto">
+                          <label htmlFor={`total_compra`}>Total:</label>
+                          <div className="input-group">
+                            <div className="input-group-prepend">
+                              <span className="input-group-text">$</span>
+                            </div>
+                            <p {...calcularTotalGeneral(values.detalles)}></p>
+                            <Field
+                              type="text"
+                              className="form-control"
+                              disabled
+                              value={values.total_compra=totalGeneral}
+                              name="total_compra"
+                            />
+                            
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  />
+                </div>
+              </div>
+              <div className="card-footer text-center">
+                <div className="row">
+                  <div className="col-md-6">
+                    <button
+                      type="submit"
+                      // onClick={sendHandler}
+                      disabled={isSubmitting}
+                      className="btn btn-primary btn-icon-split w-50"
+                    >
+                      <span className="text-white-50">
+                        <i className="fas fa-plus"></i>
+                      </span>
+                      <span className="text">Agregar</span>
+                    </button>
+                  </div>
+                  <div className="col-md-6">
+                    <a
+                      type="button"
+                      href=""
+                      className="btn btn-danger btn-icon-split w-50"
+                      onClick={() => navigate(`/compras`)}
+                    >
+                      <span className="text-white-50">
+                        <i className="fa-solid fa-x"></i>
+                      </span>
+                      <span className="text">Cancelar</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Form>
+        )}
+      </Formik>
     </div>
-  )
-}
+  );
+};
+
+export default ComprasForm;
