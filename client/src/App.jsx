@@ -8,6 +8,8 @@ import ClientPage from "./pages/clientes/ClientPage";
 import MaterialesForm from "./pages/materiales/MaterialesForm";
 import EmpleadosForm from "./pages/empleados/EmpleadosForm";
 import ClientForm from "./pages/clientes/ClientForm";
+import DashboardPage from "./pages/dashboard/DashboardPage";
+
 import { CategoriaContextProvider } from "./context/categorias/CategoriasProvider";
 import { EspecialidadContextProvider } from "./context/especialidades/EspecialidadesProvider";
 import { MaterialContextProvider } from "./context/materiales/MaterialesProvider";
@@ -18,6 +20,7 @@ import { ClientContextProvider } from "./context/clientes/ClientesProvider";
 import { CompraContextProvider } from './context/compras/ComprasProvider'
 import { RolContextProvider } from "./context/roles/RolesProvider";
 import { UsuariosContextProvider } from "./context/usuarios/UsuariosProvider";
+import { DashboardContextProvider } from "./context/dashboard/DashboardProvider";
 
 import ProveedoresPage from './pages/proveedores/ProveedorPage'
 import ProveedoresForm from "./pages/proveedores/ProveedoresForm";
@@ -49,6 +52,11 @@ function App() {
             <div id="content">
               <Navbar />
               <div className="container-fluid">
+                <DashboardContextProvider>
+                  <Routes>
+                    <Route path="/dashboard" element={<DashboardPage />} />
+                  </Routes>
+                </DashboardContextProvider>
                 <ObraContextProvider>
                   <Routes>
                     <Route path="/obras" element={<ObrasPage />} />
@@ -125,77 +133,6 @@ function App() {
             </div>
           </div>
         </div>
-        {/* <Header />
-        <div className="container-fluid">
-          <div className="row">
-            <Sidebar />
-            <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-
-            <ObraContextProvider>
-              <Routes>
-                <Route path="/obras" element={<ObrasPage />} />
-                <Route path="/agregarObra" element={<ObrasForm />} />
-                <Route path="/editarObra/:id" element={<ObrasForm />} />
-              </Routes>           
-              </ObraContextProvider> 
-              <MaterialContextProvider>
-                <Routes>
-                  <Route path="/materiales" element={<MaterialesPage />} />
-                  <Route path="/agregarMaterial" element={<MaterialesForm />} />
-                  <Route path="/editarMaterial/:id" element={<MaterialesForm />} />
-                </Routes>
-              </MaterialContextProvider>
-              <EmpleadoContextProvider>
-                <Routes>
-                  <Route path="/empleados" element={<EmpleadosPage />} />
-                  <Route path="/agregarEmpleado" element={<EmpleadosForm />} />
-                  <Route path="/editarEmpleado/:id" element={<EmpleadosForm />} />
-                </Routes>
-              </EmpleadoContextProvider>
-              <EspecialidadContextProvider>
-                <Routes>
-                  <Route path="/especialidades" element={<EspecialidadesPage />} />
-                  <Route path="/agregarEspecialidad" element={<EspecialidadesForm />} />
-                  <Route path="/editarEspecialidad/:id" element={<EspecialidadesForm />} />
-                </Routes>
-              </EspecialidadContextProvider>
-              <CategoriaContextProvider>
-                <Routes>
-                  <Route path="/categorias" element={<CategoriasPage />} />
-                  <Route path="/agregarCategoria" element={<CategoriasForm />} />
-                  <Route path="/editarCategoria/:id" element={<CategoriasForm />} />
-                </Routes>
-              </CategoriaContextProvider>
-              <ProveedorContextProvider>
-                <Routes>
-                  <Route path="/proveedores" element={<ProveedoresPage />}></Route>
-                  <Route path="/agregarProveedor" element={<ProveedoresForm />}></Route>
-                  <Route path="/editarProveedor/:id" element={<ProveedoresForm />}></Route>
-                </Routes>
-              </ProveedorContextProvider>
-              <ClientContextProvider>
-                <Routes>
-                  <Route path="/clientes" element={<ClientPage />}></Route>
-                  <Route path="/agregarCliente" element={<ClientForm />}></Route>
-                  <Route path="/editarCliente/:id" element={<ClientForm />}></Route>
-                </Routes>
-              </ClientContextProvider>
-              <CompraContextProvider>
-                <Routes>
-                  <Route path="/compras" element={<ComprasPage />}></Route>
-                  <Route path="/agregarCompras" element={<ComprasForm />}></Route>
-                </Routes>
-              </CompraContextProvider>
-              <RolContextProvider>
-                <Routes>
-                  <Route path="/roles" element={<RolesPage/>} />
-                  <Route path="/agregarRol" element={<RolesForm/>} />
-                  <Route path="/editarRol/:id" element={<RolesForm/>} />
-                </Routes>
-              </RolContextProvider>  
-            </main>
-          </div>
-        </div> */}
       </div>
     </>
   )
