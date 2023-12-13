@@ -89,6 +89,11 @@ export default function UsuariosForm() {
                         enableReinitialize={true}
                         validationSchema={UsuarioSchema}
                         onSubmit={async (values) => {
+                            const contrasenaEspacios = values.contrasena.replace(/\s{2,}/g, ' ').trim()
+                            const usuariosObject = {
+                                ...values,
+                                contrasena: contrasenaEspacios,
+                            }
                             console.log(values);
                             if (params.id) {
                                 await updateUsuario(params.id, values)

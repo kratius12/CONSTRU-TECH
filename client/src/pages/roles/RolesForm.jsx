@@ -92,9 +92,11 @@ export default function RolesForm() {
             enableReinitialize={true}
             validationSchema={RolSchema}
             onSubmit={async (values) => {
+              const rolEspacios = values.nombre.replace(/\s{2,}/g, ' ').trim()
               console.log(values);
               const rolObject = {
                 ...values,
+                rol : rolEspacios,
                 permiso: selectedPer
               }
               if (params.id) {

@@ -62,6 +62,11 @@ export default function UsuariosForm() {
                         enableReinitialize={true}
                         validationSchema={permisoSchema}
                         onSubmit={async (values) => {
+                            const permisoEspacios = values.permiso.replace(/\s{2,}/g, ' ').trim()
+                            const usuariosObject = {
+                                ...values,
+                                permiso: permisoEspacios
+                            }
                             console.log(values);
                             if (params.id) {
                                 await updatePermiso(params.id, values)
