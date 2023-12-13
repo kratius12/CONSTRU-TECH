@@ -8,8 +8,8 @@ const materialSchema = Yup.object().shape({
     .required('El proveedor es requerido'),
   idCategoria: Yup.string()
     .required('La categoria es requerida'),
-  estado: Yup.string()
-    .required('El estado es requerido')
+  // estado: Yup.string()
+  //   .required('El estado es requerido')
 });
 
 export default materialSchema

@@ -49,8 +49,7 @@ router.post("/materiales", async (req, res) => {
         const result = await prisma.materiales.create({
             data: {
                 nombre: nombre,
-                cantidad: parseInt(cantidad),
-                estado:  parseInt(estado),
+                estado: 1,
                 idCategoria:parseInt(idCategoria),
                 idProveedor:parseInt(idProveedor)
             },
