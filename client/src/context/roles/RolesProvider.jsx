@@ -45,6 +45,7 @@ export const RolContextProvider = ({children}) => {
         const response = await GetPermisosRequest()
         console.log(response.data)
         setPermisos(response.data)
+        return response.data
     }
 
     const createRol = async (rol) => {

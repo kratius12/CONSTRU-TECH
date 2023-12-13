@@ -9,4 +9,4 @@ const RolSchema = Yup.object().shape({
         .required('El estado es requerido')
 });
 
-export default rolSchema
+export default RolSchema

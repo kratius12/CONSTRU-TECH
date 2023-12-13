@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import Select from "react-select";
 // import makeAnimated from 'react-select/animated';
 import { Form, Formik, Field } from "formik";
-import { useLocation, useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useRol } from "../../context/roles/RolesProvider";
-import RolSchema from "../../components/ValidatorEmpleado";
+import RolSchema from "../roles/RolesValidator";
 
 
 export default function RolesForm() {
@@ -16,11 +16,12 @@ export default function RolesForm() {
   const [options, setOptions] = useState([]);
   const [defaultOptions, setDefaultOptions] = useState([]);
   const [selectedPer, setSelectedPer] = useState(defaultOptions)
-  const [rol, setRol] = useState({
+  const initialState = {
     nombre: "",
-    estado: "",
-    permiso: []
-  })
+    estado: 1,
+    permisos: []
+  }
+  const [rol, setRol] = useState(initialState)
   const estadoOptions = [
     {
       value: 1, label: "Activo",
@@ -29,34 +30,30 @@ export default function RolesForm() {
     }
   ]
   useEffect(() => {
-    const loadEmpleados = async () => {
+    const loadPermisos = async () => {
       if (params.id) {
         const rol = await getRol(params.id)
         if (rol) {
           setRol({
             nombre: rol.nombre,
-            apellido: rol.apellido,
-            direccion: rol.direccion,
-            estado: rol.estado,
-            email: rol.email,
-            telefono: rol.telefono,
-            tipoDoc: rol.tipoDoc,
-            cedula: rol.cedula,
-            permiso: rol.empleado_especialidad
+            estado: rol.estado === "0" ? "0" : "1",
+            permiso: rol.rol_permiso
           })
-          const defaultOpts = rol.empleado_especialidad.map(item => ({ value: item.permiso.id, label: item.permiso.permiso }))
+          const defaultOpts = rol.rol_permiso.map(item => ({ value: item.permiso.id, label: item.permiso.permiso }))
           setDefaultOptions(defaultOpts)
           setKey(prevKey => prevKey + 1)
         }
+      }else{
+        setRol(initialState)
       }
     }
     const fetchData = async () => {
-      const permisosData = await Permisos()
-      const opciones = permisosData.map(item => ({ value: item.id, label: item.permiso }))
+      const permisos = await Permisos()
+      const opciones = permisos.map(item => ({ value: item.id, label: item.permiso }))
       setOptions(opciones)
     }
     fetchData()
-    loadEmpleados()
+    loadPermisos()
   }, [])
 
   const alertConfirm = (type) => {
@@ -100,7 +97,7 @@ export default function RolesForm() {
                 permiso: selectedPer
               }
               if (params.id) {
-                await updateRol(params.permisos, rolObject)
+                await updateRol(params.id, rolObject)
                 alertConfirm()
                 setTimeout(
                   navigate("/roles"),
@@ -136,14 +133,33 @@ export default function RolesForm() {
                         ) : null}
                       </div>
                       <div className="col-md-6 mt-3">
-                        <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
-                          <option value="">Seleccione estado</option>
-                          <option value="1">Activo</option>
-                          <option value="0">Inactivo</option>
-                        </select>
+                        {params.id ? 
+                        (
+                          <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
+                            <option value="">Seleccione estado</option>
+                            <option value="1">Activo</option>
+                            <option value="0">Inactivo</option>
+                          </select>                          
+                        ): (
+                          <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} disabled>
+                            <option value="1">Activo</option>
+                          </select>
+                        )
+                        }
+                        {/* <select
+                          placeholder={<div>Selecciona estado</div>}
+                          value={values.estado}
+                          name="estado"
+                          options={estadoOptions}
+                          className="basic-multix-select"
+                          classNamePrefix="select"
+                        /> */}
+                        {errors.estado && touched.estado ? (
+                          <div className="alert alert-danger" role="alert">{errors.estado}</div>
+                        ) : null}
                       </div>
                       <div className="col-md-6 mt-3">
-                        <label>Selecciona permisos::</label>
+                        <label>Selecciona permisos:</label>
                         <Select
                           key={key}
                           defaultValue={defaultOptions}
