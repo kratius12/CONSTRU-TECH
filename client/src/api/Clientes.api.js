@@ -16,9 +16,6 @@ export const getClientRequest = async (id) =>
 export const updateClientRequest = async (id, newFields) => {
     await axios.put(`http://localhost:4000/cliente/${id}`, newFields);
 }
-export const loginRequest = async (user) =>
-    await axios.post(`http://localhost:4000/login`, user)
-
 export const ToggleClientStatusRequest = async (idCli, status) => {
     return await axios.put(`http://localhost:4000/clientStatus/${idCli}`, status)
 }

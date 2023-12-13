@@ -27,6 +27,7 @@
     "nodemon": "^2.0.22",
     "path": "^0.12.7",
     "react": "^18.2.0",
+    "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
     "reactstrap": "^9.2.0",
     "vite": "^4.5.0"
