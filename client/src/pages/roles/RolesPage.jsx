@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 // import RolTable  from "../components/RolesTable"
 import { useRol } from "../../context/roles/RolesProvider";
@@ -28,7 +28,13 @@ function RolesPage() {
         }
     ]
 
-    const {roles, Roles} = useRol()
+    const [tableStatus, setTableStatus] = useState(0)
+    const handleChangeStatus = (newStatus) => {
+        setTableStatus(newStatus)
+
+    }
+
+    const {roles, Roles, ToggleRolStatus, getRol} = useRol()
     const navigate = useNavigate()
     useEffect(() =>{
     Roles()  
@@ -39,7 +45,7 @@ function RolesPage() {
             return <h1>Sin Roles</h1>
             
         }else{
-            return <TableInfo dataHeader={dataHeader} dataBody={roles} routeEdit={'editarRol'} viewDetail/>
+            return <TableInfo dataHeader={dataHeader} dataBody={roles} routeEdit={'editarRol'} viewDetail toggleApi={ToggleRolStatus} getApi={getRol} entity={"Rol"} onChangeStatus={handleChangeStatus}/>
         }
         // return <RolTable roles={roles}/>
     }
@@ -58,7 +64,10 @@ function RolesPage() {
                                     <div className="col-md-6 mb-3">
                                         <button className="btn btn-primary" onClick={ ()=> navigate(`/agregarRol`)}>
                                             Agregar
-                                        </button>                      
+                                        </button>
+                                        <button className="btn btn-secondary" onClick={ () => navigate(`/permisos`)}>
+                                            Permisos
+                                        </button>
                                     </div>                                        
                                 </div>
                                 {renderMain()}

@@ -20,12 +20,15 @@ import { ClientContextProvider } from "./context/clientes/ClientesProvider";
 import { CompraContextProvider } from './context/compras/ComprasProvider'
 import { RolContextProvider } from "./context/roles/RolesProvider";
 import { UsuariosContextProvider } from "./context/usuarios/UsuariosProvider";
+import { PermisoContextProvider } from "./context/permisos/PermisosProvider";
 import { DashboardContextProvider } from "./context/dashboard/DashboardProvider";
 
 import ProveedoresPage from './pages/proveedores/ProveedorPage'
 import ProveedoresForm from "./pages/proveedores/ProveedoresForm";
 import RolesForm from "./pages/roles/RolesForm";
 import RolesPage from "./pages/roles/RolesPage";
+import PermisosPage from "./pages/permisos/PermisosPage";
+import PermisosForm from "./pages/permisos/PermisosForm";
 
 import LoginPage from "./pages/usuarios/LoginPage";"./pages/LoginPage";
 
@@ -120,6 +123,13 @@ function App() {
                     <Route path="/editarRol/:id" element={<RolesForm />} />
                   </Routes>
                 </RolContextProvider>
+                <PermisoContextProvider>
+                  <Routes>
+                    <Route path="/permisos" element={<PermisosPage />} />
+                    <Route path="/agregarPermiso" element={<PermisosForm />} />
+                    <Route path="/editarPermiso/:id" element={<PermisosForm />} />
+                  </Routes>
+                </PermisoContextProvider>
                 <UsuariosContextProvider>
                   <Routes>
                     <Route path="/usuarios" element={<UsuariosPage/>} />

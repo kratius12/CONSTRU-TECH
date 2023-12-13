@@ -20,6 +20,6 @@ export const UpdatePermisoRequest = async (idPer, newFields) =>{
     return await axios.put(`http://localhost:4000/permisos/${idPer}`, newFields)
 }
 
-export const TogglePermisoStatusRequest = async (idPer, status) =>{
-    return await axios.put(`http://localhost:4000/permisos/${idPer}`, status)
+export const TogglePermisoStatusRequest = async (idPer, estado) =>{
+    return await axios.put(`http://localhost:4000/permisos/${idPer}`, estado)
 }

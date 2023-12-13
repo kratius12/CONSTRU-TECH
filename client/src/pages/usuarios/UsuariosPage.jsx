@@ -22,6 +22,10 @@ function UsuariosPage() {
             accessorKey: 'idEmp'
         },
         {
+            header: "Rol",
+            accessorKey: 'idRol'
+        },
+        {
             header: "Estado",
             accessorKey: 'estado',
             idProperty: 'idUsu'
@@ -52,6 +56,7 @@ function UsuariosPage() {
         }else{
             return <TableInfo dataHeader={dataHeader} dataBody={usuarios} routeEdit={'editarUsuario'} viewDetail toggleApi={ToggleUsuarioStatus} getApi={getUsuario} entity={"Usuario"} onChangeStatus={handleChangeStatus}/>
         }
+        // return <RolTable usuarios={usuarios}/>
     }
 
     return(

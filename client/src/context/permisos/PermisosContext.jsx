@@ -1,3 +1,3 @@
 import { createContext } from "react";
 
-export const PermisoContext = createContext()
+export const PermisosContext = createContext()

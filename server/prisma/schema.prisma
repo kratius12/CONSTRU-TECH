@@ -176,7 +176,6 @@ model rol_permiso {
   id      Int      @id @default(autoincrement())
   idRol   Int?
   idPer   Int?
-  tipo    String   @db.VarChar(100)
   rol     rol?     @relation(fields: [idRol], references: [idRol], onDelete: Restrict, onUpdate: Restrict, map: "rol_permiso_ibfk_1")
   permiso permiso? @relation(fields: [idPer], references: [idPer], onDelete: Restrict, onUpdate: Restrict, map: "rol_permiso_ibfk_2")
 
