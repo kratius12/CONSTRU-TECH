@@ -21,6 +21,7 @@ CREATE TABLE `cliente` (
     `fecha_nac` VARCHAR(50) NULL,
     `estado` INTEGER NULL,
     `contrasena` VARCHAR(50) NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`idCli`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -104,7 +105,6 @@ CREATE TABLE `materiales` (
     `nombre` VARCHAR(50) NULL,
     `idProveedor` INTEGER NULL,
     `estado` INTEGER NULL,
-    `cantidad` INTEGER NULL,
     `idCategoria` INTEGER NULL,
 
     INDEX `idCategoria`(`idCategoria`),
@@ -130,9 +130,10 @@ CREATE TABLE `obras` (
     `descripcion` VARCHAR(100) NULL,
     `fechaini` VARCHAR(50) NULL,
     `fechafin` VARCHAR(50) NULL,
-    `area` INTEGER NULL,
+    `area` VARCHAR(50) NULL,
     `idCliente` INTEGER NULL,
     `estado` VARCHAR(50) NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     INDEX `idCliente`(`idCliente`),
     PRIMARY KEY (`idObra`)

@@ -2,362 +2,347 @@ import { useEffect, useState, useRef } from "react";
 import { useDashboard } from "../../context/dashboard/DashboardProvider";
 import { Bar } from "react-chartjs-2";
 function DashboardPage() {
-    const chartRef = useRef(null);
+    const clienteRef = useRef(null);
+    const obraRef = useRef(null);
+    const clientesObras = useRef(null)
+    const especialidadesObras = useRef(null)
+
+    const { getDashboardClientes, getDashboardObras, getDashboardClienteObras, getDashboardEspecialidades } = useDashboard()
+    const [clientesData, setClientesData] = useState([])
+    const [obrasData, setObrasData] = useState([])
 
     useEffect(() => {
-      if (chartRef && chartRef.current) {
-        const data = {
-          labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-          datasets: [{
-            label: '# of Votes',
-            data: [12, 19, 3, 5, 2, 3],
-            borderWidth: 1,
-          }],
-        };
-  
-        const options = {
-          scales: {
-            x: {
-              beginAtZero: true,
-            },
-            y: {
-              beginAtZero: true,
-            },
-          },
-        };
-  
-        new Chart(chartRef.current, {
-          type: 'bar',
-          data: data,
-          options: options,
-        });
-      }
+        const dataClientes = async () =>{
+            const currentDate = new Date()
+
+            const thirtyDaysAgo = new Date()
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+            const todayFormatted = currentDate.toISOString().split('T')[0]
+            const thirtyDaysAgoFormatted = thirtyDaysAgo.toISOString().split('T')[0]
+
+            const clientesInfo = await getDashboardClientes()
+
+            const clientesRegistrados = clientesInfo.filter(cliente => {
+                const createdAtFormmated = cliente.createdAt.split('T')[0]
+                return createdAtFormmated >= thirtyDaysAgoFormatted && createdAtFormmated <= todayFormatted
+            })
+            const clientesCountDia = {}
+
+            clientesRegistrados.forEach(cliente => {
+                const createdAtFormmated = cliente.createdAt.split('T')[0]
+                if (clientesCountDia[createdAtFormmated]) {
+                    clientesCountDia[createdAtFormmated]++
+                }else{
+                    clientesCountDia[createdAtFormmated] = 1
+                }
+            });
+            const data = Object.entries(clientesCountDia).map(([date, count]) => ({date, count}))
+            setClientesData(data)
+        }
+        const dataObras = async () => {
+            const currentDate = new Date()
+
+            const thirtyDaysAgo = new Date()
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+            const todayFormatted = currentDate.toISOString().split('T')[0]
+            const thirtyDaysAgoFormatted = thirtyDaysAgo.toISOString().split('T')[0]
+
+            const obrasInfo = await getDashboardObras()
+
+            const obrasRegistradas = obrasInfo.filter(obra => {
+                const createdAtFormmated = obra.createdAt.split('T')[0]
+                return createdAtFormmated >= thirtyDaysAgoFormatted && createdAtFormmated <= todayFormatted
+            })
+            const obraCountDia = {}
+
+            obrasRegistradas.forEach(obra => {
+                const createdAtFormmated = obra.createdAt.split('T')[0]
+                if (obraCountDia[createdAtFormmated]) {
+                    obraCountDia[createdAtFormmated]++
+                }else{
+                    obraCountDia[createdAtFormmated] = 1
+                }
+            });
+            const data = Object.entries(obraCountDia).map(([date, count]) => ({date, count}))
+            setObrasData(data)
+        }
+        dataClientes()
+        dataObras()
+    //   const loadClientesChart = async () =>{
+    //     if (chartRef && chartRef.current) {
+    //         const dataClientes = await getDashboardClientes()
+    //         const data = {
+    //           labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+    //           datasets: [{
+    //             label: '# of Votes',
+    //             data: [12, 19, 3, 5, 2, 3],
+    //             borderWidth: 1,
+    //           }],
+    //         };
+      
+    //         const options = {
+    //           scales: {
+    //             x: {
+    //               beginAtZero: true,
+    //             },
+    //             y: {
+    //               beginAtZero: true,
+    //             },
+    //           },
+    //         };
+      
+    //         new Chart(chartRef.current, {
+    //           type: 'bar',
+    //           data: data,
+    //           options: options,
+    //         });
+    //       }        
+    //   }
+    //   loadClientesChart()
     }, []);
+    useEffect(() => {
+        const loadchartClientes = () =>{
+            if (clienteRef && clienteRef.current) {
+                const ctx = clienteRef.current.getContext('2d');
+       
+                new Chart(ctx, {
+                   type: 'bar',
+                   data: {
+                      labels: clientesData.map(entry => entry.date),
+                      datasets: [{
+                         label: 'Clientes Registrados',
+                         data: clientesData.map(entry => entry.count),
+                         backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                         borderColor: 'rgba(75, 192, 192, 1)',
+                         borderWidth: 1,
+                      }]
+                   },
+                   options: {
+                      scales: {
+                         x: {
+                            type: 'time',
+                            time: {
+                               unit: 'day'
+                            },
+                         },
+                         y: {
+                            beginAtZero: true,
+                            title: {
+                               display: true,
+                               text: 'Cantidad de clientes'
+                            }
+                         }
+                      }
+                   }
+                });
+            }
+        }   
+        const loadchartObras = () =>{
+            if (obraRef && obraRef.current) {
+                const ctx = obraRef.current.getContext('2d');
+       
+                new Chart(ctx, {
+                   type: 'bar',
+                   data: {
+                      labels: obrasData.map(entry => entry.date),
+                      datasets: [{
+                         label: 'Obras ingresadas',
+                         data: obrasData.map(entry => entry.count),
+                         backgroundColor: 'rgba(39, 80, 245, 0.8)',
+                         borderColor: 'rgba(39, 80, 245, 0.8)',
+                         borderWidth: 1,
+                      }]
+                   },
+                   options: {
+                      scales: {
+                         x: {
+                            type: 'time',
+                            time: {
+                               unit: 'day'
+                            },
+                         },
+                         y: {
+                            beginAtZero: true,
+                            title: {
+                               display: true,
+                               text: 'Cantidad de obras'
+                            }
+                         }
+                      }
+                   }
+                });
+            }            
+        }
+        const loarchartClientesObras = async () =>{
+            if (clientesObras && clientesObras.current) {
+                const ctx = clientesObras.current.getContext("2d");
+                const clientesObrasData = await getDashboardClienteObras();
+
+                const obrasPorCliente = {};
+                clientesObrasData.forEach((entry) => {
+                  const idCliente = entry.cliente.idCli;
+                  obrasPorCliente[idCliente] = (obrasPorCliente[idCliente] || 0) + 1;
+                });
+            
+
+                const clientes = clientesObrasData.map((entry) => entry.cliente.nombre);
+                const obras = Object.values(obrasPorCliente);
+                new Chart(ctx, {
+                    type: "bar",
+                    data: {
+                      labels: clientes,
+                      datasets: [
+                        {
+                          label: "Cantidad de Servicios Solicitados",
+                          data: obras,
+                          backgroundColor: "rgba(245, 39, 39, 0.2)",
+                          borderColor: "rgba(245, 39, 39, 0.2)",
+                          borderWidth: 1,
+                        },
+                      ],
+                    },
+                    options: {
+                      scales: {
+                        y: {
+                          beginAtZero: true,
+                          title: {
+                            display: true,
+                            text: "Cantidad de Servicios",
+                          },
+                        },
+                      },
+                    },
+                  });
+
+
+            }
+        }
+        const loadchartEspecialidades = async () =>{
+            if (especialidadesObras && especialidadesObras.current) {
+                const ctx = especialidadesObras.current.getContext("2d");
+                const especialidadesData = await getDashboardEspecialidades();
+
+                const especialidadesCount = {};
+
+                especialidadesData.forEach((obra) => {
+                  obra.empleado_obra.forEach((empleado) => {
+                    empleado.empleado.empleado_especialidad.forEach((especialidad) => {
+                      const nombreEspecialidad = especialidad.especialidad.especialidad;
+                      especialidadesCount[nombreEspecialidad] = (especialidadesCount[nombreEspecialidad] || 0) + 1;
+                    });
+                  });
+                });
+          
+                const especialidadesLabels = Object.keys(especialidadesCount);
+                const especialidadesValues = Object.values(especialidadesCount);
+
+                new Chart(ctx, {
+                    type: "bar",
+                    data: {
+                      labels: especialidadesLabels,
+                      datasets: [
+                        {
+                          label: "Cantidad de especialidades en Obras",
+                          data: especialidadesValues,
+                          backgroundColor: "rgba(253, 113, 0, 0.8)",
+                          borderColor: "rgba(253, 113, 0, 0.8)",
+                          borderWidth: 1,
+                        },
+                      ],
+                    },
+                    options: {
+                      scales: {
+                        y: {
+                          beginAtZero: true,
+                          title: {
+                            display: true,
+                            text: "Cantidad de Obras",
+                          },
+                        },
+                      },
+                    },
+                  });                
+
+            }
+        }
+        loadchartEspecialidades()
+        loarchartClientesObras()
+        loadchartObras()
+        loadchartClientes()     
+    }, [clientesData, obrasData])
     return (
         <>
             <div className="d-sm-flex align-items-center justify-content-between mb-4">
                 <h1 className="h3 mb-0 text-gray-800">Dashboard</h1>
-                <a href="#" className="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                    className="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
             </div>
 
 
             <div className="row">
 
 
-                <div className="col-xl-3 col-md-6 mb-4">
-                    <div className="card border-left-primary shadow h-100 py-2">
-                        <div className="card-body">
-                            <div className="row no-gutters align-items-center">
-                                <div className="col mr-2">
-                                    <div className="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                        Earnings (Monthly)</div>
-                                    <div className="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
-                                </div>
-                                <div className="col-auto">
-                                    <i className="fas fa-calendar fa-2x text-gray-300"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-
-                <div className="col-xl-3 col-md-6 mb-4">
-                    <div className="card border-left-success shadow h-100 py-2">
-                        <div className="card-body">
-                            <div className="row no-gutters align-items-center">
-                                <div className="col mr-2">
-                                    <div className="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                        Earnings (Annual)</div>
-                                    <div className="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
-                                </div>
-                                <div className="col-auto">
-                                    <i className="fas fa-dollar-sign fa-2x text-gray-300"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-
-                <div className="col-xl-3 col-md-6 mb-4">
-                    <div className="card border-left-info shadow h-100 py-2">
-                        <div className="card-body">
-                            <div className="row no-gutters align-items-center">
-                                <div className="col mr-2">
-                                    <div className="text-xs font-weight-bold text-info text-uppercase mb-1">Tasks
-                                    </div>
-                                    <div className="row no-gutters align-items-center">
-                                        <div className="col-auto">
-                                            <div className="h5 mb-0 mr-3 font-weight-bold text-gray-800">50%</div>
-                                        </div>
-                                        <div className="col">
-                                            <div className="progress progress-sm mr-2">
-                                                <div className="progress-bar bg-info" role="progressbar"
-                                                    style={{width: '50%'}} aria-valuenow="50" aria-valuemin="0"
-                                                    aria-valuemax="100"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="col-auto">
-                                    <i className="fas fa-clipboard-list fa-2x text-gray-300"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-
-                <div className="col-xl-3 col-md-6 mb-4">
-                    <div className="card border-left-warning shadow h-100 py-2">
-                        <div className="card-body">
-                            <div className="row no-gutters align-items-center">
-                                <div className="col mr-2">
-                                    <div className="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                        Pending Requests</div>
-                                    <div className="h5 mb-0 font-weight-bold text-gray-800">18</div>
-                                </div>
-                                <div className="col-auto">
-                                    <i className="fas fa-comments fa-2x text-gray-300"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-            <div className="row">
-
-
-                <div className="col-xl-8 col-lg-7">
+                <div className="col-xl-6 col-md-6">
                     <div className="card shadow mb-4">
 
                         <div
                             className="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                            <h6 className="m-0 font-weight-bold text-primary">Earnings Overview</h6>
-                            <div className="dropdown no-arrow">
-                                <a className="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i className="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                </a>
-                                <div className="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                    aria-labelledby="dropdownMenuLink">
-                                    <div className="dropdown-header">Dropdown Header:</div>
-                                    <a className="dropdown-item" href="#">Action</a>
-                                    <a className="dropdown-item" href="#">Another action</a>
-                                    <div className="dropdown-divider"></div>
-                                    <a className="dropdown-item" href="#">Something else here</a>
-                                </div>
-                            </div>
+                            <h6 className="m-0 font-weight-bold text-primary">Clientes registrados en los ultimos 30 Días</h6>
                         </div>
 
                         <div className="card-body">
                             <div className="chart-area">
-                            <canvas ref={chartRef}></canvas>
+                            <canvas ref={clienteRef}></canvas>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="col-xl-4 col-lg-5">
+                <div className="col-xl-6 col-md-6">
                     <div className="card shadow mb-4">
 
                         <div
                             className="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                            <h6 className="m-0 font-weight-bold text-primary">Revenue Sources</h6>
-                            <div className="dropdown no-arrow">
-                                <a className="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i className="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                </a>
-                                <div className="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                    aria-labelledby="dropdownMenuLink">
-                                    <div className="dropdown-header">Dropdown Header:</div>
-                                    <a className="dropdown-item" href="#">Action</a>
-                                    <a className="dropdown-item" href="#">Another action</a>
-                                    <div className="dropdown-divider"></div>
-                                    <a className="dropdown-item" href="#">Something else here</a>
-                                </div>
-                            </div>
+                            <h6 className="m-0 font-weight-bold text-primary">Obras ingresadas en los ultimos 30 Días</h6>
                         </div>
 
                         <div className="card-body">
-                            <div className="chart-pie pt-4 pb-2">
-                                <canvas id="myPieChart"></canvas>
-                            </div>
-                            <div className="mt-4 text-center small">
-                                <span className="mr-2">
-                                    <i className="fas fa-circle text-primary"></i> Direct
-                                </span>
-                                <span className="mr-2">
-                                    <i className="fas fa-circle text-success"></i> Social
-                                </span>
-                                <span className="mr-2">
-                                    <i className="fas fa-circle text-info"></i> Referral
-                                </span>
+                            <div className="chart-area">
+                            <canvas ref={obraRef}></canvas>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <div className="col-xl-6 col-md-6">
+                    <div className="card shadow mb-4">
+
+                        <div
+                            className="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h6 className="m-0 font-weight-bold text-primary">Clientes que han solicitado servicios en los últimos 30 Días</h6>
+                        </div>
+
+                        <div className="card-body">
+                            <div className="chart-area">
+                            <canvas ref={clientesObras}></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="col-xl-6 col-md-6">
+                    <div className="card shadow mb-4">
+
+                        <div
+                            className="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h6 className="m-0 font-weight-bold text-primary">Especialidades mas utilizadas en los últimos 30 Días</h6>
+                        </div>
+
+                        <div className="card-body">
+                            <div className="chart-area">
+                            <canvas ref={especialidadesObras}></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>                
             </div>
-
-
-            <div className="row">
-
-
-                <div className="col-lg-6 mb-4">
-
-
-                    <div className="card shadow mb-4">
-                        <div className="card-header py-3">
-                            <h6 className="m-0 font-weight-bold text-primary">Projects</h6>
-                        </div>
-                        <div className="card-body">
-                            <h4 className="small font-weight-bold">Server Migration <span
-                                className="float-right">20%</span></h4>
-                            <div className="progress mb-4">
-                                <div className="progress-bar bg-danger" role="progressbar" style={{width: '20%'}}
-                                    aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                            <h4 className="small font-weight-bold">Sales Tracking <span
-                                className="float-right">40%</span></h4>
-                            <div className="progress mb-4">
-                                <div className="progress-bar bg-warning" role="progressbar" style={{width: '40%'}}
-                                    aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                            <h4 className="small font-weight-bold">Customer Database <span
-                                className="float-right">60%</span></h4>
-                            <div className="progress mb-4">
-                                <div className="progress-bar" role="progressbar" style={{width: '60%'}}
-                                    aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                            <h4 className="small font-weight-bold">Payout Details <span
-                                className="float-right">80%</span></h4>
-                            <div className="progress mb-4">
-                                <div className="progress-bar bg-info" role="progressbar" style={{width: '80%'}}
-                                    aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                            <h4 className="small font-weight-bold">Account Setup <span
-                                className="float-right">Complete!</span></h4>
-                            <div className="progress">
-                                <div className="progress-bar bg-success" role="progressbar" style={{width: '100'}}
-                                    aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div className="row">
-                        <div className="col-lg-6 mb-4">
-                            <div className="card bg-primary text-white shadow">
-                                <div className="card-body">
-                                    Primary
-                                    <div className="text-white-50 small">#4e73df</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-lg-6 mb-4">
-                            <div className="card bg-success text-white shadow">
-                                <div className="card-body">
-                                    Success
-                                    <div className="text-white-50 small">#1cc88a</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-lg-6 mb-4">
-                            <div className="card bg-info text-white shadow">
-                                <div className="card-body">
-                                    Info
-                                    <div className="text-white-50 small">#36b9cc</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-lg-6 mb-4">
-                            <div className="card bg-warning text-white shadow">
-                                <div className="card-body">
-                                    Warning
-                                    <div className="text-white-50 small">#f6c23e</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-lg-6 mb-4">
-                            <div className="card bg-danger text-white shadow">
-                                <div className="card-body">
-                                    Danger
-                                    <div className="text-white-50 small">#e74a3b</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-lg-6 mb-4">
-                            <div className="card bg-secondary text-white shadow">
-                                <div className="card-body">
-                                    Secondary
-                                    <div className="text-white-50 small">#858796</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-lg-6 mb-4">
-                            <div className="card bg-light text-black shadow">
-                                <div className="card-body">
-                                    Light
-                                    <div className="text-black-50 small">#f8f9fc</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-lg-6 mb-4">
-                            <div className="card bg-dark text-white shadow">
-                                <div className="card-body">
-                                    Dark
-                                    <div className="text-white-50 small">#5a5c69</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-
-                <div className="col-lg-6 mb-4">
-
-
-                    <div className="card shadow mb-4">
-                        <div className="card-header py-3">
-                            <h6 className="m-0 font-weight-bold text-primary">Illustrations</h6>
-                        </div>
-                        <div className="card-body">
-                            <div className="text-center">
-                                <img className="img-fluid px-3 px-sm-4 mt-3 mb-4" style={{width: '25rm'}}
-                                    src="img/undraw_posting_photo.svg" alt="..." />
-                            </div>
-                            <p>Add some quality, svg illustrations to your project courtesy of <a
-                                href="https://undraw.co/">unDraw</a>, a
-                                constantly updated collection of beautiful svg images that you can use
-                                completely free and without attribution!</p>
-                            <a href="https://undraw.co/">Browse Illustrations on
-                                unDraw &rarr;</a>
-                        </div>
-                    </div>
-
-
-                    <div className="card shadow mb-4">
-                        <div className="card-header py-3">
-                            <h6 className="m-0 font-weight-bold text-primary">Development Approach</h6>
-                        </div>
-                        <div className="card-body">
-                            <p>SB Admin 2 makes extensive use of Bootstrap 4 utility classes in order to reduce
-                                CSS bloat and poor page performance. Custom CSS classes are used to create
-                                custom components and custom utility classes.</p>
-                            <p className="mb-0">Before working with this theme, you should become familiar with the
-                                Bootstrap framework, especially the utility classes.</p>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-
         </>
     )
 }
