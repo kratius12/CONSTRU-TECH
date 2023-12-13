@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 30-11-2023 a las 21:30:01
--- Versión del servidor: 10.4.27-MariaDB
--- Versión de PHP: 8.2.0
+-- Tiempo de generación: 07-12-2023 a las 20:10:04
+-- Versión del servidor: 10.4.28-MariaDB
+-- Versión de PHP: 8.0.28
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -30,20 +30,16 @@ SET time_zone = "+00:00";
 CREATE TABLE `categoria` (
   `idcat` int(11) NOT NULL,
   `nombre` varchar(50) DEFAULT NULL,
-  `estado` int(1) DEFAULT NULL,
+  `estado` int(11) DEFAULT NULL,
   `medida` varchar(50) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `categoria`
 --
 
 INSERT INTO `categoria` (`idcat`, `nombre`, `estado`, `medida`) VALUES
-(6000, 'Ceramica', 1, NULL),
-(6001, 'Tuberia', 1, NULL),
-(6002, 'Pintura', 1, NULL),
-(6003, 'ceramica', 1, NULL),
-(6004, 'vidriedia', 1, NULL);
+(1, 'Tubería', 1, 'm2');
 
 -- --------------------------------------------------------
 
@@ -61,18 +57,16 @@ CREATE TABLE `cliente` (
   `tipoDoc` varchar(50) DEFAULT NULL,
   `cedula` varchar(10) NOT NULL,
   `fecha_nac` date DEFAULT NULL,
-  `estado` int(1) DEFAULT NULL,
+  `estado` int(11) DEFAULT NULL,
   `contrasena` varchar(50) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `cliente`
 --
 
 INSERT INTO `cliente` (`idCli`, `nombre`, `apellidos`, `email`, `direccion`, `telefono`, `tipoDoc`, `cedula`, `fecha_nac`, `estado`, `contrasena`) VALUES
-(22000, 'José', 'Hernandez', 'hernanjo324@gmail.com', 'cra 5 b #2 a', '3225771077', 'Cedula de ciudadania', '1924612312', '1998-05-12', 1, 'hernandez2020'),
-(22001, 'Santiago', 'Perez', 'Santisanchez225@gmail.com', 'cll 6 c #25 b', '3297928732', 'Cedula de extranjeria', '1235174219', '2000-02-19', 1, 'santi1284'),
-(22002, 'Kevin', 'Castrillón', 'Kafz56@hotmail.com', 'cll2 aa #33 a', '3139821231', 'Pasaporte', '1518231231', '1999-04-30', 1, 'kafz5656');
+(1, 'Ronald', 'Ortiz Arango', 'ortizroanld623@gmail.com', 'calle 55 ee', '3158119393', 'Cedula de ciudadania', '1025646465', '2006-01-16', 0, '1025646465Ronald.');
 
 -- --------------------------------------------------------
 
@@ -85,17 +79,19 @@ CREATE TABLE `compras` (
   `fecha` date DEFAULT NULL,
   `imagen` varchar(100) DEFAULT NULL,
   `total_compra` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `compras`
 --
 
 INSERT INTO `compras` (`idCom`, `fecha`, `imagen`, `total_compra`) VALUES
-(3000, '2023-05-17', '   ', 249900),
-(3001, '2023-05-02', '     ', 190400),
-(3002, '2023-05-01', '     ', 29750),
-(3003, '2023-05-02', '       ', 476000);
+(1, '2023-12-07', 'trin', 2000),
+(16, '2006-01-16', NULL, NULL),
+(17, '2006-01-16', NULL, NULL),
+(18, '2006-01-16', NULL, NULL),
+(19, '2006-01-16', NULL, NULL),
+(20, '2006-01-16', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -106,20 +102,20 @@ INSERT INTO `compras` (`idCom`, `fecha`, `imagen`, `total_compra`) VALUES
 CREATE TABLE `compras_detalle` (
   `id` int(11) NOT NULL,
   `idCompra` int(11) DEFAULT NULL,
+  `idCat` int(11) NOT NULL,
   `idMat` int(11) DEFAULT NULL,
   `cantidad` int(11) DEFAULT NULL,
+  `Precio` int(11) DEFAULT NULL,
   `subtotal` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `compras_detalle`
 --
 
-INSERT INTO `compras_detalle` (`id`, `idCompra`, `idMat`, `cantidad`, `subtotal`) VALUES
-(30000, 3000, 500, 24, 249900),
-(30001, 3001, 501, 202, 190400),
-(30002, 3002, 502, 405, 29750),
-(30003, 3003, 503, 202, 476000);
+INSERT INTO `compras_detalle` (`id`, `idCompra`, `idCat`, `idMat`, `cantidad`, `Precio`, `subtotal`) VALUES
+(5, 1, 1, 1, 12, 4000, 48000),
+(6, 16, 1, 1, 12, 4000, 48000);
 
 -- --------------------------------------------------------
 
@@ -130,22 +126,21 @@ INSERT INTO `compras_detalle` (`id`, `idCompra`, `idMat`, `cantidad`, `subtotal`
 CREATE TABLE `empleado` (
   `idEmp` int(11) NOT NULL,
   `nombre` varchar(50) DEFAULT NULL,
+  `apellido` varchar(50) NOT NULL,
   `direccion` varchar(50) DEFAULT NULL,
-  `estado` int(1) DEFAULT NULL,
+  `estado` int(11) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
   `telefono` varchar(10) DEFAULT NULL,
-  `cedula` varchar(10) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `cedula` varchar(10) DEFAULT NULL,
+  `tipoDoc` varchar(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `empleado`
 --
 
-INSERT INTO `empleado` (`idEmp`, `nombre`, `direccion`, `estado`, `telefono`, `cedula`) VALUES
-(2000, 'Mario Ortiz', 'cr5 #7b sur 205', 1, '3225478898', '9823122'),
-(2001, 'Fausto Flores', 'cr9 #8aa norte 101', 1, '3058447152', '9852412'),
-(2002, 'Belarmino Zea', 'cr10 # 7b sur 405', 1, '3201547854', '9823123'),
-(2003, 'Marcos David', 'cll 58b # 7aa 201', 1, '3256985251', '9862412'),
-(2004, 'Marcela henao', 'cll 44 ff # 3b 402', 1, '3105475210', '3246584');
+INSERT INTO `empleado` (`idEmp`, `nombre`, `apellido`, `direccion`, `estado`, `email`, `telefono`, `cedula`, `tipoDoc`) VALUES
+(1, 'Ronald Ortiz', 'Ortiz\n', 'calle 55 ee', 0, NULL, '3158119393', '1025646465', 'CC');
 
 -- --------------------------------------------------------
 
@@ -157,23 +152,14 @@ CREATE TABLE `empleado_especialidad` (
   `id` int(11) NOT NULL,
   `idEmp` int(11) DEFAULT NULL,
   `idEsp` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `empleado_especialidad`
 --
 
 INSERT INTO `empleado_especialidad` (`id`, `idEmp`, `idEsp`) VALUES
-(1800, 2001, 1500),
-(1801, 2001, 1501),
-(1802, 2001, 1502),
-(1803, 2002, 1501),
-(1804, 2002, 1502),
-(1805, 2001, 1503),
-(1806, 2001, 1500),
-(1807, 2003, 1500),
-(1808, 2003, 1501),
-(1809, 2003, 1502);
+(1, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -185,16 +171,7 @@ CREATE TABLE `empleado_obra` (
   `id` int(11) NOT NULL,
   `idEmp` int(11) DEFAULT NULL,
   `idObra` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `empleado_obra`
---
-
-INSERT INTO `empleado_obra` (`id`, `idEmp`, `idObra`) VALUES
-(900, 2001, 4000),
-(901, 2002, 4001),
-(902, 2003, 4002);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -205,19 +182,15 @@ INSERT INTO `empleado_obra` (`id`, `idEmp`, `idObra`) VALUES
 CREATE TABLE `especialidad` (
   `id` int(11) NOT NULL,
   `especialidad` varchar(30) DEFAULT NULL,
-  `estado` int(1) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `estado` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `especialidad`
 --
 
 INSERT INTO `especialidad` (`id`, `especialidad`, `estado`) VALUES
-(1500, 'Pintor', 1),
-(1501, 'Plomero', 1),
-(1502, 'Drywall', 1),
-(1503, 'Electricista', 1),
-(1504, 'Instalador de redes', 0);
+(1, 'Trabajador', 1);
 
 -- --------------------------------------------------------
 
@@ -229,20 +202,17 @@ CREATE TABLE `materiales` (
   `idMat` int(11) NOT NULL,
   `nombre` varchar(50) DEFAULT NULL,
   `idProveedor` int(11) DEFAULT NULL,
-  `estado` int(1) DEFAULT NULL,
+  `estado` int(11) DEFAULT NULL,
   `cantidad` int(11) DEFAULT NULL,
   `idCategoria` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `materiales`
 --
 
 INSERT INTO `materiales` (`idMat`, `nombre`, `idProveedor`, `estado`, `cantidad`, `idCategoria`) VALUES
-(500, 'Baldosas', 700, 1, 30, 6000),
-(501, 'Arena', 700, 1, 10, 6000),
-(502, 'Tuvo pvc', 701, 1, 5, 6001),
-(503, 'Galón de pintura', 703, 1, 10, 6002);
+(1, 'Tubo pvc', 1, 0, NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -255,16 +225,7 @@ CREATE TABLE `materiales_obras` (
   `idMaterial` int(11) DEFAULT NULL,
   `idObra` int(11) DEFAULT NULL,
   `consumo` varchar(20) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `materiales_obras`
---
-
-INSERT INTO `materiales_obras` (`id`, `idMaterial`, `idObra`, `consumo`) VALUES
-(7000, 500, 4000, 'metros'),
-(7001, 501, 4001, 'metros'),
-(7002, 502, 4002, 'metros');
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -277,19 +238,17 @@ CREATE TABLE `obras` (
   `descripcion` varchar(100) DEFAULT NULL,
   `fechaini` varchar(50) DEFAULT NULL,
   `fechafin` varchar(50) DEFAULT NULL,
-  `area` int(11) DEFAULT NULL,
+  `area` varchar(50) DEFAULT NULL,
   `idCliente` int(11) DEFAULT NULL,
   `estado` varchar(50) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `obras`
 --
 
 INSERT INTO `obras` (`idObra`, `descripcion`, `fechaini`, `fechafin`, `area`, `idCliente`, `estado`) VALUES
-(4000, 'Enchape de baño ', '2023-05-01', '2023-06-07', 25, 22000, NULL),
-(4001, 'Revoque de habitación', '2023-02-12', '2023-04-10', 8, 22002, NULL),
-(4002, 'Instalación de red electrica', '2023-04-10', '2023-10-22', 3, 22001, NULL);
+(1, 'enchape de baño', '2023-12-21', '2023-12-31', "54M", 1, '1');
 
 -- --------------------------------------------------------
 
@@ -300,22 +259,8 @@ INSERT INTO `obras` (`idObra`, `descripcion`, `fechaini`, `fechafin`, `area`, `i
 CREATE TABLE `permiso` (
   `idPer` int(11) NOT NULL,
   `permiso` varchar(30) DEFAULT NULL,
-  `estado` int(1) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `permiso`
---
-
-INSERT INTO `permiso` (`idPer`, `permiso`, `estado`) VALUES
-(100, 'Usuarios', 1),
-(101, 'roles', 1),
-(102, 'empleados', 1),
-(103, 'proveedores', 1),
-(104, 'materiales', 1),
-(105, 'compras', 1),
-(106, 'obras y tiempos', 1),
-(107, 'clientes', 1);
+  `estado` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -329,23 +274,20 @@ CREATE TABLE `proveedor` (
   `direccion` varchar(100) DEFAULT NULL,
   `nit` varchar(14) DEFAULT NULL,
   `tipo` varchar(10) DEFAULT NULL,
-  `estado` int(1) DEFAULT NULL,
+  `estado` int(11) DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
   `telefono` varchar(15) DEFAULT NULL,
   `nombreContacto` varchar(50) DEFAULT NULL,
   `telefonoContacto` varchar(10) DEFAULT NULL,
   `emailContacto` varchar(100) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `proveedor`
 --
 
 INSERT INTO `proveedor` (`idProv`, `nombre`, `direccion`, `nit`, `tipo`, `estado`, `email`, `telefono`, `nombreContacto`, `telefonoContacto`, `emailContacto`) VALUES
-(700, 'Corona', 'Calle 53 #50-76', '860.500.480-8', 'Acabados', 1, 'contactenoscorona@corona.com.co', '018000512030', 'Richy Fernandez', '3128030461', 'richyelmandamas200@gmail.com'),
-(701, 'Homecenter', 'Av 68 No. 80-77', '800.242.106-2', 'Arenas y g', 1, 'servicioalcliente@homecenter.co', '018000127373', 'Manuel Hernandez', '3228341212', 'herzm@gmail.com'),
-(702, 'Corona', 'Carrera 50 #53-20', '860.500.480-8', 'Sanitarios', 1, 'contactenoscorona@corona.com.co', '018000512030', 'Jhon Gallego', '3003723113', 'onjh@gmail.com'),
-(703, 'Pintuco', ' Calle 19a #43B-41', '890.900.148-2', 'Pintura', 1, 'tiendapintucoocana@hotmail.com', '3115128355', 'Carlos Ramires', '3013331212', 'carlitos@gmail.com');
+(1, 'Ronald Ortiz', 'calle 55 ee', '12321312555', 'Natural', 0, 'cesardomos@hotmail.com', '3158119393', '', '', '');
 
 -- --------------------------------------------------------
 
@@ -356,19 +298,16 @@ INSERT INTO `proveedor` (`idProv`, `nombre`, `direccion`, `nit`, `tipo`, `estado
 CREATE TABLE `rol` (
   `idRol` int(11) NOT NULL,
   `nombre` varchar(30) DEFAULT NULL,
-  `estado` int(1) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `estado` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `rol`
 --
 
 INSERT INTO `rol` (`idRol`, `nombre`, `estado`) VALUES
-(201, 'Administrador', 1),
-(202, 'Empleado', 1),
-(203, 'Secretaria', 1),
-(209, 'Test', 1),
-(210, 'Test2', 1);
+(1, 'Super admin', 1),
+(2, 'Admin', 1);
 
 -- --------------------------------------------------------
 
@@ -379,27 +318,9 @@ INSERT INTO `rol` (`idRol`, `nombre`, `estado`) VALUES
 CREATE TABLE `rol_permiso` (
   `id` int(11) NOT NULL,
   `idRol` int(11) DEFAULT NULL,
-  `idPer` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `rol_permiso`
---
-
-INSERT INTO `rol_permiso` (`id`, `idRol`, `idPer`) VALUES
-(300, 201, 100),
-(319, 201, 101),
-(320, 201, 102),
-(321, 201, 103),
-(322, 201, 104),
-(323, 201, 105),
-(324, 201, 106),
-(325, 201, 107),
-(326, 202, 103),
-(327, 202, 104),
-(328, 202, 105),
-(329, 202, 106),
-(330, 202, 107);
+  `idPer` int(11) DEFAULT NULL,
+  `tipo` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -409,24 +330,44 @@ INSERT INTO `rol_permiso` (`id`, `idRol`, `idPer`) VALUES
 
 CREATE TABLE `usuario` (
   `idUsu` int(11) NOT NULL,
-  `estado` int(2) NOT NULL,
-  `correo` varchar(50) DEFAULT NULL,
+  `correo` varchar(100) NOT NULL,
+  `estado` int(11) NOT NULL,
   `contrasena` varchar(20) DEFAULT NULL,
   `idRol` int(11) DEFAULT NULL,
-  `idEmpl` int(10) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `idEmp` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `usuario`
 --
 
-INSERT INTO `usuario` (`idUsu`, `estado`, `correo`, `contrasena`, `idRol`, `idEmpl`) VALUES
-(500, 1, 'mario@gmail.com', 'mario123', 201, 0),
-(501, 0, 'flores@gmail.com', 'flores56', 202, 0),
-(502, 1, 'belarzea@gmail.com', 'belarzea32', 202, 0),
-(503, 0, 'davidmar@gmail.com', 'DavidMar45', 202, 0),
-(504, 1, 'marce434@gmail.com', 'marce434', 203, 0),
-(505, 1, 'mpcm2005pilar@gmail.com', '1021804043', 203, 2004);
+INSERT INTO `usuario` (`idUsu`, `correo`, `estado`, `contrasena`, `idRol`, `idEmp`) VALUES
+(1, 'ortizronald623@gmail.com', 1, '1025646465Ronald.', 1, 1),
+(2, 'cesardomosgmail.com', 1, 'Ronaldbb', 2, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `_prisma_migrations`
+--
+
+CREATE TABLE `_prisma_migrations` (
+  `id` varchar(36) NOT NULL,
+  `checksum` varchar(64) NOT NULL,
+  `finished_at` datetime(3) DEFAULT NULL,
+  `migration_name` varchar(255) NOT NULL,
+  `logs` text DEFAULT NULL,
+  `rolled_back_at` datetime(3) DEFAULT NULL,
+  `started_at` datetime(3) NOT NULL DEFAULT current_timestamp(3),
+  `applied_steps_count` int(10) UNSIGNED NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `_prisma_migrations`
+--
+
+INSERT INTO `_prisma_migrations` (`id`, `checksum`, `finished_at`, `migration_name`, `logs`, `rolled_back_at`, `started_at`, `applied_steps_count`) VALUES
+('8cdc59b2-42d8-490f-ba28-40283e4864ae', '57c96378586917b749bf537eab447b7da0de85627b2d13ed2856100698da83e3', '2023-12-07 03:54:15.289', '20231207035414_first_migrationbrou', NULL, NULL, '2023-12-07 03:54:14.402', 1);
 
 --
 -- Índices para tablas volcadas
@@ -456,7 +397,8 @@ ALTER TABLE `compras`
 ALTER TABLE `compras_detalle`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idCompra` (`idCompra`),
-  ADD KEY `idMat` (`idMat`);
+  ADD KEY `idMat` (`idMat`),
+  ADD KEY `idCat` (`idCat`);
 
 --
 -- Indices de la tabla `empleado`
@@ -491,8 +433,8 @@ ALTER TABLE `especialidad`
 --
 ALTER TABLE `materiales`
   ADD PRIMARY KEY (`idMat`),
-  ADD KEY `idProveedor` (`idProveedor`),
-  ADD KEY `idCategoria` (`idCategoria`);
+  ADD KEY `idCategoria` (`idCategoria`),
+  ADD KEY `idProveedor` (`idProveedor`);
 
 --
 -- Indices de la tabla `materiales_obras`
@@ -532,16 +474,22 @@ ALTER TABLE `rol`
 --
 ALTER TABLE `rol_permiso`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `idRol` (`idRol`),
-  ADD KEY `idPer` (`idPer`);
+  ADD KEY `idPer` (`idPer`),
+  ADD KEY `idRol` (`idRol`);
 
 --
 -- Indices de la tabla `usuario`
 --
 ALTER TABLE `usuario`
   ADD PRIMARY KEY (`idUsu`),
-  ADD KEY `idRol` (`idRol`),
-  ADD KEY `idEmpl` (`idEmpl`);
+  ADD KEY `idEmp` (`idEmp`),
+  ADD KEY `idRol` (`idRol`);
+
+--
+-- Indices de la tabla `_prisma_migrations`
+--
+ALTER TABLE `_prisma_migrations`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
@@ -551,97 +499,97 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de la tabla `categoria`
 --
 ALTER TABLE `categoria`
-  MODIFY `idcat` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6005;
+  MODIFY `idcat` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `cliente`
 --
 ALTER TABLE `cliente`
-  MODIFY `idCli` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22013;
+  MODIFY `idCli` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `compras`
 --
 ALTER TABLE `compras`
-  MODIFY `idCom` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3004;
+  MODIFY `idCom` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT de la tabla `compras_detalle`
 --
 ALTER TABLE `compras_detalle`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30004;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `empleado`
 --
 ALTER TABLE `empleado`
-  MODIFY `idEmp` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2005;
+  MODIFY `idEmp` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `empleado_especialidad`
 --
 ALTER TABLE `empleado_especialidad`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1810;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `empleado_obra`
 --
 ALTER TABLE `empleado_obra`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=903;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `especialidad`
 --
 ALTER TABLE `especialidad`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1505;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `materiales`
 --
 ALTER TABLE `materiales`
-  MODIFY `idMat` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=504;
+  MODIFY `idMat` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `materiales_obras`
 --
 ALTER TABLE `materiales_obras`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7003;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `obras`
 --
 ALTER TABLE `obras`
-  MODIFY `idObra` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4003;
+  MODIFY `idObra` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `permiso`
 --
 ALTER TABLE `permiso`
-  MODIFY `idPer` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=108;
+  MODIFY `idPer` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `proveedor`
 --
 ALTER TABLE `proveedor`
-  MODIFY `idProv` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=704;
+  MODIFY `idProv` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `rol`
 --
 ALTER TABLE `rol`
-  MODIFY `idRol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=211;
+  MODIFY `idRol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `rol_permiso`
 --
 ALTER TABLE `rol_permiso`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=337;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `idUsu` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=506;
+  MODIFY `idUsu` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Restricciones para tablas volcadas
@@ -659,18 +607,14 @@ ALTER TABLE `compras_detalle`
 --
 ALTER TABLE `empleado_especialidad`
   ADD CONSTRAINT `empleado_especialidad_ibfk_1` FOREIGN KEY (`idEmp`) REFERENCES `empleado` (`idEmp`),
-  ADD CONSTRAINT `empleado_especialidad_ibfk_2` FOREIGN KEY (`idEsp`) REFERENCES `especialidad` (`id`),
-  ADD CONSTRAINT `empleado_especialidad_ibfk_3` FOREIGN KEY (`idEmp`) REFERENCES `empleado` (`idEmp`),
-  ADD CONSTRAINT `empleado_especialidad_ibfk_4` FOREIGN KEY (`idEsp`) REFERENCES `especialidad` (`id`);
+  ADD CONSTRAINT `empleado_especialidad_ibfk_2` FOREIGN KEY (`idEsp`) REFERENCES `especialidad` (`id`);
 
 --
 -- Filtros para la tabla `empleado_obra`
 --
 ALTER TABLE `empleado_obra`
   ADD CONSTRAINT `empleado_obra_ibfk_1` FOREIGN KEY (`idEmp`) REFERENCES `empleado` (`idEmp`),
-  ADD CONSTRAINT `empleado_obra_ibfk_2` FOREIGN KEY (`idObra`) REFERENCES `obras` (`idObra`),
-  ADD CONSTRAINT `empleado_obra_ibfk_3` FOREIGN KEY (`idEmp`) REFERENCES `empleado` (`idEmp`),
-  ADD CONSTRAINT `empleado_obra_ibfk_4` FOREIGN KEY (`idObra`) REFERENCES `obras` (`idObra`);
+  ADD CONSTRAINT `empleado_obra_ibfk_2` FOREIGN KEY (`idObra`) REFERENCES `obras` (`idObra`);
 
 --
 -- Filtros para la tabla `materiales`
