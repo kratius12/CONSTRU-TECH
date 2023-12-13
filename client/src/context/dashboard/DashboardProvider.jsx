@@ -1,5 +1,8 @@
 import { useContext, useState } from "react";
-import { GetDashboardRequest
+import { GetDashboardClienteObrasRequest,
+         GetDashboardClientesRequest,
+         GetDashboardEspecialidadesRequest,
+         GetDashboardObrasRequest
 } from "../../api/Dashboard.api";
 import { DashboardContext } from "./DashboardContext";
 
@@ -18,15 +21,42 @@ export const DashboardContextProvider = ({children}) => {
     const [dashboard, setDashboard] = useState([])
 
     async function Dashboard() {
-        const response = await GetDashboardRequest()
+        const response = await GetDashboardClientesRequest()
         setDashboard(response.data)          
     }  
 
 
 
-    const getDashboard = async (id) =>{
+    const getDashboardClientes = async (id) =>{
         try {
-            const result = await GetDashboardRequest(id)
+            const result = await GetDashboardClientesRequest(id)
+            return result.data
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    const getDashboardObras = async (id) =>{
+        try {
+            const result = await GetDashboardObrasRequest(id)
+            return result.data
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    const getDashboardClienteObras = async (id) =>{
+        try {
+            const result = await GetDashboardClienteObrasRequest(id)
+            return result.data
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    const getDashboardEspecialidades = async (id) =>{
+        try {
+            const result = await GetDashboardEspecialidadesRequest(id)
             return result.data
         } catch (error) {
             console.error(error)
@@ -34,7 +64,7 @@ export const DashboardContextProvider = ({children}) => {
     }
 
     return (
-        <DashboardContext.Provider value={{dashboard, Dashboard, getDashboard}}>
+        <DashboardContext.Provider value={{dashboard, Dashboard, getDashboardClientes, getDashboardObras, getDashboardClienteObras, getDashboardEspecialidades}}>
             {children}
         </DashboardContext.Provider>
     )
