@@ -106,9 +106,9 @@ export const getValidate = (values, hasId) => {
       errors.area = 'El area es requerida';      
     }
 
-    if (!values.cliente || !values.cliente.value) {
-      errors.cliente = 'El cliente es requerido, seleccione al menos uno';
-    }
+    // if (!values.cliente || !values.cliente.value) {
+    //   errors.cliente = 'El cliente es requerido, seleccione al menos uno';
+    // }
   
     if (!values.fechaini) {
       errors.fechaini = 'La fecha de inicio es requerida';
@@ -117,6 +117,16 @@ export const getValidate = (values, hasId) => {
     if (!values.fechafin) {
       errors.fechafin = 'La fecha final es requerida';
     }
+
+    if (dayjs(values.fechaini).isAfter(dayjs(values.fechafin))) {
+      errors.fechaini = 'La fecha de inicio no puede ser posterior a la fecha final';
+    }
+  
+    // Validación de que fechafin no sea inferior a fechaini
+    if (dayjs(values.fechafin).isBefore(dayjs(values.fechaini))) {
+      errors.fechafin = 'La fecha final no puede ser anterior a la fecha de inicio';
+    }
+
 
     if (!values.empleados || values.empleados.length === 0) {
       errors.empleados = 'El empleado es requerido, seleccione al menos uno';

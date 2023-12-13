@@ -9,7 +9,7 @@ export default function Sidebar() {
   }
   return (
     <>    <ul className="navbar-nav bg-gradient-dark sidebar sidebar-dark accordion" id="accordionSidebar">
-      <Link className="sidebar-brand d-flex align-items-center justify-content-center" to="/">
+      <Link className="sidebar-brand d-flex align-items-center justify-content-center" to="/dashboard">
         <div className="sidebar-brand-text mx-3">
           <img
             src={Logo}
@@ -19,7 +19,7 @@ export default function Sidebar() {
       </Link>
       <hr className="sidebar-divider my-0" />
       <li className="nav-item">
-        <Link className="nav-link" to="/">
+        <Link className="nav-link" to="/dashboard">
           <i className="fa-solid fa-gauge-high" />&nbsp;
           Inicio
         </Link>

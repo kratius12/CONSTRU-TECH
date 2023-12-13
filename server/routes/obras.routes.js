@@ -84,11 +84,18 @@ router.post("/obras", async (req, res) =>{
 router.put("/obra/:id", async (req, res) =>{
     try {
         const {descripcion, area, cliente, empleados, material, estado, fechafin, fechaini} = req.body
-        const result = await prisma.obras.update({
-            where:{
-                idObra:parseInt(req.params.id)
-            },
-            data:{
+        let data ={}
+
+        if (!cliente) {
+            data={
+                descripcion:descripcion,
+                area:area,
+                estado:estado,
+                fechaini:fechaini,
+                fechafin:fechafin,            
+            }
+        }else{
+            data= {
                 descripcion:descripcion,
                 area:area,
                 estado:estado,
@@ -96,6 +103,12 @@ router.put("/obra/:id", async (req, res) =>{
                 fechafin:fechafin,
                 idCliente:cliente.value
             }
+        }
+        const result = await prisma.obras.update({
+            where:{
+                idObra:parseInt(req.params.id)
+            },
+            data:data
         })
         if (result) {
             const result2 = await prisma.empleado_obra.deleteMany({

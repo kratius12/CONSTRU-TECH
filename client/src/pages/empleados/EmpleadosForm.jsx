@@ -75,8 +75,8 @@ export default function EmpleadosForm() {
       message = "Agregado"
     }
     $.confirm({
-      title: `Empleado ` + message + ` con exito!`,
-      content: "Redirecionando a listado de empleados...",
+      title: `Obra ` + message + ` con exito!`,
+      content: "Redirecionando a listado de obras...",
       icon: 'fa fa-check',
       theme: 'modern',
       closeIcon: true,
@@ -109,7 +109,7 @@ export default function EmpleadosForm() {
               }
               if (params.id) {
                 await updateEmpleado(params.id, empleadoObject)
-                alertConfirm()
+                alertConfirm('update')
                 setTimeout(
                   navigate("/empleados"),
                   5000
