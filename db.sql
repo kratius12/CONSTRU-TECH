@@ -592,6 +592,17 @@ ALTER TABLE `usuario`
   MODIFY `idUsu` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- CreatedAt de la tabla `obras`
+--
+ALTER TABLE `obras` ADD `createdAt` DATE NOT NULL DEFAULT CURRENT_DATE;
+
+
+--
+-- CreatedAt de la tabla `cliente`
+--
+ALTER TABLE `cliente` ADD `createdAt` DATE NOT NULL DEFAULT CURRENT_DATE;
+
+--
 -- Restricciones para tablas volcadas
 --
 
