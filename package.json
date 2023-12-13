@@ -29,6 +29,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "reactstrap": "^9.2.0",
+    "shortid": "^2.2.16",
     "vite": "^4.5.0"
   },
   "devDependencies": {

@@ -9,7 +9,9 @@ export const GetCompraRequest = async(idCom)=>{
 }
 
 export const CreateCompraRequest = async(compra)=>{
-    return await axios.post('http://localhost:4000/compra',compra)
+    return await axios.post('http://localhost:4000/compra',compra,{
+        headers:{"Content-Type":"multipart/form-data"}
+    })
 }
 
 export const UpdateCompraRequest = async(idCom,newCom)=>{

@@ -168,7 +168,7 @@ const ComprasForm = () => {
           )
         }}
       >
-        {({ handleSubmit, values, isSubmitting, errors, touched }) => (
+        {({ handleSubmit, values, isSubmitting, setFieldValue,errors, touched }) => (
           <Form onSubmit={handleSubmit} className="user" encType="multipart/form-data">
             <div className="card text-center w-100">
               <h2>Agregar compra</h2>
@@ -183,7 +183,7 @@ const ComprasForm = () => {
                   </div>
                   <div className="col-md-3 mt-3 mx-auto">
                     <label htmlFor="imagen">Factura:</label>
-                    <input id="fileinput" onChange={selectedHandler} className="form-control" type="file" />
+                    <input id="fileinput" onChange={(e)=>setFieldValue("imagen",event.currentTarget.files)}  className="form-control" type="file" />
                     {errors.imagen && touched.imagen ? (
                       <div className="alert alert-danger" role="alert">{errors.imagen}</div>
                     ) : null}
