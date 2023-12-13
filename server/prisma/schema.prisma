@@ -8,11 +8,12 @@ datasource db {
 }
 
 model categoria {
-  idcat      Int          @id @default(autoincrement())
-  nombre     String?      @db.VarChar(50)
-  estado     Int?
-  medida     String?      @db.VarChar(50)
-  materiales materiales[]
+  idcat           Int               @id @default(autoincrement())
+  nombre          String?           @db.VarChar(50)
+  estado          Int?
+  medida          String?           @db.VarChar(50)
+  compras_detalle compras_detalle[]
+  materiales      materiales[]
 }
 
 model cliente {
@@ -33,9 +34,10 @@ model cliente {
 
 model compras {
   idCom           Int               @id @default(autoincrement())
-  fecha           DateTime?         @db.Date
+  fecha           String?           @db.VarChar(50)
   imagen          String?           @db.VarChar(100)
   total_compra    Int?
+  codigoFactura   String            @db.VarChar(20)
   compras_detalle compras_detalle[]
 }
 
@@ -45,10 +47,11 @@ model compras_detalle {
   idCat      Int
   idMat      Int?
   cantidad   Int?
-  Precio     Int?
+  precio     Int?
   subtotal   Int?
   compras    compras?    @relation(fields: [idCompra], references: [idCom], onDelete: Restrict, onUpdate: Restrict, map: "compras_detalle_ibfk_1")
   materiales materiales? @relation(fields: [idMat], references: [idMat], onDelete: Restrict, onUpdate: Restrict, map: "compras_detalle_ibfk_2")
+  categoria  categoria   @relation(fields: [idCat], references: [idcat], onUpdate: Restrict, map: "compras_detalle_ibfk_3")
 
   @@index([idCompra], map: "idCompra")
   @@index([idMat], map: "idMat")
@@ -103,7 +106,6 @@ model materiales {
   nombre           String?            @db.VarChar(50)
   idProveedor      Int?
   estado           Int?
-  cantidad         Int?
   idCategoria      Int?
   compras_detalle  compras_detalle[]
   proveedor        proveedor?         @relation(fields: [idProveedor], references: [idProv], onDelete: Restrict, onUpdate: Restrict, map: "materiales_ibfk_1")

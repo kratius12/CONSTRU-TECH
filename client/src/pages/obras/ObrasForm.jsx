@@ -103,7 +103,7 @@ function ObrasForm() {
 
     useEffect(() => {
         setKeyCli((prevKey) => prevKey + 1)
-    }, [])
+    }, [selectedCli])
 
     const validate = (values) =>{
 
@@ -145,7 +145,7 @@ function ObrasForm() {
           }
         })
       }
-
+console.log(selectedCli);
     return (
         <div className="container">
             <div className="row">
