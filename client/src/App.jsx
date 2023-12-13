@@ -20,6 +20,8 @@ import { ClientContextProvider } from "./context/clientes/ClientesProvider";
 import { CompraContextProvider } from './context/compras/ComprasProvider'
 import { RolContextProvider } from "./context/roles/RolesProvider";
 import { UsuariosContextProvider } from "./context/usuarios/UsuariosProvider";
+import { PermisoContextProvider } from "./context/permisos/PermisosProvider";
+import { DashboardContextProvider } from "./context/dashboard/DashboardProvider";
 
 import ProveedoresPage from './pages/proveedores/ProveedorPage'
 import ProveedoresForm from "./pages/proveedores/ProveedoresForm";
