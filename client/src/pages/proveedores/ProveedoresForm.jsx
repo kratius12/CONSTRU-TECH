@@ -127,7 +127,7 @@ export default function ProveedoresForm() {
                                     <h2>{params.id ? "Editar" : "Agregar"} proveedor</h2>
                                     <div className="card-body">
                                         <div className="row">
-                                            <div className="col-6 mt-3">
+                                            <div className="col-md-6 mt-3">
                                                 <select  id="tipo" className="form-select form-control-user" onChange={handleSelectChange} value={values.tipo = tipo}
                                                 style={{height:30}}
                                                 >
@@ -140,38 +140,38 @@ export default function ProveedoresForm() {
                                                 ) : null}
                                                 
                                             </div>
-                                            <div className="col-6 mt-3">
+                                            <div className="col-md-6 mt-3">
                                                 <input type="text" className="form-control form-control-user" id="nit" onChange={handleChange} value={values.nit}  placeholder={placeholders.nit} />
                                                 {errors.nit && touched.nit ? (
                                                     <div className="alert alert-danger" role="alert">{errors.nit}</div>
                                                 ) : null}
                                             </div>
-                                            <div className="col-6 mt-3">
+                                            <div className="col-md-6 mt-3">
                                                 <input type="text" className="form-control form-control-user" id="nombre" onChange={handleChange} value={values.nombre}  placeholder={placeholders.nombre} />
                                                 {errors.nombre && touched.nombre ? (
                                                     <div className="alert alert-danger" role="alert">{errors.nombre}</div>
                                                 ) : null}
                                             </div>
 
-                                            <div className="col-6 mt-3">
+                                            <div className="col-md-6 mt-3">
                                                 <input type="text" className="form-control form-control-user" id="email" onChange={handleChange} value={values.email} placeholder="Correo electrónico*" />
                                                 {errors.email && touched.email ? (
                                                     <div className="alert alert-danger" role="alert">{errors.email}</div>
                                                 ) : null}
                                             </div>
-                                            <div className="col-6 mt-3">
+                                            <div className="col-md-6 mt-3">
                                                 <input type="text" className="form-control form-control-user" id="direccion" onChange={handleChange} value={values.direccion} placeholder="Dirección*" />
                                                 {errors.direccion && touched.direccion ? (
                                                     <div className="alert alert-danger" role="alert">{errors.direccion}</div>
                                                 ) : null}
                                             </div>
-                                            <div className="col-6 mt-3">
+                                            <div className="col-md-6 mt-3">
                                                 <input type="text" className="form-control form-control-user" id="telefono" onChange={handleChange} value={values.telefono} placeholder="Teléfono*" />
                                                 {errors.telefono && touched.telefono ? (
                                                     <div className="alert alert-danger" role="alert">{errors.telefono}</div>
                                                 ) : null}
                                             </div>
-                                            <div className="col-6 mt-3">
+                                            <div className="col-md-6 mt-3">
                                                 <select id="estado" name="estado" defaultValue="1" className="form-select form-control-user" onChange={handleChange}  >
                                                     <option value="">Seleccione estado</option>
                                                     <option value="1">Activo</option>
@@ -188,19 +188,19 @@ export default function ProveedoresForm() {
                                         <div className="card-body">
                                             <h4>Datos de contacto del proveedor</h4>
                                             <div className="row">
-                                                <div className="col-6 mt-3">
+                                                <div className="col-md-6 mt-3">
                                                     <input type="text" className="form-control form-control-user" id="nombreContacto" onChange={handleChange} value={values.nombreContacto} placeholder="Nombre del contacto*" />
                                                     {errors.nombreContacto && touched.nombreContacto ? (
                                                         <div className="alert alert-danger" role="alert">{errors.nombreContacto}</div>
                                                     ) : null}
                                                 </div>
-                                                <div className="col-6 mt-3">
+                                                <div className="col-md-6 mt-3">
                                                     <input type="text" className="form-control form-control-user" id="telefonoContacto" onChange={handleChange} value={values.telefonoContacto} placeholder="Teléfono del contacto*" />
                                                     {errors.telefonoContacto && touched.telefonoContacto ? (
                                                         <div className="alert alert-danger" role="alert">{errors.telefonoContacto}</div>
                                                     ) : null}
                                                 </div>
-                                                <div className="col-6 mt-3">
+                                                <div className="col-md-6 mt-3">
                                                     <input type="text" className="form-control form-control-user" id="emailContacto" onChange={handleChange} value={values.emailContacto} placeholder="Email del contacto*" />
                                                     {errors.emailContacto && touched.emailContacto ? (
                                                         <div className="alert alert-danger" role="alert">{errors.emailContacto}</div>

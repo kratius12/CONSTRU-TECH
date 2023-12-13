@@ -76,7 +76,7 @@ router.post("/compra", upload.single("image"), async (req, res) => {
                 imagen: imagen,
                 fecha: fecha,
                 codigoFactura: codigoFactura
-            }
+            }   
         });
 
         for (const detalle of detalles) {
