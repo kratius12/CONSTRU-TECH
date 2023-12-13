@@ -133,7 +133,6 @@ function ObrasPage() {
 
                                     {row.getVisibleCells().map((cell) => (
                                         <td key={cell.id}>
-                                        {console.log(cell.row.original)}
                                         {cell.column.id === 'accion' ? (
                                             <>
                                             <AlertDetail
