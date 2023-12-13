@@ -86,15 +86,16 @@ router.delete("/categoria/:id", async (req, res) => {
 router.put("/estadoCategoria/:id",async(req,res)=>{
     try{
         const {estado} = req.body
-        const categor = req.params.id
+        const idcat = req.params.id
         const newEstado = await prisma.categoria.update({
             where:{
-                idcat: parseInt(categor)
+                idcat: parseInt(idcat)
             },data:{
                 estado: parseInt(estado)
             }
         })
         console.log(newEstado)
+        return res.status(200).json(newEstado)
     }catch(error){
         console.error(error)
     }

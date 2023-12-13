@@ -1,0 +1,11 @@
+/* TableInfo.css */
+
+/* Estilos personalizados para cards en pantallas más pequeñas */
+.d-md-none {
+    display: block;
+  }
+  
+  .d-none.d-md-block {
+    display: none;
+  }
+  

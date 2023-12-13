@@ -105,7 +105,6 @@ model materiales {
   nombre           String?            @db.VarChar(50)
   idProveedor      Int?
   estado           Int?
-  cantidad         Int?
   idCategoria      Int?
   compras_detalle  compras_detalle[]
   proveedor        proveedor?         @relation(fields: [idProveedor], references: [idProv], onDelete: Restrict, onUpdate: Restrict, map: "materiales_ibfk_1")

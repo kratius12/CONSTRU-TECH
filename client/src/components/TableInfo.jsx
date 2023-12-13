@@ -214,7 +214,7 @@ function TableInfo({ dataHeader, dataBody, routeEdit, viewDetail, entity, toggle
             onClick={() => table.nextPage()}
           >
              Siguiente &nbsp;
-             <i className="fa-solid fa-arrow-left"></i>
+             <i className="fa-solid fa-arrow-right"></i>
             &nbsp;
           </a>
         </div>

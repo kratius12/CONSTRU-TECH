@@ -75,8 +75,6 @@ const ComprasForm = () => {
 
     // Agregar el archivo al FormData
     formdata.append("image", file);
-    formdata.append("idProv", values.idProv);
-    formdata.append("codigoFactura", values.codigoFactura);
 
     try {
       const response = await fetch("http://localhost:4000/compra", {
@@ -158,11 +156,16 @@ const ComprasForm = () => {
         validationSchema={comprasSchema}
         enableReinitialize={true}
         onSubmit={async (values) => {
-          values.imagen = file; // Agregar la imagen a los valores del formulario
+          values.imagen = file;
+          console.log(values.imagen)
+          // Agregar la imagen a los valores del formulario
           console.log(values);
           await createCompra(values);
-          sendHandler(values);
-          navigate("/compras");
+          alertConfirm()
+          setTimeout(
+            navigate("/compras"),
+            5000
+          )
         }}
       >
         {({ handleSubmit, values, isSubmitting, errors, touched }) => (
@@ -190,11 +193,11 @@ const ComprasForm = () => {
                       Proveedor:
                     </label>
                     <Field
-                      as="multi"
+                      as="select"
                       id={`idProv`}
                       name={`idProv`}
                       value={values.idProv}
-                      className="basic-multi-select"
+                      className="form-select"
                     >
                       <option value="">Seleccione un proveedor</option>
                       {proveedores.map((proveedor) => (
@@ -327,6 +330,7 @@ const ComprasForm = () => {
                             </div>
                           </div>
                         ))}
+                        <hr className="mt-3" />
                         <button
                           type="button"
                           className="btn btn-success mt-3"
@@ -348,13 +352,15 @@ const ComprasForm = () => {
                             <div className="input-group-prepend">
                               <span className="input-group-text">$</span>
                             </div>
-                            { calcularTotalGeneral(values.detalles)}
+                            <p {...calcularTotalGeneral(values.detalles)}></p>
                             <Field
                               type="text"
                               className="form-control"
                               disabled
-                              value={(totalGeneral).toLocaleString()}
+                              value={values.total_compra=totalGeneral}
+                              name="total_compra"
                             />
+                            
                           </div>
                         </div>
                       </div>
@@ -367,7 +373,7 @@ const ComprasForm = () => {
                   <div className="col-md-6">
                     <button
                       type="submit"
-                      onClick={sendHandler}
+                      // onClick={sendHandler}
                       disabled={isSubmitting}
                       className="btn btn-primary btn-icon-split w-50"
                     >
