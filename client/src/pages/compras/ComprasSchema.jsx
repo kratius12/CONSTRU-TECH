@@ -1,20 +1,18 @@
 import * as Yup from 'yup';
+
 const comprasSchema = Yup.object().shape({
-    fecha:Yup.date()
-        .required('La fecha es requerida'),
-    imagen: Yup.string()
-        .required('La imagen de la factura es requerida'),
-    categoria:Yup.string()
-        .required('La categoria es requerida'),
-    material:Yup.string()
-        .required('El material es requerido'),
-    precio:Yup.number()
-        .required('El precio es requerido')
-        .positive('El precio no puede contener valores negativos')
-        .integer(),
-    cantidad:Yup.number()
-        .required('La cantidad es requerida')
-        .positive('La cantidad no puede contener valores negativos')
+  fecha: Yup.date().required("Fecha es requerida"),
+  // imagen: Yup.mixed().required("Factura es requerida").trim(),
+  idProv: Yup.string().required("Proveedor es requerido").trim(),
+  codigoFactura: Yup.string().required("Código de Factura es requerido").trim(),
+  detalles: Yup.array().of(
+    Yup.object().shape({
+      idCat: Yup.string().required("Categoría es requerida").trim(),
+      idMat: Yup.string().required("Material es requerido").trim(),
+      cantidad: Yup.number("La cantidad solo puede contener números").required("Cantidad es requerida").positive("La cantidad tiene que ser un numero positivo"),
+      precio: Yup.number("El precio solo puede contener números").required("Precio es requerido").positive("EL precio tiene que ser un numero positivo"),
+    })
+  ).min(1, "Debe de ingresar al menos un material"),
 });
 
-export default comprasSchema
+export default comprasSchema;

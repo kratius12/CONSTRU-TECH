@@ -8,60 +8,65 @@ datasource db {
 }
 
 model categoria {
-  idcat      Int          @id @default(autoincrement())
-  nombre     String?      @db.VarChar(50)
-  estado     Int?
-  medida     String?      @db.VarChar(50)
-  materiales materiales[]
+  idcat           Int               @id @default(autoincrement())
+  nombre          String?           @db.VarChar(50)
+  estado          Int?
+  medida          String?           @db.VarChar(50)
+  compras_detalle compras_detalle[]
+  materiales      materiales[]
 }
 
 model cliente {
-  idCli      Int       @id @default(autoincrement())
-  nombre     String?   @db.VarChar(70)
-  apellidos  String?   @db.VarChar(50)
-  email      String?   @db.VarChar(100)
-  direccion  String?   @db.VarChar(50)
-  telefono   String?   @db.VarChar(10)
-  tipoDoc    String?   @db.VarChar(50)
-  cedula     String    @db.VarChar(10)
-  fecha_nac  DateTime? @db.Date
+  idCli      Int     @id @default(autoincrement())
+  nombre     String? @db.VarChar(70)
+  apellidos  String? @db.VarChar(50)
+  email      String? @db.VarChar(100)
+  direccion  String? @db.VarChar(50)
+  telefono   String? @db.VarChar(10)
+  tipoDoc    String? @db.VarChar(50)
+  cedula     String  @db.VarChar(10)
+  fecha_nac  String? @db.VarChar(50)
   estado     Int?
-  contrasena String?   @db.VarChar(50)
+  contrasena String? @db.VarChar(50)
   obras      obras[]
 }
 
 model compras {
   idCom           Int               @id @default(autoincrement())
-  fecha           DateTime?         @db.Date
+  fecha           String?           @db.VarChar(50)
   imagen          String?           @db.VarChar(100)
   total_compra    Int?
+  codigoFactura   String            @db.VarChar(20)
   compras_detalle compras_detalle[]
 }
 
 model compras_detalle {
   id         Int         @id @default(autoincrement())
   idCompra   Int?
+  idCat      Int
   idMat      Int?
-  idCat      Int?
   cantidad   Int?
-  Precio     Int?
+  precio     Int?
   subtotal   Int?
   compras    compras?    @relation(fields: [idCompra], references: [idCom], onDelete: Restrict, onUpdate: Restrict, map: "compras_detalle_ibfk_1")
   materiales materiales? @relation(fields: [idMat], references: [idMat], onDelete: Restrict, onUpdate: Restrict, map: "compras_detalle_ibfk_2")
+  categoria  categoria   @relation(fields: [idCat], references: [idcat], onUpdate: Restrict, map: "compras_detalle_ibfk_3")
 
   @@index([idCompra], map: "idCompra")
   @@index([idMat], map: "idMat")
+  @@index([idCat], map: "idCat")
 }
 
 model empleado {
   idEmp                 Int                     @id @default(autoincrement())
   nombre                String?                 @db.VarChar(50)
-  apellido              String?                 @db.VarChar(50)
+  apellido              String                  @db.VarChar(50)
   direccion             String?                 @db.VarChar(50)
   estado                Int?
   email                 String?                 @db.VarChar(100)
   telefono              String?                 @db.VarChar(10)
   cedula                String?                 @db.VarChar(10)
+  tipoDoc               String                  @db.VarChar(10)
   empleado_especialidad empleado_especialidad[]
   empleado_obra         empleado_obra[]
 }
@@ -127,7 +132,7 @@ model obras {
   descripcion      String?            @db.VarChar(100)
   fechaini         String?            @db.VarChar(50)
   fechafin         String?            @db.VarChar(50)
-  area             Int?
+  area             String?            @db.VarChar(50)
   idCliente        Int?
   estado           String?            @db.VarChar(50)
   empleado_obra    empleado_obra[]
@@ -181,7 +186,7 @@ model rol_permiso {
 
 model usuario {
   idUsu      Int     @id @default(autoincrement())
-  correo     String? @db.VarChar(100)
+  correo     String  @db.VarChar(100)
   estado     Int
   contrasena String? @db.VarChar(20)
   idRol      Int?
@@ -190,4 +195,11 @@ model usuario {
 
   @@index([idRol], map: "idRol")
   @@index([idEmp], map: "idEmp")
+}
+
+model imagenfactura {
+  idImg Int    @id @default(autoincrement())
+  type  String @db.VarChar(200)
+  name  String @db.VarChar(200)
+  data  Bytes
 }

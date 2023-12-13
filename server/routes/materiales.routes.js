@@ -37,7 +37,6 @@ router.get("/material/:id", async (req, res) => {
                 idMat: parseInt(req.params.id)
             }
         })
-        console.log(material)
         return res.send(material)
     } catch (error) {
         console.error(error)
@@ -50,14 +49,12 @@ router.post("/materiales", async (req, res) => {
         const result = await prisma.materiales.create({
             data: {
                 nombre: nombre,
-                cantidad: parseInt(cantidad),
-                estado:  parseInt(estado),
+                estado: 1,
                 idCategoria:parseInt(idCategoria),
                 idProveedor:parseInt(idProveedor)
             },
             
         })
-        console.log(result)
     } catch (error) {
         console.error(error)
     }
@@ -69,7 +66,7 @@ router.put("/material/:id", async (req, res) => {
         const { nombre, cantidad, idProveedor, idCategoria, estado } = req.body
         const response = await prisma.materiales.update({
             where: {
-                idMat: idMat
+                idMat: parseInt(idMat)
             },
             data: {
                 nombre: nombre,
@@ -79,7 +76,6 @@ router.put("/material/:id", async (req, res) => {
                 idCategoria: idCategoria
             }
         })
-        console.log(response)
     } catch (error) {
         console.error(error)
     }
@@ -107,7 +103,6 @@ router.put("/materialEstado/:id",async(req,res)=>{
                 estado: parseInt(estado)
             }
         })
-        console.log(newEstado)
     }catch(error){
         console.error(error)
     }

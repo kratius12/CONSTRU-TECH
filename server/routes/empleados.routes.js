@@ -85,7 +85,6 @@ router.put("/empleado/:id", async (req, res) => {
             },
             data:{
                 nombre: nombre,
-                apellido: apellido,
                 direccion:direccion,
                 telefono:telefono,
                 tipoDoc:tipoDoc,
@@ -139,7 +138,6 @@ router.get("/empleadosEsp", async (req, res) => {
             select:{
                 idEmp:true,
                 nombre:true,
-                apellido:true,
                 telefono:true,
                 cedula:true,
                 estado:true,

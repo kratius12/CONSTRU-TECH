@@ -17,7 +17,7 @@ export const GetMaterialRequest = async (idMat) => {
 }
 
 export const UpdateMaterialRequest = async (idMat, newFields) =>{
-    return await axios.put(`http://localhost:4000/material/${idMat}`, newFields)
+    return await axios.put(`http://localhost:4000/material/${idMat}`, newFields,{timeout:500})
 }
 
 export const ToggleMaterialStatusRequest = async (idMat, estado) =>{

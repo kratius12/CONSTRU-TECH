@@ -76,7 +76,7 @@ router.post('/newprov',async(req,res)=>{
                 direccion:direccion,
                 nit:nit,
                 tipo:tipo,
-                estado:parseInt(estado),
+                estado:1,
                 email:email,
                 telefono:telefono,
                 nombreContacto:nombreContacto,
@@ -101,8 +101,6 @@ router.put("/proveedorEstado/:id",async(req,res)=>{
                 estado: parseInt(estado)
             }
         })
-        console.log(newEstado)
-        console.log(req.body)
         return res.status(200).json(newEstado)
     }catch(error){
         console.error(error)

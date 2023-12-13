@@ -14,7 +14,13 @@ const router = Router()
 
 router.get("/obras", async (req, res) =>{
     try {
-        const result = await prisma.obras.findMany()
+        const result = await prisma.obras.findMany({
+            include:{
+                cliente:true,
+                empleado_obra:true,
+                materiales_obras:true
+            }
+        })
         res.status(200).json(result)
     } catch (error) {
         console.log(json({message: error.message}))
@@ -57,13 +63,13 @@ router.post("/obras", async (req, res) =>{
             data:{
                 descripcion:descripcion,
                 fechaini:fechaini,
-                estado:"1",
-                idCliente:parseInt(cliente)
+                estado:"Pendiente",
+                idCliente:parseInt(cliente.value)
             }
         })
         await prisma.empleado_obra.create({
             data:{
-                idEmp:parseInt(empleados),
+                idEmp:parseInt(empleados.value),
                 idObra:parseInt(result.idObra)
             }
         })
@@ -78,18 +84,31 @@ router.post("/obras", async (req, res) =>{
 router.put("/obra/:id", async (req, res) =>{
     try {
         const {descripcion, area, cliente, empleados, material, estado, fechafin, fechaini} = req.body
-        const result = await prisma.obras.update({
-            where:{
-                idObra:parseInt(req.params.id)
-            },
-            data:{
+        let data ={}
+
+        if (!cliente) {
+            data={
                 descripcion:descripcion,
                 area:area,
-                estado:String(estado.value),
+                estado:estado,
+                fechaini:fechaini,
+                fechafin:fechafin,            
+            }
+        }else{
+            data= {
+                descripcion:descripcion,
+                area:area,
+                estado:estado,
                 fechaini:fechaini,
                 fechafin:fechafin,
                 idCliente:cliente.value
             }
+        }
+        const result = await prisma.obras.update({
+            where:{
+                idObra:parseInt(req.params.id)
+            },
+            data:data
         })
         if (result) {
             const result2 = await prisma.empleado_obra.deleteMany({
