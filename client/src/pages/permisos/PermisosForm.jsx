@@ -39,7 +39,7 @@ export default function UsuariosForm() {
     const navigate = useNavigate()
     const [permiso, setPermiso] = useState({
         permiso: "",
-        estado: ""
+        estado: 1
     })
     useEffect(() => {
         const loadUsuarios = async () => {
@@ -47,7 +47,7 @@ export default function UsuariosForm() {
                 const permiso = await getPermiso(params.id)
                 setPermiso({
                     permiso: permiso.permiso,
-                    estado: permiso.estado
+                    estado: permiso.estado === "0" ? "0" :  "1"
                 })
             }
         }
@@ -98,16 +98,32 @@ export default function UsuariosForm() {
                                                     ) : null
                                                 }
                                             </div>
-                                            <div className="col-6 mt-3">
-                                                <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
-                                                    <option value="">Seleccione estado</option>
-                                                    <option value="1">Activo</option>
-                                                    <option value="0">Inactivo</option>
-                                                </select>
-                                                {errors.estado && touched.estado ? (
-                                                    <div className="alert alert-danger" role="alert">{errors.estado}</div>
-                                                ) : null}
-                                            </div>
+                                            <div className="col-md-6 mt-3">
+                        {params.id ? 
+                        (
+                          <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
+                            <option value="">Seleccione estado</option>
+                            <option value="1">Activo</option>
+                            <option value="0">Inactivo</option>
+                          </select>                          
+                        ): (
+                          <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} disabled>
+                            <option value="1">Activo</option>
+                          </select>
+                        )
+                        }
+                        {/* <select
+                          placeholder={<div>Selecciona estado</div>}
+                          value={values.estado}
+                          name="estado"
+                          options={estadoOptions}
+                          className="basic-multi-select"
+                          classNamePrefix="select"
+                        /> */}
+                        {errors.estado && touched.estado ? (
+                          <div className="alert alert-danger" role="alert">{errors.estado}</div>
+                        ) : null}
+                      </div>
                                         </div>
                                     </div>
                                     <div className="card-footer text-center">
