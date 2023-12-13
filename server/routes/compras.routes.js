@@ -64,16 +64,16 @@ router.get('/compra/:id', async (req, res) => {
 const upload = multer({ storage: storage });
 
 
-router.post("/compra", upload.single("image"), async (req, res) => {
-
-    const File = req.file ? `../images/${req.file.fileFile}` : null;
-    const imagen = File
+router.post("/compra", upload.single("imagen"), async (req, res) => {
     try {
+        if(!req.file){
+            return res.json({message:"Error al cargar la imagen"})
+        }
         const { detalles,total_compra, fecha, codigoFactura } = req.body;
         const nuevaCompra = await prisma.compras.create({
             data: {
                 total_compra: parseInt(total_compra),
-                imagen: imagen,
+                imagen: req.file.filename,
                 fecha: fecha,
                 codigoFactura: codigoFactura
             }

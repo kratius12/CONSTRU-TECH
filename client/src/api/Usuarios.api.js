@@ -9,7 +9,7 @@ export const GetUsuarioRequest = async(idUsu)=>{
 }
 
 export const UpdateUsuarioRequest = async(idUsu,newFields)=>{
-    return await axios.put(`http://localhost:4000/usuario/${idUsu}`,newFields)
+    return await axios.put(`http://localhost:4000/usuario/${idUsu}`,newFields, {timeout:500})
 }
 
 export const CreateUsuarioRequest = async(usuario)=>{

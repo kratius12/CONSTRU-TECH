@@ -54,7 +54,7 @@ const CompraDetalle = () => {
                 </div>
                 <div>
                     <strong>Imagen de la factura:</strong><br />
-                    <img src={`http://localhost:4000${compra.image}`} alt="imagen" />
+                    <img src={`${compra.imagen}`} alt={compra.codigoFactura} />
                 </div>
                 <hr />
                 <h3>Materiales:</h3>
