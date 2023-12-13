@@ -27,9 +27,17 @@ export default function ClientsForm() {
     tipoDoc: "",
     cedula: "",
     fecha_nac: "",
-    estado: "",
+    estado: 1,
     contrasena: ""
   })
+
+  const estadoOptions = [
+    {
+      value: 1, label: "Activo",
+    }, {
+      value: 0, label: "Inactivo"
+    }
+  ]
 
   useEffect(() => {
     const loadClients = async () => {
@@ -44,7 +52,7 @@ export default function ClientsForm() {
           tipoDoc: cliente.tipoDoc,
           cedula: cliente.cedula,
           fecha_nac: cliente.fecha_nac,
-          estado: cliente.estado,
+          estado: cliente.estado === "0" ? "0" : "1",
           contrasena: cliente.contrasena
         })
 
@@ -61,6 +69,7 @@ export default function ClientsForm() {
             enableReinitialize={true}
             validationSchema={ClientSchema}
             onSubmit={async (values) => {
+              // const cleanedNombre = values.nombre.replace(/\s{2,}/g, "")
               console.log(values);
               if (params.id) {
                 await updateClient(params.id, values)
@@ -150,12 +159,28 @@ export default function ClientsForm() {
                           <div className="alert alert-danger" role="alert">{errors.contrasena}</div>
                         ) : null}
                       </div>
-                      <div className="col-6 mt-3">
-                        <select id="estado" className="form-select  form-control-user" onChange={handleChange} value={values.estado} >
-                          <option value="">Seleccione estado</option>
-                          <option value="1">Activo</option>
-                          <option value="0">Inactivo</option>
-                        </select>
+                      <div className="col-md-6 mt-3">
+                        {params.id ? 
+                        (
+                          <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
+                            <option value="">Seleccione estado</option>
+                            <option value="1">Activo</option>
+                            <option value="0">Inactivo</option>
+                          </select>                          
+                        ): (
+                          <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} disabled>
+                            <option value="1">Activo</option>
+                          </select>
+                        )
+                        }
+                        {/* <select
+                          placeholder={<div>Selecciona estado</div>}
+                          value={values.estado}
+                          name="estado"
+                          options={estadoOptions}
+                          className="basic-multi-select"
+                          classNamePrefix="select"
+                        /> */}
                         {errors.estado && touched.estado ? (
                           <div className="alert alert-danger" role="alert">{errors.estado}</div>
                         ) : null}
