@@ -64,17 +64,15 @@ export const EspecialidadContextProvider = ({children}) => {
         }
     }
 
-     const toggleEspecialidadStatus = async (id) =>{
+     const toggleEspecialidadStatus = async (id,estado) =>{
         try {
-            const especialidadFound = especialidades.find((especialidad) => especialidad.id === id)
-            let status  = ''
-            if (especialidadFound.estado === 1) {
-                status = 0
-            }else{
-                status = 1
+            if (estado == 1) {
+                estado = 0
+            } else {
+                estado = 1
             }
-            await ToggleEspecialidadStatusRequest(id, status)
-
+            await ToggleEspecialidadStatusRequest(id, { estado })
+            
         } catch (error) {
             console.error(error)
         }

@@ -53,6 +53,7 @@ router.post("/empleados", async (req, res) => {
         const result = await prisma.empleado.create({
             data:{
                 nombre: nombre,
+                apellido:apellido,
                 direccion:direccion,
                 telefono:telefono,
                 tipoDoc:tipoDoc,

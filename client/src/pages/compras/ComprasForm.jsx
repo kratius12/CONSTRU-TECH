@@ -1,4 +1,4 @@
-import  { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Formik, Field, Form, FieldArray, ErrorMessage } from "formik";
 import { useNavigate } from "react-router-dom";
 import { useCompras } from "../../context/compras/ComprasProvider";
@@ -25,39 +25,84 @@ const ComprasForm = () => {
 
   const selectedHandler = (e) => {
     setFile(e.target.files[0]);
-  };
+  }; const alertConfirm = (type) => {
+    var message = ""
+    if (type == "update") {
+      message = "Actualizado"
+    } else {
+      message = "Agregado"
+    }
+    $.confirm({
+      title: `Compra ` + message + ` con exito!`,
+      content: "Redirecionando a listado de compras...",
+      icon: 'fa fa-check',
+      theme: 'modern',
+      closeIcon: true,
+      animation: 'zoom',
+      closeAnimation: 'scale',
+      animationSpeed: 1500,
+      type: 'green',
+      columnClass: 'col-md-6 col-md-offset-3',
+      autoClose: 'okay|4000',
+      buttons: {
+        okay: function () {
+        },
+      }
+    })
+  }
 
-  const sendHandler = async () => {
+  const sendHandler = async (values) => {
     if (!file) {
-      alert("you must upload file");
+      alert("You must upload a file");
       return;
     }
 
     const formdata = new FormData();
+
+    // Agregar campos del formulario al FormData
+    Object.keys(values).forEach((key) => {
+      if (key === "detalles") {
+        // Iterar sobre los detalles y agregar sus campos al FormData
+        values.detalles.forEach((detalle, index) => {
+          Object.keys(detalle).forEach((detalleKey) => {
+            formdata.append(`detalles.${index}.${detalleKey}`, detalle[detalleKey]);
+          });
+        });
+      } else {
+        formdata.append(key, values[key]);
+      }
+    });
+
+    // Agregar el archivo al FormData
     formdata.append("image", file);
 
-    const response = await fetch("http://localhost:4000/compra", {
-      method: "POST",
-      body: formdata,
-    });
-    const result = await response.text();
-
-    console.log(result);
-
     try {
-      const parsedResult = JSON.parse(result);
-      console.log(parsedResult);
+      const response = await fetch("http://localhost:4000/compra", {
+        method: "POST",
+        body: formdata,
+      });
+
+      const result = await response.text();
+
+      console.log(result);
+
+      try {
+        const parsedResult = JSON.parse(result);
+        console.log(parsedResult);
+      } catch (error) {
+        console.error(error);
+      }
+
+      // Limpiar el campo de archivo después de enviar la solicitud
+      const fileInput = document.getElementById("fileinput");
+      if (fileInput) {
+        fileInput.value = null;
+      }
+
+      setFile(null);
     } catch (error) {
-      console.error(error);
+      console.error("Error sending request:", error);
     }
-
-    // Verificar si el elemento 'fileinput' existe antes de acceder a sus propiedades
-    const fileInput = document.getElementById("fileinput");
-    if (fileInput) {
-      fileInput.value = null;
-    }
-
-    setFile(null);
   };
 
   const [totalGeneral, setTotalGeneral] = useState(0);
@@ -101,15 +146,6 @@ const ComprasForm = () => {
   }, []);
 
   useEffect(() => {
-    const calcularTotalGeneral = (detalles) => {
-      let total = 0;
-      detalles.forEach((detalle) => {
-        const subtotal = detalle.cantidad * detalle.precio;
-        total += subtotal;
-      });
-      setTotalGeneral(total);
-    };
-
     calcularTotalGeneral(initialValues.detalles);
   }, [initialValues.detalles]);
 
@@ -120,17 +156,20 @@ const ComprasForm = () => {
         validationSchema={comprasSchema}
         enableReinitialize={true}
         onSubmit={async (values) => {
+          values.imagen = file;
+          console.log(values.imagen)
+          // Agregar la imagen a los valores del formulario
           console.log(values);
           await createCompra(values);
-          navigate("/compras");
+          alertConfirm()
+          setTimeout(
+            navigate("/compras"),
+            5000
+          )
         }}
       >
         {({ handleSubmit, values, isSubmitting, errors, touched }) => (
-          <Form
-            onSubmit={handleSubmit}
-            className="user"
-            encType="multipart/form-data"
-          >
+          <Form onSubmit={handleSubmit} className="user" encType="multipart/form-data">
             <div className="card text-center w-100">
               <h2>Agregar compra</h2>
               <div className="card-body">
@@ -178,7 +217,6 @@ const ComprasForm = () => {
                       <div className="alert alert-danger" role="alert">{errors.codigoFactura}</div>
                     ) : null}
                   </div>
-
                 </div>
                 <hr className="mt-md-3 mx-auto" />
                 <div>
@@ -188,7 +226,6 @@ const ComprasForm = () => {
                       <div>
                         {values.detalles.map((detalle, index) => (
                           <div key={index} className="row">
-
                             <div className="col-md-3 mt-3 mx-auto">
                               <label htmlFor={`detalles.${index}.idCat`}>Categoría:</label>
                               <Field
@@ -266,7 +303,6 @@ const ComprasForm = () => {
                               />
                             </div>
                             <div className="col-md-2 mt-3 mx-auto">
-
                               <label htmlFor={`detalles.${index}.subtotal`}>Subtotal:</label>
                               <div className="input-group">
                                 <div className="input-group-prepend">
@@ -291,17 +327,10 @@ const ComprasForm = () => {
                               >
                                 Eliminar detalle
                               </button>
-                              <p {...calcularTotalGeneral(values.detalles)}></p>
                             </div>
-                            <hr className="mt-2" />
-                            <p {...values.total_compra = totalGeneral} ></p>
                           </div>
                         ))}
-                        {/* {errors.detalles && (
-                          <div className="alert alert-danger" role="alert">
-                            {errors.detalles}
-                          </div>
-                        )} */}
+                        <hr className="mt-3" />
                         <button
                           type="button"
                           className="btn btn-success mt-3"
@@ -311,7 +340,7 @@ const ComprasForm = () => {
                               idMat: "",
                               cantidad: "",
                               precio: "",
-                              subtotal: ""
+                              subtotal: "",
                             });
                           }}
                         >
@@ -323,24 +352,31 @@ const ComprasForm = () => {
                             <div className="input-group-prepend">
                               <span className="input-group-text">$</span>
                             </div>
+                            <p {...calcularTotalGeneral(values.detalles)}></p>
                             <Field
                               type="text"
                               className="form-control"
                               disabled
-                              value={(values.total_compra).toLocaleString()}
+                              value={values.total_compra=totalGeneral}
+                              name="total_compra"
                             />
+                            
                           </div>
                         </div>
                       </div>
                     )}
                   />
-
                 </div>
               </div>
               <div className="card-footer text-center">
                 <div className="row">
                   <div className="col-md-6">
-                    <button type="submit" onClick={sendHandler} disabled={isSubmitting} className="btn btn-primary btn-icon-split w-50">
+                    <button
+                      type="submit"
+                      // onClick={sendHandler}
+                      disabled={isSubmitting}
+                      className="btn btn-primary btn-icon-split w-50"
+                    >
                       <span className="text-white-50">
                         <i className="fas fa-plus"></i>
                       </span>
@@ -348,7 +384,12 @@ const ComprasForm = () => {
                     </button>
                   </div>
                   <div className="col-md-6">
-                    <a type="button" href="" className="btn btn-danger btn-icon-split w-50" onClick={() => navigate(`/compras`)}>
+                    <a
+                      type="button"
+                      href=""
+                      className="btn btn-danger btn-icon-split w-50"
+                      onClick={() => navigate(`/compras`)}
+                    >
                       <span className="text-white-50">
                         <i className="fa-solid fa-x"></i>
                       </span>

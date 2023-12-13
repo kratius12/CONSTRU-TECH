@@ -66,10 +66,10 @@ const upload = multer({ storage: storage });
 
 router.post("/compra", upload.single("image"), async (req, res) => {
 
-    const imageUrl = req.file ? `../images/${req.file.filename}` : null;
-    const imagen = imageUrl
+    const File = req.file ? `../images/${req.file.fileFile}` : null;
+    const imagen = File
     try {
-        const { detalles, total_compra, fecha, codigoFactura } = req.body;
+        const { detalles,total_compra, fecha, codigoFactura } = req.body;
         const nuevaCompra = await prisma.compras.create({
             data: {
                 total_compra: parseInt(total_compra),
@@ -92,7 +92,8 @@ router.post("/compra", upload.single("image"), async (req, res) => {
                     subtotal: parseInt(precio * cantidad)
                 }
             });
-        }
+        }// Después de crear la compra, calcula el total_compra sumando los subtotales
+
 
         return res.status(201).send({ message: "Compra creada exitosamente" });
     } catch (error) {

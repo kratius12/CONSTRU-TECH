@@ -106,7 +106,7 @@ function ObrasForm() {
     }, [])
 
     const validate = (values) =>{
-        console.log(values);
+
         const hasId = params.id ? params.id : ''
         const errors = getValidate(values, hasId)
 
@@ -120,7 +120,32 @@ function ObrasForm() {
         }
     }
 
-console.log(selectedCli);
+    const alertConfirm = (type) => {
+        var message = ""
+        if (type == "update") {
+          message = "Actualizado"
+        } else {
+          message = "Agregado"
+        }
+        $.confirm({
+          title: `Empleado ` + message + ` con exito!`,
+          content: "Redirecionando a listado de empleados...",
+          icon: 'fa fa-check',
+          theme: 'modern',
+          closeIcon: true,
+          animation: 'zoom',
+          closeAnimation: 'scale',
+          animationSpeed: 1500,
+          type: 'green',
+          columnClass: 'col-md-6 col-md-offset-3',
+          autoClose: 'okay|4000',
+          buttons: {
+            okay: function () {
+            },
+          }
+        })
+      }
+
     return (
         <div className="container">
             <div className="row">
@@ -130,7 +155,7 @@ console.log(selectedCli);
                         // validationSchema={ObraSchema}
                         validate={validate}
                         onSubmit={async (values) => {
-                            console.log(values);
+
                             const cleannedDescription = values.descripcion.replace(/\s{2,}/g, ' ').trim()
                             const obraObject = {
                                 ...values,
@@ -139,13 +164,23 @@ console.log(selectedCli);
                                 cliente: selectedCli,
                                 material: selectedMat
                             }
-                            console.log(obraObject)
+                            console.log(obraObject);
                             if (params.id) {
                                 await updateObra(params.id, obraObject)
-                                navigate("/obras")
+                                alertConfirm('update')
+                                setTimeout(
+                                  navigate("/obras"),
+                                  5000
+                                )
+                                // navigate("/obras")
                             } else {
                                 await createObra(obraObject)
-                                navigate("/obras")
+                                // navigate("/obras")
+                                alertConfirm()
+                                setTimeout(
+                                  navigate("/obras"),
+                                  5000
+                                )
                             }
                             setObra({
                                 descripcion: "",

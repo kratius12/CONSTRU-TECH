@@ -17,8 +17,8 @@ export const proveedorSchema = Yup.object().shape({
         .min(5, 'La direccion debe contener al menos 5 caracteres')
         .max(50, 'La direccion no puede contener mas de 50 caracteres')
         .required('La direccion es requerida'),
-    estado: Yup.string()
-        .required('El estado es requerido'),
+    // estado: Yup.string()
+    //     .required('El estado es requerido'),
     nit: Yup.string()
         .min(9, 'El nit debe contener 9 digitos')
         .max(14, 'El nit debe tener como maximo 14 digitos')

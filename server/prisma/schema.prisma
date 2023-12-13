@@ -102,7 +102,6 @@ model materiales {
   nombre           String?            @db.VarChar(50)
   idProveedor      Int?
   estado           Int?
-  cantidad         Int?
   idCategoria      Int?
   compras_detalle  compras_detalle[]
   proveedor        proveedor?         @relation(fields: [idProveedor], references: [idProv], onDelete: Restrict, onUpdate: Restrict, map: "materiales_ibfk_1")
@@ -130,7 +129,7 @@ model obras {
   descripcion      String?            @db.VarChar(100)
   fechaini         String?            @db.VarChar(50)
   fechafin         String?            @db.VarChar(50)
-  area             Int?
+  area             String?            @db.VarChar(50)
   idCliente        Int?
   estado           String?            @db.VarChar(50)
   empleado_obra    empleado_obra[]

@@ -76,7 +76,7 @@ router.post('/newprov',async(req,res)=>{
                 direccion:direccion,
                 nit:nit,
                 tipo:tipo,
-                estado:parseInt(estado),
+                estado:1,
                 email:email,
                 telefono:telefono,
                 nombreContacto:nombreContacto,

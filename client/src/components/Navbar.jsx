@@ -1,5 +1,8 @@
 import { Link } from 'react-router-dom'
-
+import undraw_profile1 from "../assets/img/undraw_profile_1.svg";
+import undraw_profile2 from "../assets/img/undraw_profile_2.svg";
+import undraw_profile3 from "../assets/img/undraw_profile_3.svg";
+import undraw_profile from "../assets/img/undraw_profile.svg";
 function Navbar() {
     return (
         <nav className="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
@@ -90,7 +93,7 @@ function Navbar() {
                             </div>
                             <div>
                                 <div className="small text-gray-500">December 2, 2019</div>
-                                Spending Alert: We've noticed unusually high spending for your account.
+                                Spending Alert: Weve noticed unusually high spending for your account.
                             </div>
                         </a>
                         <a className="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
@@ -113,19 +116,19 @@ function Navbar() {
                         </h6>
                         <a className="dropdown-item d-flex align-items-center" href="#">
                             <div className="dropdown-list-image mr-3">
-                                <img className="rounded-circle" src="img/undraw_profile_1.svg"
+                                <img className="rounded-circle" src={undraw_profile1}
                                     alt="..." />
                                 <div className="status-indicator bg-success"></div>
                             </div>
                             <div className="font-weight-bold">
                                 <div className="text-truncate">Hi there! I am wondering if you can help me with a
-                                    problem I've been having.</div>
+                                    problem Ive been having.</div>
                                 <div className="small text-gray-500">Emily Fowler · 58m</div>
                             </div>
                         </a>
                         <a className="dropdown-item d-flex align-items-center" href="#">
                             <div className="dropdown-list-image mr-3">
-                                <img className="rounded-circle" src="img/undraw_profile_2.svg"
+                                <img className="rounded-circle" src={undraw_profile2}
                                     alt="..." />
                                 <div className="status-indicator"></div>
                             </div>
@@ -137,7 +140,7 @@ function Navbar() {
                         </a>
                         <a className="dropdown-item d-flex align-items-center" href="#">
                             <div className="dropdown-list-image mr-3">
-                                <img className="rounded-circle" src="img/undraw_profile_3.svg"
+                                <img className="rounded-circle" src={undraw_profile3}
                                     alt="..." />
                                 <div className="status-indicator bg-warning"></div>
                             </div>
@@ -171,7 +174,7 @@ function Navbar() {
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span className="mr-2 d-none d-lg-inline text-gray-600 small">Douglas McGee</span>
                         <img className="img-profile rounded-circle"
-                            src="img/undraw_profile.svg" />
+                            src={undraw_profile} />
                     </a>
 
                     <div className="dropdown-menu dropdown-menu-right shadow animated--grow-in"
