@@ -41,6 +41,7 @@ export default function RolesForm() {
           })
           const defaultOpts = rol.rol_permiso.map(item => ({ value: item.permiso.id, label: item.permiso.permiso }))
           setDefaultOptions(defaultOpts)
+          setSelectedPer(defaultOpts)
           setKey(prevKey => prevKey + 1)
         }
       }else{
