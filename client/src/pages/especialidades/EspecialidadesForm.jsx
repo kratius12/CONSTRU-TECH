@@ -35,6 +35,32 @@ export default function EspecialidadesForm() {
     loadEspecialidades()
   }, [getEspecialidad, params.id])
 
+  const alertConfirm = (type) => {
+    var message = ""
+    if (type == "update") {
+      message = "Actualizado"
+    } else {
+      message = "Agregada"
+    }
+    $.confirm({
+      title: `Especialidad ` + message + ` con exito!`,
+      content: "Redirecionando a listado de especialidades...",
+      icon: 'fa fa-check',
+      theme: 'modern',
+      closeIcon: true,
+      animation: 'zoom',
+      closeAnimation: 'scale',
+      animationSpeed: 500,
+      type: 'green',
+      columnClass: 'col-md-6 col-md-offset-3',
+      autoClose: 'okay|4000',
+      buttons: {
+        okay: function () {
+        },
+      }
+    })
+  }
+
   return (
     <div className="container">
       <div className="row">
@@ -51,10 +77,18 @@ export default function EspecialidadesForm() {
               console.log(especialidadObject);
               if (params.id) {
                 await updateEspecialidad(params.id, especialidadObject)
-                navigate("/especialidades")
+                alertConfirm('update')
+                setTimeout(
+                  navigate("/especialidades"),
+                  5000
+                )                
               } else {
                 await createEspecialidad(especialidadObject)
-                navigate("/especialidades")
+                alertConfirm()
+                setTimeout(
+                  navigate("/especialidades"),
+                  5000
+                )
               }
               setEspecialidad({
                 especialidad: "",
