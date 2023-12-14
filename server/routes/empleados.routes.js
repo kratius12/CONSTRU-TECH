@@ -173,4 +173,31 @@ router.put("/empleadoStatus/:id", async (req, res) => {
     }
 })
 
+router.put("/empleados/searchDoc", async (req, res) =>{
+    try {
+        const {cedula, tipoDoc} = req.body
+        const result = await prisma.empleado.findMany({
+            where:{
+                AND:[
+                    {
+                      cedula: cedula
+                    },{
+                      tipoDoc: tipoDoc  
+                    }
+                ]
+            }
+        })
+        if (result.length > 0) {
+            return res.status(200).json(true)           
+        } else {
+            return res.status(200).json(false)
+        }
+        // res.status(200).json(result)
+
+    } catch (error) {
+        console.log(json({message: error.message}));
+        return res.status(500).json({message: error.message})
+    }
+})
+
 export default router
