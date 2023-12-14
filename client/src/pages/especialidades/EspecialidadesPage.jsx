@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 // import EspecialidadTable  from "../components/EspecialidadTable"
 import { useEspecialidades } from "../../context/especialidades/EspecialidadesProvider";
@@ -18,7 +18,8 @@ function EspecialidadesPage() {
         },
         {
             header: "Estado",
-            accessorKey: 'estado'
+            accessorKey: 'estado',
+            idProperty: 'id'
         },
         {
             header: "Acción",
@@ -26,7 +27,11 @@ function EspecialidadesPage() {
             idProperty: 'id'
         }
     ]
+    const [tableStatus, setTableStatus] = useState(0)
+    const handleChangeStatus = (newStatus) => {
+        setTableStatus(newStatus)
 
+    }
     const {especialidades, Especialidades, toggleEspecialidadStatus, getEspecialidad} = useEspecialidades()
     const navigate = useNavigate()
     useEffect(() =>{
@@ -39,7 +44,7 @@ function EspecialidadesPage() {
             
         }
 
-        return <TableInfo dataHeader={dataHeader} dataBody={especialidades} routeEdit={'editarEspecialidad'} toggleApi={toggleEspecialidadStatus} getApi={getEspecialidad} entity={'Especialidad'}/>
+        return <TableInfo dataHeader={dataHeader} dataBody={especialidades} routeEdit={'editarEspecialidad'} toggleApi={toggleEspecialidadStatus} getApi={getEspecialidad} entity={'Especialidad'} onChangeStatus={handleChangeStatus}/>
         // return <EspecialidadTable especialidades={especialidades}/>
     }
 
