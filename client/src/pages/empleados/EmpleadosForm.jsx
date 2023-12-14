@@ -60,7 +60,7 @@ export default function EmpleadosForm() {
     }
     const fetchData = async () => {
       const especialidadesData = await Especialidades()
-      const opciones = especialidadesData.map(item => ({ value: item.id, label: item.especialidad }))
+      const opciones = especialidadesData.filter(item => item.estado == 1).map(item => ({ value: item.id, label: item.especialidad }))
       setOptions(opciones)
     }
     fetchData()
