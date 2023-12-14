@@ -101,6 +101,7 @@ export default function EmpleadosForm() {
           <Formik initialValues={empleado}
             enableReinitialize={true}
             validationSchema={EmpleadoSchema}
+            validateOnChange={true}
             onSubmit={async (values) => {
               console.log(values);
               const empleadoObject = {
@@ -163,10 +164,10 @@ export default function EmpleadosForm() {
                   <div className="card-body">
                     <div className="row">
                       <div className="col-md-6 mt-3">
-                        <input type="text" className="form-control form-control-user" id="nombre" onChange={handleChange} value={values.nombre} placeholder="Nombres*" />
-                        {errors.nombre && touched.nombre ? (
-                          <div className="alert alert-danger" role="alert">{errors.nombre}</div>
-                        ) : null}
+                      <Field type="text" className="form-control form-control-user" id="nombre" name="nombre" placeholder="Nombres*" />
+                      {errors.nombre && touched.nombre ? (
+                        <div className="alert alert-danger" role="alert">{errors.nombre}</div>
+                      ) : null}
                       </div>
                       <div className="col-md-6 mt-3">
                         <input type="text" className="form-control form-control-user" id="apellido" onChange={handleChange} value={values.apellido} placeholder="Apellidos*" />
