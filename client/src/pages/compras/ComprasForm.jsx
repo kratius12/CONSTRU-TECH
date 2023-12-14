@@ -26,8 +26,6 @@ const ComprasForm = () => {
   const [file, setFile] = useState(null);
 
 
-  const navigate = useNavigate();
-
  const alertConfirm = (type) => {
     var message = ""
     if (type == "update") {

@@ -64,23 +64,19 @@ const CompraDetalle = () => {
                     </div>
                 </div>
                 <div>
-
-
-                    {/* <Button variant="secondary" onClick={handleOpenModal} style={{ marginLeft: '15px', padding: '20px' }}>
-<i class="bi bi-search"></i> {/* Bootstrap icon for search */}
                     <button type="button" className="btn btn-secondary" onClick={handleOpenModal}>
 
                         Ver factura de compra
                     </button>
 
 
-                    <Modal show={showModal} onHide={handleCloseModal}>
+                    <Modal  show={showModal} onHide={handleCloseModal}>
                         <Modal.Header closeButton>
-                            <Modal.Title>Detalle de la Imagen</Modal.Title>
+                            <Modal.Title>Imagen de factura</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
                             <img
-                                src={`server/images/${compra.imagen}`}
+                                src={`http://localhost:4000/images/${compra.imagen}`}
                                 alt="Imagen de factura"
                                 style={{ width: '100%' }}
                             />

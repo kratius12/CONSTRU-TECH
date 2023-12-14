@@ -92,18 +92,18 @@ function ObrasForm() {
             const materialesData = await Materiales()
             const opcionesMat = materialesData.filter(item=> item.estado ==1).map(item => ({ value: item.idMat, label: item.nombre }))
             setOptionsMat(opcionesMat)
-
+            setKeyMat((prevKey) => prevKey + 1)
             const empleadosData = await Empleados()
             const opcionesEmp = empleadosData.filter(item=> item.estado ==1).map(item => ({ value: item.idEmp, label: item.nombre + '-' + item.apellido }))
             setOptionsEmp(opcionesEmp)
-
+            setKeyEmp((prevKey) => prevKey + 1)
             const clientesData = await Clientes()
             const opcionesClientes = clientesData.filter(item=> item.estado ==1).map(item => ({ value: item.idCli, label: item.nombre }))
             setOptionsCli(opcionesClientes)
             setKeyCli((prevKey) => prevKey + 1)
         }
         fetchData()
-
+        
     }, [defaultOptionsCli, defaultOptionsEmp, defaultOptionsMat])
 
     const validate = (values) =>{
@@ -146,6 +146,7 @@ function ObrasForm() {
           }
         })
       }
+      console.log(defaultOptionsMat)
     return (
         <div className="container">
             <div className="row">
@@ -155,7 +156,7 @@ function ObrasForm() {
                         // validationSchema={ObraSchema}
                         validate={validate}
                         onSubmit={async (values) => {
-
+                            console.log(values)
                             const cleannedDescription = values.descripcion.replace(/\s{2,}/g, ' ').trim()
                             const cleannedArea = values.area.replace(/\s{2,}/g, ' ').trim()
                             const obraObject = {
@@ -255,6 +256,8 @@ function ObrasForm() {
                                                                 classNamePrefix="select"
                                                                 onChange={(selectedMat) => {
                                                                 setSelectedMat(selectedMat);
+                                                                setFieldValue('material', selectedMat);
+                                                                setFieldTouched('material', true);
                                                                 handleMenuClose
                                                                 }}
                                                             />
