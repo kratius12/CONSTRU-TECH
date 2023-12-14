@@ -83,27 +83,28 @@ function ObrasForm() {
                 setKeyCli(prevKey => prevKey + 1)
             }
         }
-        const fetchData = async () => {
-            const materialesData = await Materiales()
-            const opcionesMat = materialesData.map(item => ({ value: item.idMat, label: item.nombre }))
-            setOptionsMat(opcionesMat)
 
-            const empleadosData = await Empleados()
-            const opcionesEmp = empleadosData.map(item => ({ value: item.idEmp, label: item.nombre + '-' + item.apellido }))
-            setOptionsEmp(opcionesEmp)
-
-            const clientesData = await Clientes()
-            const opcionesClientes = clientesData.map(item => ({ value: item.idCli, label: item.nombre }))
-            setOptionsCli(opcionesClientes)
-            
-        }
-        fetchData()
         loadObras()
     }, [])
 
     useEffect(() => {
-        setKeyCli((prevKey) => prevKey + 1)
-    }, [selectedCli])
+        const fetchData = async () => {
+            const materialesData = await Materiales()
+            const opcionesMat = materialesData.filter(item=> item.estado ==1).map(item => ({ value: item.idMat, label: item.nombre }))
+            setOptionsMat(opcionesMat)
+
+            const empleadosData = await Empleados()
+            const opcionesEmp = empleadosData.filter(item=> item.estado ==1).map(item => ({ value: item.idEmp, label: item.nombre + '-' + item.apellido }))
+            setOptionsEmp(opcionesEmp)
+
+            const clientesData = await Clientes()
+            const opcionesClientes = clientesData.filter(item=> item.estado ==1).map(item => ({ value: item.idCli, label: item.nombre }))
+            setOptionsCli(opcionesClientes)
+            setKeyCli((prevKey) => prevKey + 1)
+        }
+        fetchData()
+
+    }, [defaultOptionsCli, defaultOptionsEmp, defaultOptionsMat])
 
     const validate = (values) =>{
 
@@ -125,17 +126,17 @@ function ObrasForm() {
         if (type == "update") {
           message = "Actualizado"
         } else {
-          message = "Agregado"
+          message = "Agregada"
         }
         $.confirm({
-          title: `Empleado ` + message + ` con exito!`,
+          title: `Obra ` + message + ` con exito!`,
           content: "Redirecionando a listado de empleados...",
           icon: 'fa fa-check',
           theme: 'modern',
           closeIcon: true,
           animation: 'zoom',
           closeAnimation: 'scale',
-          animationSpeed: 1500,
+          animationSpeed: 500,
           type: 'green',
           columnClass: 'col-md-6 col-md-offset-3',
           autoClose: 'okay|4000',
@@ -145,7 +146,6 @@ function ObrasForm() {
           }
         })
       }
-console.log(selectedCli);
     return (
         <div className="container">
             <div className="row">
@@ -157,14 +157,15 @@ console.log(selectedCli);
                         onSubmit={async (values) => {
 
                             const cleannedDescription = values.descripcion.replace(/\s{2,}/g, ' ').trim()
+                            const cleannedArea = values.area.replace(/\s{2,}/g, ' ').trim()
                             const obraObject = {
                                 ...values,
+                                area:cleannedArea,
                                 descripcion: cleannedDescription,
                                 empleados: selectedEmp,
                                 cliente: selectedCli,
                                 material: selectedMat
                             }
-                            console.log(obraObject);
                             if (params.id) {
                                 await updateObra(params.id, obraObject)
                                 alertConfirm('update')
@@ -215,10 +216,8 @@ console.log(selectedCli);
                                                                 classNamePrefix="select"
                                                                 onChange={(selectedCli) => {
                                                                     setSelectedCli(selectedCli)
-                                                                    setFieldValue('cliente', selectedCli)
                                                                     handleMenuClose
                                                                 }}
-                                                                onBlur={(selectedCli) => setSelectedCli(selectedCli)}
                                                             />
                                                             {errors.cliente && touched.cliente ? (
                                                                 <div className="alert alert-danger" role="alert">{errors.cliente}</div>
@@ -236,11 +235,9 @@ console.log(selectedCli);
                                                                 className="basic-multi-select"
                                                                 classNamePrefix="select"
                                                                 onChange={(selectedEmp) => {
-                                                                    setFieldValue('empleados', selectedEmp);
                                                                     setSelectedEmp(selectedEmp)
                                                                     handleMenuClose
                                                                 }}
-                                                                onBlur={() => setFieldTouched('empleados', true)}
                                                             />
                                                             {errors.empleados && touched.empleados ? (
                                                                 <div className="alert alert-danger" role="alert">{errors.empleados}</div>
@@ -257,11 +254,9 @@ console.log(selectedCli);
                                                                 className="basic-multi-select"
                                                                 classNamePrefix="select"
                                                                 onChange={(selectedMat) => {
-                                                                setFieldValue('material', selectedMat);
                                                                 setSelectedMat(selectedMat);
                                                                 handleMenuClose
                                                                 }}
-                                                                onBlur={() => setFieldTouched('material', true)} 
                                                             />
                                                             {errors.material && touched.material ? (
                                                                 <div className="alert alert-danger" role="alert">{errors.material}</div>
@@ -299,7 +294,7 @@ console.log(selectedCli);
                                                         </div>
                                                         <div className="col-md-6 mt-3">
                                                             <label htmlFor="fechafin" className="form-label">Fecha fin<span className="text-danger">*</span></label>
-                                                            <input type="date" className="form-control" id="fechafin" onChange={handleChange} value={values.fechafin} />
+                                                            <input type="date" className="form-control" id="fechafin" onChange={handleChange} value={values.fechafin || ''} />
                                                             {errors.fechafin && touched.fechafin ? (
                                                                 <div className="alert alert-danger" role="alert">{errors.fechafin}</div>
                                                             ) : null}

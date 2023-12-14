@@ -34,7 +34,6 @@ router.get("/dashboard/clienteObras", async (req, res) =>{
                 cliente:true
             }
         })
-        console.log(result);
         res.status(200).json(result)
     } catch (error) {
         console.log(error)
@@ -68,5 +67,35 @@ router.get("/dashboard/especialidades", async (req, res) =>{
     }
 })
 
+
+router.get("/dashboard/clientesCount", async (req, res) =>{
+    try {
+        const result = await prisma.cliente.count()
+        res.status(200).json(result)
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({message: error.message})
+    }
+})
+
+router.get("/dashboard/obrasCount", async (req, res) =>{
+    try {
+        const result = await prisma.obras.count()
+        res.status(200).json(result)
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({message: error.message})
+    }
+})
+
+router.get("/dashboard/empleadosCount", async (req, res) =>{
+    try {
+        const result = await prisma.empleado.count()
+        res.status(200).json(result)
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({message: error.message})
+    }
+})
 
 export default router
