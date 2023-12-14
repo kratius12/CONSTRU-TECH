@@ -5,7 +5,7 @@ import {
     GetCompraRequest,
     GetComprasRequest,
     UpdateCompraRequest,
-    GetDetalleReques
+    GetDetalleReques,SearchFacturaRequest
 } from '../../api/Compras.api'
 import { ComprasContext } from './ComprasContext'
 
@@ -62,8 +62,16 @@ export const CompraContextProvider = ({ children }) => {
             console.error(error)
         }
     }
+    const searchFact = async (compra) => {
+        try {
+            const response = await SearchFacturaRequest(compra)
+            return response.data
+        } catch (error) {
+            console.error(error)
+        }
+    }
     return (
-        <ComprasContext.Provider value={{ compras, Compras, deleteCompra, createCompra, updateCompra, getCompra,getDetalle }}
+        <ComprasContext.Provider value={{ compras, Compras, deleteCompra, createCompra, updateCompra, getCompra,getDetalle, searchFact }}
         >
             {children}
         </ComprasContext.Provider>

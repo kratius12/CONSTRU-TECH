@@ -144,4 +144,22 @@ router.get('/api/checkNit/:nit', async (req, res) => {
     }
   });
 
+router.put("/documentoProv",async(req,res)=>{
+    try{
+        const {nit} = req.body
+        const prov = await prisma.proveedor.findMany({
+            where:{
+                nit: nit
+            }
+        })
+        if(prov.length>0){
+            return res.status(200).json(true)
+        }else{
+            return res.status(200).json(false)
+        }
+    }catch(error){
+        console.error(error)
+    }
+})
+
 export default router

@@ -27,3 +27,6 @@ export const GetDetalleReques = async(idCom)=>{
     return await axios.get(`http://localhost:4000/detalle/${idCom}`)
 }
 
+export const SearchFacturaRequest = async (fields) =>{
+    return await axios.put(`http://localhost:4000/compraFactura`, fields)
+}

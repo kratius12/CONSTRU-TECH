@@ -4,7 +4,7 @@ import {
     DeleteProveedorRequest,
     GetProveedorRequest,
     GetProveedoresRequest,
-    UpdateProveedorRequest, ToggleProveedorStatusRequest
+    UpdateProveedorRequest, ToggleProveedorStatusRequest, SearchNitRequest
 
 } from "../../api/Proveedores.api";
 import { ProveedorContext } from "./ProveedorContext";
@@ -76,9 +76,17 @@ export const ProveedorContextProvider = ({ children }) => {
             console.error(error)
         }
     }
+    const searchNit = async (proveedor)=>{
+        try {
+            const response = await SearchNitRequest(proveedor)
+            return response.data
+        } catch (error) {
+            console.error(error)
+        }
+    }
 
     return (
-        <ProveedorContext.Provider value={{ proveedores, Proveedores, deleteProveedor, toggleStado, createProveedor, getProveedor, updateProveedor }}>
+        <ProveedorContext.Provider value={{ proveedores, Proveedores, deleteProveedor, toggleStado, createProveedor, getProveedor, updateProveedor, searchNit }}>
             {children}
         </ProveedorContext.Provider>
     )

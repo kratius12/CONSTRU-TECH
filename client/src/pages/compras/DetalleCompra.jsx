@@ -3,13 +3,17 @@ import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import Card from 'react-bootstrap/Card';
 import axios from "axios";
+import {Modal, Button} from "react-bootstrap"
 import "../../components/compras/comprasDetalle.css";
 
 const CompraDetalle = () => {
     const { id } = useParams();
     const [compra, setCompra] = useState(null);
     const navigate = useNavigate();
+    const [showModal, setShowModal] = useState(false);
 
+    const handleOpenModal = () => setShowModal(true);
+    const handleCloseModal = () => setShowModal(false);
     useEffect(() => {
         const fetchCompraDetalle = async () => {
             try {
@@ -26,6 +30,7 @@ const CompraDetalle = () => {
     if (!compra) {
         return <div>Cargando...</div>;
     }
+    const formattedTotalCompra = `$${compra.total_compra.toLocaleString()}`;
 
     return (
         <div>
@@ -48,14 +53,37 @@ const CompraDetalle = () => {
                         </div>
                         <div className="col-md-3 mt-3 mx-auto">
                             <label htmlFor="fecha">Total de la compra:</label>
-                            <input className="form-control form-control-user" type="text" id="fecha" name="fecha" value={(compra.total_compra)} disabled />
+                            <input className="form-control form-control-user" type="text" id="fecha" name="fecha" value={formattedTotalCompra} disabled />
                         </div>
                     </div>
                 </div>
                 <div>
-                    <strong>Imagen de la factura:</strong><br />
-                    <img src={`http://localhost:4000/${compra.imagen}`} alt="Imagen de la factura"
-                        style={{ width: '30%' }} />
+
+                    {/* <Button variant="secondary" onClick={handleOpenModal} style={{ marginLeft: '15px', padding: '20px' }}>
+<i class="bi bi-search"></i> {/* Bootstrap icon for search */}
+                    <button type="button" className="btn btn-secondary" onClick={handleOpenModal}>
+
+                        Ver factura de compra
+                    </button>
+
+
+                    <Modal show={showModal} onHide={handleCloseModal}>
+                        <Modal.Header closeButton>
+                            <Modal.Title>Detalle de la Imagen</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <img
+                                src={`server/images/${compra.imagen}`}
+                                alt="Imagen de factura"
+                                style={{ width: '100%' }}
+                            />
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button variant="secondary" onClick={handleCloseModal}>
+                                Cerrar
+                            </Button>
+                        </Modal.Footer>
+                    </Modal>
                 </div>
                 <hr />
                 <h3>Materiales:</h3>

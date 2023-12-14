@@ -46,24 +46,25 @@ router.get('/compra/:id', async (req, res) => {
     }
 });
 
-
-router.get("/facturas/:cod",async (req,res)=>{
+router.put("/compraFactura",async(req,res)=>{
     try {
-        const {codigoFactura} = req.params.cod
-        const factura = await prisma.compras.findMany({
+        const {codigoFactura} = req.body
+        const result = await prisma.compras.findMany({
             where:{
-                codigoFactura:codigoFactura
+                codigoFactura: codigoFactura
             }
         })
-        if(factura.length>0){
-            return res.json(true)
+        if(result.length>0){
+            return res.status(200).json(true)
         }else{
-            return res.json(false)
+            return res.status(200).json(false)
         }
     } catch (error) {
-        console.error(error)
+        console.log(json({message: error.message}));
+        return res.status(500).json({message: error.message})
     }
 })
+
 
 router.post("/compra", subirArchivoProducto, async (req, res) => {
       if (!req.file) {
@@ -75,7 +76,7 @@ router.post("/compra", subirArchivoProducto, async (req, res) => {
       const nuevaCompra = await prisma.compras.create({
         data: {
           total_compra: parseInt(total_compra),
-          imagen: req.file.path,
+          imagen: req.file.filename,
           fecha: fecha,
           codigoFactura: codigoFactura,
         },

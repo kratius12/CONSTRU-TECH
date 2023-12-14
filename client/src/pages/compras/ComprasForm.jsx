@@ -15,18 +15,14 @@ const fetchData = async (url) => {
   }
 };
 const ComprasForm = () => {
-  const { createCompra } = useCompras();
+  const { createCompra,searchFact } = useCompras();
   const [categorias, setCategorias] = useState([]);
   const [materiales, setMateriales] = useState([]);
   const [proveedores, setProveedores] = useState([]);
 
-  const [codigoFacturaError, setCodigoFacturaError] = useState("");
   const navigate = useNavigate();
-  const [file, setFile] = useState(null);
 
-  const selectedHandler = (e) => {
-    setFile(e.target.files[0]);
-  }; const alertConfirm = (type) => {
+ const alertConfirm = (type) => {
     var message = ""
     if (type == "update") {
       message = "Actualizado"
@@ -34,7 +30,7 @@ const ComprasForm = () => {
       message = "Agregado"
     }
     $.confirm({
-      title: `Compra ` + message + ` con exito!`,
+      title: `Compra  agregada con exito!`,
       content: "Redirecionando a listado de compras...",
       icon: 'fa fa-check',
       theme: 'modern',
@@ -104,11 +100,25 @@ const ComprasForm = () => {
         validationSchema={comprasSchema}
         enableReinitialize={true}
         onSubmit={async (values, { setSubmitting }) => {
-          const response = await axios.get(`http://localhost:4000/facturas/${values.codigoFactura}`)
-          if (response.data ==false ) {
-            setCodigoFacturaError("El codigo de la factura ya está registrado en otra compra.")
-            return alert(codigoFacturaError);
-          }
+          const validateFact = await searchFact(values)
+          if (validateFact === true) {
+            $.confirm({
+              title: `Error`,
+              content: `El codigo de factura: `+values.codigoFactura+` ya existe, por favor ingrese uno diferente`,
+              icon: 'fa fa-circle-xmark',
+              theme: 'modern',
+              closeIcon: true,
+              animation: 'zoom',
+              closeAnimation: 'scale',
+              animationSpeed: 500,
+              type: 'red',
+              columnClass: 'col-md-6 col-md-offset-3',
+              buttons: {
+                Cerrar: function () {
+                },
+              }
+            })                
+          }else{
           const formData = new FormData();
           formData.append("fecha", values.fecha);
           formData.append("imagen", values.imagen);
@@ -134,7 +144,7 @@ const ComprasForm = () => {
           } finally {
             setSubmitting(false);
           }
-        }}
+        }}}
       >
         {({ handleSubmit, values, isSubmitting, setFieldValue, errors, touched }) => (
           <Form onSubmit={handleSubmit} className="user" encType="multipart/form-data">
