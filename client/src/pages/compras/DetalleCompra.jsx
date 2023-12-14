@@ -3,7 +3,9 @@ import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import Card from 'react-bootstrap/Card';
 import axios from "axios";
+
 import {Modal, Button} from "react-bootstrap"
+
 import "../../components/compras/comprasDetalle.css";
 
 const CompraDetalle = () => {
@@ -30,7 +32,9 @@ const CompraDetalle = () => {
     if (!compra) {
         return <div>Cargando...</div>;
     }
+
     const formattedTotalCompra = `$${compra.total_compra.toLocaleString()}`;
+
 
     return (
         <div>
@@ -53,11 +57,14 @@ const CompraDetalle = () => {
                         </div>
                         <div className="col-md-3 mt-3 mx-auto">
                             <label htmlFor="fecha">Total de la compra:</label>
+
                             <input className="form-control form-control-user" type="text" id="fecha" name="fecha" value={formattedTotalCompra} disabled />
+
                         </div>
                     </div>
                 </div>
                 <div>
+
 
                     {/* <Button variant="secondary" onClick={handleOpenModal} style={{ marginLeft: '15px', padding: '20px' }}>
 <i class="bi bi-search"></i> {/* Bootstrap icon for search */}
@@ -84,6 +91,7 @@ const CompraDetalle = () => {
                             </Button>
                         </Modal.Footer>
                     </Modal>
+
                 </div>
                 <hr />
                 <h3>Materiales:</h3>

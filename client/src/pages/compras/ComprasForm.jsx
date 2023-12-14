@@ -20,6 +20,12 @@ const ComprasForm = () => {
   const [materiales, setMateriales] = useState([]);
   const [proveedores, setProveedores] = useState([]);
 
+
+  const [codigoFacturaError, setCodigoFacturaError] = useState("");
+  const navigate = useNavigate();
+  const [file, setFile] = useState(null);
+
+
   const navigate = useNavigate();
 
  const alertConfirm = (type) => {
@@ -144,6 +150,7 @@ const ComprasForm = () => {
           } finally {
             setSubmitting(false);
           }
+
         }}}
       >
         {({ handleSubmit, values, isSubmitting, setFieldValue, errors, touched }) => (

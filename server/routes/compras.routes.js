@@ -46,6 +46,7 @@ router.get('/compra/:id', async (req, res) => {
     }
 });
 
+
 router.put("/compraFactura",async(req,res)=>{
     try {
         const {codigoFactura} = req.body
@@ -66,6 +67,7 @@ router.put("/compraFactura",async(req,res)=>{
 })
 
 
+
 router.post("/compra", subirArchivoProducto, async (req, res) => {
       if (!req.file) {
         return res.json({ message: "Error al cargar la imagen" });
@@ -77,6 +79,7 @@ router.post("/compra", subirArchivoProducto, async (req, res) => {
         data: {
           total_compra: parseInt(total_compra),
           imagen: req.file.filename,
+
           fecha: fecha,
           codigoFactura: codigoFactura,
         },

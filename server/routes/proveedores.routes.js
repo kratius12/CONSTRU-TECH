@@ -144,6 +144,7 @@ router.get('/api/checkNit/:nit', async (req, res) => {
     }
   });
 
+
 router.put("/documentoProv",async(req,res)=>{
     try{
         const {nit} = req.body
@@ -161,5 +162,6 @@ router.put("/documentoProv",async(req,res)=>{
         console.error(error)
     }
 })
+
 
 export default router
