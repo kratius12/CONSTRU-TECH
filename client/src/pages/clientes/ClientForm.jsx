@@ -69,6 +69,13 @@ export default function ClientsForm() {
             enableReinitialize={true}
             validationSchema={ClientSchema}
             onSubmit={async (values) => {
+              const hoy = new Date();
+              const fechaNac = new Date(values.birthdate);
+              let edad = hoy.getFullYear() - fechaNac.getFullYear();
+              const m = hoy.getMonth() - fechaNac.getMonth();
+              if (m < 0 || (m === 0 && hoy.getDate() < fechaNac.getDate())) {
+                edad--;
+              }
               // const cleanedNombre = values.nombre.replace(/\s{2,}/g, "")
               console.log(values);
               if (params.id) {

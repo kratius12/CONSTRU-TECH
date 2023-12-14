@@ -25,7 +25,18 @@ const ClientSchema = Yup.object().shape({
     .max(20, 'El documento no puede contener mas de 20 caracteres')
     .required('El número de documento es requerido'),
     fecha_nac: Yup.string()
-    .required('La fecha de nacimiento es requerida'),
+    .max(new Date(), 'La fecha de nacimiento no puede ser una fecha futura')
+    .required('La fecha de nacimiento es requerida')
+    .test('is-adult', 'Debe ser mayor a 18 años', (value) => {
+      const hoy = new Date();
+      const fecha_nac = new Date(value);
+      let edad = hoy.getFullYear() - fecha_nac.getFullYear();
+      const m = hoy.getMonth() - fecha_nac.getMonth();
+      if (m < 0 || (m === 0 && hoy.getDate() < fecha_nac.getDate())) {
+        edad--;
+      }
+      return edad >= 18;
+    }),
     estado: Yup.string()
     .required('El estado es requerido'),
     contrasena: Yup.string()
