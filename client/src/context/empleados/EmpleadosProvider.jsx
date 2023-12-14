@@ -7,7 +7,8 @@ import { CreateEmpleadoRequest,
     GetEmpleadosEspecialidadesRequest,
     ToggleEmpleadoStatusRequest,
     GetEspecialidadesRequest,
-    CreateEspecialidadesRequest
+    CreateEspecialidadesRequest,
+    SearchDocRequest
 } from "../../api/Empleados.api";
 import { EmpleadoContext } from "./EmpleadosContext";
 
@@ -99,8 +100,18 @@ export const EmpleadoContextProvider = ({children}) => {
             console.error(error)
         }
     }
+
+    const searchDoc = async (empleado) => {
+        try {
+            const response = await SearchDocRequest(empleado)
+            return response.data
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
     return (
-        <EmpleadoContext.Provider value={{empleados, Empleados, deleteEmpleado, createEmpleado, getEmpleado, updateEmpleado, toggleEmpleadoStatus, especialidades, Especialidades, createEspecialidad}}>
+        <EmpleadoContext.Provider value={{empleados, Empleados, deleteEmpleado, createEmpleado, getEmpleado, updateEmpleado, toggleEmpleadoStatus, especialidades, Especialidades, createEspecialidad, searchDoc}}>
             {children}
         </EmpleadoContext.Provider>
     )

@@ -9,7 +9,7 @@ import EmpleadoSchema from "../../components/ValidatorEmpleado";
 
 export default function EmpleadosForm() {
 
-  const { createEmpleado, getEmpleado, updateEmpleado, especialidades, Especialidades } = useEmpleados()
+  const { createEmpleado, getEmpleado, updateEmpleado, especialidades, Especialidades, searchDoc } = useEmpleados()
   const params = useParams()
   const navigate = useNavigate()
   const [key, setKey] = useState(0)
@@ -75,14 +75,14 @@ export default function EmpleadosForm() {
       message = "Agregado"
     }
     $.confirm({
-      title: `Obra ` + message + ` con exito!`,
-      content: "Redirecionando a listado de obras...",
+      title: `Empleado ` + message + ` con exito!`,
+      content: "Redirecionando a listado de empleados...",
       icon: 'fa fa-check',
       theme: 'modern',
       closeIcon: true,
       animation: 'zoom',
       closeAnimation: 'scale',
-      animationSpeed: 1500,
+      animationSpeed: 500,
       type: 'green',
       columnClass: 'col-md-6 col-md-offset-3',
       autoClose: 'okay|4000',
@@ -107,33 +107,52 @@ export default function EmpleadosForm() {
                 ...values,
                 especialidad: selectedEsp
               }
-              if (params.id) {
-                await updateEmpleado(params.id, empleadoObject)
-                alertConfirm('update')
-                setTimeout(
-                  navigate("/empleados"),
-                  5000
-                )
-              } else {
-                await createEmpleado(empleadoObject)
-                alertConfirm()
-                setTimeout(
-                  navigate("/empleados"),
-                  5000
-                )
-
+              const validateDoc = await searchDoc(empleadoObject)
+              if (validateDoc === true) {
+                $.confirm({
+                  title: `Error`,
+                  content: `El tipo documento: `+values.tipoDoc+` y numero documento: `+values.cedula+` ya existe, por favor ingrese uno diferente`,
+                  icon: 'fa fa-circle-xmark',
+                  theme: 'modern',
+                  closeIcon: true,
+                  animation: 'zoom',
+                  closeAnimation: 'scale',
+                  animationSpeed: 500,
+                  type: 'red',
+                  columnClass: 'col-md-6 col-md-offset-3',
+                  buttons: {
+                    Cerrar: function () {
+                    },
+                  }
+                })                
+              }else{
+                if (params.id) {
+                  await updateEmpleado(params.id, empleadoObject)
+                  alertConfirm('update')
+                  setTimeout(
+                    navigate("/empleados"),
+                    5000
+                  )
+                } else {
+                  await createEmpleado(empleadoObject)
+                  alertConfirm()
+                  setTimeout(
+                    navigate("/empleados"),
+                    5000
+                  )
+                }
               }
-              setEmpleado({
-                nombre: "",
-                apellido: "",
-                direccion: "",
-                estado: "",
-                email: "",
-                telefono: "",
-                tipoDoc: "",
-                cedula: "",
-                especialidad: []
-              })
+              // setEmpleado({
+              //   nombre: "",
+              //   apellido: "",
+              //   direccion: "",
+              //   estado: "",
+              //   email: "",
+              //   telefono: "",
+              //   tipoDoc: "",
+              //   cedula: "",
+              //   especialidad: []
+              // })
             }}
           >
             {({ handleChange, handleSubmit, values, isSubmitting, errors, touched }) => (
