@@ -15,3 +15,7 @@ export const GetDashboardClienteObrasRequest = async () =>{
 export const GetDashboardEspecialidadesRequest = async () =>{
     return await axios.get('http://localhost:4000/dashboard/especialidades')
 }
+
+export const GetDashboardEmpleadosCountRequest = async () =>{
+    return await axios.get('http://localhost:4000/dashboard/empleadosCount')
+}

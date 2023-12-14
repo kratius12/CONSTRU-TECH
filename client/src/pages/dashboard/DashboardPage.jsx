@@ -7,12 +7,16 @@ function DashboardPage() {
     const clientesObras = useRef(null)
     const especialidadesObras = useRef(null)
 
-    const { getDashboardClientes, getDashboardObras, getDashboardClienteObras, getDashboardEspecialidades } = useDashboard()
+    const { getDashboardClientes, getDashboardObras, getDashboardClienteObras, getDashboardEspecialidades, getDashboardEmpleadosCount} = useDashboard()
     const [clientesData, setClientesData] = useState([])
     const [obrasData, setObrasData] = useState([])
 
+    const [countObras, setCountObras] = useState([])
+    const [countClientes, setCountClientes] = useState([])
+    const [countEmpleados, setCountEmpleados] = useState([])
+
     useEffect(() => {
-        const dataClientes = async () =>{
+        const dataClientes = async () => {
             const currentDate = new Date()
 
             const thirtyDaysAgo = new Date()
@@ -21,7 +25,6 @@ function DashboardPage() {
             const thirtyDaysAgoFormatted = thirtyDaysAgo.toISOString().split('T')[0]
 
             const clientesInfo = await getDashboardClientes()
-
             const clientesRegistrados = clientesInfo.filter(cliente => {
                 const createdAtFormmated = cliente.createdAt.split('T')[0]
                 return createdAtFormmated >= thirtyDaysAgoFormatted && createdAtFormmated <= todayFormatted
@@ -32,11 +35,11 @@ function DashboardPage() {
                 const createdAtFormmated = cliente.createdAt.split('T')[0]
                 if (clientesCountDia[createdAtFormmated]) {
                     clientesCountDia[createdAtFormmated]++
-                }else{
+                } else {
                     clientesCountDia[createdAtFormmated] = 1
                 }
             });
-            const data = Object.entries(clientesCountDia).map(([date, count]) => ({date, count}))
+            const data = Object.entries(clientesCountDia).map(([date, count]) => ({ date, count }))
             setClientesData(data)
         }
         const dataObras = async () => {
@@ -59,165 +62,150 @@ function DashboardPage() {
                 const createdAtFormmated = obra.createdAt.split('T')[0]
                 if (obraCountDia[createdAtFormmated]) {
                     obraCountDia[createdAtFormmated]++
-                }else{
+                } else {
                     obraCountDia[createdAtFormmated] = 1
                 }
             });
-            const data = Object.entries(obraCountDia).map(([date, count]) => ({date, count}))
+            const data = Object.entries(obraCountDia).map(([date, count]) => ({ date, count }))
             setObrasData(data)
         }
         dataClientes()
         dataObras()
-    //   const loadClientesChart = async () =>{
-    //     if (chartRef && chartRef.current) {
-    //         const dataClientes = await getDashboardClientes()
-    //         const data = {
-    //           labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-    //           datasets: [{
-    //             label: '# of Votes',
-    //             data: [12, 19, 3, 5, 2, 3],
-    //             borderWidth: 1,
-    //           }],
-    //         };
-      
-    //         const options = {
-    //           scales: {
-    //             x: {
-    //               beginAtZero: true,
-    //             },
-    //             y: {
-    //               beginAtZero: true,
-    //             },
-    //           },
-    //         };
-      
-    //         new Chart(chartRef.current, {
-    //           type: 'bar',
-    //           data: data,
-    //           options: options,
-    //         });
-    //       }        
-    //   }
-    //   loadClientesChart()
     }, []);
     useEffect(() => {
-        const loadchartClientes = () =>{
+        const loadchartClientes = () => {
             if (clienteRef && clienteRef.current) {
                 const ctx = clienteRef.current.getContext('2d');
-       
+
                 new Chart(ctx, {
-                   type: 'bar',
-                   data: {
-                      labels: clientesData.map(entry => entry.date),
-                      datasets: [{
-                         label: 'Clientes Registrados',
-                         data: clientesData.map(entry => entry.count),
-                         backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                         borderColor: 'rgba(75, 192, 192, 1)',
-                         borderWidth: 1,
-                      }]
-                   },
-                   options: {
-                      scales: {
-                         x: {
-                            type: 'time',
-                            time: {
-                               unit: 'day'
+                    type: 'bar',
+                    data: {
+                        labels: clientesData.map(entry => entry.date),
+                        datasets: [{
+                            label: 'Clientes Registrados',
+                            data: clientesData.map(entry => entry.count),
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1,
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                type: 'time',
+                                time: {
+                                    unit: 'day'
+                                },
                             },
-                         },
-                         y: {
-                            beginAtZero: true,
-                            title: {
-                               display: true,
-                               text: 'Cantidad de clientes'
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Cantidad de clientes'
+                                }
                             }
-                         }
-                      }
-                   }
+                        }
+                    }
                 });
             }
-        }   
-        const loadchartObras = () =>{
+        }
+        const loadchartObras = () => {
             if (obraRef && obraRef.current) {
                 const ctx = obraRef.current.getContext('2d');
-       
+
                 new Chart(ctx, {
-                   type: 'bar',
-                   data: {
-                      labels: obrasData.map(entry => entry.date),
-                      datasets: [{
-                         label: 'Obras ingresadas',
-                         data: obrasData.map(entry => entry.count),
-                         backgroundColor: 'rgba(39, 80, 245, 0.8)',
-                         borderColor: 'rgba(39, 80, 245, 0.8)',
-                         borderWidth: 1,
-                      }]
-                   },
-                   options: {
-                      scales: {
-                         x: {
-                            type: 'time',
-                            time: {
-                               unit: 'day'
+                    type: 'bar',
+                    data: {
+                        labels: obrasData.map(entry => entry.date),
+                        datasets: [{
+                            label: 'Obras ingresadas',
+                            data: obrasData.map(entry => entry.count),
+                            backgroundColor: 'rgba(39, 80, 245, 0.8)',
+                            borderColor: 'rgba(39, 80, 245, 0.8)',
+                            borderWidth: 1,
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                type: 'time',
+                                time: {
+                                    unit: 'day'
+                                },
                             },
-                         },
-                         y: {
-                            beginAtZero: true,
-                            title: {
-                               display: true,
-                               text: 'Cantidad de obras'
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Cantidad de obras'
+                                }
                             }
-                         }
-                      }
-                   }
+                        }
+                    }
                 });
-            }            
+            }
         }
-        const loarchartClientesObras = async () =>{
+        const loadchartClientesObras = async () => {
             if (clientesObras && clientesObras.current) {
                 const ctx = clientesObras.current.getContext("2d");
                 const clientesObrasData = await getDashboardClienteObras();
-
-                const obrasPorCliente = {};
+            
+                // Filtrar obras dentro de los últimos 30 días
+                const fechaLimite = new Date();
+                fechaLimite.setDate(fechaLimite.getDate() - 30);
+                const obrasRecientes = clientesObrasData.filter(
+                  (entry) => new Date(entry.createdAt) >= fechaLimite
+                );
+            
+                // Crear un objeto que mapea el ID del cliente a su nombre
+                const nombresClientes = {};
                 clientesObrasData.forEach((entry) => {
+                  nombresClientes[entry.cliente.idCli] = entry.cliente.nombre;
+                });
+            
+                // Contar la cantidad de obras por cliente
+                const obrasPorCliente = {};
+                obrasRecientes.forEach((entry) => {
                   const idCliente = entry.cliente.idCli;
                   obrasPorCliente[idCliente] = (obrasPorCliente[idCliente] || 0) + 1;
                 });
             
-
-                const clientes = clientesObrasData.map((entry) => entry.cliente.nombre);
+                // Obtener nombres de clientes y cantidades de obras
+                const clientes = Object.keys(obrasPorCliente).map(
+                  (idCliente) => nombresClientes[idCliente]
+                );
                 const obras = Object.values(obrasPorCliente);
+
                 new Chart(ctx, {
                     type: "bar",
                     data: {
-                      labels: clientes,
-                      datasets: [
-                        {
-                          label: "Cantidad de Servicios Solicitados",
-                          data: obras,
-                          backgroundColor: "rgba(245, 39, 39, 0.2)",
-                          borderColor: "rgba(245, 39, 39, 0.2)",
-                          borderWidth: 1,
-                        },
-                      ],
+                        labels: clientes,
+                        datasets: [
+                            {
+                                label: "Cantidad de Servicios Solicitados",
+                                data: obras,
+                                backgroundColor: "rgba(245, 39, 39, 0.2)",
+                                borderColor: "rgba(245, 39, 39, 0.2)",
+                                borderWidth: 1,
+                            },
+                        ],
                     },
                     options: {
-                      scales: {
-                        y: {
-                          beginAtZero: true,
-                          title: {
-                            display: true,
-                            text: "Cantidad de Servicios",
-                          },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: "Cantidad de Servicios",
+                                },
+                            },
                         },
-                      },
                     },
-                  });
-
-
+                });
             }
-        }
-        const loadchartEspecialidades = async () =>{
+        };
+
+        const loadchartEspecialidades = async () => {
             if (especialidadesObras && especialidadesObras.current) {
                 const ctx = especialidadesObras.current.getContext("2d");
                 const especialidadesData = await getDashboardEspecialidades();
@@ -225,57 +213,121 @@ function DashboardPage() {
                 const especialidadesCount = {};
 
                 especialidadesData.forEach((obra) => {
-                  obra.empleado_obra.forEach((empleado) => {
-                    empleado.empleado.empleado_especialidad.forEach((especialidad) => {
-                      const nombreEspecialidad = especialidad.especialidad.especialidad;
-                      especialidadesCount[nombreEspecialidad] = (especialidadesCount[nombreEspecialidad] || 0) + 1;
+                    obra.empleado_obra.forEach((empleado) => {
+                        empleado.empleado.empleado_especialidad.forEach((especialidad) => {
+                            const nombreEspecialidad = especialidad.especialidad.especialidad;
+                            especialidadesCount[nombreEspecialidad] = (especialidadesCount[nombreEspecialidad] || 0) + 1;
+                        });
                     });
-                  });
                 });
-          
+
                 const especialidadesLabels = Object.keys(especialidadesCount);
                 const especialidadesValues = Object.values(especialidadesCount);
 
                 new Chart(ctx, {
                     type: "bar",
                     data: {
-                      labels: especialidadesLabels,
-                      datasets: [
-                        {
-                          label: "Cantidad de especialidades en Obras",
-                          data: especialidadesValues,
-                          backgroundColor: "rgba(253, 113, 0, 0.8)",
-                          borderColor: "rgba(253, 113, 0, 0.8)",
-                          borderWidth: 1,
-                        },
-                      ],
+                        labels: especialidadesLabels,
+                        datasets: [
+                            {
+                                label: "Cantidad de especialidades en Obras",
+                                data: especialidadesValues,
+                                backgroundColor: "rgba(253, 113, 0, 0.8)",
+                                borderColor: "rgba(253, 113, 0, 0.8)",
+                                borderWidth: 1,
+                            },
+                        ],
                     },
                     options: {
-                      scales: {
-                        y: {
-                          beginAtZero: true,
-                          title: {
-                            display: true,
-                            text: "Cantidad de Obras",
-                          },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: "Cantidad de Obras",
+                                },
+                            },
                         },
-                      },
                     },
-                  });                
+                });
 
             }
         }
+        const loadCounts = async () =>{
+            setCountObras(obrasData.length)
+            setCountClientes(clientesData.length)
+            const empleadosCount = await getDashboardEmpleadosCount()
+            setCountEmpleados(empleadosCount)
+        }
+
         loadchartEspecialidades()
-        loarchartClientesObras()
+        loadchartClientesObras()
         loadchartObras()
-        loadchartClientes()     
+        loadchartClientes()
+        loadCounts()
     }, [clientesData, obrasData])
+
     return (
         <>
             <div className="d-sm-flex align-items-center justify-content-between mb-4">
                 <h1 className="h3 mb-0 text-gray-800">Dashboard</h1>
             </div>
+                    <div className="row">
 
+
+                        <div className="col-xl-3 col-md-6 mb-4 offset-md-1">
+                            <div className="card border-left-primary shadow h-100 py-2">
+                                <div className="card-body">
+                                    <div className="row no-gutters align-items-center text-center">
+                                        <div className="col mr-2">
+                                            <div className="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                Total Clientes</div>
+                                            <div className="h5 mb-0 font-weight-bold text-gray-800">{countClientes}</div>
+                                        </div>
+                                        <div className="col-auto">
+                                            <i className="fas fa-address-card fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div className="col-xl-3 col-md-6 mb-4">
+                            <div className="card border-left-success shadow h-100 py-2">
+                                <div className="card-body">
+                                    <div className="row no-gutters align-items-center text-center">
+                                        <div className="col mr-2">
+                                            <div className="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                                Total Obras</div>
+                                            <div className="h5 mb-0 font-weight-bold text-gray-800">{countObras}</div>
+                                        </div>
+                                        <div className="col-auto">
+                                            <i className="fas fa-map-location-dot fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div className="col-xl-3 col-md-6 mb-4">
+                            <div className="card border-left-warning shadow h-100 py-2">
+                                <div className="card-body">
+                                    <div className="row no-gutters align-items-center text-center">
+                                        <div className="col mr-2">
+                                            <div className="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                                Total empleados</div>
+                                            <div className="h5 mb-0 font-weight-bold text-gray-800">{countEmpleados}</div>
+                                        </div>
+                                        <div className="col-auto">
+                                            <i className="fas fa-user-group fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
             <div className="row">
 
@@ -290,7 +342,7 @@ function DashboardPage() {
 
                         <div className="card-body">
                             <div className="chart-area">
-                            <canvas ref={clienteRef}></canvas>
+                                <canvas ref={clienteRef}></canvas>
                             </div>
                         </div>
                     </div>
@@ -306,7 +358,7 @@ function DashboardPage() {
 
                         <div className="card-body">
                             <div className="chart-area">
-                            <canvas ref={obraRef}></canvas>
+                                <canvas ref={obraRef}></canvas>
                             </div>
                         </div>
                     </div>
@@ -322,7 +374,7 @@ function DashboardPage() {
 
                         <div className="card-body">
                             <div className="chart-area">
-                            <canvas ref={clientesObras}></canvas>
+                                <canvas ref={clientesObras}></canvas>
                             </div>
                         </div>
                     </div>
@@ -337,11 +389,11 @@ function DashboardPage() {
 
                         <div className="card-body">
                             <div className="chart-area">
-                            <canvas ref={especialidadesObras}></canvas>
+                                <canvas ref={especialidadesObras}></canvas>
                             </div>
                         </div>
                     </div>
-                </div>                
+                </div>
             </div>
         </>
     )

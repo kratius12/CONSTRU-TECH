@@ -2,7 +2,8 @@ import { useContext, useState } from "react";
 import { GetDashboardClienteObrasRequest,
          GetDashboardClientesRequest,
          GetDashboardEspecialidadesRequest,
-         GetDashboardObrasRequest
+         GetDashboardObrasRequest,
+         GetDashboardEmpleadosCountRequest
 } from "../../api/Dashboard.api";
 import { DashboardContext } from "./DashboardContext";
 
@@ -63,8 +64,17 @@ export const DashboardContextProvider = ({children}) => {
         }
     }
 
+    const getDashboardEmpleadosCount = async (id) =>{
+        try {
+            const result = await GetDashboardEmpleadosCountRequest(id)
+            return result.data
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
     return (
-        <DashboardContext.Provider value={{dashboard, Dashboard, getDashboardClientes, getDashboardObras, getDashboardClienteObras, getDashboardEspecialidades}}>
+        <DashboardContext.Provider value={{dashboard, Dashboard, getDashboardClientes, getDashboardObras, getDashboardClienteObras, getDashboardEspecialidades, getDashboardEmpleadosCount}}>
             {children}
         </DashboardContext.Provider>
     )
