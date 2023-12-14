@@ -30,6 +30,34 @@ router.get("/materiales", async (req, res) => {
         console.error(error)
     }
 })
+router.get("/materialesAc", async (req, res) => {
+    try {
+        const materiales = await prisma.materiales.findMany({
+            select: {
+                idMat: true,
+                estado: true,
+                nombre: true,
+                proveedor: {
+                    select: {
+                        nombre: true
+                    }
+                },
+                categoria: {
+                    select: {
+                        nombre: true
+                    }
+                }
+
+            }, where:{
+                estado:1
+            }
+
+        })
+        return res.send(materiales)
+    } catch (error) {
+        console.error(error)
+    }
+})
 router.get("/material/:id", async (req, res) => {
     try {
         const material = await prisma.materiales.findFirst({

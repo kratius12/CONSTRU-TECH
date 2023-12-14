@@ -14,12 +14,13 @@ const fetchData = async (url) => {
     return [];
   }
 };
-
 const ComprasForm = () => {
   const { createCompra } = useCompras();
   const [categorias, setCategorias] = useState([]);
   const [materiales, setMateriales] = useState([]);
   const [proveedores, setProveedores] = useState([]);
+
+  const [codigoFacturaError, setCodigoFacturaError] = useState("");
   const navigate = useNavigate();
   const [file, setFile] = useState(null);
 
@@ -51,59 +52,6 @@ const ComprasForm = () => {
     })
   }
 
-  const sendHandler = async (values) => {
-    if (!file) {
-      alert("You must upload a file");
-      return;
-    }
-
-    const formdata = new FormData();
-
-    // Agregar campos del formulario al FormData
-    Object.keys(values).forEach((key) => {
-      if (key === "detalles") {
-        // Iterar sobre los detalles y agregar sus campos al FormData
-        values.detalles.forEach((detalle, index) => {
-          Object.keys(detalle).forEach((detalleKey) => {
-            formdata.append(`detalles.${index}.${detalleKey}`, detalle[detalleKey]);
-          });
-        });
-      } else {
-        formdata.append(key, values[key]);
-      }
-    });
-
-    // Agregar el archivo al FormData
-    formdata.append("image", file);
-
-    try {
-      const response = await fetch("http://localhost:4000/compra", {
-        method: "POST",
-        body: formdata,
-      });
-
-      const result = await response.text();
-
-      console.log(result);
-
-      try {
-        const parsedResult = JSON.parse(result);
-        console.log(parsedResult);
-      } catch (error) {
-        console.error(error);
-      }
-
-      // Limpiar el campo de archivo después de enviar la solicitud
-      const fileInput = document.getElementById("fileinput");
-      if (fileInput) {
-        fileInput.value = null;
-      }
-
-      setFile(null);
-    } catch (error) {
-      console.error("Error sending request:", error);
-    }
-  };
 
   const [totalGeneral, setTotalGeneral] = useState(0);
 
@@ -134,20 +82,20 @@ const ComprasForm = () => {
   };
 
   useEffect(() => {
-    fetchData("http://localhost:4000/categorias").then((data) => {
+    fetchData("http://localhost:4000/categoriasAct").then((data) => {
       setCategorias(data);
     });
-    fetchData("http://localhost:4000/materiales").then((data) => {
+    fetchData("http://localhost:4000/materialesAc").then((data) => {
       setMateriales(data);
     });
-    fetchData("http://localhost:4000/provs").then((data) => {
+    fetchData("http://localhost:4000/provsAc").then((data) => {
       setProveedores(data);
     });
   }, []);
 
   useEffect(() => {
     calcularTotalGeneral(initialValues.detalles);
-  }, [initialValues.detalles]);
+  }, []);
 
   return (
     <div className="container">
@@ -155,20 +103,40 @@ const ComprasForm = () => {
         initialValues={initialValues}
         validationSchema={comprasSchema}
         enableReinitialize={true}
-        onSubmit={async (values) => {
-          values.imagen = file;
-          console.log(values.imagen)
-          // Agregar la imagen a los valores del formulario
-          console.log(values);
-          await createCompra(values);
-          alertConfirm()
-          setTimeout(
-            navigate("/compras"),
-            5000
-          )
+        onSubmit={async (values, { setSubmitting }) => {
+          const response = await axios.get(`http://localhost:4000/facturas/${values.codigoFactura}`)
+          if (response.data ==false ) {
+            setCodigoFacturaError("El codigo de la factura ya está registrado en otra compra.")
+            return alert(codigoFacturaError);
+          }
+          const formData = new FormData();
+          formData.append("fecha", values.fecha);
+          formData.append("imagen", values.imagen);
+          formData.append("idProv", values.idProv);
+          formData.append("codigoFactura", values.codigoFactura);
+          formData.append("total_compra", totalGeneral)
+          values.detalles.forEach((detalle, index) => {
+            formData.append(`detalles[${index}][idCat]`, detalle.idCat);
+            formData.append(`detalles[${index}][idMat]`, detalle.idMat);
+            formData.append(`detalles[${index}][cantidad]`, detalle.cantidad);
+            formData.append(`detalles[${index}][precio]`, detalle.precio);
+            formData.append(`detalles[${index}][subtotal]`, detalle.subtotal);
+          });
+
+          try {
+
+            await createCompra(formData);
+            alertConfirm();
+
+            navigate("/compras");
+          } catch (error) {
+            console.error("Error al crear la compra:", error);
+          } finally {
+            setSubmitting(false);
+          }
         }}
       >
-        {({ handleSubmit, values, isSubmitting, setFieldValue,errors, touched }) => (
+        {({ handleSubmit, values, isSubmitting, setFieldValue, errors, touched }) => (
           <Form onSubmit={handleSubmit} className="user" encType="multipart/form-data">
             <div className="card text-center w-100">
               <h2>Agregar compra</h2>
@@ -183,7 +151,15 @@ const ComprasForm = () => {
                   </div>
                   <div className="col-md-3 mt-3 mx-auto">
                     <label htmlFor="imagen">Factura:</label>
-                    <input id="fileinput" onChange={(e)=>setFieldValue("imagen",event.currentTarget.files)}  className="form-control" type="file" />
+                    <input
+                      id="imagen"
+                      name="imagen"
+                      type="file"
+                      className="form-control"
+                      onChange={(event) => {
+                        setFieldValue('imagen', event.currentTarget.files[0]);
+                      }}
+                    />
                     {errors.imagen && touched.imagen ? (
                       <div className="alert alert-danger" role="alert">{errors.imagen}</div>
                     ) : null}
@@ -346,21 +322,20 @@ const ComprasForm = () => {
                         >
                           Agregar material
                         </button>
+                        {calcularTotalGeneral(values.detalles)}
                         <div className="col-md-2 mt-3 mx-auto">
                           <label htmlFor={`total_compra`}>Total:</label>
                           <div className="input-group">
                             <div className="input-group-prepend">
                               <span className="input-group-text">$</span>
                             </div>
-                            <p {...calcularTotalGeneral(values.detalles)}></p>
                             <Field
                               type="text"
                               className="form-control"
                               disabled
-                              value={values.total_compra=totalGeneral}
+                              value={totalGeneral.toLocaleString()}
                               name="total_compra"
                             />
-                            
                           </div>
                         </div>
                       </div>
@@ -373,7 +348,6 @@ const ComprasForm = () => {
                   <div className="col-md-6">
                     <button
                       type="submit"
-                      // onClick={sendHandler}
                       disabled={isSubmitting}
                       className="btn btn-primary btn-icon-split w-50"
                     >
