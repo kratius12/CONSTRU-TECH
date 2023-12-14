@@ -1,8 +1,8 @@
 import * as Yup from 'yup';
 
 const comprasSchema = Yup.object().shape({
-  fecha: Yup.date().required("Fecha es requerida"),
-  // imagen: Yup.mixed().required("Factura es requerida").trim(),
+  fecha: Yup.date().required("Fecha es requerida").max(new Date(), 'La fecha no puede ser posterior a la fecha actual').min(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), 'La fecha no puede ser anterior a una semana'),
+  imagen: Yup.mixed().required("Factura es requerida"),
   idProv: Yup.string().required("Proveedor es requerido").trim(),
   codigoFactura: Yup.string().required("Código de Factura es requerido").trim(),
   detalles: Yup.array().of(

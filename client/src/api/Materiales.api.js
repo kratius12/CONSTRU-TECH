@@ -25,9 +25,9 @@ export const ToggleMaterialStatusRequest = async (idMat, estado) =>{
 }
 
 export const GetProveedoresRequest = async()=>{
-    return await axios.get("http://localhost:4000/provs")
+    return await axios.get("http://localhost:4000/provsAc")
 }
 
 export const GetCategoriasRequest = async()=>{
-    return await axios.get("http://localhost:4000/categorias")
+    return await axios.get("http://localhost:4000/categoriasAct")
 }

@@ -3,9 +3,11 @@ import { Form, Formik } from "formik";
 import { useParams, useNavigate } from "react-router-dom";
 import { useProveedores } from "../../context/proveedores/ProveedorProvider";
 import proveedorSchema from './ProveedorValidator'
+import Swal from 'sweetalert2';
+
 export default function ProveedoresForm() {
     //   const [agreed, setAgreed] = useState(false)
-    const { createProveedor, getProveedor, updateProveedor, Proveedores } = useProveedores()
+    const { createProveedor, getProveedor, updateProveedor, Proveedores, searchNit } = useProveedores()
     useEffect(() => {
         Proveedores()
     }, [])
@@ -96,30 +98,59 @@ export default function ProveedoresForm() {
                         enableReinitialize={true}
                         validationSchema={proveedorSchema}
                         onSubmit={async (values) => {
-                            console.log(values);
-                            if (params.id) {
-                                await updateProveedor(params.id, values)
-                                navigate("/proveedores")
-                                alertConfirm()
-                            } else {
-                                await createProveedor(values)
-                                navigate("/proveedores")
-                                alertConfirm()
+                            try {
+                                const validateFact = await searchNit(values)
+                                if (validateFact === true) {
+                                    $.confirm({
+                                        title: `Error`,
+                                        content: `El `+placeholders.nit +`${values.nit} ya existe, por favor ingrese uno diferente`,
+                                        icon: 'fa fa-circle-xmark',
+                                        theme: 'modern',
+                                        closeIcon: true,
+                                        animation: 'zoom',
+                                        closeAnimation: 'scale',
+                                        animationSpeed: 500,
+                                        type: 'red',
+                                        columnClass: 'col-md-6 col-md-offset-3',
+                                        buttons: {
+                                            Cerrar: function () {
+                                            },
+                                        }
+                                    })
+                                } else {
+                                    // El NIT no existe, procede con la creación o actualización del proveedor
+                                    console.log(values);
+
+                                    if (params.id) {
+                                        await updateProveedor(params.id, values);
+                                        navigate("/proveedores");
+                                        alertConfirm();
+                                    } else {
+                                        await createProveedor(values);
+                                        navigate("/proveedores");
+                                        alertConfirm();
+                                    }
+
+                                    setProveedor({
+                                        nombre: "",
+                                        direccion: "",
+                                        nit: "",
+                                        tipo: "",
+                                        estado: "",
+                                        email: "",
+                                        telefono: "",
+                                        nombreContacto: "",
+                                        telefonoContacto: "",
+                                        emailContacto: ""
+                                    });
+                                }
+                            } catch (error) {
+                                console.error(error);
+                                // Manejar errores de la solicitud al servidor
                             }
-                            setProveedor({
-                                nombre: "",
-                                direccion: "",
-                                nit: "",
-                                tipo: "",
-                                estado: "",
-                                email: "",
-                                telefono: "",
-                                nombreContacto: "",
-                                telefonoContacto: "",
-                                emailContacto: ""
-                            })
                         }}
                     >
+
                         {({ handleChange, handleSubmit, values, isSubmitting, errors, touched }) => (
 
                             <Form onSubmit={handleSubmit} className="user">
@@ -128,8 +159,8 @@ export default function ProveedoresForm() {
                                     <div className="card-body">
                                         <div className="row">
                                             <div className="col-md-6 mt-3">
-                                                <select  id="tipo" className="form-select form-control-user" onChange={handleSelectChange} value={values.tipo = tipo}
-                                                   
+                                                <select id="tipo" className="form-select form-control-user" onChange={handleSelectChange} value={values.tipo = tipo}
+
                                                 >
                                                     <option value="0">Seleccione el tipo de proveedor*</option>
                                                     <option value="Natural">Natural</option>
@@ -138,16 +169,16 @@ export default function ProveedoresForm() {
                                                 {errors.tipo && touched.tipo ? (
                                                     <div className="alert alert-danger" role="alert">{errors.tipo}</div>
                                                 ) : null}
-                                                
+
                                             </div>
                                             <div className="col-md-6 mt-3">
-                                                <input type="text" className="form-control form-control-user" id="nit" onChange={handleChange} value={values.nit}  placeholder={placeholders.nit} />
+                                                <input type="text" className="form-control form-control-user" id="nit" onChange={handleChange} value={values.nit} placeholder={placeholders.nit} />
                                                 {errors.nit && touched.nit ? (
                                                     <div className="alert alert-danger" role="alert">{errors.nit}</div>
                                                 ) : null}
                                             </div>
                                             <div className="col-md-6 mt-3">
-                                                <input type="text" className="form-control form-control-user" id="nombre" onChange={handleChange} value={values.nombre}  placeholder={placeholders.nombre} />
+                                                <input type="text" className="form-control form-control-user" id="nombre" onChange={handleChange} value={values.nombre} placeholder={placeholders.nombre} />
                                                 {errors.nombre && touched.nombre ? (
                                                     <div className="alert alert-danger" role="alert">{errors.nombre}</div>
                                                 ) : null}
@@ -172,20 +203,20 @@ export default function ProveedoresForm() {
                                                 ) : null}
                                             </div>
                                             <div className="col-md-6 mt-3">
-                                            {params.id ?
-                          (
-                            <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
-                              <option value="">Seleccione estado</option>
-                              <option value="1">Activo</option>
-                              <option value="0">Inactivo</option>
-                            </select>
-                          ) : (
-                            <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} disabled>
-                              <option value="1">Activo</option>
-                            </select>
-                          )
-                        }
-                        {/* {errors.estado && touched.estado ? (
+                                                {params.id ?
+                                                    (
+                                                        <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
+                                                            <option value="">Seleccione estado</option>
+                                                            <option value="1">Activo</option>
+                                                            <option value="0">Inactivo</option>
+                                                        </select>
+                                                    ) : (
+                                                        <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} disabled>
+                                                            <option value="1">Activo</option>
+                                                        </select>
+                                                    )
+                                                }
+                                                {/* {errors.estado && touched.estado ? (
                                                     <div className="alert alert-danger" role="alert">{errors.estado}</div>
                                                 ) : null} */}
                                             </div>

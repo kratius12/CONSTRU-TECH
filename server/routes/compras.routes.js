@@ -1,27 +1,12 @@
 import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
 import multer from "multer";
-import path from "path";
-import fs from "fs";
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
+import subirArchivoProducto from "../ProcesarImagenes/SubirImagen.js";
 const router = Router();
 const prisma = new PrismaClient();
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        // Utiliza una ruta absoluta en lugar de una ruta relativa
-        const absolutePath = path.join(__dirname, '..', 'images');
-        cb(null, absolutePath);
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
-    },
-});
 
 
 router.get("/compras", async (req, res) => {
@@ -61,45 +46,62 @@ router.get('/compra/:id', async (req, res) => {
     }
 });
 
-const upload = multer({ storage: storage });
 
-
-router.post("/compra", upload.single("image"), async (req, res) => {
-
-    const File = req.file ? `../images/${req.file.fileFile}` : null;
-    const imagen = File
+router.put("/compraFactura",async(req,res)=>{
     try {
-        const { detalles,total_compra, fecha, codigoFactura } = req.body;
-        const nuevaCompra = await prisma.compras.create({
-            data: {
-                total_compra: parseInt(total_compra),
-                imagen: imagen,
-                fecha: fecha,
+        const {codigoFactura} = req.body
+        const result = await prisma.compras.findMany({
+            where:{
                 codigoFactura: codigoFactura
             }
-        });
-
-        for (const detalle of detalles) {
-            const { idCat, idMat, cantidad, precio } = detalle;
-
-            await prisma.compras_detalle.createMany({
-                data: {
-                    cantidad: parseInt(cantidad),
-                    idCompra: nuevaCompra.idCom,
-                    idMat: parseInt(idMat),
-                    idCat: parseInt(idCat),
-                    precio: parseInt(precio),
-                    subtotal: parseInt(precio * cantidad)
-                }
-            });
-        }// Después de crear la compra, calcula el total_compra sumando los subtotales
-
-
-        return res.status(201).send({ message: "Compra creada exitosamente" });
+        })
+        if(result.length>0){
+            return res.status(200).json(true)
+        }else{
+            return res.status(200).json(false)
+        }
     } catch (error) {
-        console.error(error);
-        return res.status(201).send({ message: 'Error interno del servidor' });
+        console.log(json({message: error.message}));
+        return res.status(500).json({message: error.message})
     }
-});
+})
+
+
+
+router.post("/compra", subirArchivoProducto, async (req, res) => {
+      if (!req.file) {
+        return res.json({ message: "Error al cargar la imagen" });
+      }
+  
+      const { detalles, total_compra, fecha, codigoFactura } = req.body;
+  
+      const nuevaCompra = await prisma.compras.create({
+        data: {
+          total_compra: parseInt(total_compra),
+          imagen: req.file.filename,
+
+          fecha: fecha,
+          codigoFactura: codigoFactura,
+        },
+      });
+  
+      for (const detalle of detalles) {
+        const { idCat, idMat, cantidad, precio } = detalle;
+  
+        await prisma.compras_detalle.createMany({
+          data: {
+            cantidad: parseInt(cantidad),
+            idCompra: nuevaCompra.idCom,
+            idMat: parseInt(idMat),
+            idCat: parseInt(idCat),
+            precio: parseInt(precio),
+            subtotal: parseInt(precio * cantidad),
+          },
+        });
+      }
+  
+      return res.status(201).send({ message: "Compra creada exitosamente" });
+    } );
+  
 
 export default router;
