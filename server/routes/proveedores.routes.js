@@ -13,6 +13,18 @@ router.get('/provs', async (req, res) => {
         return res.status(500).json({ message: error.message })
     }
 })  
+router.get('/provsAc', async (req, res) => {
+    try {
+        const proveedores = await prisma.proveedor.findMany({
+            where:{
+                estado:1
+            }
+        })
+        return res.send(proveedores)
+    } catch (error) {
+        return res.status(500).json({ message: error.message })
+    }
+})  
 router.get('/prov/:idProv', async (req, res) => {
     try {
         const provFound = await prisma.proveedor.findFirst({
@@ -67,30 +79,42 @@ router.delete('/prov/:idProv', async (req, res) => {
 
 
 
-router.post('/newprov',async(req,res)=>{
+router.post('/newprov', async (req, res) => {
     try {
-        const {nombre,direccion,nit,tipo,estado,email,telefono,nombreContacto,telefonoContacto,emailContacto}=req.body
-        const newProv = await prisma.proveedor.create({
-            data: {
-                nombre:nombre,
-                direccion:direccion,
-                nit:nit,
-                tipo:tipo,
-                estado:1,
-                email:email,
-                telefono:telefono,
-                nombreContacto:nombreContacto,
-                telefonoContacto:telefonoContacto,
-                emailContacto:emailContacto
-            },
-            
-        })
-        return res.json(newProv)
-    } catch (error) {
-        return res.status(500).json({message:error.message})
-    }
-})
+      const { nit } = req.body;
 
+      const existingProveedor = await prisma.proveedor.findFirst({
+        where: {
+          nit: nit,
+        },
+      });
+  
+      if (existingProveedor) {
+        return res.status(400).json({ message: 'Ya existe un proveedor con este NIT.' });
+      }
+  
+      const { nombre, direccion, tipo, estado, email, telefono, nombreContacto, telefonoContacto, emailContacto } = req.body;
+      const newProv = await prisma.proveedor.create({
+        data: {
+          nombre: nombre,
+          direccion: direccion,
+          nit: nit,
+          tipo: tipo,
+          estado: 1,
+          email: email,
+          telefono: telefono,
+          nombreContacto: nombreContacto,
+          telefonoContacto: telefonoContacto,
+          emailContacto: emailContacto,
+        },
+      });
+  
+      return res.json(newProv);
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  });
+  
 router.put("/proveedorEstado/:id",async(req,res)=>{
     try{
         const {estado} = req.body
@@ -106,5 +130,18 @@ router.put("/proveedorEstado/:id",async(req,res)=>{
         console.error(error)
     }
 })
+router.get('/api/checkNit/:nit', async (req, res) => {
+    try {
+      const existingProveedor = await prisma.proveedor.findFirst({
+        where: {
+          nit: req.params.nit,
+        },
+      });
+  
+      return res.json({ exists: !!existingProveedor });
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  });
 
 export default router

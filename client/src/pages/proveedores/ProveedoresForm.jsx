@@ -3,6 +3,8 @@ import { Form, Formik } from "formik";
 import { useParams, useNavigate } from "react-router-dom";
 import { useProveedores } from "../../context/proveedores/ProveedorProvider";
 import proveedorSchema from './ProveedorValidator'
+import Swal from 'sweetalert2';
+
 export default function ProveedoresForm() {
     //   const [agreed, setAgreed] = useState(false)
     const { createProveedor, getProveedor, updateProveedor, Proveedores } = useProveedores()
@@ -96,30 +98,49 @@ export default function ProveedoresForm() {
                         enableReinitialize={true}
                         validationSchema={proveedorSchema}
                         onSubmit={async (values) => {
-                            console.log(values);
-                            if (params.id) {
-                                await updateProveedor(params.id, values)
-                                navigate("/proveedores")
-                                alertConfirm()
-                            } else {
-                                await createProveedor(values)
-                                navigate("/proveedores")
-                                alertConfirm()
-                            }
-                            setProveedor({
-                                nombre: "",
-                                direccion: "",
-                                nit: "",
-                                tipo: "",
-                                estado: "",
-                                email: "",
-                                telefono: "",
-                                nombreContacto: "",
-                                telefonoContacto: "",
-                                emailContacto: ""
-                            })
-                        }}
-                    >
+                            try {
+                                const response = await fetch('/api/checkNit/' + values.nit);
+                                const result = await response.json();
+                
+                                if (result.exists) {
+                                  Swal.fire({
+                                    icon: 'error',
+                                    title: 'Oops...',
+                                    text: 'Ya existe un proveedor con este NIT.',
+                                  });
+                                } else {
+                                  // El NIT no existe, procede con la creación o actualización del proveedor
+                                  console.log(values);
+                
+                                  if (params.id) {
+                                    await updateProveedor(params.id, values);
+                                    navigate("/proveedores");
+                                    alertConfirm();
+                                  } else {
+                                    await createProveedor(values);
+                                    navigate("/proveedores");
+                                    alertConfirm();
+                                  }
+                
+                                  setProveedor({
+                                    nombre: "",
+                                    direccion: "",
+                                    nit: "",
+                                    tipo: "",
+                                    estado: "",
+                                    email: "",
+                                    telefono: "",
+                                    nombreContacto: "",
+                                    telefonoContacto: "",
+                                    emailContacto: ""
+                                  });
+                                }
+                              } catch (error) {
+                                console.error(error);
+                                // Manejar errores de la solicitud al servidor
+                              }
+                            }}
+                          >
                         {({ handleChange, handleSubmit, values, isSubmitting, errors, touched }) => (
 
                             <Form onSubmit={handleSubmit} className="user">
