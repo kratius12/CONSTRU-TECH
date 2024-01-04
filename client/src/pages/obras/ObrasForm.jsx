@@ -14,6 +14,9 @@ function ObrasForm() {
     const [keyEmp, setKeyEmp] = useState(0)
     const [keyCli, setKeyCli] = useState(0)
 
+    const [actividades, setActividades] = useState([
+        {actividad:'', fechaInicio:'', fechaFinal:'', empleados:'', materiales:'', estadoAct:''}
+    ])
 
     const [optionsMat, setOptionsMat] = useState([])
     const [defaultOptionsMat, setDefaultOptionsMat] = useState([])
@@ -44,6 +47,7 @@ function ObrasForm() {
         estado: "",
         fechaini: "",
         fechafin: "",
+        precio:"",
         cliente: [],
         empleados: [],
         material: []
@@ -59,19 +63,20 @@ function ObrasForm() {
                     estado: obra.estado,
                     fechaini: obra.fechaini,
                     fechafin: obra.fechafin,
+                    precio: obra.precio,
                     cliente: obra.cliente.idCliente,
                     empleados: obra.empleado_obra,
                     material: obra.materiales_obras
                 })
-                const defaultOptsEmp = obra.empleado_obra.map(item => ({ value: item.empleado.idEmp, label: item.empleado.nombre }))
-                setDefaultOptionsEmp(defaultOptsEmp)
-                setSelectedEmp(defaultOptsEmp)
-                setKeyEmp(prevKey => prevKey + 1)
+                // const defaultOptsEmp = obra.empleado_obra.map(item => ({ value: item.empleado.idEmp, label: item.empleado.nombre }))
+                // setDefaultOptionsEmp(defaultOptsEmp)
+                // setSelectedEmp(defaultOptsEmp)
+                // setKeyEmp(prevKey => prevKey + 1)
 
-                const defaultOptsMat = obra.materiales_obras.map(item => ({ value: item.materiales.idMat, label: item.materiales.nombre }))
-                setDefaultOptionsMat(defaultOptsMat)
-                setSelectedMat(defaultOptsMat)
-                setKeyMat(prevKey => prevKey + 1)
+                // const defaultOptsMat = obra.materiales_obras.map(item => ({ value: item.materiales.idMat, label: item.materiales.nombre }))
+                // setDefaultOptionsMat(defaultOptsMat)
+                // setSelectedMat(defaultOptsMat)
+                // setKeyMat(prevKey => prevKey + 1)
 
                 const defaultOptionsCli = [
                     {
@@ -89,12 +94,12 @@ function ObrasForm() {
 
     useEffect(() => {
         const fetchData = async () => {
-            const materialesData = await Materiales()
-            const opcionesMat = materialesData.filter(item=> item.estado ==1).map(item => ({ value: item.idMat, label: item.nombre }))
-            setOptionsMat(opcionesMat)
+            // const materialesData = await Materiales()
+            // const opcionesMat = materialesData.filter(item=> item.estado ==1).map(item => ({ value: item.idMat, label: item.nombre }))
+            // setOptionsMat(opcionesMat)
 
             const empleadosData = await Empleados()
-            const opcionesEmp = empleadosData.filter(item=> item.estado ==1).map(item => ({ value: item.idEmp, label: item.nombre + '-' + item.apellido }))
+            const opcionesEmp = empleadosData.filter(item=> item.estado ==1).map(item => ({ value: item.idEmp, label: item.nombre + '-' + item.apellidos }))
             setOptionsEmp(opcionesEmp)
 
             const clientesData = await Clientes()
@@ -119,6 +124,16 @@ function ObrasForm() {
         if (focusHelper) {
             focusHelper.focus()
         }
+    }
+
+    const handleAgregarActividad = () => {
+        setActividades([...actividades, {actividad:'', fechaInicio:'', fechaFinal:'', empleados:'', materiales:'', estadoAct:''}])
+    }
+
+    const handleChangeActividad = (index, field, value) => {
+        const addActividad = [...actividades]
+        addActividad[index][field] = value
+        setActividades(addActividad)
     }
 
     const alertConfirm = (type) => {
@@ -155,7 +170,6 @@ function ObrasForm() {
                         // validationSchema={ObraSchema}
                         validate={validate}
                         onSubmit={async (values) => {
-
                             const cleannedDescription = values.descripcion.replace(/\s{2,}/g, ' ').trim()
                             const cleannedArea = values.area.replace(/\s{2,}/g, ' ').trim()
                             const obraObject = {
@@ -187,6 +201,7 @@ function ObrasForm() {
                                 descripcion: "",
                                 area: "",
                                 estado: "",
+                                precio:"",
                                 fechaini: "",
                                 fechafin: "",
                                 cliente: [],
@@ -221,45 +236,6 @@ function ObrasForm() {
                                                             />
                                                             {errors.cliente && touched.cliente ? (
                                                                 <div className="alert alert-danger" role="alert">{errors.cliente}</div>
-                                                            ) : null}
-                                                        </div>
-                                                        <div className="col-md-6 mt-3">
-                                                            <label htmlFor="empleados" className="form-label">Empleados<span className="text-danger">*</span></label>
-                                                            <Select
-                                                                placeholder={<div>Selecciona Empleados</div>}
-                                                                key={keyEmp}
-                                                                defaultValue={defaultOptionsEmp}
-                                                                isMulti
-                                                                name="empleados"
-                                                                options={optionsEmp}
-                                                                className="basic-multi-select"
-                                                                classNamePrefix="select"
-                                                                onChange={(selectedEmp) => {
-                                                                    setSelectedEmp(selectedEmp)
-                                                                    handleMenuClose
-                                                                }}
-                                                            />
-                                                            {errors.empleados && touched.empleados ? (
-                                                                <div className="alert alert-danger" role="alert">{errors.empleados}</div>
-                                                            ) : null}
-                                                        </div>
-                                                        <div className="col-md-6 mt-3">
-                                                            <label htmlFor="material">Material</label>
-                                                            <Select
-                                                                placeholder={<div>Selecciona Materiales</div>}
-                                                                key={keyMat}
-                                                                defaultValue={defaultOptionsMat}
-                                                                isMulti
-                                                                options={optionsMat}
-                                                                className="basic-multi-select"
-                                                                classNamePrefix="select"
-                                                                onChange={(selectedMat) => {
-                                                                setSelectedMat(selectedMat);
-                                                                handleMenuClose
-                                                                }}
-                                                            />
-                                                            {errors.material && touched.material ? (
-                                                                <div className="alert alert-danger" role="alert">{errors.material}</div>
                                                             ) : null}
                                                         </div>
                                                         <div className="col-md-6 mt-3">
@@ -305,7 +281,139 @@ function ObrasForm() {
                                                             {errors.area && touched.area ? (
                                                                 <div className="alert alert-danger" role="alert">{errors.area}</div>
                                                             ) : null}
-                                                        </div>                                                        
+                                                        </div>  
+                                                        <div className="col-md-6 mt-3">
+                                                            <label htmlFor="precio" className="form-label">Precio de la obra<span className="text-danger">*</span></label>
+                                                            <input type="text" className="form-control form-control-user" id="precio" onChange={handleChange} value={values.precio || ''} placeholder="Precio de la obra*" />
+                                                            {errors.precio && touched.precio ? (
+                                                                <div className="alert alert-danger" role="alert">{errors.precio}</div>
+                                                            ) : null}
+                                                        </div>   
+                                                        <div className="col-md-12">
+                                                            <hr />
+                                                                {actividades.map((actividad, index)=>(
+                                                                    <div key={index} className="row my-4 px-4">
+
+                                                                    <div className="col-md-4">
+                                                                        <label htmlFor="actividad" className="form-label">Actividad<span className="text-danger">*</span></label>
+                                                                        <input 
+                                                                            type="text" 
+                                                                            className="form-control form-control-user" 
+                                                                            id="actividad" 
+                                                                            onChange={(e) => handleChangeActividad(index, 'actividad', e.target.value)} 
+                                                                            value={values.area || ''} 
+                                                                            placeholder="Actividad ha realizarse*"
+                                                                        />
+                                                                        {errors.area && touched.area ? (
+                                                                            <div className="alert alert-danger" role="alert">{errors.area}</div>
+                                                                        ) : null}
+                                                                    </div>
+                                                                    <div className="col-md-4">
+                                                                        <label htmlFor="fechaInicio" className="form-label">Fecha inicio (actividad)<span className="text-danger">*</span></label>
+                                                                        <input 
+                                                                         type="text"
+                                                                         className="form-control form-control-user"
+                                                                         id="fechaInicio"
+                                                                         onChange={(e) => handleChangeActividad(index, 'fechaInicio', e.target.value)} 
+                                                                         value={values.area || ''} 
+                                                                         placeholder="Fecha de inicio de la actividad*"
+                                                                        />
+                                                                        {errors.area && touched.area ? (
+                                                                            <div className="alert alert-danger" role="alert">{errors.area}</div>
+                                                                        ) : null}
+                                                                    </div>
+                                                                    <div className="col-md-4">
+                                                                        <label htmlFor="fechaFinal" className="form-label">Fecha fin (actividad)<span className="text-danger">*</span></label>
+                                                                        <input 
+                                                                         type="text" 
+                                                                         className="form-control form-control-user" 
+                                                                         id="fechaFinal" 
+                                                                         onChange={(e) => handleChangeActividad(index, 'fechaFinal', e.target.value)} 
+                                                                         value={values.area || ''} 
+                                                                         placeholder="Fecha de finalizacion de la actividad*" />
+                                                                        {errors.area && touched.area ? (
+                                                                            <div className="alert alert-danger" role="alert">{errors.area}</div>
+                                                                        ) : null}
+                                                                    </div>
+                                                                    <div className="col-md-4 my-4">
+                                                                    <label htmlFor="area" className="form-label">Empleados<span className="text-danger">*</span></label>
+                                                                    <Select
+                                                                    placeholder={<div>Selecciona empleados</div>}
+                                                                    name="empleados"
+                                                                    value={selectedCli}
+                                                                    options={optionsCli}
+                                                                    className="basic-multi-select"
+                                                                    classNamePrefix="select"
+                                                                    onChange={(selectedCli) => {
+                                                                        setFieldValue('empleados', selectedCli)
+                                                                        setSelectedCli(selectedCli)
+                                                                        handleMenuClose
+                                                                    }}
+                                                                    onBlur={() => setFieldTouched('empleados', true)}
+                                                                    onMenuClose={handleMenuClose}
+                                                                    />
+                                                                    {errors.cliente && touched.cliente ? (
+                                                                        <div className="alert alert-danger" role="alert">{errors.cliente}</div>
+                                                                    ) : null}
+                                                                    </div>
+                                                                    <div className="col-md-4 my-4">
+                                                                        <label htmlFor="materiales" className="form-label">Materiales<span className="text-danger">*</span></label>
+                                                                <Select
+                                                                    placeholder={<div>Selecciona materiales</div>}
+                                                                    name="materiales"
+                                                                    value={selectedCli}
+                                                                    options={optionsCli}
+                                                                    className="basic-multi-select"
+                                                                    classNamePrefix="select"
+                                                                    onChange={(selectedCli) => {
+                                                                        setFieldValue('materiales', selectedCli)
+                                                                        setSelectedCli(selectedCli)
+                                                                        handleMenuClose
+                                                                    }}
+                                                                    onBlur={() => setFieldTouched('materiales', true)}
+                                                                    onMenuClose={handleMenuClose}
+                                                                    />
+                                                                    {errors.cliente && touched.cliente ? (
+                                                                        <div className="alert alert-danger" role="alert">{errors.cliente}</div>
+                                                                    ) : null}
+                                                                        {errors.area && touched.area ? (
+                                                                            <div className="alert alert-danger" role="alert">{errors.area}</div>
+                                                                        ) : null}
+                                                                    </div>
+                                                                    <div className="col-md-4 my-4">
+                                                                        <label htmlFor="estadoAct" className="form-label">Estado<span className="text-danger">*</span></label>
+                                                                <Select
+                                                                    placeholder={<div>Selecciona estado</div>}
+                                                                    name="estadoAct"
+                                                                    value={selectedCli}
+                                                                    options={optionsCli}
+                                                                    className="basic-multi-select"
+                                                                    classNamePrefix="select"
+                                                                    onChange={(selectedCli) => {
+                                                                        setFieldValue('empleados', selectedCli)
+                                                                        setSelectedCli(selectedCli)
+                                                                        handleMenuClose
+                                                                    }}
+                                                                    onBlur={() => setFieldTouched('empleados', true)}
+                                                                    onMenuClose={handleMenuClose}
+                                                                    />
+                                                                    {errors.cliente && touched.cliente ? (
+                                                                        <div className="alert alert-danger" role="alert">{errors.cliente}</div>
+                                                                    ) : null}
+                                                                        {errors.area && touched.area ? (
+                                                                            <div className="alert alert-danger" role="alert">{errors.area}</div>
+                                                                        ) : null}
+                                                                    </div>
+                                                                    <hr />
+                                                                </div>
+                                                                ))}
+                                                            <button 
+                                                             type="button" 
+                                                             className="btn btn-primary"
+                                                             onClick={handleAgregarActividad}>
+                                                                Agregar Actividad
+                                                            </button>                                                            
+                                                        </div>                                                   
                                                         <div className="col-md-12 mt-3">
                                                             <label htmlFor="descripcion" className="form-label">Descripcion de la obra<span className="text-danger">*</span></label>
                                                             <textarea type="text" className="form-control form-control-user" id="descripcion" onChange={handleChange} value={values.descripcion} placeholder="Descripción de la obra*" />
