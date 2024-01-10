@@ -107,10 +107,10 @@ model obras {
   descripcion  String?        @db.VarChar(100)
   fechaini     String?        @db.VarChar(50)
   fechafin     String?        @db.VarChar(50)
-  area         Int?
+  area         String?        @db.VarChar(50)
   idCliente    Int?
   estado       String?        @db.VarChar(50)
-  precio       Int?
+  precio       Int
   detalle_obra detalle_obra[]
   cliente      cliente?       @relation(fields: [idCliente], references: [idCli], onDelete: Restrict, onUpdate: Restrict, map: "obras_ibfk_3")
 

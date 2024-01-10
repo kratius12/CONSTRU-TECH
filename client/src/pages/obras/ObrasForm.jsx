@@ -26,8 +26,8 @@ function ObrasForm() {
   const [actividades, setActividades] = useState([
     {
       actividad: "",
-      fechaInicio: "",
-      fechaFinal: "",
+      fechaini: "",
+      fechafin: "",
       empleados: [],
       materiales: [],
       estadoAct: "",
@@ -51,10 +51,6 @@ function ObrasForm() {
     { value: "En revision", label: "En revision" },
     { value: "Terminada", label: "Terminada" },
   ];
-
-  // const [optionsEstado, setOptionsEstado] = useState(optsEstado);
-  // const [defaultOptionsEstado, setDefaultOptionsEstado] = useState([]);
-  // const [selectedEstado, setSelectedEstado] = useState(defaultOptionsEstado)
   const [actividadCounter, setActividadCounter] = useState(0);
 
   const [obra, setObra] = useState({
@@ -64,12 +60,12 @@ function ObrasForm() {
     fechaini: "",
     fechafin: "",
     precio: "",
-    cliente: [],
+    cliente: "",
     actividades: [
         {
             actividad:'',
-            fechaInicio:'',
-            fechaFinal:'',
+            fechaini:'',
+            fechafin:'',
             empleados:[],
             materiales:[],
             estadoAct:''
@@ -88,36 +84,35 @@ function ObrasForm() {
           fechaini: obra.fechaini,
           fechafin: obra.fechafin,
           precio: obra.precio,
-          cliente: obra.cliente.idCliente,
-          empleados: obra.empleado_obra,
-          material: obra.materiales_obras,
-          actividades: [
+          cliente: {value: obra.idCliente, label: obra.cliente.nombre+" - "+obra.cliente.apellidos},
+          actividades: 
+          obra.actividades || 
+          [
             {
                 actividad:'',
-                fechaInicio:'',
-                fechaFinal:'',
+                fechaini:'',
+                fechafin:'',
                 empleados:[],
                 materiales:[],
                 estadoAct:''
             }
         ]
         });
-        // const defaultOptsEmp = obra.empleado_obra.map(item => ({ value: item.empleado.idEmp, label: item.empleado.nombre }))
-        // setDefaultOptionsEmp(defaultOptsEmp)
-        // setSelectedEmp(defaultOptsEmp)
-        // setKeyEmp(prevKey => prevKey + 1)
-
-        // const defaultOptsMat = obra.materiales_obras.map(item => ({ value: item.materiales.idMat, label: item.materiales.nombre }))
-        // setDefaultOptionsMat(defaultOptsMat)
-        // setSelectedMat(defaultOptsMat)
-        // setKeyMat(prevKey => prevKey + 1)
 
         const defaultOptionsCli = [
           {
             value: obra.cliente.idCli,
-            label: obra.cliente.nombre,
+            label: obra.cliente.nombre+" - "+obra.cliente.apellidos,
           },
         ];
+        const defaultSelectedEmp = obra.actividades.flatMap(actividad => actividad.empleados.map(emp => ({ value: emp.idEmp, label: `${emp.nombre} - ${emp.apellidos}` })));
+        const defaultSelectedMat = obra.actividades.flatMap(actividad => actividad.materiales.map(mat => ({ value: mat.idMat, label: mat.nombre })));
+    
+        setSelectedEmp(defaultSelectedEmp);
+        setSelectedMat(defaultSelectedMat);
+        setKeyEmp((prevKey) => prevKey + 1);
+        setKeyMat((prevKey) => prevKey + 1);
+
         setDefaultOptionsCli(defaultOptionsCli);
         setSelectedCli(defaultOptionsCli);
         setKeyCli((prevKey) => prevKey + 1);
@@ -167,17 +162,6 @@ function ObrasForm() {
   };
 
   const handleAgregarActividad = () => {
-    // setActividades((prevActividades) => [
-    //   ...prevActividades,
-    //   {
-    //     actividad: "",
-    //     fechaInicio: "",
-    //     fechaFinal: "",
-    //     empleados: [],
-    //     materiales: [],
-    //     estadoAct: "",
-    //   },
-    // ]);
     setActividadCounter(actividadCounter + 1);
     setObra((prevObra) => ({
         ...prevObra,
@@ -185,8 +169,8 @@ function ObrasForm() {
             ...prevObra.actividades,
             {
                 actividad:'',
-                fechaInicio:'',
-                fechaFinal:'',
+                fechaini:'',
+                fechafin:'',
                 empleados:[],
                 materiales:[],
                 estadoAct:''
@@ -204,23 +188,6 @@ function ObrasForm() {
         }
         return {...prevObra, actividades: newActividades}
     })
-    // setObra((prevObra) => {
-    //     const newActividades = [...prevObra.actividades]
-    //     newActividades[index][field] = value
-
-    //     return {
-    //         ...prevObra,
-    //         actividades: newActividades
-    //     }
-    // })
-    // setActividades((prevActividades) => {
-    //     const newActividades = [...prevActividades]
-    //     newActividades[index][field] = value
-    //     return newActividades
-    // })
-    // const addActividad = [...actividades];
-    // addActividad[index][field] = value;
-    // setActividades(addActividad);
   };
 
   const alertConfirm = (type) => {
@@ -232,7 +199,7 @@ function ObrasForm() {
     }
     $.confirm({
       title: `Obra ` + message + ` con exito!`,
-      content: "Redirecionando a listado de empleados...",
+      content: "Redirecionando a listado de obras...",
       icon: "fa fa-check",
       theme: "modern",
       closeIcon: true,
@@ -268,6 +235,7 @@ function ObrasForm() {
                 cliente: selectedCli,
               };
               if (params.id) {
+                console.log(obraObject)
                 await updateObra(params.id, obraObject);
                 alertConfirm("update");
                 setTimeout(navigate("/obras"), 5000);
@@ -285,12 +253,12 @@ function ObrasForm() {
                 precio: "",
                 fechaini: "",
                 fechafin: "",
-                cliente: [],
+                cliente: "",
                 actividades: [
                     {
                         actividad:'',
-                        fechaInicio:'',
-                        fechaFinal:'',
+                        fechaini:'',
+                        fechafin:'',
                         empleados:[],
                         materiales:[],
                         estadoAct:''
@@ -326,6 +294,7 @@ function ObrasForm() {
                               placeholder={<div>Selecciona cliente</div>}
                               defaultValue={defaultOptionsCli}
                               name="cliente"
+                              id="cliente"
                               options={optionsCli}
                               className="basic-multi-select"
                               classNamePrefix="select"
@@ -477,7 +446,7 @@ function ObrasForm() {
                                       </div>
                                       <div className="col-md-4">
                                         <label
-                                          htmlFor={`fechaInicio-${index}`}
+                                          htmlFor={`fechaini-${index}`}
                                           className="form-label"
                                         >
                                           Fecha inicio (actividad)
@@ -486,21 +455,21 @@ function ObrasForm() {
                                         <input
                                           type="text"
                                           className="form-control form-control-user"
-                                          id={`fechaInicio-${index}`}
+                                          id={`fechaini-${index}`}
                                           onChange={(e) =>
                                             handleChangeActividad(
                                               index,
-                                              "fechaInicio",
+                                              "fechaini",
                                               e.target.value
                                             )
                                           }
-                                          value={obra.actividades[index]?.fechaInicio || ""}
+                                          value={obra.actividades[index]?.fechaini || ""}
                                           placeholder="Fecha de inicio de la actividad*"
                                         />
                                       </div>
                                       <div className="col-md-4">
                                         <label
-                                          htmlFor={`fechaFinal-${index}`}
+                                          htmlFor={`fechafin-${index}`}
                                           className="form-label"
                                         >
                                           Fecha fin (actividad)
@@ -509,15 +478,15 @@ function ObrasForm() {
                                         <input
                                           type="text"
                                           className="form-control form-control-user"
-                                          id={`fechaFinal-${index}`}
+                                          id={`fechafin-${index}`}
                                           onChange={(e) =>
                                             handleChangeActividad(
                                               index,
-                                              "fechaFinal",
+                                              "fechafin",
                                               e.target.value
                                             )
                                           }
-                                          value={obra.actividades[index]?.fechaFinal || ""}
+                                          value={obra.actividades[index]?.fechafin || ""}
                                           placeholder="Fecha de finalizacion de la actividad*"
                                         />
                                       </div>
@@ -527,8 +496,9 @@ function ObrasForm() {
                                           </label>
                                           <Select
                                               placeholder={<div>Selecciona empleados</div>}
+                                              isMulti={true}
                                               name={`empleados-${index}`}
-                                              value={obra.actividades[index].empleados}
+                                              value={defaultOptionsEmp}
                                               options={optionsEmp}
                                               className="basic-multi-select"
                                               classNamePrefix="select"
@@ -547,6 +517,7 @@ function ObrasForm() {
                                           </label>
                                           <Select
                                               placeholder={<div>Selecciona materiales</div>}
+                                              isMulti={true}
                                               name={`materiales-${index}`} 
                                               value={obra.actividades[index].materiales}
                                               options={optionsMat}
@@ -571,11 +542,14 @@ function ObrasForm() {
                                         <Select
                                           placeholder={<div>Selecciona estado</div>}
                                           name={`estadoAct-${index}`}
-                                          
                                           options={optsEstadoAct}
-                                          className="basic-multi-select"
+                                          className="basic-select"
                                           classNamePrefix="select"
-                                          
+                                          onChange={(selectedEst) => {
+                                            handleChangeActividad(index, 'estadoAct', selectedEst);
+                                            setSelectedMat(selectedMat);
+                                            handleMenuClose();
+                                          }}
                                           onBlur={() =>
                                             setFieldTouched(`estadoAct-${index}`, true)
                                           }

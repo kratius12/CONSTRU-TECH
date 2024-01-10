@@ -44,7 +44,10 @@ router.get("/obra/:id", async (req, res) =>{
                 }
             }
         })
-        console.log(result);
+        if (result) {
+            result.actividades = result.detalle_obra;
+            delete result.detalle_obra;
+        }
         res.status(200).json(result)
     } catch (error) {
         console.log(json({message: error.message}))
@@ -66,7 +69,10 @@ router.post("/obras", async (req, res) =>{
         await prisma.detalle_obra.create({
             data:{
                 idEmp:parseInt(empleados.value),
-                idObra:parseInt(result.idObra)
+                idObra:parseInt(result.idObra),
+                estado:"En curso",
+                fechaini:fechaini,
+                actividad:"Asesoria"
             }
         })
         console.log(result)
@@ -79,36 +85,54 @@ router.post("/obras", async (req, res) =>{
 
 router.put("/obra/:id", async (req, res) =>{
     try {
-        const {descripcion, area, cliente, detalle,estado, fechafin, fechaini, precio} = req.body
-        console.log(req.body);
-        // const result = await prisma.obras.update({
-        //     where:{
-        //         idObra:parseInt(req.params.id)
-        //     },
-        //     data:{
-        //         descripcion:descripcion,
-        //         area:area,
-        //         estado:estado,
-        //         fechaini:fechaini,
-        //         fechafin:fechafin,
-        //         idCliente:cliente.value,
-        //         precio:precio
-        //     }
-        // })
-        // if (result) {
-        //     await Promise.all(detalle.map(async (detalle) =>{
-        //         const { idEmp, idMat, actividad, estado, fechaini, fechafin } = detalle;
-        //         await prisma.detalle_obra.create({
-        //             data:{
-        //                 idEmp:parseInt(detalle.value),
-        //                 idObra:parseInt(req.params.id)
-        //             }
-        //         })
-        //     }))
-        //     res.status(200).json(result)
-        // }else{
-        //     console.log("Ha ocurrido un error...");            
-        // }
+        const {descripcion, area, cliente, actividades, estado, fechafin, fechaini, precio} = req.body
+        const result = await prisma.obras.update({
+            where:{
+                idObra:parseInt(req.params.id)
+            },
+            data:{
+                descripcion:descripcion,
+                area:area,
+                estado:estado,
+                fechaini:fechaini,
+                fechafin:fechafin,
+                idCliente:cliente.value,
+                precio:parseInt(precio)
+            }
+        })
+        if (result) {
+
+            await prisma.detalle_obra.deleteMany({
+                where: {
+                  idObra: parseInt(req.params.id),
+                },
+            });
+
+            await Promise.all(actividades.map(async (actividad) =>{
+                const { empleados, materiales, ...rest } = actividad
+                const maxIteraciones = Math.max(empleados.length, materiales.length);
+                
+                for (let i = 0; i < maxIteraciones; i++) {
+                    const idEmp = empleados[i] ? empleados[i].value : empleados[i - 1].value;
+                    const idMat = materiales[i] ? materiales[i].value : materiales[i - 1].value;
+                
+                    await prisma.detalle_obra.create({
+                        data: {
+                            idObra: parseInt(req.params.id),
+                            actividad: rest.actividad,
+                            fechaini: rest.fechaInicio,
+                            fechafin: rest.fechaFinal,
+                            idEmp: idEmp,
+                            idMat: idMat,
+                            estado: rest.estadoAct.value              
+                        },
+                    });
+                }
+            }))
+            res.status(200).json(result)
+        }else{
+            console.log("Ha ocurrido un error...");            
+        }
     } catch (error) {
         console.log(json({message:error.message}))
         return res.status(500).json({message: error.message})

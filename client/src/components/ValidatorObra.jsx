@@ -126,14 +126,6 @@ export const getValidate = (values, hasId) => {
     if (dayjs(values.fechafin).isBefore(dayjs(values.fechaini))) {
       errors.fechafin = 'La fecha final no puede ser anterior a la fecha de inicio';
     }
-
-
-    if (!values.empleados || values.empleados.length === 0) {
-      errors.empleados = 'El empleado es requerido, seleccione al menos uno';
-    }
-    if (!values.material || values.material.length === 0) {
-      errors.material = 'El material es requerido, seleccione al menos uno';
-    }
     return errors;
     
   }else{
