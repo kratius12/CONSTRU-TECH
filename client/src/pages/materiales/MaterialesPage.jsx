@@ -15,17 +15,10 @@ function MaterialesPage() {
             header: "Nombre",
             accessorKey: 'nombre'
         },
-        // {
-        //     header: "Cantidad",
-        //     accessorKey: 'cantidad'
-        // },
         {
             header: "Categoría",
             accessorKey: 'categoria.nombre',
-        }, {
-            header: "Proveedor",
-            accessorKey: "proveedor.nombre"
-        }, 
+        },
         {
             header:"Estado",
             accessorKey:"estado",

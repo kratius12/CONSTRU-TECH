@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-// import RolTable  from "../components/RolesTable"
 import { usePermiso } from "../../context/permisos/PermisosProvider";
 import TableInfo from "../../components/TableInfo";
 
@@ -19,11 +18,6 @@ function PermisosPage() {
         {
             header: "Estado",
             accessorKey: 'estado',
-            idProperty: 'idPer'
-        },
-        {
-            header: "Acción",
-            accessorKey: 'accion',
             idProperty: 'idPer'
         }
     ]
@@ -45,7 +39,7 @@ function PermisosPage() {
             return <h1>Sin Permisos</h1>
             
         }else{
-            return <TableInfo dataHeader={dataHeader} dataBody={permisos} routeEdit={'editarPermiso'} viewDetail toggleApi={TogglePermisoStatus} getApi={getPermiso} entity={"Permiso"} onChangeStatus={handleChangeStatus}/>
+            return <TableInfo dataHeader={dataHeader} dataBody={permisos}   toggleApi={TogglePermisoStatus} getApi={getPermiso} entity={"Permiso"} onChangeStatus={handleChangeStatus}/>
         }
         // return <RolTable permisos={permisos}/>
     }
@@ -62,8 +56,8 @@ function PermisosPage() {
                             <div className="row">
                                 <div className="col-md-6">
                                     <div className="col-md-6 mb-3">
-                                        <button className="btn btn-primary" onClick={ ()=> navigate(`/agregarPermiso`)}>
-                                            Agregar
+                                        <button className="btn btn-secondary" onClick={ ()=> navigate(`/roles`)}>
+                                            Regresar 
                                         </button>
                                     </div>                                        
                                 </div>

@@ -3,7 +3,6 @@ import { Form, Formik } from "formik";
 import { useParams, useNavigate } from "react-router-dom";
 import { useProveedores } from "../../context/proveedores/ProveedorProvider";
 import proveedorSchema from './ProveedorValidator'
-import Swal from 'sweetalert2';
 
 export default function ProveedoresForm() {
     //   const [agreed, setAgreed] = useState(false)
@@ -28,10 +27,16 @@ export default function ProveedoresForm() {
         emailContacto: ""
     })
 
-    const alertConfirm = () => {
+    const alertConfirm = (type) => {
+        var message = ""
+        if(params.id){
+            message = "actualizado"
+        }else{
+            message = "agregado"
+        }
         $.confirm({
-            title: `Proveedor guardado con exito!`,
-            content: "Redirecionando a listado de empleados...",
+            title: `Proveedor ${message} con éxito!`,
+            content: "Redireccionando a listado de empleados...",
             icon: 'fa fa-check',
             theme: 'modern',
             closeIcon: true,
@@ -42,9 +47,10 @@ export default function ProveedoresForm() {
             autoClose: 'okay|4000',
             buttons: {
                 okay: function () {
+                    // Puedes agregar acciones adicionales si es necesario
                 },
             }
-        })
+        });
     }
 
     useEffect(() => {
@@ -63,6 +69,10 @@ export default function ProveedoresForm() {
                     telefonoContacto: proveedor.telefonoContacto,
                     emailContacto: proveedor.emailContacto
                 })
+                if (proveedor.tipo == "Juridico") {
+                    setMostrarContacto(proveedor.tipo === 'Juridico');
+                    setOpcionSeleccionada(proveedor.tipo);
+                }
             }
         }
         loadProveedores()
@@ -90,6 +100,8 @@ export default function ProveedoresForm() {
             });
         }
     }
+
+
     return (
         <div className="container">
             <div className="row">
@@ -99,54 +111,54 @@ export default function ProveedoresForm() {
                         validationSchema={proveedorSchema}
                         onSubmit={async (values) => {
                             try {
-                                const validateFact = await searchNit(values)
-                                if (validateFact === true) {
-                                    $.confirm({
-                                        title: `Error`,
-                                        content: `El `+placeholders.nit +`${values.nit} ya existe, por favor ingrese uno diferente`,
-                                        icon: 'fa fa-circle-xmark',
-                                        theme: 'modern',
-                                        closeIcon: true,
-                                        animation: 'zoom',
-                                        closeAnimation: 'scale',
-                                        animationSpeed: 500,
-                                        type: 'red',
-                                        columnClass: 'col-md-6 col-md-offset-3',
-                                        buttons: {
-                                            Cerrar: function () {
-                                            },
-                                        }
-                                    })
-                                } else {
-                                    // El NIT no existe, procede con la creación o actualización del proveedor
-                                    console.log(values);
+                                // El NIT no existe, procede con la creación o actualización del proveedor
+                                console.log(values);
 
-                                    if (params.id) {
-                                        await updateProveedor(params.id, values);
-                                        navigate("/proveedores");
-                                        alertConfirm();
-                                    } else {
-                                        await createProveedor(values);
+                                if (params.id) {
+                                    await updateProveedor(params.id, { ...values, tipo: tipo });
+                                    navigate("/proveedores");
+                                    alertConfirm();
+                                } else {
+                                    const validateFact = await searchNit(values)
+                                    if (validateFact === true) {
+                                        $.confirm({
+                                            title: `Error`,
+                                            content: `El ` + placeholders.nit + `${values.nit} ya existe, por favor ingrese uno diferente`,
+                                            icon: 'fa fa-circle-xmark',
+                                            theme: 'modern',
+                                            closeIcon: true,
+                                            animation: 'zoom',
+                                            closeAnimation: 'scale',
+                                            animationSpeed: 500,
+                                            type: 'red',
+                                            columnClass: 'col-md-6 col-md-offset-3',
+                                            buttons: {
+                                                Cerrar: function () {
+                                                },
+                                            }
+                                        })
+                                    }
+                                    else {
+                                        await createProveedor({ ...values, tipo: tipo });
                                         navigate("/proveedores");
                                         alertConfirm();
                                     }
-
-                                    setProveedor({
-                                        nombre: "",
-                                        direccion: "",
-                                        nit: "",
-                                        tipo: "",
-                                        estado: "",
-                                        email: "",
-                                        telefono: "",
-                                        nombreContacto: "",
-                                        telefonoContacto: "",
-                                        emailContacto: ""
-                                    });
                                 }
+                                setProveedor({
+                                    nombre: "",
+                                    direccion: "",
+                                    nit: "",
+                                    tipo: "",
+                                    estado: "",
+                                    email: "",
+                                    telefono: "",
+                                    nombreContacto: "",
+                                    telefonoContacto: "",
+                                    emailContacto: ""
+                                });
+
                             } catch (error) {
                                 console.error(error);
-                                // Manejar errores de la solicitud al servidor
                             }
                         }}
                     >
@@ -159,8 +171,14 @@ export default function ProveedoresForm() {
                                     <div className="card-body">
                                         <div className="row">
                                             <div className="col-md-6 mt-3">
-                                                <select id="tipo" className="form-select form-control-user" onChange={handleSelectChange} value={values.tipo = tipo}
-
+                                                <select
+                                                    id="tipo"
+                                                    className="form-select form-control-user"
+                                                    onChange={(e) => {
+                                                        handleSelectChange(e);
+                                                        handleChange(e);
+                                                    }}
+                                                    value={values.tipo}
                                                 >
                                                     <option value="0">Seleccione el tipo de proveedor*</option>
                                                     <option value="Natural">Natural</option>

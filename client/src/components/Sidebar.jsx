@@ -26,7 +26,7 @@ export default function Sidebar() {
       </li>
       <hr className="sidebar-divider my-0" />
       <li className="nav-item">
-        <Link className="nav-link" to="/usuarios">
+        <Link className="nav-link" to="">
           <i className="fa-solid fa-users" />&nbsp;
           Usuarios
         </Link>

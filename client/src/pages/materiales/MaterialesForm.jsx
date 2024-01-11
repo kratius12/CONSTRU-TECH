@@ -8,23 +8,22 @@ import materialSchema from "./MaterialesValidator";
 
 export default function MaterialesForm() {
   //   const [agreed, setAgreed] = useState(false)
-  const { createMaterial, getMaterial, updateMaterial, getProveedores, getCategorias, proveedores, categorias } = useMateriales()
+  const { createMaterial, getMaterial, updateMaterial, getCategorias,  categorias } = useMateriales()
   useEffect(() => {
     getCategorias()
-    getProveedores()
   }, [])
 
 
-  const alertConfirm = (type) => {
+  const alertConfirm = () => {
     var message = ""
-    if (type == "update") {
-      message = "Actualizado"
+    if (params.id) {
+      message = "actualizado"
     } else {
-      message = "Agregado"
+      message = "agregado"
     }
     // eslint-disable-next-line no-undef
     $.confirm({
-      title: `material ` + message + ` con exito!`,
+      title: `Material ` + message + ` con exito!`,
       content: "Redirecionando a listado de materiales...",
       icon: 'fa fa-check',
       theme: 'modern',
@@ -43,8 +42,7 @@ export default function MaterialesForm() {
   const params = useParams()
   const navigate = useNavigate()
   const [material, setMaterial] = useState({
-    nombre: "",
-    idProveedor: "",
+    nombre: "", 
     cantidad: "",
     idCategoria: "",
     estado: ""
@@ -55,8 +53,7 @@ export default function MaterialesForm() {
       if (params.id) {
         const material = await getMaterial(params.id)
         setMaterial({
-          nombre: material.nombre,
-          idProveedor: material.idProveedor,
+          nombre: material.nombre, 
           cantidad: material.cantidad,
           idCategoria: material.idCategoria,
           estado: material.estado
@@ -94,7 +91,6 @@ export default function MaterialesForm() {
               }
               setMaterial({
                 nombre: "",
-                idProveedor: "",
                 cantidad: "",
                 idCategoria: "",
                 estado: ""
@@ -113,12 +109,6 @@ export default function MaterialesForm() {
                           <div className="alert alert-danger" role="alert">{errors.nombre}</div>
                         ) : null}
                       </div>
-                      {/* <div className="col-md-6 mt-3">
-                        <input type="number" className="form-control form-control-user" id="cantidad" onChange={handleChange} value={values.cantidad} placeholder="Cantidad*"/>
-                        {errors.cantidad && touched.cantidad ? (
-                          <div className="alert alert-danger" role="alert">{errors.cantidad}</div>
-                        ) : null}
-                      </div> */}
                       <div className="col-md-6 mt-3">
                         <select className="form-select form-control-user" id="idCategoria" value={values.idCategoria} onChange={handleChange}>
                           <option >Seleccione una categoria*</option>
@@ -128,17 +118,6 @@ export default function MaterialesForm() {
                         </select>
                         {errors.idCategoria && touched.idCategoria ? (
                           <div className="alert alert-danger" role="alert">{errors.idCategoria}</div>
-                        ) : null}
-                      </div>
-                      <div className="col-md-6 mt-3">
-                        <select className="form-select form-control-user" id="idProveedor" value={values.idProveedor} onChange={handleChange}>
-                          <option value="">Seleccione un proveedor*</option>
-                          {proveedores.map((proveedor, i) => (
-                            <option key={i} value={proveedor.idProv}>{proveedor.nombre}</option>
-                          ))}
-                        </select>
-                        {errors.idProveedor && touched.idProveedor ? (
-                          <div className="alert alert-danger" role="alert">{errors.idProveedor}</div>
                         ) : null}
                       </div>
                       <div className="col-md-6 mt-3">
@@ -155,9 +134,6 @@ export default function MaterialesForm() {
                             </select>
                           )
                         }
-                        {/* {errors.estado && touched.estado ? (
-                                                    <div className="alert alert-danger" role="alert">{errors.estado}</div>
-                                                ) : null} */}
                       </div>
                     </div>
                   </div>

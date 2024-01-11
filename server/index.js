@@ -3,6 +3,7 @@ import cors from "cors";
 import {dirname, join} from "path";
 import { fileURLToPath } from "url";
 import path from "path";
+import bodyParser from "body-parser";
 import { PORT } from "./config.js";
 import indexRoutes from "./routes/index.routes.js"
 import obrasRoutes from "./routes/obras.routes.js"
@@ -27,6 +28,8 @@ app.use(express.urlencoded({
 }))
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({extended:true}))
 
 app.use(indexRoutes)
 app.use(obrasRoutes)

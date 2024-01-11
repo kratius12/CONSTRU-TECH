@@ -4,20 +4,14 @@ export const GetRolesRequest = async () =>{
     return await axios.get('http://localhost:4000/roles')
 }
 
-export const CreatePermisosRequest = async (permiso) =>{
-    return await axios.post('http://localhost:4000/permisos', permiso)
-}
 
 export const CreateRolRequest = async (rol) => {
-    return await axios.post('http://localhost:4000/roles', rol)
+    return await axios.post('http://localhost:4000/rol', rol,{timeout:500})
 }
 
-export const DeleteRolRequest = async (idRol) =>{
-    return await axios.delete(`http://localhost:4000/roles/${idRol}`)
-}
 
 export const GetRolRequest = async (idRol) => {
-    return await axios.get(`http://localhost:4000/roles/${idRol}`)
+    return await axios.get(`http://localhost:4000/rol/${idRol}`)
 }
 
 export const UpdateRolRequest = async (idRol, newFields) =>{

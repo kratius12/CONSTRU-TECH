@@ -11,11 +11,6 @@ router.get("/materiales", async (req, res) => {
                 idMat: true,
                 estado: true,
                 nombre: true,
-                proveedor: {
-                    select: {
-                        nombre: true
-                    }
-                },
                 categoria: {
                     select: {
                         nombre: true
@@ -37,11 +32,6 @@ router.get("/materialesAc", async (req, res) => {
                 idMat: true,
                 estado: true,
                 nombre: true,
-                proveedor: {
-                    select: {
-                        nombre: true
-                    }
-                },
                 categoria: {
                     select: {
                         nombre: true
@@ -73,13 +63,12 @@ router.get("/material/:id", async (req, res) => {
 
 router.post("/materiales", async (req, res) => {
     try {
-        const { nombre, cantidad, idProveedor, idCategoria, estado } = req.body
+        const { nombre, idCategoria } = req.body
         const result = await prisma.materiales.create({
             data: {
                 nombre: nombre,
                 estado: 1,
                 idCategoria:parseInt(idCategoria),
-                idProveedor:parseInt(idProveedor)
             },
             
         })
@@ -91,7 +80,7 @@ router.post("/materiales", async (req, res) => {
 router.put("/material/:id", async (req, res) => {
     try {
         const idMat = req.params.id
-        const { nombre, cantidad, idProveedor, idCategoria, estado } = req.body
+        const { nombre, cantidad,  idCategoria, estado } = req.body
         const response = await prisma.materiales.update({
             where: {
                 idMat: parseInt(idMat)
@@ -100,7 +89,6 @@ router.put("/material/:id", async (req, res) => {
                 nombre: nombre,
                 cantidad: cantidad,
                 estado: estado,
-                idProveedor: idProveedor,
                 idCategoria: idCategoria
             }
         })
