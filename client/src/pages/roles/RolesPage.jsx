@@ -50,6 +50,7 @@ function RolesPage() {
           onChangeStatus={handleChangeStatus}
           viewDetail
           getApi={getRol}
+          
         />
       );
     }

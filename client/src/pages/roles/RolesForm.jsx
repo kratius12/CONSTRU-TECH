@@ -4,6 +4,7 @@ import axios from "axios";
 import Select from "react-select";
 import { useNavigate, useParams } from "react-router-dom";
 import { useRol } from "../../context/roles/RolesProvider";
+import RolSchema from "./RolesValidator";
 
 const fetchData = async (url) => {
   try {
@@ -16,143 +17,165 @@ const fetchData = async (url) => {
 };
 
 const RolesForm = () => {
-  const [permisos, setPermisos] = useState([]); // Asumiendo que tienes una lista de permisos
-  const [roles, setRoles] = useState([]); // Nueva lista de roles
-  const {createRol, updateRol} = useRol()
-  const navigate = useNavigate()
-  const params = useParams()
+  const [permisos, setPermisos] = useState([]);
+  const [roles, setRoles] = useState([]);
+  const { createRol, updateRol, getRol } = useRol();
+  const navigate = useNavigate();
+  const params = useParams();
+
   useEffect(() => {
-    // Cargar la lista de permisos
-    fetchData("http://localhost:4000/permisos").then((data) => {
+    fetchData("http://localhost:4000/permisosAct").then((data) => {
       setPermisos(data);
     });
 
-    // Cargar la lista de roles
     fetchData("http://localhost:4000/roles").then((data) => {
       setRoles(data);
     });
-  }, []);
+
+    const loadRoles = async () => {
+      if (params.id) {
+        try {
+          const role = await getRol(params.id);
+          setRoles({
+            nombre: role.nombre,
+            estado: role.estado,
+            permisos: role.rolpermisoempleado,
+          });
+        } catch (error) {
+          console.error("Error fetching role data:", error);
+        }
+      }
+    };
+
+    loadRoles();
+  }, [params.id, getRol]);
 
   const initialValues = {
-    nombre: "",
-    estado: "",
-    permisos: [],
+    nombre: roles.nombre || "",
+    estado: roles.estado || "",
+    permisos: roles.permisos || [],
   };
+
   const alertConfirm = (type) => {
-    var message = ""
-    if (type == "update") {
-      message = "actualizado"
+    var message = "";
+    if (type === "update") {
+      message = "actualizado";
     } else {
-      message = "agregado"
+      message = "agregado";
     }
     $.confirm({
-      title: `Rol ` + message + ` con exito!`,
-      content: "Redirecionando a listado de roles...",
-      icon: 'fa fa-check',
-      theme: 'modern',
+      title: `Rol ` + message + ` con éxito!`,
+      content: "Redireccionando a listado de roles...",
+      icon: "fa fa-check",
+      theme: "modern",
       closeIcon: true,
-      animation: 'zoom',
-      closeAnimation: 'scale',
+      animation: "zoom",
+      closeAnimation: "scale",
       animationSpeed: 500,
-      type: 'green',
-      columnClass: 'col-md-6 col-md-offset-3',
-      autoClose: 'okay|4000',
+      type: "green",
+      columnClass: "col-md-6 col-md-offset-3",
+      autoClose: "okay|4000",
       buttons: {
-        okay: function () {
-        },
-      }
-    })
-  }
+        okay: function () {},
+      },
+    });
+  };
 
   return (
     <div className="container">
       <Formik
         initialValues={initialValues}
-        onSubmit={async(values) => {
-          console.log(values)
-         if(params.id){
-          await updateRol(params.id,values)
-          alertConfirm("update")
-          setTimeout(
-            navigate("/roles"),
-            5000
-          )
-         }else{
-          await createRol(values)
-          alertConfirm()
-          setTimeout(
-            navigate("/roles"),
-            5000
-          )
-         }
+        validationSchema={RolSchema}
+        onSubmit={async (values) => {
+          console.log(values);
+          if (params.id) {
+            await updateRol(params.id, values);
+            alertConfirm("update");
+            setTimeout(() => navigate("/roles"));
+          } else {
+            await createRol(values);
+            alertConfirm();
+            setTimeout(() => navigate("/roles"));
+          }
         }}
       >
-        {({ handleSubmit, values, isSubmitting }) => (
+        {({ handleSubmit, handleChange, values, isSubmitting, setFieldValue, errors, touched }) => (
           <Form onSubmit={handleSubmit} className="user">
             <div className="card text-center w-100">
-              <h2>Agregar Rol</h2>
+              <h2>{params.id ? "Editar" : "Agregar"} rol</h2>
               <div className="card-body">
                 <div className="row">
-                  <div className="col-md-4 mt-3 mx-auto">
-                    <label htmlFor="nombre">Nombre del Rol:</label>
-                    <Field
-                      className="form-control"
+                  <div className="col-md-6 mt-3 mx-auto">
+                    <input
                       type="text"
                       id="nombre"
                       name="nombre"
+                      className="form-control form-control-user"
+                      placeholder="Nombre del permiso*"
+                      onChange={handleChange}
                       value={values.nombre}
                     />
-                    <ErrorMessage
-                      name="nombre"
-                      component="div"
-                      className="alert alert-danger"
-                    />
+                    {errors.nombre && touched.nombre ? (
+                      <div className="alert alert-danger" role="alert">
+                        {errors.nombre}
+                      </div>
+                    ) : null}
                   </div>
-                  <div className="col-md-4 mt-3 mx-auto">
-                    <label htmlFor="estado">Estado del Rol:</label>
-                    <Field
-                      className="form-control"
-                      type="text"
-                      id="estado"
-                      name="estado"
-                      value={values.estado}
-                    />
-                    <ErrorMessage
-                      name="estado"
-                      component="div"
-                      className="alert alert-danger"
-                    />
+                  <div className="col-md-6 mt-3">
+                    {params.id ? (
+                      <select
+                        id="estado"
+                        className="form-select form-control-user"
+                        onChange={handleChange}
+                        value={values.estado}
+                      >
+                        <option value="">Seleccione estado</option>
+                        <option value="1">Activo</option>
+                        <option value="0">Inactivo</option>
+                      </select>
+                    ) : (
+                      <select
+                        id="estado"
+                        className="form-select form-control-user"
+                        onChange={handleChange}
+                        value={values.estado}
+                        disabled
+                      >
+                        <option value="1">Activo</option>
+                      </select>
+                    )}
+                    {errors.estado && touched.estado ? (
+                      <div className="alert alert-danger" role="alert">
+                        {errors.estado}
+                      </div>
+                    ) : null}
                   </div>
                   <div className="col-md-4 mt-3 mx-auto">
                     <label htmlFor="permisos">Permisos:</label>
-                    <Select 
-                    
-                      as="basic-multi-select"
-                      options={permisos}
+                    <Select
+                      options={permisos.map((permiso) => ({
+                        value: permiso.idPer,
+                        label: permiso.permiso,
+                      }))}
                       isMulti
-                      className="form-select"
+                      className="basic-multi-select"
                       id="permisos"
                       name="permisos"
                       value={values.permisos}
-                    >
-                      {permisos.map((permiso) => (
-                        <option key={permiso.idPer} value={permiso.idPer}>
-                          {permiso.permiso}
-                        </option>
-                      ))}
-                    </Select  >
-                    <ErrorMessage
-                      name="permisos"
-                      component="div"
-                      className="alert alert-danger"
+                      onChange={(selected) => setFieldValue("permisos", selected)}
                     />
+                    {errors.permisos && touched.permisos ? (
+                      <div className="alert alert-danger" role="alert">
+                        {errors.permisos}
+                      </div>
+                    ) : null}
                   </div>
                 </div>
               </div>
               <div className="card-footer text-center">
                 <div className="row">
                   <div className="col-md-6">
-                  <button
+                    <button
                       type="submit"
                       disabled={isSubmitting}
                       className="btn btn-primary btn-icon-split w-50"
@@ -185,4 +208,4 @@ const RolesForm = () => {
   );
 };
 
-export default RolesForm
+export default RolesForm;

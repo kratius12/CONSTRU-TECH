@@ -57,15 +57,7 @@ export const RolContextProvider = ({children}) => {
         }
     }
 
-    const deleteRol = async (idRol) => {
-        try {
-            const response = await DeleteRolRequest(idRol)
-            setRoles(roles.filter(rol => rol.idRol !== idRol))
-            console.log(response);
-        } catch (error) {
-            console.error(error)
-        }
-    }
+
 
     const updateRol = async (idRol, newfields) =>{
         try {
@@ -89,7 +81,7 @@ export const RolContextProvider = ({children}) => {
         }
     }
     return (
-        <RolesContext.Provider value={{roles, permisos, Permisos,  Roles, deleteRol, createRol, getRol, updateRol, ToggleRolStatus}}>
+        <RolesContext.Provider value={{roles, permisos, Permisos,  Roles,  createRol, getRol, updateRol, ToggleRolStatus}}>
             {children}
         </RolesContext.Provider>
     )

@@ -111,9 +111,7 @@ export default function ProveedoresForm() {
                         validationSchema={proveedorSchema}
                         onSubmit={async (values) => {
                             try {
-                                // El NIT no existe, procede con la creación o actualización del proveedor
                                 console.log(values);
-
                                 if (params.id) {
                                     await updateProveedor(params.id, { ...values, tipo: tipo });
                                     navigate("/proveedores");

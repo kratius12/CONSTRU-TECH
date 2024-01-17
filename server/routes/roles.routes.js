@@ -36,30 +36,59 @@ router.get("/rol/:id",async(req,res)=>{
     }
 })
 
-router.post("/rol",async(req,res)=>{
+router.post("/rol", async (req, res) => {
     try {
-        const {nombre,permisos} = req.body
+        const { nombre, permisos } = req.body;
         const rol = await prisma.rol.create({
-            data:{
-                nombre:nombre,
-                estado:1
+            data: {
+                nombre: nombre,
+                estado: 1
             }
-        })
-        for(var i = 0; i< permisos.length; i++){
-            var elemento = permisos[i]
-            
-            await prisma.rolpermisoempleado.createMany({
-                data:{
-                    idPer:parseInt(elemento),
-                    idRol:parseInt(rol.idRol),
-                    idEmp:null
-                }
-            })
-         
+        });
+
+        for (var i = 0; i < permisos.length; i++) {
+            var elemento = permisos[i];
+
+            // Asegúrate de que el objeto en permisos tenga la propiedad 'value'
+            if (elemento.hasOwnProperty('value')) {
+                // Accede a la propiedad 'value' del objeto
+                var value = elemento.value;
+
+                await prisma.rolpermisoempleado.createMany({
+                    data: {
+                        idPer: parseInt(value),
+                        idRol: parseInt(rol.idRol),
+                        idEmp: null
+                    }
+                });
+            } else {
+                // Si el objeto en permisos no tiene la propiedad 'value', maneja el caso apropiado
+                console.error('El objeto en permisos no tiene la propiedad "value"');
+            }
         }
+
         return res.status(201).send({ message: "Rol creado exitosamente" });
     } catch (error) {
-        return res.status(500).json({ message: error.message })
+        return res.status(500).json({ message: error.message });
+    }
+});
+
+
+router.put("/rol/:id",async(req,res)=>{
+    try {
+        const {nombre,estado} = req.body
+        const rol = await prisma.rol.update({
+            where:{
+                idRol:req.params.id
+            },
+            data:{
+                nombre:nombre,
+                estado:parseInt(estado)
+            }
+        })
+        return res.status(201).send({message: "Rol actualizado exitosamente"})
+    } catch (error) {
+        
     }
 })
 
