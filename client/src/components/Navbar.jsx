@@ -3,7 +3,15 @@ import undraw_profile1 from "../assets/img/undraw_profile_1.svg";
 import undraw_profile2 from "../assets/img/undraw_profile_2.svg";
 import undraw_profile3 from "../assets/img/undraw_profile_3.svg";
 import undraw_profile from "../assets/img/undraw_profile.svg";
-function Navbar() {
+import { useNavigate } from 'react-router-dom'
+function Navbar({ handleLogout }) {
+
+    const navigate = useNavigate()
+
+    const handleLogoutClick = () => {
+        handleLogout()
+    }
+
     return (
         <nav className="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
             <form className="form-inline">
@@ -193,9 +201,10 @@ function Navbar() {
                         </a>
 
                         <hr className="sidebar-divider my-0" />                            
-                        <Link className="nav-link" to="/login">
-                                Log out
-                            </Link>
+                        <a className="dropdown-item" href="#" onClick={handleLogoutClick}>
+                            <i className="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                            Cerrar sesion
+                        </a>
                     </div>
                 </li>
 

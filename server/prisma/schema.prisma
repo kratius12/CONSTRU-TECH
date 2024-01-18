@@ -62,7 +62,7 @@ model empleado {
   apellidos             String?                 @db.VarChar(50)
   direccion             String?                 @db.VarChar(50)
   estado                Int?
-  email                 String?                 @db.VarChar(100)
+  email                 String?                 @unique @db.VarChar(100)
   contrasena            String?                 @db.VarChar(20)
   telefono              String?                 @db.VarChar(10)
   cedula                String?                 @db.VarChar(10)
@@ -110,7 +110,7 @@ model obras {
   area         String?        @db.VarChar(50)
   idCliente    Int?
   estado       String?        @db.VarChar(50)
-  precio       Int
+  precio       Int?
   detalle_obra detalle_obra[]
   cliente      cliente?       @relation(fields: [idCliente], references: [idCli], onDelete: Restrict, onUpdate: Restrict, map: "obras_ibfk_3")
 
