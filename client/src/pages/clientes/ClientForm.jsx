@@ -4,9 +4,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useClients } from "../../context/clientes/ClientesProvider";
 import ClientSchema from "../../components/ValidatorCliente";
 
-
-
-
 export default function ClientsForm() {
   const { createClient, getClient, updateClient } = useClients()
 

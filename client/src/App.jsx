@@ -43,6 +43,7 @@ import CategoriasForm from "./pages/categorias/CategoriasForm";
 import Navbar from "./components/Navbar"
 import DetalleCompra from "./pages/compras/DetalleCompra";
 function App() {
+  console.clear()
   return (
     <>
       <div id="page-top">

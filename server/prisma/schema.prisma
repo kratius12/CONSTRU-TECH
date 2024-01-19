@@ -27,6 +27,7 @@ model cliente {
   fecha_nac   String? @db.VarChar(50)
   estado      Int?
   constrasena String? @db.VarChar(50)
+  salt        Int
   obras       obras[]
 }
 
@@ -64,10 +65,11 @@ model empleado {
   direccion             String?                 @db.VarChar(50)
   estado                Int?
   email                 String?                 @db.VarChar(100)
-  contrasena            String?                 @db.VarChar(20)
+  contrasena            String?                 @db.VarChar(200)
   telefono              String?                 @db.VarChar(10)
   cedula                String?                 @db.VarChar(10)
   tipoDoc               String?                 @db.VarChar(10)
+  salt                  String                  @db.VarChar(200)
   detalle_obra          detalle_obra[]
   empleado_especialidad empleado_especialidad[]
   rolpermisoempleado    rolpermisoempleado[]

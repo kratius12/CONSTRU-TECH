@@ -5,6 +5,18 @@ import Select from "react-select";
 import { useNavigate, useParams } from "react-router-dom";
 import { useRol } from "../../context/roles/RolesProvider";
 import RolSchema from "./RolesValidator";
+const fetchPermisos = async (url) => {
+  try {
+    const response = await axios.get(url);
+    return response.data.map((permiso) => ({
+      value: permiso.idPer,
+      label: permiso.permiso,
+    }));
+  } catch (error) {
+    console.error("Error fetching permisos:", error);
+    return [];
+  }
+};
 
 const fetchData = async (url) => {
   try {
@@ -17,6 +29,7 @@ const fetchData = async (url) => {
 };
 
 const RolesForm = () => {
+  const [selectedPermissionNames, setSelectedPermissionNames] = useState([]);
   const [permisos, setPermisos] = useState([]);
   const [roles, setRoles] = useState([]);
   const { createRol, updateRol, getRol } = useRol();
@@ -24,9 +37,11 @@ const RolesForm = () => {
   const params = useParams();
 
   useEffect(() => {
-    fetchData("http://localhost:4000/permisosAct").then((data) => {
-      setPermisos(data);
-    });
+    const loadPermisos = async () => {
+      const permisosData = await fetchPermisos("http://localhost:4000/permisosAct");
+      console.log(permisosData)
+      setPermisos(permisosData);
+    };
 
     fetchData("http://localhost:4000/roles").then((data) => {
       setRoles(data);
@@ -35,18 +50,23 @@ const RolesForm = () => {
     const loadRoles = async () => {
       if (params.id) {
         try {
-          const role = await getRol(params.id);
+          const rol = await getRol(params.id);
           setRoles({
-            nombre: role.nombre,
-            estado: role.estado,
-            permisos: role.rolpermisoempleado,
+            nombre: rol.nombre,
+            estado: rol.estado,
+            permisos: rol.rolpermisoempleado,
           });
+          const formattedPermisos = rol.rolpermisoempleado.map((permiso) => ({
+            value: permiso.idPer,
+            label: permiso.permiso,
+          }));
+          setSelectedPermissionNames(formattedPermisos);
         } catch (error) {
           console.error("Error fetching role data:", error);
         }
       }
     };
-
+    loadPermisos()
     loadRoles();
   }, [params.id, getRol]);
 
@@ -76,7 +96,7 @@ const RolesForm = () => {
       columnClass: "col-md-6 col-md-offset-3",
       autoClose: "okay|4000",
       buttons: {
-        okay: function () {},
+        okay: function () { },
       },
     });
   };
@@ -85,6 +105,7 @@ const RolesForm = () => {
     <div className="container">
       <Formik
         initialValues={initialValues}
+        enableReinitialize={true}
         validationSchema={RolSchema}
         onSubmit={async (values) => {
           console.log(values);
@@ -153,16 +174,15 @@ const RolesForm = () => {
                   <div className="col-md-4 mt-3 mx-auto">
                     <label htmlFor="permisos">Permisos:</label>
                     <Select
-                      options={permisos.map((permiso) => ({
-                        value: permiso.idPer,
-                        label: permiso.permiso,
-                      }))}
+                      options={permisos}
                       isMulti
                       className="basic-multi-select"
                       id="permisos"
                       name="permisos"
                       value={values.permisos}
-                      onChange={(selected) => setFieldValue("permisos", selected)}
+                      onChange={(selected) => {
+                        setFieldValue("permisos", selected);
+                      }}
                     />
                     {errors.permisos && touched.permisos ? (
                       <div className="alert alert-danger" role="alert">

@@ -15,9 +15,9 @@ export const GetRolRequest = async (idRol) => {
 }
 
 export const UpdateRolRequest = async (idRol, newFields) =>{
-    return await axios.put(`http://localhost:4000/rol/${idRol}`, newFields)
+    return await axios.put(`http://localhost:4000/rol/${idRol}`, newFields,{timeout:500})
 }
 
 export const ToggleRolStatusRequest = async (idRol, estado) =>{
-    return await axios.put(`http://localhost:4000/rol/${idRol}`, estado)
+    return await axios.put(`http://localhost:4000/estadoRol/${idRol}`, estado)
 }

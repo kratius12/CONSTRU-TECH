@@ -3,6 +3,12 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 const router = Router();
+const generarHash = async (password, saltRounds = 10) => {
+        const salt = await bcrypt.genSalt(saltRounds);
+        const hash = await bcrypt.hash(password, salt);
+        return { hash, salt };
+    };
+    
 
 router.get('/clientes', async (req, res) =>{
         try {
@@ -33,6 +39,7 @@ router.post('/cliente', async (req, res) => {
         try{
                 const {nombre, apellidos, email, direccion, telefono, tipoDoc, cedula, fecha_nac, estado, contrasena} = req.body
                 let date = new Date(fecha_nac)
+                const { hash, salt } = await generarHash(contrasena);
                 const result = await prisma.cliente.create({
                         data:{
                                 nombre: nombre,
@@ -42,9 +49,10 @@ router.post('/cliente', async (req, res) => {
                                 telefono: telefono,
                                 tipoDoc: tipoDoc,
                                 cedula: cedula,
-                                fecha_nac: date,
+                                fecha_nac: fecha_nac,
                                 estado: parseInt(estado),
-                                contrasena:contrasena
+                                contrasena:contrasena,
+                                salt:null
                         }
                 })
                 console.log(result);

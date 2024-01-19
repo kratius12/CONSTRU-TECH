@@ -91,10 +91,11 @@ const ComprasForm = () => {
   useEffect(() => {
     calcularTotalGeneral(initialValues.detalles);
   }, []);
-
+  console.clear()
   return (
     <div className="container">
       <Formik
+
         initialValues={initialValues}
         validationSchema={comprasSchema}
         enableReinitialize={true}
