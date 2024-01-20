@@ -19,6 +19,7 @@ export default function EmpleadosForm() {
   const params = useParams();
   const navigate = useNavigate();
   const [key, setKey] = useState(0);
+  const [keyRol, setKeyRol] = useState(0)
   const [options, setOptions] = useState([]);
   const [defaultOptions, setDefaultOptions] = useState([]);
   const [selectedEsp, setSelectedEsp] = useState(defaultOptions);
@@ -37,22 +38,21 @@ export default function EmpleadosForm() {
   };
 
   const [empleado, setEmpleado] = useState(initialState);
+
   const [rol, setRol] = useState([])
-  const [rolAct, setRolAct] = useState([])
+  const [defaultOptionsRol, setDefaultOptionsRol] = useState([]);
+  const [selectedRol, setSelectedRol] = useState(null)
 
   useEffect(() => {
     fetchData1("http://localhost:4000/rolesAct").then((data) => {
-      setRol(data)
-    })
-    fetchData1("http://localhost:4000/rolesAct").then((data)=>{
-      setRolAct(data)
+      const rol = data.filter(item=> item.estado ==1).map(item => ({ value: item.idRol, label: item.nombre }))
+      setKeyRol(prevKey => prevKey + 1)
+      setRol(rol)
     })
     const loadEmpleados = async () => {
       if (params.id) {
-
         const empleado = await getEmpleado(params.id);
         if (empleado) {
-         
           setEmpleado({
             nombre: empleado.nombre,
             apellidos: empleado.apellidos,
@@ -64,13 +64,21 @@ export default function EmpleadosForm() {
             cedula: empleado.cedula,
             especialidad: empleado.empleado_especialidad,
             contrasena: empleado.contrasena,
-            rol: empleado.rol
+            rol: empleado.rolpermisoempleado
           });
           const defaultOpts = empleado.empleado_especialidad.map((item) => ({
             value: item.especialidad.id,
             label: item.especialidad.especialidad,
           }));
+          const defaultOptionsRol = empleado.rolpermisoempleado.map((item) => ({
+            value: item.rol.idRol,
+            label: item.rol.nombre
+          }));
+          console.log(defaultOptionsRol)
+          setDefaultOptionsRol(defaultOptionsRol)
+          setSelectedRol(defaultOptionsRol)
           setDefaultOptions(defaultOpts);
+          setKeyRol(prevKey => prevKey + 1)
           setKey((prevKey) => prevKey + 1);
         }
       } else {
@@ -89,6 +97,13 @@ export default function EmpleadosForm() {
     fetchData();
     loadEmpleados();
   }, []);
+
+  const handleMenuClose = () =>{
+    const focusHelper = document.getElementById('focusHelper')
+    if (focusHelper) {
+        focusHelper.focus()
+    }
+}
 
   const alertConfirm = (type) => {
     var message = "";
@@ -130,35 +145,37 @@ export default function EmpleadosForm() {
                 especialidad: selectedEsp,
               };
               const validateDoc = await searchDoc(empleadoObject);
-              if (validateDoc === true) {
-                window.$.confirm({
-                  title: `Error`,
-                  content: `El tipo documento: ` + values.tipoDoc + ` y número documento: ` + values.cedula + ` ya existe, por favor ingrese uno diferente`,
-                  icon: 'fa fa-circle-xmark',
-                  theme: 'modern',
-                  closeIcon: true,
-                  animation: 'zoom',
-                  closeAnimation: 'scale',
-                  animationSpeed: 500,
-                  type: 'red',
-                  columnClass: 'col-md-6 col-md-offset-3',
-                  buttons: {
-                    Cerrar: function () { },
-                  }
-                });
+              if (params.id) {
+                console.log(values)
+                await updateEmpleado(params.id, empleadoObject);
+                alertConfirm('update');
+                setTimeout(() => navigate("/empleados"));
               } else {
-                if (params.id) {
-                  console.log(values)
-                  await updateEmpleado(params.id, empleadoObject);
-                  alertConfirm('update');
-                  setTimeout(() => navigate("/empleados"), 5000);
-                } else {
-                  console.log(values)
+                
+                if (validateDoc === true) {
+                  window.$.confirm({
+                    title: `Error`,
+                    content: `El tipo documento: ` + values.tipoDoc + ` y número documento: ` + values.cedula + ` ya existe, por favor ingrese uno diferente`,
+                    icon: 'fa fa-circle-xmark',
+                    theme: 'modern',
+                    closeIcon: true,
+                    animation: 'zoom',
+                    closeAnimation: 'scale',
+                    animationSpeed: 500,
+                    type: 'red',
+                    columnClass: 'col-md-6 col-md-offset-3',
+                    buttons: {
+                      Cerrar: function () { },
+                    }
+                  });
+                  
+                }else{
                   await createEmpleado(empleadoObject);
                   alertConfirm();
-                  setTimeout(() => navigate("/empleados"), 5000);
+                  setTimeout(() => navigate("/empleados"));
                 }
               }
+
             }}
           >
             {({ handleChange, handleSubmit, values, isSubmitting, errors, touched }) => (
@@ -168,6 +185,7 @@ export default function EmpleadosForm() {
                   <h1 className="h4 text-gray-900 mb-4">{params.id ? "Editar" : "Agregar"} empleado</h1>
                   <div className="card-body">
                     <div className="row">
+                    <div id="focusHelper"></div>
                       <div className="col-md-6 mt-3">
                         <Field type="text" className="form-control form-control-user" id="nombre" name="nombre" placeholder="Nombres*" />
                         {errors.nombre && touched.nombre ? (
@@ -255,24 +273,20 @@ export default function EmpleadosForm() {
                         ) : null}
                       </div>
                       <div className="col-md-6 mt-3">
-                        <Field
-                          as="select"
-                          id={`rol`}
-                          name={`rol`}
-                          className="form-select form-control-user"
-                        >
-                          <option value="">Seleccione un rol</option>
-                          {rol.map((rol) => (
-                            <option key={rol.idRol} value={rol.idRol} selected={rol.nombre === values.rol}>
-                              {rol.nombre}
-                            </option>
-                          ))}
-                        </Field>
-                        {
-                          errors.rol && touched.rol ? (
-                            <div className="alert alert-danger" role="alert">{errors.rol}</div>
-                          ):null
-                        }
+                        <label htmlFor="rol" className="form-label">Rol<span className="text-danger">*</span></label>
+                        <Select
+                            key={keyRol}
+                            placeholder={<div>Seleccione rol</div>}
+                            defaultValue={defaultOptionsRol}
+                            name="rol"
+                            options={rol}
+                            className="basic-multi-select"
+                            classNamePrefix="select"
+                            onChange={(selectedRol) => {
+                                setSelectedRol(selectedRol)
+                                handleMenuClose
+                            }}
+                        />
                       </div>
                     </div>
                   </div>

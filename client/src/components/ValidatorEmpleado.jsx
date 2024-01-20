@@ -10,8 +10,8 @@ const EmpleadoSchema = Yup.object().shape({
   telefono: Yup.string().required('El número telefónico es obligatorio').matches(/^[0-9]+$/, 'El número de telefono de identidad solo puede contener numeros').max(10,"El número de telefono no puede contener más de 10 caracteres").trim().min(7,"El numero de telefono no debe de tener menos de 7 caracteres"),
   direccion: Yup.string().required('La dirección es obligatoria').trim(),
   estado: Yup.string().required('Seleccione estado').trim(),
-  rol: Yup.string().required('Seleccione un rol'),
-  especialidad: Yup.array().min(1,"Debe seleccionar al menos una especialidad"),
+  rol: Yup.array().min(1,"Debe seleccionar el rol"),
+  // especialidad: Yup.array().min(1,"Debe seleccionar al menos una especialidad"),
 });
 
 export default EmpleadoSchema;
