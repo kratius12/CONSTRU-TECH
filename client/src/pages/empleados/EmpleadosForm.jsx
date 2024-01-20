@@ -38,15 +38,21 @@ export default function EmpleadosForm() {
 
   const [empleado, setEmpleado] = useState(initialState);
   const [rol, setRol] = useState([])
+  const [rolAct, setRolAct] = useState([])
 
   useEffect(() => {
     fetchData1("http://localhost:4000/rolesAct").then((data) => {
       setRol(data)
     })
+    fetchData1("http://localhost:4000/rolesAct").then((data)=>{
+      setRolAct(data)
+    })
     const loadEmpleados = async () => {
       if (params.id) {
+
         const empleado = await getEmpleado(params.id);
         if (empleado) {
+         
           setEmpleado({
             nombre: empleado.nombre,
             apellidos: empleado.apellidos,
@@ -58,7 +64,7 @@ export default function EmpleadosForm() {
             cedula: empleado.cedula,
             especialidad: empleado.empleado_especialidad,
             contrasena: empleado.contrasena,
-
+            rol: empleado.rol
           });
           const defaultOpts = empleado.empleado_especialidad.map((item) => ({
             value: item.especialidad.id,
@@ -124,37 +130,35 @@ export default function EmpleadosForm() {
                 especialidad: selectedEsp,
               };
               const validateDoc = await searchDoc(empleadoObject);
-              if (params.id) {
-                console.log(values)
-                await updateEmpleado(params.id, empleadoObject);
-                alertConfirm('update');
-                setTimeout(() => navigate("/empleados"));
+              if (validateDoc === true) {
+                window.$.confirm({
+                  title: `Error`,
+                  content: `El tipo documento: ` + values.tipoDoc + ` y número documento: ` + values.cedula + ` ya existe, por favor ingrese uno diferente`,
+                  icon: 'fa fa-circle-xmark',
+                  theme: 'modern',
+                  closeIcon: true,
+                  animation: 'zoom',
+                  closeAnimation: 'scale',
+                  animationSpeed: 500,
+                  type: 'red',
+                  columnClass: 'col-md-6 col-md-offset-3',
+                  buttons: {
+                    Cerrar: function () { },
+                  }
+                });
               } else {
-                
-                if (validateDoc === true) {
-                  window.$.confirm({
-                    title: `Error`,
-                    content: `El tipo documento: ` + values.tipoDoc + ` y número documento: ` + values.cedula + ` ya existe, por favor ingrese uno diferente`,
-                    icon: 'fa fa-circle-xmark',
-                    theme: 'modern',
-                    closeIcon: true,
-                    animation: 'zoom',
-                    closeAnimation: 'scale',
-                    animationSpeed: 500,
-                    type: 'red',
-                    columnClass: 'col-md-6 col-md-offset-3',
-                    buttons: {
-                      Cerrar: function () { },
-                    }
-                  });
-                  
-                }else{
+                if (params.id) {
+                  console.log(values)
+                  await updateEmpleado(params.id, empleadoObject);
+                  alertConfirm('update');
+                  setTimeout(() => navigate("/empleados"), 5000);
+                } else {
+                  console.log(values)
                   await createEmpleado(empleadoObject);
                   alertConfirm();
-                  setTimeout(() => navigate("/empleados"));
+                  setTimeout(() => navigate("/empleados"), 5000);
                 }
               }
-
             }}
           >
             {({ handleChange, handleSubmit, values, isSubmitting, errors, touched }) => (
@@ -246,9 +250,9 @@ export default function EmpleadosForm() {
                           classNamePrefix="select"
                           onChange={(selectedEsp) => setSelectedEsp(selectedEsp)}
                         />
-                        {/* {errors.especialidad && touched.especialidad ? (
+                        {errors.especialidad && touched.especialidad ? (
                           <div className="alert alert-danger" role="alert">{errors.especialidad}</div>
-                        ) : null} */}
+                        ) : null}
                       </div>
                       <div className="col-md-6 mt-3">
                         <Field
@@ -264,6 +268,11 @@ export default function EmpleadosForm() {
                             </option>
                           ))}
                         </Field>
+                        {
+                          errors.rol && touched.rol ? (
+                            <div className="alert alert-danger" role="alert">{errors.rol}</div>
+                          ):null
+                        }
                       </div>
                     </div>
                   </div>

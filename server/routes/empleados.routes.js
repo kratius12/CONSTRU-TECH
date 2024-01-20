@@ -95,7 +95,7 @@ router.post("/empleados", async (req, res) => {
         await Promise.all(especialidad.map(async (idEsp) => {
             await prisma.empleado_especialidad.create({
                 data: {
-                    idEmp: result.idEmp,
+                    idEmp: parseInt(result.idEmp),
                     idEsp: parseInt(idEsp.value)
                 }
             });
@@ -123,7 +123,7 @@ router.post("/empleados", async (req, res) => {
 
 router.put("/empleado/:id", async (req, res) => {
     try {
-        const { nombre, apellidos, direccion, estado, telefono, tipoDoc, cedula, especialidad, email, contrasena } = req.body
+        const { nombre, apellidos, direccion, estado, telefono, tipoDoc, cedula, especialidad, email, contrasena,rol } = req.body
         const result = await prisma.empleado.update({
             where: {
                 idEmp: parseInt(req.params.id)
@@ -154,11 +154,17 @@ router.put("/empleado/:id", async (req, res) => {
                     }
                 })
             }))
-            res.status(200).json(result)
         } else {
             console.log("Ha ocurrido un error...");
         }
-
+        const nuevoRol = await prisma.rolpermisoempleado.updateMany({
+            where:{
+                idEmp:parseInt(req.params.id)
+            },data:{
+                idRol:parseInt(rol)
+            }
+        })
+        res.status(200).json(result)
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: error.message })
