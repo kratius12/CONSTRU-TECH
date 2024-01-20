@@ -157,13 +157,27 @@ router.put("/empleado/:id", async (req, res) => {
         } else {
             console.log("Ha ocurrido un error...");
         }
-        const nuevoRol = await prisma.rolpermisoempleado.updateMany({
-            where:{
-                idEmp:parseInt(req.params.id)
-            },data:{
-                idRol:parseInt(rol)
+        const role = await prisma.rolpermisoempleado.findMany({
+            where: {
+                idRol: parseInt(rol),
+                idEmp: null
             }
         })
+        const deleteRol = await prisma.rolpermisoempleado.deleteMany({
+            where:{
+                idEmp:parseInt(req.params.id)
+            }
+        })
+        for (const rols of rol) {
+            const nuevo = await prisma.rolpermisoempleado.create({
+                data: {
+                    idEmp: parseInt(req.params.id),
+                    idPer: rols.idPer,
+                    idRol: rols.idRol
+                }
+            })
+        }
+        
         res.status(200).json(result)
     } catch (error) {
         console.log(error);
