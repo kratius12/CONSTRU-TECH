@@ -28,7 +28,6 @@ router.get('/cliente/:id', async (req, res) =>{
                                 idCli:parseInt(req.params.id)
                         }
                 })
-                console.log(result);
                 res.status(200).json(result);
         }catch (error){
                 console.log(error);
@@ -37,7 +36,7 @@ router.get('/cliente/:id', async (req, res) =>{
 });
 
 router.post('/cliente', async (req, res) => {
-        // try{
+        try{
                 const {nombre, apellidos, email, direccion, telefono, tipoDoc, cedula, fecha_nac, estado, contrasena} = req.body
                 let date = new Date(fecha_nac)
                 const { hash, salt } = await generarHash(contrasena);
@@ -56,17 +55,17 @@ router.post('/cliente', async (req, res) => {
                                 salt:salt
                         }
                 })
-                console.log(result);
+                
                 res.status(200).json(result);
-//         }catch (error) {
-//                 return res.status(500).json(error);
-//         }
+        }catch (error) {
+                return res.status(500).json(error);
+        }
 });
 
 router.put('/cliente/:id', async (req, res) => {
         try {
                 const {nombre,apellidos, email, direccion, telefono, tipoDoc, cedula, fecha_nac, estado,contrasena} = req.body
-                let date = new Date(fecha_nac)
+                const { hash, salt } = await generarHash(contrasena);
                 const result = await prisma.cliente.update({
                         where:{
                                 idCli: parseInt(req.params.id)
@@ -78,12 +77,13 @@ router.put('/cliente/:id', async (req, res) => {
                                 telefono: telefono,
                                 tipoDoc: tipoDoc,
                                 cedula: cedula,
-                                fecha_nac: date,
+                                fecha_nac: fecha_nac,
                                 estado: parseInt(estado),
-                                contrasena:contrasena
+                                constrasena:hash,
+                                salt:salt
                         }
                 })
-                console.log(result);
+                
                 res.status(200).json(result)
         } catch (error) {
                 console.log(error);
@@ -99,7 +99,6 @@ router.delete('/cliente/:id', async (req, res) => {
                 }
             })
             res.status(200).json(result)
-            console.log(result);
         } catch (error) {
             console.log(error);
             return res.status(500).json(error)
@@ -128,7 +127,6 @@ router.delete('/cliente/:id', async (req, res) => {
                 }
             })
             res.status(200).json(user)
-            console.log(user, empleado);
         } catch (error) {
             console.log(error);
             return res.status(500).json(error)
@@ -145,7 +143,6 @@ router.delete('/cliente/:id', async (req, res) => {
                     estado:parseInt(status)
                 }
             })        
-            console.log(status)
             return res.status(200).json(result)
     
         } catch (error) {

@@ -109,19 +109,48 @@ router.delete("/material/:id", async (req, res) => {
     }
 })
 
-router.put("/materialEstado/:id",async(req,res)=>{
-    try{
-        const {estado} = req.body
+router.put("/materialEstado/:id", async (req, res) => {
+    const { id } = req.params;
+    const { estado } = req.body;
+  
+    const material = await prisma.materiales.findUnique({
+        where: {
+          idMat: Number(id),
+        },
+        include: {
+          categoria: true,
+        },
+      });
+      if (estado === 1) {
+        if (material.categoria.estado == 1) {
+          await prisma.materiales.update({
+            where: {
+              idMat: Number(id),
+            },
+            data: {
+              estado,
+            },
+          });
+      
+          return res.status(200).json({
+            message: "Estado del material actualizado con éxito",
+            type: "green",
+          });
+        } else if(material.categoria.estado==0){
+          return res.status(404).json({
+            message: "No se puede editar el estado del material si el estado de la categoría es 0",
+            type: "red",
+          });
+        }
+      }else if(estado===0){
         const newEstado = await prisma.materiales.update({
             where:{
-                idMat: parseInt(req.params.id)
+                idMat:parseInt(req.params.id)
             },data:{
                 estado: parseInt(estado)
             }
         })
-    }catch(error){
-        console.error(error)
-    }
-})
+      }
+  });
 
 export default router

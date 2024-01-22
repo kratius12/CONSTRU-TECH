@@ -1,10 +1,19 @@
-import React, { useState, useEffect } from "react";
-import { Formik, Field, Form, ErrorMessage } from "formik";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
 import Select from "react-select";
+import { Form, Formik, Field } from "formik";
+import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { useRol } from "../../context/roles/RolesProvider";
-import RolSchema from "./RolesValidator";
+import * as yup from "yup"
+const RolSchema = yup.object().shape({
+  nombre: yup
+    .string()
+    .trim() // Elimina espacios en blanco al principio y al final
+    .matches(/^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]+$/, 'El nombre no puede contener caracteres especiales ni números')
+    .required('El nombre del rol es obligatorio'),
+  permisos: yup.array().min(1, 'Debe seleccionar al menos un permiso'),
+});
+
 const fetchPermisos = async (url) => {
   try {
     const response = await axios.get(url);
@@ -29,23 +38,24 @@ const fetchData = async (url) => {
 };
 
 const RolesForm = () => {
-  const [selectedPermissionNames, setSelectedPermissionNames] = useState([]);
+  const hasWhitespace = (value) => /\s/.test(value);
+  const validateWhitespace = (value) => {
+    return hasWhitespace(value) ? 'No se permiten espacios en blanco' : undefined;
+  };
+
   const [permisos, setPermisos] = useState([]);
-  const [roles, setRoles] = useState([]);
+  const [roles, setRoles] = useState({});;
   const { createRol, updateRol, getRol } = useRol();
   const navigate = useNavigate();
   const params = useParams();
-
+  const [key, setKey] = useState(0)
+  const [defaultOptions, setDefaultOptions] = useState([]);
+  const [permisoSelected, setPermisoSelected] = useState(defaultOptions)
   useEffect(() => {
     const loadPermisos = async () => {
       const permisosData = await fetchPermisos("http://localhost:4000/permisosAct");
-      console.log(permisosData)
       setPermisos(permisosData);
     };
-
-    fetchData("http://localhost:4000/roles").then((data) => {
-      setRoles(data);
-    });
 
     const loadRoles = async () => {
       if (params.id) {
@@ -54,19 +64,22 @@ const RolesForm = () => {
           setRoles({
             nombre: rol.nombre,
             estado: rol.estado,
-            permisos: rol.rolpermisoempleado,
+            permisos: rol.rolpermisoempleado.map((permiso) => permiso.idPer),
           });
-          const formattedPermisos = rol.rolpermisoempleado.map((permiso) => ({
-            value: permiso.idPer,
-            label: permiso.permiso,
-          }));
-          setSelectedPermissionNames(formattedPermisos);
+          const defaul = rol.rolpermisoempleado.map((item) => ({
+            value: item.permiso.idPer,
+            label: item.permiso.permiso
+          }))
+          setDefaultOptions(defaul)
+          setPermisoSelected(defaul)
+          setKey(prevKey => prevKey + 1)
         } catch (error) {
           console.error("Error fetching role data:", error);
         }
       }
     };
-    loadPermisos()
+
+    loadPermisos();
     loadRoles();
   }, [params.id, getRol]);
 
@@ -77,14 +90,8 @@ const RolesForm = () => {
   };
 
   const alertConfirm = (type) => {
-    var message = "";
-    if (type === "update") {
-      message = "actualizado";
-    } else {
-      message = "agregado";
-    }
     $.confirm({
-      title: `Rol ` + message + ` con éxito!`,
+      title: `Rol ` + type + ` con éxito!`,
       content: "Redireccionando a listado de roles...",
       icon: "fa fa-check",
       theme: "modern",
@@ -108,14 +115,18 @@ const RolesForm = () => {
         enableReinitialize={true}
         validationSchema={RolSchema}
         onSubmit={async (values) => {
-          console.log(values);
+          const rolObject = {
+            ...values,
+            permisos: permisoSelected
+          }
+          console.log(rolObject)
           if (params.id) {
-            await updateRol(params.id, values);
-            alertConfirm("update");
+            await updateRol(params.id, rolObject);
+            alertConfirm("actualizado");
             setTimeout(() => navigate("/roles"));
           } else {
-            await createRol(values);
-            alertConfirm();
+            await createRol(rolObject);
+            alertConfirm("agregado");
             setTimeout(() => navigate("/roles"));
           }
         }}
@@ -127,7 +138,7 @@ const RolesForm = () => {
               <div className="card-body">
                 <div className="row">
                   <div className="col-md-6 mt-3 mx-auto">
-                    <input
+                    <Field
                       type="text"
                       id="nombre"
                       name="nombre"
@@ -135,6 +146,8 @@ const RolesForm = () => {
                       placeholder="Nombre del permiso*"
                       onChange={handleChange}
                       value={values.nombre}
+                      onBlur={() => setFieldValue('nombre', values.nombre.trim())}
+                      validate={validateWhitespace}
                     />
                     {errors.nombre && touched.nombre ? (
                       <div className="alert alert-danger" role="alert">
@@ -144,24 +157,13 @@ const RolesForm = () => {
                   </div>
                   <div className="col-md-6 mt-3">
                     {params.id ? (
-                      <select
-                        id="estado"
-                        className="form-select form-control-user"
-                        onChange={handleChange}
-                        value={values.estado}
-                      >
+                      <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
                         <option value="">Seleccione estado</option>
                         <option value="1">Activo</option>
                         <option value="0">Inactivo</option>
                       </select>
                     ) : (
-                      <select
-                        id="estado"
-                        className="form-select form-control-user"
-                        onChange={handleChange}
-                        value={values.estado}
-                        disabled
-                      >
+                      <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} disabled>
                         <option value="1">Activo</option>
                       </select>
                     )}
@@ -174,14 +176,16 @@ const RolesForm = () => {
                   <div className="col-md-4 mt-3 mx-auto">
                     <label htmlFor="permisos">Permisos:</label>
                     <Select
+                      id="permisos"
+                      key={key}
                       options={permisos}
                       isMulti
+                      defaultValue={defaultOptions}
                       className="basic-multi-select"
-                      id="permisos"
                       name="permisos"
-                      value={values.permisos}
-                      onChange={(selected) => {
-                        setFieldValue("permisos", selected);
+                      onChange={(selectedPer) => {
+                        setPermisoSelected(selectedPer)
+                        setFieldValue("permisos", selectedPer)
                       }}
                     />
                     {errors.permisos && touched.permisos ? (
@@ -195,15 +199,11 @@ const RolesForm = () => {
               <div className="card-footer text-center">
                 <div className="row">
                   <div className="col-md-6">
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="btn btn-primary btn-icon-split w-50"
-                    >
+                    <button type="submit" disabled={isSubmitting} className="btn btn-primary btn-icon-split w-50">
                       <span className="text-white-50">
                         <i className="fas fa-plus"></i>
                       </span>
-                      <span className="text">Agregar</span>
+                      <span className="text">{params.id ? "Editar" : "Agregar"}</span>
                     </button>
                   </div>
                   <div className="col-md-6">

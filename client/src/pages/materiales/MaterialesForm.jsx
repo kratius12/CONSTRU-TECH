@@ -39,6 +39,9 @@ export default function MaterialesForm() {
       }
     })
   }
+  const validateWhitespace = (value) => {
+    return hasWhitespace(value) ? 'No se permiten espacios en blanco' : undefined;
+};
   const params = useParams()
   const navigate = useNavigate()
   const [material, setMaterial] = useState({
@@ -64,7 +67,7 @@ export default function MaterialesForm() {
     loadMateriales()
 
   }, [getMaterial, params.id])
-
+  console.clear()
   return (
     <div className="container">
       <div className="row">
@@ -97,14 +100,15 @@ export default function MaterialesForm() {
               })
             }}
           >
-            {({ handleChange, handleSubmit, values, isSubmitting, errors, touched }) => (
+            {({ handleChange, handleSubmit, values, isSubmitting, errors, touched, setFieldValue }) => (
               <Form onSubmit={handleSubmit} className="user">
                 <div className="card text-center w-100">
                   <h2>{params.id ? "Editar" : "Agregar"} material</h2>
                   <div className="card-body">
                     <div className="row">
                       <div className="col-md-6 mt-3">
-                        <input type="text" className="form-control form-control-user" id="nombre" onChange={handleChange} value={values.nombre} placeholder="Nombre*" />
+                        <input type="text" className="form-control form-control-user" id="nombre" onChange={handleChange} value={values.nombre} placeholder="Nombre*"onBlur={() => setFieldValue('nombre', values.nombre.trim())} // Eliminar espacios en blanco al salir del campo
+                                                    validate={validateWhitespace} />
                         {errors.nombre && touched.nombre ? (
                           <div className="alert alert-danger" role="alert">{errors.nombre}</div>
                         ) : null}

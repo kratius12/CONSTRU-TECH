@@ -18,11 +18,7 @@ const ComprasForm = () => {
   const { createCompra,searchFact } = useCompras();
   const [materiales, setMateriales] = useState([]);
   const [proveedores, setProveedores] = useState([]);
-
-
-  const [codigoFacturaError, setCodigoFacturaError] = useState("");
   const navigate = useNavigate();
-  const [file, setFile] = useState(null);
 
 
  const alertConfirm = (type) => {
@@ -62,6 +58,7 @@ const ComprasForm = () => {
     });
     setTotalGeneral(total);
   };
+ 
 
   const initialValues = {
     fecha: "",

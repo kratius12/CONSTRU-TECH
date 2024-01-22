@@ -40,8 +40,6 @@ function MaterialesPage() {
     useEffect(() => {
         Materiales()
     }, [])
-
-    console.log(location)
     function renderMain() {
         if (materiales.length === 0) {
             return <h1>Sin materiales</h1>
@@ -52,6 +50,7 @@ function MaterialesPage() {
             toggleApi={toggleMaterialEstado} getApi={getMaterial} entity={"material"} onChangeStatus={handleChangeStatus} />
         }
     }
+    // console.clear()
     return (
         <>
             <h1 className="h3 mb-2 text-gray-800">Gestión de materiales</h1>

@@ -16,7 +16,9 @@ export default function CategoriasForm() {
     medida: "",
     estado: ""
   })
-
+  const validateWhitespace = (value) => {
+    return hasWhitespace(value) ? 'No se permiten espacios en blanco' : undefined;
+  };
   useEffect(() => {
     const loadEspecialidades = async () => {
       if (params.id) {
@@ -39,7 +41,6 @@ export default function CategoriasForm() {
             enableReinitialize={true}
             validationSchema={CategoriaSchema}
             onSubmit={async (values) => {
-              console.log(values);
               if (params.id) {
                 await updateCategoria(params.id, values)
                 navigate("/categorias")
@@ -54,14 +55,15 @@ export default function CategoriasForm() {
               })
             }}
           >
-            {({ handleChange, handleSubmit, values, isSubmitting, errors, touched }) => (
+            {({ handleChange, handleSubmit, values, isSubmitting, errors, touched, setFieldValue }) => (
               <Form onSubmit={handleSubmit} className="user">
                 <div className="card text-center w-100">
                   <h2>{params.id ? "Editar" : "Agregar"} categoria</h2>
                   <div className="card-body">
                     <div className="row">
                       <div className="col-6 mt-3">
-                        <input type="text" className="form-control form-control-user" id="nombre" onChange={handleChange} value={values.nombre} placeholder="Nombre*" />
+                        <input type="text" className="form-control form-control-user" id="nombre" onChange={handleChange} value={values.nombre} placeholder="Nombre*" onBlur={() => setFieldValue('nombre', values.nombre.trim())} // Eliminar espacios en blanco al salir del campo
+                          validate={validateWhitespace} />
                         {errors.nombre && touched.nombre ? (
                           <div className="alert alert-danger" role="alert">{errors.nombre}</div>
                         ) : null}
@@ -80,14 +82,22 @@ export default function CategoriasForm() {
                         ) : null}
                       </div>
                       <div className="col-6 mt-3">
-                        <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
-                          <option value="">Seleccione estado*</option>
-                          <option value="1">Activo</option>
-                          <option value="0">Inactivo</option>
-                        </select>
-                        {errors.estado && touched.estado ? (
+                      {params.id ?
+                          (
+                            <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
+                              <option value="">Seleccione estado</option>
+                              <option value="1">Activo</option>
+                              <option value="0">Inactivo</option>
+                            </select>
+                          ) : (
+                            <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} disabled>
+                              <option value="1">Activo</option>
+                            </select>
+                          )
+                        }
+                        {/* {errors.estado && touched.estado ? (
                           <div className="alert alert-danger" role="alert">{errors.estado}</div>
-                        ) : null}
+                        ) : null} */}
                       </div>
                     </div>
                   </div>

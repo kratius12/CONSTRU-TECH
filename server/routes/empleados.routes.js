@@ -9,13 +9,13 @@ router.get("/empleados", async (req, res) => {
     try {
         const result = await prisma.empleado.findMany({
             include: {
-                rolpermisoempleado:{
-                    distinct:["idRol"],
-                    select:{
-                        rol:{
-                            select:{
-                                idRol:true,
-                                nombre:true
+                rolpermisoempleado: {
+                    distinct: ["idRol"],
+                    select: {
+                        rol: {
+                            select: {
+                                idRol: true,
+                                nombre: true
                             }
                         }
                     },
@@ -43,22 +43,20 @@ router.get("/empleado/:id", async (req, res) => {
                         especialidad: true
                     }
                 },
-                rolpermisoempleado:{
-                    distinct:["idRol"],
-                    select:{
-                        rol:{
-                            select:{
-                                idRol:true,
-                                nombre:true
+                rolpermisoempleado: {
+                    distinct: ["idRol"],
+                    select: {
+                        rol: {
+                            select: {
+                                idRol: true,
+                                nombre: true
                             }
                         }
                     },
                 }
-              
+
             }
         })
-        
-    console.log('Valores únicos:', result);
         res.status(200).json(result);
     } catch (error) {
         console.log(error)
@@ -102,7 +100,7 @@ router.post("/empleados", async (req, res) => {
         }));
         const role = await prisma.rolpermisoempleado.findMany({
             where: {
-                idRol: parseInt(rol),
+                idRol: parseInt(rol.value),
                 idEmp: null
             }
         })
@@ -123,7 +121,8 @@ router.post("/empleados", async (req, res) => {
 
 router.put("/empleado/:id", async (req, res) => {
     try {
-        const { nombre, apellidos, direccion, estado, telefono, tipoDoc, cedula, especialidad, email, contrasena,rol } = req.body
+        const { nombre, apellidos, direccion, estado, telefono, tipoDoc, cedula, especialidad, email, contrasena, rol } = req.body
+        const { hash, salt } = await generarHash(contrasena);
         const result = await prisma.empleado.update({
             where: {
                 idEmp: parseInt(req.params.id)
@@ -137,10 +136,11 @@ router.put("/empleado/:id", async (req, res) => {
                 cedula: cedula,
                 estado: parseInt(estado),
                 email: email,
-                contrasena: contrasena,
+                contrasena: hash,
+                salt: salt
             }
         })
-        if (result) {
+        if (especialidad.length>0) {
             const result2 = await prisma.empleado_especialidad.deleteMany({
                 where: {
                     idEmp: parseInt(req.params.id)
@@ -157,34 +157,19 @@ router.put("/empleado/:id", async (req, res) => {
         } else {
             console.log("Ha ocurrido un error...");
         }
-        const role = await prisma.rolpermisoempleado.findMany({
-            where: {
-                idRol: parseInt(rol),
-                idEmp: null
-            }
-        })
-        const deleteRol = await prisma.rolpermisoempleado.deleteMany({
+        const upRol = await prisma.rolpermisoempleado.updateMany({
             where:{
                 idEmp:parseInt(req.params.id)
+            },data:{
+                idRol:rol.value
             }
         })
-        for (const rols of rol) {
-            const nuevo = await prisma.rolpermisoempleado.create({
-                data: {
-                    idEmp: parseInt(req.params.id),
-                    idPer: rols.idPer,
-                    idRol: rols.idRol
-                }
-            })
-        }
-        
         res.status(200).json(result)
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: error.message })
     }
 })
-
 router.delete("/empleado/:id", async (req, res) => {
     try {
         const result = await prisma.empleado.delete({
@@ -201,9 +186,9 @@ router.delete("/empleado/:id", async (req, res) => {
 })
 
 router.get("/empleadosEsp", async (req, res) => {
-    try{
+    try {
         const result = await prisma.empleado.findMany({
-            
+
             select: {
                 idEmp: true,
                 nombre: true,
@@ -227,16 +212,46 @@ router.get("/empleadosEsp", async (req, res) => {
 router.put("/empleadoStatus/:id", async (req, res) => {
     try {
         const { status } = req.body
-        const result = await prisma.empleado.update({
-            where: {
+
+        const searchRol = await prisma.rolpermisoempleado.findFirst({
+            where:{
                 idEmp: parseInt(req.params.id)
-            },
-            data: {
-                estado: parseInt(status)
+            },select:{
+                rol:{
+                    select:{
+                        idRol:true
+                    }
+                }
             }
         })
-        console.log(status)
-        return res.status(200).json(result)
+        if(status===1){
+            const validarRol = await prisma.rol.findUnique({
+                where:{
+                    idRol:searchRol.rol.idRol
+                }
+            })
+            if(validarRol.estado==1){
+                const actualizarEstado = await prisma.empleado.update({
+                    where:{
+                        idEmp:parseInt(req.params.id)
+                    },data:{
+                        estado:parseInt(status)
+                    }
+                })
+                return res.status(200).json({message:"Cambio de estado exitoso!!"})
+            }else if(validarRol.estado==0){
+                return res.status(404).json({message:"No se puede cambiar el estado del empleado puesto que el rol asociado está inactivo"})
+            }
+        }else if(status===0){
+            const actualizarEstado = await prisma.empleado.update({
+                where:{
+                    idEmp:parseInt(req.params.id)
+                },data:{
+                    estado:parseInt(status)
+                }
+            })
+            return res.status(200).json({message:"Cambio de estado exitoso!!"})
+        }
 
     } catch (error) {
         return res.status(500).json({ message: error.message })
@@ -268,23 +283,23 @@ router.put("/empleados/searchDoc", async (req, res) => {
     }
 })
 
-router.get("/rolesEmpleado/:id",async(req,res)=>{
+router.get("/rolesEmpleado/:id", async (req, res) => {
     try {
         const rol = await prisma.rolpermisoempleado.findFirst({
-            where:{
-                idEmp:parseInt(req.params.id)
+            where: {
+                idEmp: parseInt(req.params.id)
             },
-            select:{
-                rol:{
-                    select:{
-                        nombre:true
+            select: {
+                rol: {
+                    select: {
+                        nombre: true
                     }
                 }
             }
         })
         return res.status(200).json(rol)
     } catch (error) {
-        
+
     }
 })
 

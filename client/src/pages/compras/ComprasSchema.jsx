@@ -20,18 +20,17 @@ const comprasSchema = Yup.object().shape({
     }),
 
   idProv: Yup.string().required("Proveedor es requerido").trim(),
-  codigoFactura: Yup.string().required("Código de Factura es requerido").trim(),
+  codigoFactura: Yup.string().required("Código de Factura es requerido").matches(/^\S+$/, 'No se permiten espacios en blanco'),
 
   detalles: Yup.array().of(
     Yup.object().shape({
       idMat: Yup.string().required("Material es requerido").trim(),
-      cantidad: Yup.number("La cantidad solo puede contener números")
+      cantidad: Yup.string()
         .required("Cantidad es requerida")
-        .positive("La cantidad tiene que ser un numero positivo"),
-
-      precio: Yup.number("El precio solo puede contener números")
+        .matches(/^\S+$/, 'No se permiten espacios en blanco').matches(/^[0-9]+$/, 'La cantidad solo puede contener números'),
+      precio: Yup.string()
         .required("Precio es requerido")
-        .positive("EL precio tiene que ser un numero positivo"),
+        .matches(/^\S+$/, 'No se permiten espacios en blanco').matches(/^[0-9]+$/, 'El precio solo puede contener números'),
     })
   ).min(1, "Debe de ingresar al menos un material"),
 });

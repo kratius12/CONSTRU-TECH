@@ -98,10 +98,9 @@ router.delete('/prov/:idProv', async (req, res) => {
 })
 
 
-
 router.post('/newprov', async (req, res) => {
     try {
-        const { nit } = req.body;
+        const { nit, nombre, direccion, tipo, estado, email, telefono, nombreContacto, telefonoContacto, emailContacto } = req.body;
 
         const existingProveedor = await prisma.proveedor.findFirst({
             where: {
@@ -113,7 +112,22 @@ router.post('/newprov', async (req, res) => {
             return res.status(400).json({ message: 'Ya existe un proveedor con este NIT.' });
         }
 
-        const { nombre, direccion, tipo, estado, email, telefono, nombreContacto, telefonoContacto, emailContacto } = req.body;
+        let contactoData = {};  // Inicializar el objeto para datos de contacto
+
+        if (tipo === 'Juridico') {
+            contactoData = {
+                nombreContacto: nombreContacto,
+                telefonoContacto: telefonoContacto,
+                emailContacto: emailContacto,
+            };
+        } else if (tipo === 'Natural') {
+            contactoData = {
+                nombreContacto: null,
+                telefonoContacto: null,
+                emailContacto: null,
+            };
+        }
+
         const newProv = await prisma.proveedor.create({
             data: {
                 nombre: nombre,
@@ -123,21 +137,16 @@ router.post('/newprov', async (req, res) => {
                 estado: 1,
                 email: email,
                 telefono: telefono,
+                ...contactoData, 
             },
         });
-        if (tipo == "Juridico") {
-            await prisma.proveedor.create({
-                nombreContacto: nombreContacto,
-                telefonoContacto: telefonoContacto,
-                emailContacto: emailContacto,
-            })
-        }
 
         return res.json(newProv);
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
 });
+
 
 router.put("/proveedorEstado/:id", async (req, res) => {
     try {

@@ -45,7 +45,7 @@ export default function EmpleadosForm() {
 
   useEffect(() => {
     fetchData1("http://localhost:4000/rolesAct").then((data) => {
-      const rol = data.filter(item=> item.estado ==1).map(item => ({ value: item.idRol, label: item.nombre }))
+      const rol = data.filter(item => item.estado == 1).map(item => ({ value: item.idRol, label: item.nombre }))
       setKeyRol(prevKey => prevKey + 1)
       setRol(rol)
     })
@@ -98,12 +98,12 @@ export default function EmpleadosForm() {
     loadEmpleados();
   }, []);
 
-  const handleMenuClose = () =>{
+  const handleMenuClose = () => {
     const focusHelper = document.getElementById('focusHelper')
     if (focusHelper) {
-        focusHelper.focus()
+      focusHelper.focus()
     }
-}
+  }
 
   const alertConfirm = (type) => {
     var message = "";
@@ -151,7 +151,7 @@ export default function EmpleadosForm() {
                 alertConfirm('update');
                 setTimeout(() => navigate("/empleados"));
               } else {
-                
+
                 if (validateDoc === true) {
                   window.$.confirm({
                     title: `Error`,
@@ -168,8 +168,8 @@ export default function EmpleadosForm() {
                       Cerrar: function () { },
                     }
                   });
-                  
-                }else{
+
+                } else {
                   await createEmpleado(empleadoObject);
                   alertConfirm();
                   setTimeout(() => navigate("/empleados"));
@@ -178,14 +178,14 @@ export default function EmpleadosForm() {
 
             }}
           >
-            {({ handleChange, handleSubmit, values, isSubmitting, errors, touched }) => (
+            {({ handleChange, handleSubmit, values, isSubmitting, errors, touched, setFieldValue }) => (
               <Form onSubmit={handleSubmit} className="user">
                 <div className="card text-center w-100">
                   <br />
                   <h1 className="h4 text-gray-900 mb-4">{params.id ? "Editar" : "Agregar"} empleado</h1>
                   <div className="card-body">
                     <div className="row">
-                    <div id="focusHelper"></div>
+                      <div id="focusHelper"></div>
                       <div className="col-md-6 mt-3">
                         <Field type="text" className="form-control form-control-user" id="nombre" name="nombre" placeholder="Nombres*" />
                         {errors.nombre && touched.nombre ? (
@@ -266,7 +266,10 @@ export default function EmpleadosForm() {
                           options={options}
                           className="basic-multi-select"
                           classNamePrefix="select"
-                          onChange={(selectedEsp) => setSelectedEsp(selectedEsp)}
+                          onChange={(selectedEsp) => {
+                            setSelectedEsp(selectedEsp)
+                            setFieldValue("especialidad",selectedEsp)
+                          }}
                         />
                         {errors.especialidad && touched.especialidad ? (
                           <div className="alert alert-danger" role="alert">{errors.especialidad}</div>
@@ -275,18 +278,24 @@ export default function EmpleadosForm() {
                       <div className="col-md-6 mt-3">
                         <label htmlFor="rol" className="form-label">Rol<span className="text-danger">*</span></label>
                         <Select
-                            key={keyRol}
-                            placeholder={<div>Seleccione rol</div>}
-                            defaultValue={defaultOptionsRol}
-                            name="rol"
-                            options={rol}
-                            className="basic-multi-select"
-                            classNamePrefix="select"
-                            onChange={(selectedRol) => {
-                                setSelectedRol(selectedRol)
-                                handleMenuClose
-                            }}
+                          key={keyRol}
+                          placeholder={<div>Seleccione rol</div>}
+                          defaultValue={defaultOptionsRol}
+                          name="rol"
+                          options={rol}
+                          className="basic-multi-select"
+                          classNamePrefix="select"
+                          onChange={(selectedRol) => {
+                            setSelectedRol(selectedRol)
+                            handleMenuClose
+                            setFieldValue("rol", selectedRol)
+                          }}
                         />
+                        {
+                          errors.rol && touched.rol ? (
+                            <div className="alert alert-danger">{errors.rol}</div>
+                          ) : null
+                        }
                       </div>
                     </div>
                   </div>
