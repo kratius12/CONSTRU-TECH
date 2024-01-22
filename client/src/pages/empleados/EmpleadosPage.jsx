@@ -39,6 +39,7 @@ function EmpleadosPage() {
         setTableStatus(newStatus)
 
     }
+    // console.clear()
     const {empleados, Empleados, toggleEmpleadoStatus, getEmpleado} = useEmpleados()
     const navigate = useNavigate()
     useEffect(() =>{
@@ -52,7 +53,6 @@ function EmpleadosPage() {
             
         }else{
             return <TableInfo dataHeader={dataHeader} dataBody={empleados} routeEdit={'editarEmpleado'} viewDetail toggleApi={toggleEmpleadoStatus} getApi={getEmpleado} entity={'Empleado'} onChangeStatus={handleChangeStatus}/>
-            //return <EmpleadoTable empleados={empleados}/>
         }
     }
 

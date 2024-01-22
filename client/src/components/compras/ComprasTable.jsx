@@ -39,7 +39,7 @@ export default function ComprasTable({ compras }) {
                                 <tr key={idCom}>
                                     <td>{idCom}</td>
                                     <td>{fecha}</td>
-                                    <td>{total_compra}</td>
+                                    <td>${total_compra.toLocaleString()}</td>
                                     <td>{codigoFactura}</td>
                                     <td>
                                         <button className="btn btn-secondary" onClick={() => navigate(`/compra/${idCom}`)}>

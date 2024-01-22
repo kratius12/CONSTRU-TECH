@@ -1,156 +1,162 @@
-import { Router, json } from "express";
+import { Router } from "express";
 import { PrismaClient } from "@prisma/client"
 
 const prisma = new PrismaClient()
 const router = Router()
 
-router.get("/roles", async (req, res) =>{
+router.get("/roles", async (req, res) => {
     try {
-        const result = await prisma.rol.findMany()
-        res.status(200).json(result)
-
+        const roles = await prisma.rol.findMany({
+        })
+        return res.send(roles)
     } catch (error) {
-        console.log(json({message: error.message}));
-        return res.status(500).json({message: error.message})
+        return res.status(500).json({ message: error.message })
     }
 })
-
-router.get("/roles/:id", async (req, res) =>{
+router.get("/rolesAct", async (req, res) => {
     try {
-        const result = await prisma.rol.findFirst({
+        const roles = await prisma.rol.findMany({
             where: {
-                idRol:parseInt(req.params.id)
-            },
-            include:{
-                rol_permiso:{
-                    select:{
-                        idPer:true,
-                        permiso:true
+                estado: 1
+            }
+        })
+        return res.send(roles)
+    } catch (error) {
+        return res.status(500).json({ message: error.message })
+    }
+})
+
+router.get("/rol/:id", async (req, res) => {
+    try {
+        const rol = await prisma.rol.findUnique({
+            where: {
+                idRol: parseInt(req.params.id)
+            }, include: {
+                rolpermisoempleado: {
+                    select: {
+                        permiso: {
+                            select: {
+                                permiso: true
+                            }
+                        }
                     }
                 }
             }
         })
-        console.log(result);
-        res.status(200).json(result)
+        return res.send(rol)
     } catch (error) {
-        console.log(error)
-        return res.status(500).json({message: error.message})
+        return res.status(500).json({ message: error.message })
     }
 })
 
-router.post("/roles", async (req, res) => {
+router.post("/rol", async (req, res) => {
     try {
-        const {nombre, estado,  permiso
-        } = req.body
-        const result = await prisma.rol.create({
-            data:{
+        const { nombre, permisos } = req.body;
+        const rol = await prisma.rol.create({
+            data: {
                 nombre: nombre,
-                estado:parseInt(estado)
-            }
-        })
-        await Promise.all(permiso.map(async (idPer) => {
-            console.log(result,permiso);
-            await prisma.rol_permiso.create({
-                data:{
-                    idRol:result.idRol,
-                    idPer:parseInt(idPer.value)
-                }
-            })
-        }))
-        res.status(200).json(result)
-    } catch (error) {
-        return res.status(500).json({message: error.message})
-    }
-})
-
-router.put("/roles/:id", async (req, res) => {
-    try {
-        const {nombre, estado, permiso} = req.body
-        const result = await prisma.rol.update({
-            where:{
-                idRol:parseInt(req.params.id)
+                estado: 1
             },
-            data:{
-                nombre: nombre,
-                estado:parseInt(estado)
-            }
-        })
-        if (result) {
-            const result2 = await prisma.rol_permiso.deleteMany({
-                where:{
-                    idRol:parseInt(req.params.id)
-                }
-            })
-            await Promise.all(permiso.map(async (idPer) => {
-                await prisma.rol_permiso.create({
-                    data:{
-                        idRol:parseInt(req.params.id),
-                        idPer:parseInt(idPer.value)
+        });
+
+        for (var i = 0; i < permisos.length; i++) {
+            var elemento = permisos[i];
+            if (elemento.hasOwnProperty('value')) {
+                var value = elemento.value;
+                await prisma.rolpermisoempleado.createMany({
+                    data: {
+                        idPer: parseInt(value),
+                        idRol: parseInt(rol.idRol),
+                        idEmp: null
                     }
-                })
-            }))
-            res.status(200).json(result)            
-        }else{
-            console.log("Ha ocurrido un error...");
+                });
+            } else {
+                console.error('El objeto en permisos no tiene la propiedad "value"');
+            }
         }
-
+        return res.status(201).send({ message: "Rol creado exitosamente" });
     } catch (error) {
-        console.log(error);
-        return res.status(500).json({message: error.message})
+        return res.status(500).json({ message: error.message });
     }
-})
+});
 
-router.delete("/roles/:id", async (req, res) => {
+router.put("/rol/:id", async (req, res) => {
     try {
-        const result = await prisma.rol.delete({
-            where:{
-                idRol:parseInt(req.params.id)
+        const { nombre, estado, permisos } = req.body
+
+        const rol = await prisma.rol.update({
+            data: {
+                nombre: nombre,
+                estado: parseInt(estado)
+            },
+            where: {
+                idRol: parseInt(req.params.id)
+            }
+        });
+        
+        const buscar = await prisma.rolpermisoempleado.findMany({
+            where: {
+                idRol: parseInt(req.params.id)
             }
         })
-        res.status(200).json(result)
-        console.log(result);
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({message: error.message})
-    }
-})
-
-router.get("/rolPermiso", async (req, res) => {
-    try {
-        const result= await prisma.rol.findMany({
-            select:{
-                idRol:true,
-                nombre:true,
-                estado:true,
-                rol_permiso:{
-                    select:{
-                        permiso:true
-                    }
+        const delet = await prisma.rolpermisoempleado.deleteMany({
+            where: {
+                idRol: parseInt(req.params.id)
+            }
+        })
+            for (var i = 0; i < permisos.length; i++) {
+                var elemento = permisos[i];
+                if (elemento.hasOwnProperty('value')) {
+                    var value = elemento.value;
+                    await prisma.rolpermisoempleado.createMany({
+                        data: {
+                            idPer: parseInt(value),
+                            idRol: parseInt(rol.idRol),
+                            idEmp: null
+                        }
+                    });
+                } else {
+                    console.error('El objeto en permisos no tiene la propiedad "value"');
                 }
             }
-        })   
-        res.json(result)
+        return res.status(201).send({ message: "Rol actualizado exitosamente" })
     } catch (error) {
-        return res.status(500).json({message: error.message})
+
     }
 })
 
-router.put("/rolStatus/:id", async (req, res) => {
-    try {
-        const {status} = req.body
-        const result = await prisma.rol.update({
-            where:{
-                idRol:parseInt(req.params.id)
-            },
-            data:{
-                estado:parseInt(status)
-            }
-        })        
-        console.log(status)
-        return res.status(200).json(result)
 
+router.put("/estadoRol/:id", async (req, res) => {
+    try {
+        const { estado } = req.body
+        const result = await prisma.rol.update({
+            where: {
+                idRol: parseInt(req.params.id)
+            }, data: {
+                estado: parseInt(estado)
+            }
+        })
+        if (estado === 0) {
+            const empIn = await prisma.rolpermisoempleado.findMany({
+                where: {
+                    idRol: parseInt(req.params.id),
+                    idEmp: { not: null }
+                },
+                select: {
+                    idEmp: true,
+                    idRol: true
+                }
+            })
+            const inactivarEmpleado = await prisma.empleado.updateMany({
+                where: {
+                    idEmp: empIn.idEmp
+                }, data: {
+                    estado: 0
+                }
+            })
+        }
     } catch (error) {
-        return res.status(500).json({message: error.message})
+        console.error(error)
     }
 })
 

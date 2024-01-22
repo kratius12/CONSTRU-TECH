@@ -16,17 +16,10 @@ const fetchData = async (url) => {
 };
 const ComprasForm = () => {
   const { createCompra,searchFact } = useCompras();
-  const [categorias, setCategorias] = useState([]);
   const [materiales, setMateriales] = useState([]);
   const [proveedores, setProveedores] = useState([]);
-
-
-  const [codigoFacturaError, setCodigoFacturaError] = useState("");
   const navigate = useNavigate();
-  const [file, setFile] = useState(null);
 
-
-  const navigate = useNavigate();
 
  const alertConfirm = (type) => {
     var message = ""
@@ -65,6 +58,7 @@ const ComprasForm = () => {
     });
     setTotalGeneral(total);
   };
+ 
 
   const initialValues = {
     fecha: "",
@@ -74,7 +68,6 @@ const ComprasForm = () => {
     total_compra: 0,
     detalles: [
       {
-        idCat: "",
         idMat: "",
         cantidad: "",
         precio: "",
@@ -84,9 +77,6 @@ const ComprasForm = () => {
   };
 
   useEffect(() => {
-    fetchData("http://localhost:4000/categoriasAct").then((data) => {
-      setCategorias(data);
-    });
     fetchData("http://localhost:4000/materialesAc").then((data) => {
       setMateriales(data);
     });
@@ -98,10 +88,11 @@ const ComprasForm = () => {
   useEffect(() => {
     calcularTotalGeneral(initialValues.detalles);
   }, []);
-
+  console.clear()
   return (
     <div className="container">
       <Formik
+
         initialValues={initialValues}
         validationSchema={comprasSchema}
         enableReinitialize={true}
@@ -132,7 +123,6 @@ const ComprasForm = () => {
           formData.append("codigoFactura", values.codigoFactura);
           formData.append("total_compra", totalGeneral)
           values.detalles.forEach((detalle, index) => {
-            formData.append(`detalles[${index}][idCat]`, detalle.idCat);
             formData.append(`detalles[${index}][idMat]`, detalle.idMat);
             formData.append(`detalles[${index}][cantidad]`, detalle.cantidad);
             formData.append(`detalles[${index}][precio]`, detalle.precio);
@@ -220,29 +210,6 @@ const ComprasForm = () => {
                         {values.detalles.map((detalle, index) => (
                           <div key={index} className="row">
                             <div className="col-md-3 mt-3 mx-auto">
-                              <label htmlFor={`detalles.${index}.idCat`}>Categoría:</label>
-                              <Field
-                                as="select"
-                                className="form-select"
-                                id={`detalles.${index}.idCat`}
-                                name={`detalles.${index}.idCat`}
-                                value={values.detalles.idCat}
-                                key={`detalles.${index}.idCat`}
-                              >
-                                <option value="">Seleccione una categoría</option>
-                                {categorias.map((categoria) => (
-                                  <option key={categoria.idcat} value={categoria.idcat}>
-                                    {categoria.nombre}
-                                  </option>
-                                ))}
-                              </Field>
-                              <ErrorMessage
-                                name={`detalles.${index}.idCat`}
-                                component="div"
-                                className="alert alert-danger"
-                              />
-                            </div>
-                            <div className="col-md-3 mt-3 mx-auto">
                               <label htmlFor={`detalles.${index}.idMat`}>Material:</label>
                               <Field
                                 as="select"
@@ -265,7 +232,7 @@ const ComprasForm = () => {
                                 className="alert alert-danger"
                               />
                             </div>
-                            <div className="col-md-2 mt-3 mx-auto">
+                            <div className="col-md-3 mt-3 mx-auto">
                               <label htmlFor={`detalles.${index}.cantidad`}>Cantidad:</label>
                               <Field
                                 type="text"
@@ -280,7 +247,7 @@ const ComprasForm = () => {
                                 className="alert alert-danger"
                               />
                             </div>
-                            <div className="col-md-2 mt-3 mx-auto">
+                            <div className="col-md-3 mt-3 mx-auto">
                               <label htmlFor={`detalles.${index}.precio`}>Precio:</label>
                               <Field
                                 type="text"
@@ -295,7 +262,7 @@ const ComprasForm = () => {
                                 className="alert alert-danger"
                               />
                             </div>
-                            <div className="col-md-2 mt-3 mx-auto">
+                            <div className="col-md-3 mt-3 mx-auto">
                               <label htmlFor={`detalles.${index}.subtotal`}>Subtotal:</label>
                               <div className="input-group">
                                 <div className="input-group-prepend">
@@ -318,18 +285,17 @@ const ComprasForm = () => {
                                 className="btn btn-danger"
                                 onClick={() => arrayHelpers.remove(index)}
                               >
-                                Eliminar detalle
+                                Eliminar material
                               </button>
+                              <hr className="mt-md-3 mx-auto" />
                             </div>
                           </div>
                         ))}
-                        <hr className="mt-3" />
                         <button
                           type="button"
                           className="btn btn-success mt-3"
                           onClick={() => {
                             arrayHelpers.push({
-                              idCat: "",
                               idMat: "",
                               cantidad: "",
                               precio: "",
@@ -340,7 +306,7 @@ const ComprasForm = () => {
                           Agregar material
                         </button>
                         {calcularTotalGeneral(values.detalles)}
-                        <div className="col-md-2 mt-3 mx-auto">
+                        <div className="col-md-3 mt-3 mx-auto">
                           <label htmlFor={`total_compra`}>Total:</label>
                           <div className="input-group">
                             <div className="input-group-prepend">
@@ -377,7 +343,6 @@ const ComprasForm = () => {
                   <div className="col-md-6">
                     <a
                       type="button"
-                      href=""
                       className="btn btn-danger btn-icon-split w-50"
                       onClick={() => navigate(`/compras`)}
                     >

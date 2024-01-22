@@ -1,185 +1,220 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Select from "react-select";
-// import makeAnimated from 'react-select/animated';
 import { Form, Formik, Field } from "formik";
-import { useLocation, useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEmpleados } from "../../context/empleados/EmpleadosProvider";
 import EmpleadoSchema from "../../components/ValidatorEmpleado";
-
-
+const fetchData1 = async (url) => {
+  try {
+    const response = await axios.get(url);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    return [];
+  }
+};
 export default function EmpleadosForm() {
-
-  const { createEmpleado, getEmpleado, updateEmpleado, especialidades, Especialidades, searchDoc } = useEmpleados()
-  const params = useParams()
-  const navigate = useNavigate()
-  const [key, setKey] = useState(0)
+  const { createEmpleado, getEmpleado, updateEmpleado, especialidades, Especialidades, searchDoc } = useEmpleados();
+  const params = useParams();
+  const navigate = useNavigate();
+  const [key, setKey] = useState(0);
+  const [keyRol, setKeyRol] = useState(0)
   const [options, setOptions] = useState([]);
   const [defaultOptions, setDefaultOptions] = useState([]);
-  const [selectedEsp, setSelectedEsp] = useState(defaultOptions)
+  const [selectedEsp, setSelectedEsp] = useState(defaultOptions);
   const initialState = {
     nombre: "",
-    apellido: "",
+    apellidos: "",
     direccion: "",
     estado: 1,
     telefono: "",
     tipoDoc: "",
     cedula: "",
-    especialidad: []
-  }
-  const [empleado, setEmpleado] = useState(initialState)
-  const estadoOptions = [
-    {
-      value: 1, label: "Activo",
-    }, {
-      value: 0, label: "Inactivo"
-    }
-  ]
+    especialidad: [],
+    email: "",
+    contrasena: "",
+    rol: ""
+  };
+
+  const [empleado, setEmpleado] = useState(initialState);
+
+  const [rol, setRol] = useState([])
+  const [defaultOptionsRol, setDefaultOptionsRol] = useState([]);
+  const [selectedRol, setSelectedRol] = useState(null)
+
   useEffect(() => {
+    fetchData1("http://localhost:4000/rolesAct").then((data) => {
+      const rol = data.filter(item => item.estado == 1).map(item => ({ value: item.idRol, label: item.nombre }))
+      setKeyRol(prevKey => prevKey + 1)
+      setRol(rol)
+    })
     const loadEmpleados = async () => {
       if (params.id) {
-        const empleado = await getEmpleado(params.id)
+        const empleado = await getEmpleado(params.id);
         if (empleado) {
           setEmpleado({
             nombre: empleado.nombre,
-            apellido: empleado.apellido,
+            apellidos: empleado.apellidos,
             direccion: empleado.direccion,
             estado: empleado.estado === "0" ? "0" : "1",
             email: empleado.email,
             telefono: empleado.telefono,
             tipoDoc: empleado.tipoDoc,
             cedula: empleado.cedula,
-            especialidad: empleado.empleado_especialidad
-          })
-          const defaultOpts = empleado.empleado_especialidad.map(item => ({ value: item.especialidad.id, label: item.especialidad.especialidad }))
-          setDefaultOptions(defaultOpts)
-          setKey(prevKey => prevKey + 1)
+            especialidad: empleado.empleado_especialidad,
+            contrasena: empleado.contrasena,
+            rol: empleado.rolpermisoempleado
+          });
+          const defaultOpts = empleado.empleado_especialidad.map((item) => ({
+            value: item.especialidad.id,
+            label: item.especialidad.especialidad,
+          }));
+          const defaultOptionsRol = empleado.rolpermisoempleado.map((item) => ({
+            value: item.rol.idRol,
+            label: item.rol.nombre
+          }));
+          console.log(defaultOptionsRol)
+          setDefaultOptionsRol(defaultOptionsRol)
+          setSelectedRol(defaultOptionsRol)
+          setDefaultOptions(defaultOpts);
+          setKeyRol(prevKey => prevKey + 1)
+          setKey((prevKey) => prevKey + 1);
         }
-      }else{
-        setEmpleado(initialState)
+      } else {
+        setEmpleado(initialState);
       }
-    }
-    const fetchData = async () => {
-      const especialidadesData = await Especialidades()
-      const opciones = especialidadesData.filter(item => item.estado == 1).map(item => ({ value: item.id, label: item.especialidad }))
-      setOptions(opciones)
-    }
-    fetchData()
-    loadEmpleados()
-  }, [])
+    };
 
-  const alertConfirm = (type) => {
-    var message = ""
-    if (type == "update") {
-      message = "Actualizado"
-    } else {
-      message = "Agregado"
+    const fetchData = async () => {
+      const especialidadesData = await Especialidades();
+      const opciones = especialidadesData
+        .filter((item) => item.estado == 1)
+        .map((item) => ({ value: item.id, label: item.especialidad }));
+      setOptions(opciones);
+    };
+
+    fetchData();
+    loadEmpleados();
+  }, []);
+
+  const handleMenuClose = () => {
+    const focusHelper = document.getElementById('focusHelper')
+    if (focusHelper) {
+      focusHelper.focus()
     }
-    $.confirm({
-      title: `Empleado ` + message + ` con exito!`,
-      content: "Redirecionando a listado de empleados...",
-      icon: 'fa fa-check',
-      theme: 'modern',
-      closeIcon: true,
-      animation: 'zoom',
-      closeAnimation: 'scale',
-      animationSpeed: 500,
-      type: 'green',
-      columnClass: 'col-md-6 col-md-offset-3',
-      autoClose: 'okay|4000',
-      buttons: {
-        okay: function () {
-        },
-      }
-    })
   }
 
+  const alertConfirm = (type) => {
+    var message = "";
+    if (type === "update") {
+      message = "Actualizado";
+    } else {
+      message = "Agregado";
+    }
+    window.$.confirm({
+      title: `Empleado ` + message + ` con éxito!`,
+      content: "Redireccionando a listado de empleados...",
+      icon: "fa fa-check",
+      theme: "modern",
+      closeIcon: true,
+      animation: "zoom",
+      closeAnimation: "scale",
+      animationSpeed: 500,
+      type: "green",
+      columnClass: "col-md-6 col-md-offset-3",
+      autoClose: "okay|4000",
+      buttons: {
+        okay: function () { },
+      },
+    });
+  };
 
   return (
     <div className="container">
       <div className="row">
         <div className="col-md-12">
-          <Formik initialValues={empleado}
+          <Formik
+            initialValues={empleado}
             enableReinitialize={true}
             validationSchema={EmpleadoSchema}
             validateOnChange={true}
             onSubmit={async (values) => {
-              console.log(values);
               const empleadoObject = {
                 ...values,
-                especialidad: selectedEsp
-              }
-              const validateDoc = await searchDoc(empleadoObject)
-              if (validateDoc === true) {
-                $.confirm({
-                  title: `Error`,
-                  content: `El tipo documento: `+values.tipoDoc+` y numero documento: `+values.cedula+` ya existe, por favor ingrese uno diferente`,
-                  icon: 'fa fa-circle-xmark',
-                  theme: 'modern',
-                  closeIcon: true,
-                  animation: 'zoom',
-                  closeAnimation: 'scale',
-                  animationSpeed: 500,
-                  type: 'red',
-                  columnClass: 'col-md-6 col-md-offset-3',
-                  buttons: {
-                    Cerrar: function () {
-                    },
-                  }
-                })                
-              }else{
-                if (params.id) {
-                  await updateEmpleado(params.id, empleadoObject)
-                  alertConfirm('update')
-                  setTimeout(
-                    navigate("/empleados"),
-                    5000
-                  )
+                especialidad: selectedEsp,
+              };
+              const validateDoc = await searchDoc(empleadoObject);
+              if (params.id) {
+                console.log(values)
+                await updateEmpleado(params.id, empleadoObject);
+                alertConfirm('update');
+                setTimeout(() => navigate("/empleados"));
+              } else {
+
+                if (validateDoc === true) {
+                  window.$.confirm({
+                    title: `Error`,
+                    content: `El tipo documento: ` + values.tipoDoc + ` y número documento: ` + values.cedula + ` ya existe, por favor ingrese uno diferente`,
+                    icon: 'fa fa-circle-xmark',
+                    theme: 'modern',
+                    closeIcon: true,
+                    animation: 'zoom',
+                    closeAnimation: 'scale',
+                    animationSpeed: 500,
+                    type: 'red',
+                    columnClass: 'col-md-6 col-md-offset-3',
+                    buttons: {
+                      Cerrar: function () { },
+                    }
+                  });
+
                 } else {
-                  await createEmpleado(empleadoObject)
-                  alertConfirm()
-                  setTimeout(
-                    navigate("/empleados"),
-                    5000
-                  )
+                  await createEmpleado(empleadoObject);
+                  alertConfirm();
+                  setTimeout(() => navigate("/empleados"));
                 }
               }
-              // setEmpleado({
-              //   nombre: "",
-              //   apellido: "",
-              //   direccion: "",
-              //   estado: "",
-              //   email: "",
-              //   telefono: "",
-              //   tipoDoc: "",
-              //   cedula: "",
-              //   especialidad: []
-              // })
+
             }}
           >
-            {({ handleChange, handleSubmit, values, isSubmitting, errors, touched }) => (
+            {({ handleChange, handleSubmit, values, isSubmitting, errors, touched, setFieldValue }) => (
               <Form onSubmit={handleSubmit} className="user">
                 <div className="card text-center w-100">
                   <br />
                   <h1 className="h4 text-gray-900 mb-4">{params.id ? "Editar" : "Agregar"} empleado</h1>
                   <div className="card-body">
                     <div className="row">
+                      <div id="focusHelper"></div>
                       <div className="col-md-6 mt-3">
-                      <Field type="text" className="form-control form-control-user" id="nombre" name="nombre" placeholder="Nombres*" />
-                      {errors.nombre && touched.nombre ? (
-                        <div className="alert alert-danger" role="alert">{errors.nombre}</div>
-                      ) : null}
+                        <Field type="text" className="form-control form-control-user" id="nombre" name="nombre" placeholder="Nombres*" />
+                        {errors.nombre && touched.nombre ? (
+                          <div className="alert alert-danger" role="alert">{errors.nombre}</div>
+                        ) : null}
                       </div>
                       <div className="col-md-6 mt-3">
-                        <input type="text" className="form-control form-control-user" id="apellido" onChange={handleChange} value={values.apellido} placeholder="Apellidos*" />
-                        {errors.apellido && touched.apellido ? (
-                          <div className="alert alert-danger" role="alert">{errors.apellido}</div>
+                        <input type="text" className="form-control form-control-user" id="apellidos" onChange={handleChange} value={values.apellidos} placeholder="Apellidos*" />
+                        {errors.apellidos && touched.apellidos ? (
+                          <div className="alert alert-danger" role="alert">{errors.apellidos}</div>
+                        ) : null}
+                      </div>
+                      <div className="col-md-6 mt-3">
+                        <input type="text" className="form-control form-control-user" id="email" onChange={handleChange} value={values.email} placeholder="Email*" />
+                        {errors.email && touched.email ? (
+                          <div className="alert alert-danger" role="alert">{errors.email}</div>
+                        ) : null}
+                      </div>
+                      <div className="col-md-6 mt-3">
+                        <input type="password" className="form-control form-control-user" id="contrasena" onChange={handleChange} value={values.contrasena} placeholder="Contraseña*" />
+                        {errors.contrasena && touched.contrasena ? (
+                          <div className="alert alert-danger" role="alert">{errors.contrasena}</div>
                         ) : null}
                       </div>
                       <div className="col-md-6 mt-3">
                         <select id="tipoDoc" className="form-select form-control-user" onChange={handleChange} value={values.tipoDoc}>
                           <option value="">Seleccione tipo documento*</option>
-                          <option value="CC">Cedula de ciudadania</option>
-                          <option value="CE">Cedula de extranjeria</option>
+                          <option value="CC">Cedula de ciudadanía</option>
+                          <option value="CE">Cedula de extranjería</option>
                           <option value="PS">Pasaporte</option>
                         </select>
                         {errors.tipoDoc && touched.tipoDoc ? (
@@ -205,27 +240,17 @@ export default function EmpleadosForm() {
                         ) : null}
                       </div>
                       <div className="col-md-6 mt-3">
-                        {params.id ? 
-                        (
+                        {params.id ? (
                           <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
                             <option value="">Seleccione estado</option>
                             <option value="1">Activo</option>
                             <option value="0">Inactivo</option>
-                          </select>                          
-                        ): (
+                          </select>
+                        ) : (
                           <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} disabled>
                             <option value="1">Activo</option>
                           </select>
-                        )
-                        }
-                        {/* <select
-                          placeholder={<div>Selecciona estado</div>}
-                          value={values.estado}
-                          name="estado"
-                          options={estadoOptions}
-                          className="basic-multi-select"
-                          classNamePrefix="select"
-                        /> */}
+                        )}
                         {errors.estado && touched.estado ? (
                           <div className="alert alert-danger" role="alert">{errors.estado}</div>
                         ) : null}
@@ -233,6 +258,7 @@ export default function EmpleadosForm() {
                       <div className="col-md-6 mt-3">
                         <label>Selecciona especialidades:</label>
                         <Select
+                          id="especialidad"
                           key={key}
                           defaultValue={defaultOptions}
                           isMulti
@@ -240,8 +266,36 @@ export default function EmpleadosForm() {
                           options={options}
                           className="basic-multi-select"
                           classNamePrefix="select"
-                          onChange={(selectedEsp) => setSelectedEsp(selectedEsp)}
+                          onChange={(selectedEsp) => {
+                            setSelectedEsp(selectedEsp)
+                            setFieldValue("especialidad",selectedEsp)
+                          }}
                         />
+                        {errors.especialidad && touched.especialidad ? (
+                          <div className="alert alert-danger" role="alert">{errors.especialidad}</div>
+                        ) : null}
+                      </div>
+                      <div className="col-md-6 mt-3">
+                        <label htmlFor="rol" className="form-label">Rol<span className="text-danger">*</span></label>
+                        <Select
+                          key={keyRol}
+                          placeholder={<div>Seleccione rol</div>}
+                          defaultValue={defaultOptionsRol}
+                          name="rol"
+                          options={rol}
+                          className="basic-multi-select"
+                          classNamePrefix="select"
+                          onChange={(selectedRol) => {
+                            setSelectedRol(selectedRol)
+                            handleMenuClose
+                            setFieldValue("rol", selectedRol)
+                          }}
+                        />
+                        {
+                          errors.rol && touched.rol ? (
+                            <div className="alert alert-danger">{errors.rol}</div>
+                          ) : null
+                        }
                       </div>
                     </div>
                   </div>
@@ -272,5 +326,5 @@ export default function EmpleadosForm() {
         </div>
       </div>
     </div>
-  )
+  );
 }

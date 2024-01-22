@@ -60,7 +60,7 @@ function ClientPage() {
             return <TableInfo dataHeader={dataHeader} dataBody={clientes} routeEdit={"editarCliente"} viewDetail toggleApi={toggleClientStatus} getApi={getClient} entity={'Cliente'} onChangeStatus={handleChangeStatus} />
         }
     }
-
+    console.clear()
     return (
         <>
             <h1 className="h3 mb-2 text-gray-800">Gestión de clientes</h1>

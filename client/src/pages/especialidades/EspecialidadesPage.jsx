@@ -47,7 +47,7 @@ function EspecialidadesPage() {
         return <TableInfo dataHeader={dataHeader} dataBody={especialidades} routeEdit={'editarEspecialidad'} toggleApi={toggleEspecialidadStatus} getApi={getEspecialidad} entity={'Especialidad'} onChangeStatus={handleChangeStatus}/>
         // return <EspecialidadTable especialidades={especialidades}/>
     }
-
+    console.clear()
     return(
         <>
         <h1 className="h3 mb-2 text-gray-800">Gestión de especialidades</h1>        

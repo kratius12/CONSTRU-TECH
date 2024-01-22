@@ -4,9 +4,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEspecialidades } from "../../context/especialidades/EspecialidadesProvider";
 import EspecialidadSchema from '../../components/ValidatorEspecialidad'
 
-
-
-
 export default function EspecialidadesForm() {
   //   const [agreed, setAgreed] = useState(false)
   const { createEspecialidad, getEspecialidad, updateEspecialidad, } = useEspecialidades()
@@ -19,7 +16,9 @@ export default function EspecialidadesForm() {
   };
 
   const [especialidad, setEspecialidad] = useState(initialState)
-
+  const validateWhitespace = (value) => {
+    return hasWhitespace(value) ? 'No se permiten espacios en blanco' : undefined;
+};
   useEffect(() => {
     const loadEspecialidades = async () => {
       if (params.id) {
@@ -28,7 +27,7 @@ export default function EspecialidadesForm() {
           especialidad: especialidad.especialidad,
           estado: especialidad.estado === "0" ? "0" : "1"
         })
-      }else{
+      } else {
         setEspecialidad(initialState)
       }
     }
@@ -60,7 +59,7 @@ export default function EspecialidadesForm() {
       }
     })
   }
-
+  console.clear()
   return (
     <div className="container">
       <div className="row">
@@ -72,7 +71,7 @@ export default function EspecialidadesForm() {
               const cleannedName = values.especialidad.replace(/\s{2,}/g, ' ').trim()
               const especialidadObject = {
                 ...values,
-                especialidad:cleannedName
+                especialidad: cleannedName
               }
               console.log(especialidadObject);
               if (params.id) {
@@ -81,7 +80,7 @@ export default function EspecialidadesForm() {
                 setTimeout(
                   navigate("/especialidades"),
                   5000
-                )                
+                )
               } else {
                 await createEspecialidad(especialidadObject)
                 alertConfirm()
@@ -96,31 +95,31 @@ export default function EspecialidadesForm() {
               })
             }}
           >
-            {({ handleChange, handleSubmit, values, isSubmitting, errors, touched }) => (
+            {({ handleChange, handleSubmit, values, isSubmitting, errors, touched,setFieldValue }) => (
               <Form onSubmit={handleSubmit} className="user">
                 <div className="card text-center w-100">
                   <h2>{params.id ? "Editar" : "Agregar"} especialidad</h2>
                   <div className="card-body">
                     <div className="row">
                       <div className="col-6 mt-3">
-                        <input type="text" className="form-control form-control-user" id="especialidad" onChange={handleChange} value={values.especialidad} placeholder="Nombre*" />
+                        <input type="text" className="form-control form-control-user" id="especialidad" onChange={handleChange} value={values.especialidad} placeholder="Nombre*"  />
                         {errors.especialidad && touched.especialidad ? (
                           <div className="alert alert-danger" role="alert">{errors.especialidad}</div>
                         ) : null}
                       </div>
                       <div className="col-6 mt-3">
                         {params.id ?
-                        (
-                          <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
-                            <option value="">Seleccione estado*</option>
-                            <option value="1">Activo</option>
-                            <option value="0">Inactivo</option>
-                          </select>                          
-                        ):(
-                          <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} disabled>
-                            <option value="1">Activo</option>
-                          </select>                          
-                        )
+                          (
+                            <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
+                              <option value="">Seleccione estado*</option>
+                              <option value="1">Activo</option>
+                              <option value="0">Inactivo</option>
+                            </select>
+                          ) : (
+                            <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} disabled>
+                              <option value="1">Activo</option>
+                            </select>
+                          )
                         }
                         {errors.estado && touched.estado ? (
                           <div className="alert alert-danger" role="alert">{errors.estado}</div>

@@ -29,7 +29,12 @@ router.get('/compra/:id', async (req, res) => {
                 compras_detalle: {
                     include: {
                         materiales: true,
-                        categoria: true
+                        
+                    }
+                },
+                proveedor:{
+                    select:{
+                        nombre:true
                     }
                 }
             }
@@ -73,27 +78,26 @@ router.post("/compra", subirArchivoProducto, async (req, res) => {
         return res.json({ message: "Error al cargar la imagen" });
       }
   
-      const { detalles, total_compra, fecha, codigoFactura } = req.body;
+      const { detalles, total_compra, fecha, codigoFactura,idProv } = req.body;
   
       const nuevaCompra = await prisma.compras.create({
         data: {
           total_compra: parseInt(total_compra),
           imagen: req.file.filename,
-
+          idProv:parseInt(idProv),
           fecha: fecha,
           codigoFactura: codigoFactura,
         },
       });
   
       for (const detalle of detalles) {
-        const { idCat, idMat, cantidad, precio } = detalle;
+        const {  idMat, cantidad, precio } = detalle;
   
         await prisma.compras_detalle.createMany({
           data: {
             cantidad: parseInt(cantidad),
             idCompra: nuevaCompra.idCom,
             idMat: parseInt(idMat),
-            idCat: parseInt(idCat),
             precio: parseInt(precio),
             subtotal: parseInt(precio * cantidad),
           },

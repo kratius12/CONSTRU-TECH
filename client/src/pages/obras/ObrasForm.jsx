@@ -98,6 +98,7 @@ function ObrasForm() {
       }
     };
 
+
     loadObras();
   }, [ params.id ]);
 
@@ -125,6 +126,7 @@ function ObrasForm() {
     };
     fetchData();
   }, [defaultOptionsCli, defaultOptionsEmp, defaultOptionsMat]);
+
 
   const validate = (values) => {
     const hasId = params.id ? params.id : "";
@@ -196,6 +198,7 @@ function ObrasForm() {
                label: `${item.nombre || ''} ${item.apellidos || ''}`,
               }))
       }
+
     }
 
   }
@@ -528,6 +531,7 @@ function ObrasForm() {
                                                 value: item.idMat || '',
                                                 label: `${item.nombre || ''}`,
                                               })) : ''
+
                                             }
 
                                           />

@@ -29,7 +29,9 @@ export default function Sidebar({userData}) {
         </Link>
       </li>
       <hr className="sidebar-divider my-0" />
+
       {permisosUsuario.includes('roles') && (
+
       <li className="nav-item">
         <Link className="nav-link" to="/roles">
           <i className="fa-solid fa-user-tie" />&nbsp;
