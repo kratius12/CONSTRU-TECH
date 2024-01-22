@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Card from 'react-bootstrap/Card';
 import axios from "axios";
 
-import {Modal, Button} from "react-bootstrap"
+import { Modal, Button } from "react-bootstrap"
 
 import "../../components/compras/comprasDetalle.css";
 
@@ -57,30 +57,26 @@ const CompraDetalle = () => {
                         </div>
                         <div className="col-md-3 mt-3 mx-auto">
                             <label htmlFor="fecha">Total de la compra:</label>
-
                             <input className="form-control form-control-user" type="text" id="fecha" name="fecha" value={formattedTotalCompra} disabled />
-
+                        </div>
+                        <div className="col-md-3 mt-3 mx-auto">
+                            <label htmlFor="fecha">Proveedor:</label>
+                            <input className="form-control form-control-user" type="text" id="fecha" name="fecha" value={compra.proveedor.nombre} disabled />
                         </div>
                     </div>
                 </div>
                 <div>
-
-
-                    {/* <Button variant="secondary" onClick={handleOpenModal} style={{ marginLeft: '15px', padding: '20px' }}>
-<i class="bi bi-search"></i> {/* Bootstrap icon for search */}
                     <button type="button" className="btn btn-secondary" onClick={handleOpenModal}>
 
                         Ver factura de compra
                     </button>
-
-
                     <Modal show={showModal} onHide={handleCloseModal}>
                         <Modal.Header closeButton>
-                            <Modal.Title>Detalle de la Imagen</Modal.Title>
+                            <Modal.Title>Imagen de factura</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
                             <img
-                                src={`server/images/${compra.imagen}`}
+                                src={`http://localhost:4000/images/${compra.imagen}`}
                                 alt="Imagen de factura"
                                 style={{ width: '100%' }}
                             />
@@ -100,10 +96,9 @@ const CompraDetalle = () => {
                         <><div key={detalle.id}>
                             <Card className="detalle-card">
                                 <div><strong>Material: </strong> {detalle.materiales.nombre}</div>
-                                <div><strong>Categoria:</strong> {detalle.categoria.nombre}</div>
                                 <div><strong>Cantidad:</strong> {detalle.cantidad}</div>
                                 <div><strong>Precio:</strong> {detalle.precio}</div>
-                                <div><strong>Subtotal:</strong> {detalle.subtotal}</div>
+                                <div><strong>Subtotal:</strong> ${detalle.subtotal.toLocaleString()}</div>
                             </Card>
                         </div></>
                     ))}

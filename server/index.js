@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import {dirname, join} from "path";
 import { fileURLToPath } from "url";
+import path from "path";
+import bodyParser from "body-parser";
 import { PORT } from "./config.js";
 import indexRoutes from "./routes/index.routes.js"
 import obrasRoutes from "./routes/obras.routes.js"
@@ -25,6 +27,11 @@ app.use(express.json())
 app.use(express.urlencoded({
     extended:true
 }))
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({extended:true}))
+
 app.use(indexRoutes)
 app.use(obrasRoutes)
 app.use(materialesRoutes)
@@ -37,7 +44,7 @@ app.use(rolesRoutes)
 app.use(usuariosRoutes)
 app.use(permisosRoutes)
 app.use(comprasRoutes)
-
+app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use(dashboardRoutes)
 app.use(loginRoutes)
 

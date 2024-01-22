@@ -10,7 +10,6 @@ router.get("/categorias", async (req, res) =>{
         res.status(200).json(result)
 
     } catch (error) {
-        console.log(json({message: error.message}));
         return res.status(500).json({message: error.message})
     }
 })
@@ -36,7 +35,6 @@ router.get("/categoria/:id", async (req, res) =>{
                 idcat:parseInt(req.params.id)
             }
         })
-        console.log(result);
         res.status(200).json(result)
     } catch (error) {
         console.log(error)
@@ -50,11 +48,10 @@ router.post("/categorias", async (req, res) => {
         const result = await prisma.categoria.create({
             data:{
                 nombre: nombre,
-                estado:parseInt(estado),
+                estado:1,
                 medida:medida
             }
         })
-        console.log(result);
         res.status(200).json(result)
     } catch (error) {
         return res.status(500).json({message: error.message})
@@ -90,7 +87,6 @@ router.delete("/categoria/:id", async (req, res) => {
             }
         })
         res.status(200).json(result)
-        console.log(result);
     } catch (error) {
         console.log(error);
         return res.status(500).json({message: error.message})
@@ -109,10 +105,14 @@ router.put("/estadoCategoria/:id",async(req,res)=>{
           await prisma.materiales.updateMany({
             where: { idCategoria: parseInt(req.params.id) },
             data: { estado: 0 },
-          });}
+          });
+        }
           else{
         return res.status(200).json(categoriaActualizada)
-    }}catch(error){
+    }
+
+
+}catch(error){
         console.error(error)
     }
 })
