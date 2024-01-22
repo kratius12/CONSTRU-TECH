@@ -107,6 +107,7 @@ router.post("/obras", async (req, res) =>{
 router.put("/obra/:id", async (req, res) =>{
     try {
         const {descripcion, area, cliente, actividades, estado, fechafin, fechaini, precio} = req.body
+        const clienteValue = cliente.length > 0 ? cliente[0].value : null;
         const result = await prisma.obras.update({
             where:{
                 idObra:parseInt(req.params.id)
@@ -117,7 +118,7 @@ router.put("/obra/:id", async (req, res) =>{
                 estado:estado,
                 fechaini:fechaini,
                 fechafin:fechafin,
-                idCliente:cliente.value,
+                idCliente:clienteValue,
                 precio:parseInt(precio)
             }
         })
@@ -129,27 +130,23 @@ router.put("/obra/:id", async (req, res) =>{
                 },
             });
 
-            await Promise.all(actividades.map(async (actividad) =>{
-                const { empleados, materiales, ...rest } = actividad
-                const maxIteraciones = Math.max(empleados.length, materiales.length);
+            await Promise.all(actividades.map(async (actividad) => {
+                const { empleados, materiales, ...rest } = actividad;
                 
-                for (let i = 0; i < maxIteraciones; i++) {
-                    const idEmp = empleados[i] ? empleados[i].value : empleados[i - 1].value;
-                    const idMat = materiales[i] ? materiales[i].value : materiales[i - 1].value;
                 
-                    await prisma.detalle_obra.create({
-                        data: {
-                            idObra: parseInt(req.params.id),
-                            actividad: rest.actividad,
-                            fechaini: rest.fechaInicio,
-                            fechafin: rest.fechaFinal,
-                            idEmp: idEmp,
-                            idMat: idMat,
-                            estado: rest.estadoAct.value              
-                        },
-                    });
-                }
-            }))
+                await prisma.detalle_obra.create({
+                    data: {
+                      actividad: actividad.actividad,
+                      fechaini: actividad.fechaini,
+                      fechafin: actividad.fechafin,
+                      estado: actividad.estado,
+                      idObra: parseInt(req.params.id),
+                      idEmp: actividad.idEmp,
+                      idMat: actividad.idMat,
+                    },
+                  });
+                
+            }));
             res.status(200).json(result)
         }else{
             console.log("Ha ocurrido un error...");            
