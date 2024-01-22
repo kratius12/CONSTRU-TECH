@@ -98,7 +98,7 @@ const CompraDetalle = () => {
                                 <div><strong>Material: </strong> {detalle.materiales.nombre}</div>
                                 <div><strong>Cantidad:</strong> {detalle.cantidad}</div>
                                 <div><strong>Precio:</strong> {detalle.precio}</div>
-                                <div><strong>Subtotal:</strong> {detalle.subtotal}</div>
+                                <div><strong>Subtotal:</strong> ${detalle.subtotal.toLocaleString()}</div>
                             </Card>
                         </div></>
                     ))}
