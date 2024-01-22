@@ -34,7 +34,12 @@ router.get("/obra/:id", async (req, res) =>{
                 idObra:parseInt(req.params.id)
             },
             include:{
-                detalle_obra:true,
+                detalle_obra:{
+                    include:{
+                        empleado:true,
+                        materiales:true
+                    }
+                },
                 cliente:{
                     select:{
                         idCli:true,
@@ -68,11 +73,27 @@ router.post("/obras", async (req, res) =>{
         })
         await prisma.detalle_obra.create({
             data:{
-                idEmp:parseInt(empleados.value),
-                idObra:parseInt(result.idObra),
+                // idEmp:parseInt(empleados.value),
+                // idObra:parseInt(result.idObra),
                 estado:"En curso",
                 fechaini:fechaini,
-                actividad:"Asesoria"
+                fechafin:fechaini,
+                actividad:"Asesoria",
+                obras:{
+                    connect:{
+                        idObra: parseInt(result.idObra)
+                    }
+                },
+                empleado:{
+                    connect:{
+                        idEmp: empleados.value
+                    }
+                },
+                materiales:{
+                    connect:{
+                        idMat:0
+                    }
+                }
             }
         })
         console.log(result)
