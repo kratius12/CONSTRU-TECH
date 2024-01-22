@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 15-12-2023 a las 19:48:19
--- Versión del servidor: 10.4.28-MariaDB
--- Versión de PHP: 8.0.28
+-- Tiempo de generación: 22-01-2024 a las 15:59:07
+-- Versión del servidor: 10.4.32-MariaDB
+-- Versión de PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `constru-tech v2`
+-- Base de datos: `constru-tech`
 --
 
 -- --------------------------------------------------------
@@ -32,7 +32,7 @@ CREATE TABLE `categoria` (
   `nombre` varchar(50) DEFAULT NULL,
   `estado` int(11) DEFAULT NULL,
   `medida` varchar(50) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -51,8 +51,24 @@ CREATE TABLE `cliente` (
   `cedula` varchar(10) DEFAULT NULL,
   `fecha_nac` varchar(50) DEFAULT NULL,
   `estado` int(11) DEFAULT NULL,
-  `constrasena` varchar(50) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `constrasena` varchar(200) DEFAULT NULL,
+  `salt` varchar(200) NOT NULL,
+  `createdAt` date NOT NULL DEFAULT curdate()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `codigos`
+--
+
+CREATE TABLE `codigos` (
+  `Id` int(11) NOT NULL,
+  `codigo` varchar(50) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `estado` int(11) DEFAULT NULL,
+  `fecha` timestamp NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -67,7 +83,7 @@ CREATE TABLE `compras` (
   `total_compra` int(11) DEFAULT NULL,
   `codigoFactura` varchar(20) DEFAULT NULL,
   `idProv` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -79,9 +95,10 @@ CREATE TABLE `compras_detalle` (
   `id` int(11) NOT NULL,
   `idCompra` int(11) NOT NULL,
   `idMat` int(11) DEFAULT NULL,
+  `cantidad` int(11) DEFAULT NULL,
   `precio` int(11) DEFAULT NULL,
   `subtotal` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -98,7 +115,7 @@ CREATE TABLE `detalle_obra` (
   `idMat` int(11) NOT NULL,
   `estado` varchar(50) DEFAULT NULL,
   `idObra` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -109,15 +126,16 @@ CREATE TABLE `detalle_obra` (
 CREATE TABLE `empleado` (
   `idEmp` int(11) NOT NULL,
   `nombre` varchar(50) DEFAULT NULL,
-  `apellidos` varchar(50) DEFAULT NULL,
   `direccion` varchar(50) DEFAULT NULL,
-  `estado` int(1) DEFAULT NULL,
+  `estado` int(11) DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
-  `contrasena` varchar(20) DEFAULT NULL,
   `telefono` varchar(10) DEFAULT NULL,
   `cedula` varchar(10) DEFAULT NULL,
-  `tipoDoc` varchar(10) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `tipoDoc` varchar(10) DEFAULT NULL,
+  `apellidos` varchar(50) DEFAULT NULL,
+  `contrasena` varchar(250) DEFAULT NULL,
+  `createdAt` date NOT NULL DEFAULT curdate()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -129,7 +147,7 @@ CREATE TABLE `empleado_especialidad` (
   `id` int(11) NOT NULL,
   `idEmp` int(11) NOT NULL,
   `idEsp` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -141,7 +159,7 @@ CREATE TABLE `especialidad` (
   `id` int(11) NOT NULL,
   `especialidad` varchar(30) DEFAULT NULL,
   `estado` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -154,7 +172,7 @@ CREATE TABLE `materiales` (
   `nombre` varchar(50) DEFAULT NULL,
   `estado` int(11) DEFAULT NULL,
   `idCategoria` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -167,11 +185,12 @@ CREATE TABLE `obras` (
   `descripcion` varchar(100) DEFAULT NULL,
   `fechaini` varchar(50) DEFAULT NULL,
   `fechafin` varchar(50) DEFAULT NULL,
-  `area` int(11) DEFAULT NULL,
+  `area` varchar(50) DEFAULT NULL,
   `idCliente` int(11) DEFAULT NULL,
   `estado` varchar(50) DEFAULT NULL,
-  `precio` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `precio` int(11) DEFAULT NULL,
+  `createdAt` date NOT NULL DEFAULT curdate()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -183,7 +202,16 @@ CREATE TABLE `permiso` (
   `idPer` int(11) NOT NULL,
   `permiso` varchar(30) DEFAULT NULL,
   `estado` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `permiso`(`permiso`,`estado`) VALUES
+(`Roles`,1),
+(`Empleados`,1),
+(`Especialidades`,1),
+(`Proveedores`,1),
+(`Materiales`,1),
+(`Obras y tiempos`,1),
+(`Clientes`,1)
 
 -- --------------------------------------------------------
 
@@ -203,7 +231,7 @@ CREATE TABLE `proveedor` (
   `nombreContacto` varchar(50) DEFAULT NULL,
   `telefonoContacto` varchar(10) DEFAULT NULL,
   `emailContacto` varchar(100) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -215,7 +243,7 @@ CREATE TABLE `rol` (
   `idRol` int(11) NOT NULL,
   `nombre` varchar(30) DEFAULT NULL,
   `estado` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -227,8 +255,34 @@ CREATE TABLE `rolpermisoempleado` (
   `id` int(11) NOT NULL,
   `idRol` int(11) NOT NULL,
   `idPer` int(11) NOT NULL,
-  `idEmp` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `idEmp` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `_prisma_migrations`
+--
+
+CREATE TABLE `_prisma_migrations` (
+  `id` varchar(36) NOT NULL,
+  `checksum` varchar(64) NOT NULL,
+  `finished_at` datetime(3) DEFAULT NULL,
+  `migration_name` varchar(255) NOT NULL,
+  `logs` text DEFAULT NULL,
+  `rolled_back_at` datetime(3) DEFAULT NULL,
+  `started_at` datetime(3) NOT NULL DEFAULT current_timestamp(3),
+  `applied_steps_count` int(10) UNSIGNED NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `_prisma_migrations`
+--
+
+INSERT INTO `_prisma_migrations` (`id`, `checksum`, `finished_at`, `migration_name`, `logs`, `rolled_back_at`, `started_at`, `applied_steps_count`) VALUES
+('5e5bca49-7710-480f-bc5c-af61b1c91614', 'a2e39ee5317b244a980169d20172a3a7ffc2403e8d0f8cc3a10bb7169eeb89c1', '2024-01-22 14:58:11.593', '20240122145707_migracion', NULL, NULL, '2024-01-22 14:58:11.533', 1),
+('dc7b9de6-0b50-4e74-b40a-f3e7cc4a9f2f', '2482081e9d756286788f23ea00fd1a93ab5b995b76e2e361f9f4d88a56a176d3', '2024-01-22 14:58:11.532', '20240121161531_migracion', NULL, NULL, '2024-01-22 14:58:10.775', 1),
+('f73a4bd7-e6ec-4854-ac31-936437be8bf8', 'cb01df05c83e63a71d6efb340a527daf62c41e34a577bccb9dff68fbfb79ac55', '2024-01-22 14:58:10.773', '20231213144537_add_created_at_column_obras_clientes', NULL, NULL, '2024-01-22 14:58:09.962', 1);
 
 --
 -- Índices para tablas volcadas
@@ -245,6 +299,13 @@ ALTER TABLE `categoria`
 --
 ALTER TABLE `cliente`
   ADD PRIMARY KEY (`idCli`);
+
+--
+-- Indices de la tabla `codigos`
+--
+ALTER TABLE `codigos`
+  ADD PRIMARY KEY (`Id`),
+  ADD UNIQUE KEY `codigos_codigo_key` (`codigo`);
 
 --
 -- Indices de la tabla `compras`
@@ -266,15 +327,16 @@ ALTER TABLE `compras_detalle`
 --
 ALTER TABLE `detalle_obra`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `idObra` (`idObra`),
+  ADD KEY `idEmp` (`idEmp`),
   ADD KEY `idMat` (`idMat`),
-  ADD KEY `idEmp` (`idEmp`);
+  ADD KEY `idObra` (`idObra`);
 
 --
 -- Indices de la tabla `empleado`
 --
 ALTER TABLE `empleado`
-  ADD PRIMARY KEY (`idEmp`);
+  ADD PRIMARY KEY (`idEmp`),
+  ADD UNIQUE KEY `empleado_email_key` (`email`);
 
 --
 -- Indices de la tabla `empleado_especialidad`
@@ -327,9 +389,15 @@ ALTER TABLE `rol`
 --
 ALTER TABLE `rolpermisoempleado`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `idRol` (`idRol`),
+  ADD KEY `idEmp` (`idEmp`),
   ADD KEY `idPer` (`idPer`),
-  ADD KEY `idEmp` (`idEmp`);
+  ADD KEY `idRol` (`idRol`);
+
+--
+-- Indices de la tabla `_prisma_migrations`
+--
+ALTER TABLE `_prisma_migrations`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
@@ -346,6 +414,12 @@ ALTER TABLE `categoria`
 --
 ALTER TABLE `cliente`
   MODIFY `idCli` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `codigos`
+--
+ALTER TABLE `codigos`
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `compras`
@@ -455,13 +529,13 @@ ALTER TABLE `empleado_especialidad`
 -- Filtros para la tabla `materiales`
 --
 ALTER TABLE `materiales`
-  ADD CONSTRAINT `materiales_ibfk_1` FOREIGN KEY (`idCategoria`) REFERENCES `categoria` (`idcat`);
+  ADD CONSTRAINT `materiales_ibfk_2` FOREIGN KEY (`idCategoria`) REFERENCES `categoria` (`idcat`);
 
 --
 -- Filtros para la tabla `obras`
 --
 ALTER TABLE `obras`
-  ADD CONSTRAINT `obras_ibfk_1` FOREIGN KEY (`idCliente`) REFERENCES `cliente` (`idCli`);
+  ADD CONSTRAINT `obras_ibfk_3` FOREIGN KEY (`idCliente`) REFERENCES `cliente` (`idCli`);
 
 --
 -- Filtros para la tabla `rolpermisoempleado`
