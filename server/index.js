@@ -18,6 +18,7 @@ import usuariosRoutes from "./routes/usuarios.routes.js";
 import permisosRoutes from "./routes/permisos.routes.js";
 import comprasRoutes from './routes/compras.routes.js'
 import dashboardRoutes from './routes/dashboard.routes.js'
+import loginRoutes from './routes/login.routes.js'
 import exphbs from "express-handlebars";
 const app = express()
 const _dirname = dirname(fileURLToPath(import.meta.url))
@@ -45,6 +46,7 @@ app.use(permisosRoutes)
 app.use(comprasRoutes)
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use(dashboardRoutes)
+app.use(loginRoutes)
 
 app.use(express.static(join(_dirname,"../client/dist")))
 app.listen(PORT)

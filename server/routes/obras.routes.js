@@ -17,8 +17,7 @@ router.get("/obras", async (req, res) =>{
         const result = await prisma.obras.findMany({
             include:{
                 cliente:true,
-                empleado_obra:true,
-                materiales_obras:true
+                detalle_obra:true
             }
         })
         res.status(200).json(result)
@@ -35,20 +34,25 @@ router.get("/obra/:id", async (req, res) =>{
                 idObra:parseInt(req.params.id)
             },
             include:{
-                empleado_obra:{
-                    select:{
-                        empleado:true
-                    }
-                },
-                materiales_obras:{
-                    select:{
+                detalle_obra:{
+                    include:{
+                        empleado:true,
                         materiales:true
                     }
                 },
-                cliente:true
+                cliente:{
+                    select:{
+                        idCli:true,
+                        nombre:true,
+                        apellidos:true
+                    }
+                }
             }
         })
-        console.log(result);
+        if (result) {
+            result.actividades = result.detalle_obra;
+            delete result.detalle_obra;
+        }
         res.status(200).json(result)
     } catch (error) {
         console.log(json({message: error.message}))
@@ -58,7 +62,7 @@ router.get("/obra/:id", async (req, res) =>{
 
 router.post("/obras", async (req, res) =>{
     try {
-        const {descripcion, estado, fechaini, fechafin, cliente, empleados, materiales} = req.body
+        const {descripcion, fechaini, cliente, empleados} = req.body
         const result = await prisma.obras.create({
             data:{
                 descripcion:descripcion,
@@ -67,23 +71,42 @@ router.post("/obras", async (req, res) =>{
                 idCliente:parseInt(cliente.value)
             }
         })
-        await prisma.empleado_obra.create({
+        await prisma.detalle_obra.create({
             data:{
-                idEmp:parseInt(empleados.value),
-                idObra:parseInt(result.idObra)
+                // idEmp:parseInt(empleados.value),
+                // idObra:parseInt(result.idObra),
+                estado:"En curso",
+                fechaini:fechaini,
+                fechafin:fechaini,
+                actividad:"Asesoria",
+                obras:{
+                    connect:{
+                        idObra: parseInt(result.idObra)
+                    }
+                },
+                empleado:{
+                    connect:{
+                        idEmp: empleados.value
+                    }
+                },
+                materiales:{
+                    connect:{
+                        idMat:0
+                    }
+                }
             }
         })
         console.log(result)
         res.status(200).json(result)
     } catch (error) {
-        console.log(json({message: error.message}))
+        console.log('message:'+error.message)
         return res.status(500).json({message: error.message})
     }
 })
 
 router.put("/obra/:id", async (req, res) =>{
     try {
-        const {descripcion, area, cliente, empleados, material, estado, fechafin, fechaini} = req.body
+        const {descripcion, area, cliente, actividades, estado, fechafin, fechaini, precio} = req.body
         const result = await prisma.obras.update({
             where:{
                 idObra:parseInt(req.params.id)
@@ -94,35 +117,38 @@ router.put("/obra/:id", async (req, res) =>{
                 estado:estado,
                 fechaini:fechaini,
                 fechafin:fechafin,
-                idCliente:cliente.value
+                idCliente:cliente.value,
+                precio:parseInt(precio)
             }
         })
         if (result) {
-            const result2 = await prisma.empleado_obra.deleteMany({
-                where:{
-                    idObra:parseInt(req.params.id)
+
+            await prisma.detalle_obra.deleteMany({
+                where: {
+                  idObra: parseInt(req.params.id),
+                },
+            });
+
+            await Promise.all(actividades.map(async (actividad) =>{
+                const { empleados, materiales, ...rest } = actividad
+                const maxIteraciones = Math.max(empleados.length, materiales.length);
+                
+                for (let i = 0; i < maxIteraciones; i++) {
+                    const idEmp = empleados[i] ? empleados[i].value : empleados[i - 1].value;
+                    const idMat = materiales[i] ? materiales[i].value : materiales[i - 1].value;
+                
+                    await prisma.detalle_obra.create({
+                        data: {
+                            idObra: parseInt(req.params.id),
+                            actividad: rest.actividad,
+                            fechaini: rest.fechaInicio,
+                            fechafin: rest.fechaFinal,
+                            idEmp: idEmp,
+                            idMat: idMat,
+                            estado: rest.estadoAct.value              
+                        },
+                    });
                 }
-            })
-            const result3 = await prisma.materiales_obras.deleteMany({
-                where:{
-                    idObra:parseInt(req.params.id)
-                }
-            })
-            await Promise.all(empleados.map(async (empleado) =>{
-                await prisma.empleado_obra.create({
-                    data:{
-                        idEmp:parseInt(empleado.value),
-                        idObra:parseInt(req.params.id)
-                    }
-                })
-            }))
-            await Promise.all(material.map(async (mat) =>{
-                await prisma.materiales_obras.create({
-                    data:{
-                        idMaterial:parseInt(mat.value),
-                        idObra:parseInt(req.params.id)
-                    }
-                })
             }))
             res.status(200).json(result)
         }else{

@@ -1,18 +1,16 @@
 import { useEffect, useState, useId } from 'react';
 import ReactDOMServer from 'react-dom/server';
-function renderObjectProperties(obj) {
+function renderObjectProperties(obj, excludedFields = []) {
   if (!obj || (Array.isArray(obj) && obj.length === 0)) {
-    return <p>Sin datos</p>;
+    return 'Sin datos';
   }
-  return (
-    <ul>
-      {Object.entries(obj).map(([propKey, propValue]) => (
-        <li key={propKey} className='list-group-item'>
-          <strong>{propKey}:</strong> {propValue}
-        </li>
-      ))}
-    </ul>
-  );
+
+  return Object.entries(obj)
+    .filter(([propKey]) => !excludedFields.includes(propKey))
+    .map(([propKey, propValue]) => (
+      `${propValue}`
+    ))
+    .join(', ');
 }
 const AlertDetail = ({ id, entity, getApi }) => {
   const [infoDetail, setInfoDetail] = useState(null);
@@ -30,7 +28,7 @@ const AlertDetail = ({ id, entity, getApi }) => {
     fetchData();
   }, [getApi, id]);
 
-  const excludedFields = ['createdAt', 'updatedAt'];
+  const excludedFields = ['createdAt', 'updatedAt', 'idObra', 'Id', 'idEmp', 'idCli', 'idMat', 'idcat', 'idCliente', 'actividades', 'empleado_especialidad', 'contrasena'];
   const [textStatus, setTextStatus] = useState(1);
   const text = textStatus === 1 ? 'Activo' : 'Inactivo';
 
@@ -66,17 +64,18 @@ const AlertDetail = ({ id, entity, getApi }) => {
                 </div>
               ))
             ): typeof value === 'object'?  (
-              <div className="card">
-                <ul className="list-group list-group-flush">
-                  <li className='list-group-item'>{renderObjectProperties(value)}</li>
-                </ul>
-              </div>
+              <input 
+              type="text"
+              className="form-control form-control-user"
+              value={renderObjectProperties(value, ['idObra', 'Id', 'idEmp', 'idCli', 'idMat', 'idcat', 'idCliente', 'actividades'])}
+              readOnly              
+              />
             ) : (
               // Si no es un array, muestra el input normal
               <input
                 type="text"
                 className="form-control form-control-user"
-                value={key === 'estado' ? (text ?? '') : JSON.stringify(value)}
+                value={key === 'estado' ? (text ?? '') : (typeof value === 'string' ? value : JSON.stringify(value))}
                 readOnly
               />
             )}
@@ -85,21 +84,6 @@ const AlertDetail = ({ id, entity, getApi }) => {
       ))}
   </div>
 </form>
-
-
-      
-      // <table className="w-100">
-      //   <tbody>
-      //     {Object.entries(infoDetail)
-      //       .filter(([key]) => !excludedFields.includes(key))
-      //       .map(([key, value]) => (
-      //         <tr key={key}>
-      //           <th>{key}</th>
-      //           <td>{key === 'estado' ? text : value}</td>
-      //         </tr>
-      //       ))}
-      //   </tbody>
-      // </table>
     );
   };
 

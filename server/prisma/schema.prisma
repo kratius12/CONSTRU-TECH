@@ -28,6 +28,7 @@ model cliente {
   estado      Int?
   constrasena String? @db.VarChar(200)
   salt        String  @db.VarChar(200)
+  createdAt        DateTime           @default(dbgenerated("(curdate())")) @db.Date
   obras       obras[]
 }
 
@@ -64,12 +65,13 @@ model empleado {
   apellidos             String?                 @db.VarChar(50)
   direccion             String?                 @db.VarChar(50)
   estado                Int?
-  email                 String?                 @db.VarChar(100)
-  contrasena            String?                 @db.VarChar(200)
+
+  email                 String?                 @unique @db.VarChar(100)
+  contrasena            String?                 @db.VarChar(250)
   telefono              String?                 @db.VarChar(10)
   cedula                String?                 @db.VarChar(10)
   tipoDoc               String?                 @db.VarChar(10)
-  salt                  String?                 @db.VarChar(200)
+  createdAt             DateTime                @default(dbgenerated("(curdate())")) @db.Date
   detalle_obra          detalle_obra[]
   empleado_especialidad empleado_especialidad[]
   rolpermisoempleado    rolpermisoempleado[]
@@ -110,10 +112,11 @@ model obras {
   descripcion  String?        @db.VarChar(100)
   fechaini     String?        @db.VarChar(50)
   fechafin     String?        @db.VarChar(50)
-  area         Int?
+  area         String?        @db.VarChar(50)
   idCliente    Int?
   estado       String?        @db.VarChar(50)
-  precio       Int
+  precio       Int?
+  createdAt        DateTime           @default(dbgenerated("(curdate())")) @db.Date
   detalle_obra detalle_obra[]
   cliente      cliente?       @relation(fields: [idCliente], references: [idCli], onDelete: Restrict, onUpdate: Restrict, map: "obras_ibfk_3")
 
@@ -168,6 +171,7 @@ model detalle_obra {
 }
 
 model rolpermisoempleado {
+
   id       Int       @id @default(autoincrement())
   idRol    Int
   idPer    Int
@@ -179,4 +183,14 @@ model rolpermisoempleado {
   @@index([idEmp], map: "idEmp")
   @@index([idPer], map: "idPer")
   @@index([idRol], map: "idRol")
+
+}
+
+model codigos {
+  Id     Int       @id @default(autoincrement())
+  codigo String?   @unique @db.VarChar(50)
+  email  String?   @db.VarChar(255)
+  estado Int?
+  fecha  DateTime? @default(now()) @db.Timestamp(0)
+
 }

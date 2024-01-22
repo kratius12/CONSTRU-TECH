@@ -77,6 +77,7 @@ router.post("/empleados", async (req, res) => {
         const result = await prisma.empleado.create({
             data: {
                 nombre: nombre,
+
                 apellidos: apellidos,
                 direccion: direccion,
                 telefono: telefono,
@@ -90,6 +91,7 @@ router.post("/empleados", async (req, res) => {
         });
 
         // Almacenar las especialidades
+
         await Promise.all(especialidad.map(async (idEsp) => {
             await prisma.empleado_especialidad.create({
                 data: {
@@ -129,6 +131,7 @@ router.put("/empleado/:id", async (req, res) => {
             },
             data: {
                 nombre: nombre,
+
                 apellidos: apellidos,
                 direccion: direccion,
                 telefono: telefono,
@@ -138,6 +141,7 @@ router.put("/empleado/:id", async (req, res) => {
                 email: email,
                 contrasena: hash,
                 salt: salt
+
             }
         })
         if (especialidad.length>0) {
