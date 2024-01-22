@@ -10,29 +10,15 @@ function ObrasForm() {
     createObra,
     getObra,
     updateObra,
-    clientes,
     Clientes,
-    materiales,
     Materiales,
-    empleados,
     Empleados,
   } = useObras();
   const params = useParams();
   const navigate = useNavigate();
-  const [keyMat, setKeyMat] = useState(0);
   const [keyEmp, setKeyEmp] = useState(0);
   const [keyCli, setKeyCli] = useState(0);
 
-  const [actividades, setActividades] = useState([
-    {
-      actividad: "",
-      fechaini: "",
-      fechafin: "",
-      empleados: [],
-      materiales: [],
-      estadoAct: "",
-    },
-  ]);
 
   const [optionsMat, setOptionsMat] = useState([]);
   const [defaultOptionsMat, setDefaultOptionsMat] = useState([]);
@@ -45,6 +31,7 @@ function ObrasForm() {
   const [optionsCli, setOptionsCli] = useState([]);
   const [defaultOptionsCli, setDefaultOptionsCli] = useState([]);
   const [selectedCli, setSelectedCli] = useState(null);
+
 
   const optsEstadoAct = [
     { value: "En curso", label: "En curso" },
@@ -105,14 +92,6 @@ function ObrasForm() {
             label: obra.cliente.nombre+" - "+obra.cliente.apellidos,
           },
         ];
-        const defaultSelectedEmp = obra.actividades.flatMap(actividad => actividad.empleados.map(emp => ({ value: emp.idEmp, label: `${emp.nombre} - ${emp.apellidos}` })));
-        const defaultSelectedMat = obra.actividades.flatMap(actividad => actividad.materiales.map(mat => ({ value: mat.idMat, label: mat.nombre })));
-    
-        setSelectedEmp(defaultSelectedEmp);
-        setSelectedMat(defaultSelectedMat);
-        setKeyEmp((prevKey) => prevKey + 1);
-        setKeyMat((prevKey) => prevKey + 1);
-
         setDefaultOptionsCli(defaultOptionsCli);
         setSelectedCli(defaultOptionsCli);
         setKeyCli((prevKey) => prevKey + 1);
@@ -120,7 +99,7 @@ function ObrasForm() {
     };
 
     loadObras();
-  }, []);
+  }, [ params.id ]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -190,6 +169,37 @@ function ObrasForm() {
     })
   };
 
+  const actividadesAgrupadas = obra.actividades.reduce((agrupadas, actividad) => {
+    const existente = agrupadas.find((ag) => ag.actividad === actividad.actividad);
+  
+    if (existente) {
+      existente.empleados.push(actividad.empleado);
+      existente.materiales.push(actividad.materiales);
+    } else {
+      agrupadas.push({
+        actividad: actividad.actividad,
+        empleados: [actividad.empleado],
+        materiales: [actividad.materiales],
+      });
+    }
+  
+    return agrupadas;
+  }, []);
+
+  const showEmpleados = (empleados) => {
+    for (const key in empleados) {
+      if (empleados.hasOwnProperty(key) && empleados[key] === undefined) {
+          return '';
+      }else{
+        return empleados.map((item, indexI) => ({
+               value: item.idEmp || '',
+               label: `${item.nombre || ''} ${item.apellidos || ''}`,
+              }))
+      }
+    }
+
+  }
+
   const alertConfirm = (type) => {
     var message = "";
     if (type == "update") {
@@ -221,7 +231,6 @@ function ObrasForm() {
           <Formik
             initialValues={obra}
             enableReinitialize={true}
-            // validationSchema={ObraSchema}
             validate={validate}
             onSubmit={async (values) => {
               const cleannedDescription = values.descripcion
@@ -419,7 +428,7 @@ function ObrasForm() {
                           </div>
                           <div className="col-md-12">
                             <hr />
-                            {obra.actividades.map((actividad, index) => (
+                            { actividadesAgrupadas.map((actividadAgrupada, index) => (
                                     <div key={index} className="row my-4 px-4">
                                       <div className="col-md-4">
                                         <label
@@ -430,19 +439,18 @@ function ObrasForm() {
                                           <span className="text-danger">*</span>
                                         </label>
                                         <input
-                                          type="text"
+                                          type="text" 
                                           className="form-control form-control-user"
-                                          id={`actividad-${index}`}
-                                          onChange={(e) =>
-                                            handleChangeActividad(
-                                              index,
-                                              "actividad",
-                                              e.target.value
-                                            )
-                                          }
-                                          value={obra.actividades[index]?.actividad || ''}
-                                          placeholder="Actividad ha realizarse*"
+                                          name={`actividades[${index}].actividad`}
+                                          value={actividadAgrupada.actividad}
+                                          onChange={(e) => {
+                                            handleChange(e);
+                                            handleActividadChange(index, e.target.value);
+                                          }}
                                         />
+                                        {errors.actividades && errors.actividades[index] && errors.actividades[index].actividad && (
+                                                <div className="text-danger">{errors.actividades[index].actividad}</div>
+                                              )}                                      
                                       </div>
                                       <div className="col-md-4">
                                         <label
@@ -453,7 +461,7 @@ function ObrasForm() {
                                           <span className="text-danger">*</span>
                                         </label>
                                         <input
-                                          type="text"
+                                          type="date"
                                           className="form-control form-control-user"
                                           id={`fechaini-${index}`}
                                           onChange={(e) =>
@@ -476,7 +484,7 @@ function ObrasForm() {
                                           <span className="text-danger">*</span>
                                         </label>
                                         <input
-                                          type="text"
+                                          type="date"
                                           className="form-control form-control-user"
                                           id={`fechafin-${index}`}
                                           onChange={(e) =>
@@ -495,20 +503,16 @@ function ObrasForm() {
                                               Empleados<span className="text-danger">*</span>
                                           </label>
                                           <Select
-                                              placeholder={<div>Selecciona empleados</div>}
-                                              isMulti={true}
-                                              name={`empleados-${index}`}
-                                              value={defaultOptionsEmp}
-                                              options={optionsEmp}
-                                              className="basic-multi-select"
-                                              classNamePrefix="select"
-                                              onChange={(selectedEmp) => {
-                                                handleChangeActividad(index, 'empleados', selectedEmp);
-                                                setSelectedEmp(selectedEmp);
-                                                handleMenuClose();
-                                              }}
-                                              onBlur={() => setFieldTouched(`empleados-[${index}].empleados`, true)}
-                                              onMenuClose={handleMenuClose}
+                                            isMulti
+                                            name={`actividades[${index}].empleados`}
+                                            // value={
+                                            //   actividadAgrupada.empleados.map((item, indexI) => ({
+                                            //     value: item.idEmp || '',
+                                            //     label: `${item.nombre || ''} ${item.apellidos || ''}`,
+                                            //   }))
+                                            // }
+                                            defaultValue={showEmpleados(actividadAgrupada.empleados) || []}
+                                            options={optionsEmp}
                                           />
                                       </div>
                                       <div className="col-md-4 my-4">
@@ -516,20 +520,16 @@ function ObrasForm() {
                                               Materiales<span className="text-danger">*</span>
                                           </label>
                                           <Select
-                                              placeholder={<div>Selecciona materiales</div>}
-                                              isMulti={true}
-                                              name={`materiales-${index}`} 
-                                              value={obra.actividades[index].materiales}
-                                              options={optionsMat}
-                                              className="basic-multi-select"
-                                              classNamePrefix="select"
-                                              onChange={(selectedMat) => {
-                                                handleChangeActividad(index, 'materiales', selectedMat);
-                                                setSelectedMat(selectedMat);
-                                                handleMenuClose();
-                                              }}
-                                              onBlur={() => setFieldTouched(`materiales-[${index}].materiales`, true)}
-                                              onMenuClose={handleMenuClose}
+                                            isMulti
+                                            options={optionsMat}
+                                            name={`actividades[${index}].materiales`}
+                                            defaultValue={
+                                              actividadAgrupada.materiales ? actividadAgrupada.materiales.map((item, indexI) => ({
+                                                value: item.idMat || '',
+                                                label: `${item.nombre || ''}`,
+                                              })) : ''
+                                            }
+
                                           />
                                       </div>
                                       <div className="col-md-4 my-4">
@@ -539,15 +539,21 @@ function ObrasForm() {
                                         >
                                           Estado<span className="text-danger">*</span>
                                         </label>
+                                        
                                         <Select
                                           placeholder={<div>Selecciona estado</div>}
                                           name={`estadoAct-${index}`}
+                                          value={
+                                            [{ 
+                                              value: obra.actividades[index]?.estado,
+                                              label: obra.actividades[index]?.estado
+                                            }]
+                                          }
                                           options={optsEstadoAct}
                                           className="basic-select"
                                           classNamePrefix="select"
                                           onChange={(selectedEst) => {
                                             handleChangeActividad(index, 'estadoAct', selectedEst);
-                                            setSelectedMat(selectedMat);
                                             handleMenuClose();
                                           }}
                                           onBlur={() =>

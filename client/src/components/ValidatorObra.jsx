@@ -101,15 +101,20 @@ export const getValidate = (values, hasId) => {
     } else if (values.descripcion.trim().length > 100) {
       errors.descripcion = 'La descripción no puede contener más de 100 caracteres';
     }
+    if (values.descripcion && !/^[a-zA-Z0-9\s]+$/.test(values.descripcion)) {
+      errors.descripcion = 'No se permiten caracteres especiales en la descripción';
+    }
 
     if (!values.area) {
       errors.area = 'El area es requerida';      
+    } else if (values.area.trim().length < 8) {
+      errors.area = 'El area debe contener al menos 8 caracteres';
+    } else if (values.area.trim().length > 100) {
+      errors.area = 'El area no puede contener más de 100 caracteres';
     }
-
-    // if (!values.cliente || !values.cliente.value) {
-    //   errors.cliente = 'El cliente es requerido, seleccione al menos uno';
-    // }
-  
+    if (values.area && !/^[a-zA-Z0-9\s]+$/.test(values.area)) {
+      errors.area = 'No se permiten caracteres especiales en el area';
+    }
     if (!values.fechaini) {
       errors.fechaini = 'La fecha de inicio es requerida';
     }
@@ -137,7 +142,9 @@ export const getValidate = (values, hasId) => {
     } else if (values.descripcion.trim().length > 100) {
       errors.descripcion = 'La descripción no puede contener más de 100 caracteres';
     }
-
+    if (values.descripcion && !/^[a-zA-Z0-9\s]+$/.test(values.descripcion)) {
+      errors.descripcion = 'No se permiten caracteres especiales en la descripción';
+    }
 
     if (!values.cliente || !values.cliente.value) {
       errors.cliente = 'El cliente es requerido, seleccione al menos uno';
@@ -149,6 +156,44 @@ export const getValidate = (values, hasId) => {
   
     if (!values.empleados || !values.empleados.value) {
       errors.empleados = 'El empleado es requerido, seleccione al menos uno';
+    }
+
+    if (values.actividades) {
+      values.actividades.forEach((actividad, index) => {
+        // Otras validaciones...
+  
+        // Validación para caracteres especiales en actividad
+        if (actividad.actividad && !/^[a-zA-Z0-9\s]+$/.test(actividad.actividad)) {
+          errors.actividades = errors.actividades || [];
+          errors.actividades[index] = errors.actividades[index] || {};
+          errors.actividades[index].actividad = 'No se permiten caracteres especiales';
+        }
+  
+        // Otras validaciones...
+      });
+    }
+  
+    // Otras validaciones...
+  
+    // Validación para campos duplicados
+    if (values.actividades) {
+      const actividadesErrors = [];
+  
+      values.actividades.forEach((actividad, index) => {
+        // Validación para caracteres especiales en otros campos duplicados
+        // Agrega validaciones similares a las ya mencionadas anteriormente
+  
+        actividadesErrors[index] = {}; // Inicializa el objeto de errores para este elemento duplicado
+  
+        // Ejemplo de validación para otro campo duplicado (fecha de inicio)
+        if (actividad.fechaini && !/^[a-zA-Z0-9\s]+$/.test(actividad.fechaini)) {
+          actividadesErrors[index].fechaini = 'No se permiten caracteres especiales en la fecha de inicio';
+        }
+  
+        // Otras validaciones para campos duplicados...
+      });
+  
+      errors.actividades = actividadesErrors;
     }
 
     return errors;
