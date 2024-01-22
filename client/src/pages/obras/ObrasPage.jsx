@@ -85,7 +85,7 @@ function ObrasPage() {
                         <div className="row">
                             <div className="col-md-6">
                                 <div className="col-md-6 mb-3">
-                                    <button className="btn btn-primary" onClick={() => navigate(`/agregarObra`)}>
+                                    <button className="btn btn-primary" onClick={() => navigate('/agregarObra')}>
                                         Agregar
                                     </button>
                                 </div>

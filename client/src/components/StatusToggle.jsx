@@ -26,9 +26,9 @@ function StatusToggle({id, initialStatus, toggleApi, onCambioEstado}) {
                         toggleApi(id,status)
                         onCambioEstado(id,!status)
                         $.alert('Se ha cambiado el estado!');
-                        // setTimeout(() => {
-                        //     window.location.reload(false);
-                        // }, 2000)
+                        setTimeout(() => {
+                            window.location.reload(false);
+                        }, 2000)
                         
                     }                    
                 },

@@ -213,7 +213,7 @@ function DashboardPage() {
                 const especialidadesCount = {};
 
                 especialidadesData.forEach((obra) => {
-                    obra.empleado_obra.forEach((empleado) => {
+                    obra.detalle_obra.forEach((empleado) => {
                         empleado.empleado.empleado_especialidad.forEach((especialidad) => {
                             const nombreEspecialidad = especialidad.especialidad.especialidad;
                             especialidadesCount[nombreEspecialidad] = (especialidadesCount[nombreEspecialidad] || 0) + 1;
