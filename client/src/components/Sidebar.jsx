@@ -9,7 +9,6 @@ export default function Sidebar({userData}) {
   }
 
   const permisosUsuario = userData.rolesPermisos.map((rolPermiso) => String(rolPermiso.permiso.permiso).toLowerCase());
-  console.log(permisosUsuario);
   
   return (
     <>    

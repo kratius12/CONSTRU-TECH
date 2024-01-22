@@ -27,6 +27,7 @@ model cliente {
   fecha_nac   String? @db.VarChar(50)
   estado      Int?
   constrasena String? @db.VarChar(50)
+  createdAt        DateTime           @default(dbgenerated("(curdate())")) @db.Date
   obras       obras[]
 }
 
@@ -67,6 +68,7 @@ model empleado {
   telefono              String?                 @db.VarChar(10)
   cedula                String?                 @db.VarChar(10)
   tipoDoc               String?                 @db.VarChar(10)
+  createdAt             DateTime                @default(dbgenerated("(curdate())")) @db.Date
   detalle_obra          detalle_obra[]
   empleado_especialidad empleado_especialidad[]
   rolpermisoempleado    rolpermisoempleado[]
@@ -111,6 +113,7 @@ model obras {
   idCliente    Int?
   estado       String?        @db.VarChar(50)
   precio       Int?
+  createdAt        DateTime           @default(dbgenerated("(curdate())")) @db.Date
   detalle_obra detalle_obra[]
   cliente      cliente?       @relation(fields: [idCliente], references: [idCli], onDelete: Restrict, onUpdate: Restrict, map: "obras_ibfk_3")
 
