@@ -1,4 +1,4 @@
-import { Route, Routes, Link } from "react-router-dom";
+import { Route, Routes, Link, Navigate } from "react-router-dom";
 import ReactDOMServer from 'react-dom/server';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ObrasPage from "./pages/obras/ObrasPage";
@@ -473,6 +473,26 @@ function App() {
     });
   };
 
+  const userDataString = localStorage.getItem('userData');
+  const userData = userDataString ? JSON.parse(userDataString) : null;
+
+  const tienePermisos = (requiredPermisos) => {
+    if (!userData || !userData.rolesPermisos) {
+      return false;
+    }
+
+    const permisosUsuario = userData.rolesPermisos.map(
+      (rolPermiso) => String(rolPermiso.permiso.permiso).toLowerCase()
+    );
+
+    return requiredPermisos.every((permiso) => permisosUsuario.includes(permiso));
+  };
+
+  const redirectToDashboard = (route) =>{
+    const state = {redirected:true, from:route}
+
+    return <Navigate to="/dashboard" replace state={state} />
+  }
   return (
     <>
       {loggedIn ? (
@@ -490,78 +510,249 @@ function App() {
                 </DashboardContextProvider>
                 <ObraContextProvider>
                   <Routes>
-                    <Route path="/obras" element={<ObrasPage />} />
+                    {/* <Route path="/obras" element={<ObrasPage />} />
                     <Route path="/agregarObra" element={<ObrasForm />} />
-                    <Route path="/editarObra/:id" element={<ObrasForm />} />
+                    <Route path="/editarObra/:id" element={<ObrasForm />} /> */}
+                    <Route path="/obras" element={
+                      tienePermisos(['obras'])? (
+                        <ObrasPage />
+                      ):(
+                        redirectToDashboard('obras')
+                      )
+                    } />
+                    <Route path="/agregarObra" element={
+                      tienePermisos(['obras'])? (
+                        <ObrasForm />
+                      ):(
+                        redirectToDashboard('obras')
+                      )
+                    } />
+                    <Route path="/editarObra/:id" element={
+                      tienePermisos(['obras'])? (
+                        <ObrasForm />
+                      ):(
+                        redirectToDashboard('obras')
+                      )
+                    } />
                   </Routes>
                 </ObraContextProvider>
                 <MaterialContextProvider>
                   <Routes>
-                    <Route path="/materiales" element={<MaterialesPage />} />
-                    <Route path="/agregarMaterial" element={<MaterialesForm />} />
-                    <Route path="/editarMaterial/:id" element={<MaterialesForm />} />
+                    <Route path="/materiales" element={
+                      tienePermisos(['materiales'])? (
+                        <MaterialesPage />
+                      ):(
+                        redirectToDashboard('materiales')
+                      )
+                    } />
+                    <Route path="/agregarMaterial" element={
+                      tienePermisos(['materiales'])? (
+                        <MaterialesForm />
+                      ):(
+                        redirectToDashboard('materiales')
+                      )
+                    } />
+                    <Route path="/editarMaterial/:id" element={
+                      tienePermisos(['materiales'])? (
+                        <MaterialesForm />
+                      ):(
+                        redirectToDashboard('materiales')
+                      )
+                    } />
                   </Routes>
                 </MaterialContextProvider>
                 <EmpleadoContextProvider>
                   <Routes>
-                    <Route path="/empleados" element={<EmpleadosPage />} />
-                    <Route path="/agregarEmpleado" element={<EmpleadosForm />} />
-                    <Route path="/editarEmpleado/:id" element={<EmpleadosForm />} />
+                    <Route path="/empleados" element={
+                      tienePermisos(['empleados'])? (
+                        <EmpleadosPage />
+                      ):(
+                        redirectToDashboard('empleados')
+                      )
+                    } />
+                    <Route path="/agregarEmpleado" element={
+                      tienePermisos(['empleados'])? (
+                        <EmpleadosForm />
+                      ):(
+                        redirectToDashboard('empleados')
+                      )
+                    } />
+                    <Route path="/editarEmpleado/:id" element={
+                      tienePermisos(['empleados'])? (
+                        <EmpleadosForm />
+                      ):(
+                        redirectToDashboard('empleados')
+                      )
+                    } />
                   </Routes>
                 </EmpleadoContextProvider>
                 <EspecialidadContextProvider>
                   <Routes>
-                    <Route path="/especialidades" element={<EspecialidadesPage />} />
-                    <Route path="/agregarEspecialidad" element={<EspecialidadesForm />} />
-                    <Route path="/editarEspecialidad/:id" element={<EspecialidadesForm />} />
+                    <Route path="/especialidades" element={
+                      tienePermisos(['especialidades'])? (
+                        <EspecialidadesPage />
+                      ):(
+                        redirectToDashboard('especialidades')
+                      )
+                    } />
+                    <Route path="/agregarEspecialidad" element={
+                      tienePermisos(['especialidades'])? (
+                        <EspecialidadesForm />
+                      ):(
+                        redirectToDashboard('especialidades')
+                      )
+                    } />
+                    <Route path="/editarEspecialidad/:id" element={
+                      tienePermisos(['especialidades'])? (
+                        <EspecialidadesForm />
+                      ):(
+                        redirectToDashboard('especialidades')
+                      )
+                    } />
                   </Routes>
                 </EspecialidadContextProvider>
                 <CategoriaContextProvider>
                   <Routes>
-                    <Route path="/categorias" element={<CategoriasPage />} />
-                    <Route path="/agregarCategoria" element={<CategoriasForm />} />
-                    <Route path="/editarCategoria/:id" element={<CategoriasForm />} />
+                    <Route path="/categorias" element={
+                      tienePermisos(['categorias'])? (
+                        <CategoriasPage />
+                      ):(
+                        redirectToDashboard('categorias')
+                      )
+                    } />
+                    <Route path="/agregarCategoria" element={
+                      tienePermisos(['categorias'])? (
+                        <CategoriasForm />
+                      ):(
+                        redirectToDashboard('categorias')
+                      )
+                    } />
+                    <Route path="/editarCategoria/:id" element={
+                      tienePermisos(['categorias'])? (
+                        <CategoriasForm />
+                      ):(
+                        redirectToDashboard('categorias')
+                      )
+                    } />
                   </Routes>
                 </CategoriaContextProvider>
                 <ProveedorContextProvider>
                   <Routes>
-                    <Route path="/proveedores" element={<ProveedoresPage />}></Route>
-                    <Route path="/agregarProveedor" element={<ProveedoresForm />}></Route>
-                    <Route path="/editarProveedor/:id" element={<ProveedoresForm />}></Route>
+                    <Route path="/proveedores" element={
+                      tienePermisos(['proveedores'])? (
+                        <ProveedoresPage />
+                      ):(
+                        redirectToDashboard('proveedores')
+                      )
+                    }></Route>
+                    <Route path="/agregarProveedor" element={
+                      tienePermisos(['proveedores'])? (
+                        <ProveedoresForm />
+                      ):(
+                        redirectToDashboard('proveedores')
+                      )
+                    }></Route>
+                    <Route path="/editarProveedor/:id" element={
+                      tienePermisos(['proveedores'])? (
+                        <ProveedoresForm />
+                      ):(
+                        redirectToDashboard('proveedores')
+                      )
+                    }></Route>
                   </Routes>
                 </ProveedorContextProvider>
                 <ClientContextProvider>
                   <Routes>
-                    <Route path="/clientes" element={<ClientPage />}></Route>
-                    <Route path="/agregarCliente" element={<ClientForm />}></Route>
-                    <Route path="/editarCliente/:id" element={<ClientForm />}></Route>
+                    <Route path="/clientes" element={
+                      tienePermisos(['clientes'])? (
+                        <ClientPage />
+                      ):(
+                        redirectToDashboard('clientes')
+                      )
+                    }></Route>
+                    <Route path="/agregarCliente" element={
+                      tienePermisos(['clientes'])? (
+                        <ClientForm />
+                      ):(
+                        redirectToDashboard('clientes')
+                      )
+                    }></Route>
+                    <Route path="/editarCliente/:id" element={
+                      tienePermisos(['clientes'])? (
+                        <ClientForm />
+                      ):(
+                        redirectToDashboard('clientes')
+                      )
+                    }></Route>
                     {/* <Route path="/login" element={<LoginPage />}></Route> */}
                   </Routes>
                 </ClientContextProvider>
                 <CompraContextProvider>
                   <Routes>
-                    <Route path="/compras" element={<ComprasPage />}></Route>
-                    <Route path="/agregarCompras" element={<ComprasForm />}></Route>
-                    <Route path="/compra/:id" element={<DetalleCompra />}></Route>
+                    <Route path="/compras" element={
+                      tienePermisos(['compras'])? (
+                        <ComprasPage />
+                      ):(
+                        redirectToDashboard('compras')
+                      )
+                    }></Route>
+                    <Route path="/agregarCompras" element={
+                      tienePermisos(['compras'])? (
+                        <ComprasForm />
+                      ):(
+                        redirectToDashboard('compras')
+                      )
+                    }></Route>
+                    <Route path="/compra/:id" element={
+                      tienePermisos(['compras'])? (
+                        <DetalleCompra />
+                      ):(
+                        redirectToDashboard('compras')
+                      )
+                    }></Route>
                   </Routes>
                 </CompraContextProvider>
                 <RolContextProvider>
                   <Routes>
-                    <Route path="/roles" element={<RolesPage />} />
-                    <Route path="/agregarRol" element={<RolesForm />} />
-                    <Route path="/editarRol/:id" element={<RolesForm />} />
+                    <Route path="/roles" element={
+                      tienePermisos(['roles'])? (
+                        <RolesPage />
+                      ):(
+                        redirectToDashboard('roles')
+                      )
+                    } />
+                    <Route path="/agregarRol" element={
+                      tienePermisos(['roles'])? (
+                        <RolesForm />
+                      ):(
+                        redirectToDashboard('roles')
+                      )
+                    } />
+                    <Route path="/editarRol/:id" element={
+                      tienePermisos(['roles'])? (
+                        <RolesForm />
+                      ):(
+                        redirectToDashboard('roles')
+                      )
+                    } />
                   </Routes>
                 </RolContextProvider>
                 <PermisoContextProvider>
                   <Routes>
-                    <Route path="/permisos" element={<PermisosPage />} />
+                    <Route path="/permisos" element={
+                      tienePermisos(['permisos'])? (
+                        <PermisosPage />
+                      ): (
+                        redirectToDashboard('permisos')
+                      )
+                    } />
                   </Routes>
                 </PermisoContextProvider>
-                <UsuariosContextProvider>
+                {/* <UsuariosContextProvider>
                   <Routes>
 
                   </Routes>
-                </UsuariosContextProvider> 
+                </UsuariosContextProvider>  */}
               </div>
             </div>
           </div>
