@@ -4,7 +4,8 @@ import { Form, Formik, Field } from "formik";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEmpleados } from "../../context/empleados/EmpleadosProvider";
-import EmpleadoSchema from "../../components/ValidatorEmpleado";
+import EmpleadoSchema from "../../components/ValidatorEmpleado"
+
 const fetchData1 = async (url) => {
   try {
     const response = await axios.get(url);
@@ -15,7 +16,7 @@ const fetchData1 = async (url) => {
   }
 };
 export default function EmpleadosForm() {
-  const { createEmpleado, getEmpleado, updateEmpleado, especialidades, Especialidades, searchDoc } = useEmpleados();
+  const { createEmpleado, getEmpleado, updateEmpleado, especialidades, Especialidades, searchDoc,searchEmail } = useEmpleados();
   const params = useParams();
   const navigate = useNavigate();
   const [key, setKey] = useState(0);
@@ -144,14 +145,11 @@ export default function EmpleadosForm() {
                 ...values,
                 especialidad: selectedEsp,
               };
-              const validateDoc = await searchDoc(empleadoObject);
-              if (params.id) {
-                console.log(values)
-                await updateEmpleado(params.id, empleadoObject);
-                alertConfirm('update');
-                setTimeout(() => navigate("/empleados"));
-              } else {
 
+              if (params.id) {
+                const validateEmail = await searchEmail(empleadoObject,params.id)
+                const validateDoc = await searchDoc(empleadoObject,params.id);
+                console.log(values)
                 if (validateDoc === true) {
                   window.$.confirm({
                     title: `Error`,
@@ -168,6 +166,64 @@ export default function EmpleadosForm() {
                       Cerrar: function () { },
                     }
                   });
+                }if (validateEmail === true) {
+                  window.$.confirm({
+                    title: `Error`,
+                    content: `El email:` + values.email + ` ya existe, por favor ingrese uno diferente`,
+                    icon: 'fa fa-circle-xmark',
+                    theme: 'modern',
+                    closeIcon: true,
+                    animation: 'zoom',
+                    closeAnimation: 'scale',
+                    animationSpeed: 500,
+                    type: 'red',
+                    columnClass: 'col-md-6 col-md-offset-3',
+                    buttons: {
+                      Cerrar: function () { },
+                    }
+                  });
+                }else{
+                await updateEmpleado(params.id, empleadoObject);
+                alertConfirm('update');
+                setTimeout(() => navigate("/empleados"));
+                }
+                
+              } else {
+                const validateEmail = await searchEmail(empleadoObject)
+                const validateDoc = await searchDoc(empleadoObject);
+                if (validateDoc === true) {
+                  window.$.confirm({
+                    title: `Error`,
+                    content: `El tipo documento: ` + values.tipoDoc + ` y número documento: ` + values.cedula + ` ya existe, por favor ingrese uno diferente`,
+                    icon: 'fa fa-circle-xmark',
+                    theme: 'modern',
+                    closeIcon: true,
+                    animation: 'zoom',
+                    closeAnimation: 'scale',
+                    animationSpeed: 500,
+                    type: 'red',
+                    columnClass: 'col-md-6 col-md-offset-3',
+                    buttons: {
+                      Cerrar: function () { },
+                    }
+                  });
+                  if (validateEmail === true) {
+                    window.$.confirm({
+                      title: `Error`,
+                      content: `El email:` + values.email + ` ya existe, por favor ingrese uno diferente`,
+                      icon: 'fa fa-circle-xmark',
+                      theme: 'modern',
+                      closeIcon: true,
+                      animation: 'zoom',
+                      closeAnimation: 'scale',
+                      animationSpeed: 500,
+                      type: 'red',
+                      columnClass: 'col-md-6 col-md-offset-3',
+                      buttons: {
+                        Cerrar: function () { },
+                      }
+                    });
+                  }
 
                 } else {
                   await createEmpleado(empleadoObject);
@@ -268,7 +324,7 @@ export default function EmpleadosForm() {
                           classNamePrefix="select"
                           onChange={(selectedEsp) => {
                             setSelectedEsp(selectedEsp)
-                            setFieldValue("especialidad",selectedEsp)
+                            setFieldValue("especialidad", selectedEsp)
                           }}
                         />
                         {errors.especialidad && touched.especialidad ? (

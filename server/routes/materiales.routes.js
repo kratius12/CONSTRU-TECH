@@ -28,17 +28,7 @@ router.get("/materiales", async (req, res) => {
 router.get("/materialesAc", async (req, res) => {
     try {
         const materiales = await prisma.materiales.findMany({
-            select: {
-                idMat: true,
-                estado: true,
-                nombre: true,
-                categoria: {
-                    select: {
-                        nombre: true
-                    }
-                }
-
-            }, where:{
+            where:{
                 estado:1
             }
 

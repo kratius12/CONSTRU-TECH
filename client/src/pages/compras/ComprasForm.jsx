@@ -88,7 +88,7 @@ const ComprasForm = () => {
   useEffect(() => {
     calcularTotalGeneral(initialValues.detalles);
   }, []);
-  console.clear()
+  // console.clear()
   return (
     <div className="container">
       <Formik
@@ -128,12 +128,12 @@ const ComprasForm = () => {
             formData.append(`detalles[${index}][precio]`, detalle.precio);
             formData.append(`detalles[${index}][subtotal]`, detalle.subtotal);
           });
+          
 
           try {
-
+            console.log(formData)
             await createCompra(formData);
             alertConfirm();
-
             navigate("/compras");
           } catch (error) {
             console.error("Error al crear la compra:", error);

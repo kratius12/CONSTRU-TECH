@@ -63,6 +63,19 @@ router.get("/empleado/:id", async (req, res) => {
         return res.status(500).json({ message: error.message })
     }
 })
+router.get("/empleadosAct", async (req, res) => {
+    try {
+        const result = await prisma.empleado.findMany({
+            where: {
+                estado: 1
+            },
+        })
+        res.status(200).json(result);
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ message: error.message })
+    }
+})
 
 const generarHash = async (password, saltRounds = 10) => {
     const salt = await bcrypt.genSalt(saltRounds);
@@ -86,7 +99,6 @@ router.post("/empleados", async (req, res) => {
                 estado: parseInt(estado),
                 email: email,
                 contrasena: hash, // Almacenar el hash en lugar de la contraseña original
-                salt: salt
             },
         });
 
@@ -131,7 +143,6 @@ router.put("/empleado/:id", async (req, res) => {
             },
             data: {
                 nombre: nombre,
-
                 apellidos: apellidos,
                 direccion: direccion,
                 telefono: telefono,
@@ -140,11 +151,9 @@ router.put("/empleado/:id", async (req, res) => {
                 estado: parseInt(estado),
                 email: email,
                 contrasena: hash,
-                salt: salt
-
             }
         })
-        if (especialidad.length>0) {
+        if (especialidad.length > 0) {
             const result2 = await prisma.empleado_especialidad.deleteMany({
                 where: {
                     idEmp: parseInt(req.params.id)
@@ -158,16 +167,19 @@ router.put("/empleado/:id", async (req, res) => {
                     }
                 })
             }))
-        } else {
-            console.log("Ha ocurrido un error...");
         }
-        const upRol = await prisma.rolpermisoempleado.updateMany({
-            where:{
-                idEmp:parseInt(req.params.id)
-            },data:{
-                idRol:rol.value
-            }
-        })
+        var elemento = rol.value;
+        if (elemento) {
+            const upRol = await prisma.rolpermisoempleado.updateMany({
+                where: {
+                    idEmp: parseInt(req.params.id)
+                }, data: {
+                    idRol: parseInt(elemento)
+                }
+            })
+        } else {
+            console.log("ni idea de cual es el error rey")
+        }
         res.status(200).json(result)
     } catch (error) {
         console.log(error);
@@ -201,7 +213,8 @@ router.get("/empleadosEsp", async (req, res) => {
                 estado: true,
                 empleado_especialidad: {
                     select: {
-                        especialidad: true
+                        especialidad: true,
+                        idEsp: true
                     }
                 }
             }
@@ -218,43 +231,43 @@ router.put("/empleadoStatus/:id", async (req, res) => {
         const { status } = req.body
 
         const searchRol = await prisma.rolpermisoempleado.findFirst({
-            where:{
+            where: {
                 idEmp: parseInt(req.params.id)
-            },select:{
-                rol:{
-                    select:{
-                        idRol:true
+            }, select: {
+                rol: {
+                    select: {
+                        idRol: true
                     }
                 }
             }
         })
-        if(status===1){
+        if (status === 1) {
             const validarRol = await prisma.rol.findUnique({
-                where:{
-                    idRol:searchRol.rol.idRol
+                where: {
+                    idRol: searchRol.rol.idRol
                 }
             })
-            if(validarRol.estado==1){
+            if (validarRol.estado == 1) {
                 const actualizarEstado = await prisma.empleado.update({
-                    where:{
-                        idEmp:parseInt(req.params.id)
-                    },data:{
-                        estado:parseInt(status)
+                    where: {
+                        idEmp: parseInt(req.params.id)
+                    }, data: {
+                        estado: parseInt(status)
                     }
                 })
-                return res.status(200).json({message:"Cambio de estado exitoso!!"})
-            }else if(validarRol.estado==0){
-                return res.status(404).json({message:"No se puede cambiar el estado del empleado puesto que el rol asociado está inactivo"})
+                return res.status(200).json({ message: "Cambio de estado exitoso!!" })
+            } else if (validarRol.estado == 0) {
+                return res.status(404).json({ message: "No se puede cambiar el estado del empleado puesto que el rol asociado está inactivo" })
             }
-        }else if(status===0){
+        } else if (status === 0) {
             const actualizarEstado = await prisma.empleado.update({
-                where:{
-                    idEmp:parseInt(req.params.id)
-                },data:{
-                    estado:parseInt(status)
+                where: {
+                    idEmp: parseInt(req.params.id)
+                }, data: {
+                    estado: parseInt(status)
                 }
             })
-            return res.status(200).json({message:"Cambio de estado exitoso!!"})
+            return res.status(200).json({ message: "Cambio de estado exitoso!!" })
         }
 
     } catch (error) {
@@ -265,6 +278,7 @@ router.put("/empleadoStatus/:id", async (req, res) => {
 router.put("/empleados/searchDoc", async (req, res) => {
     try {
         const { cedula, tipoDoc } = req.body
+
         const result = await prisma.empleado.findMany({
             where: {
                 AND: [
@@ -276,6 +290,116 @@ router.put("/empleados/searchDoc", async (req, res) => {
                 ]
             }
         })
+        if (req.params.id) {
+            const result = await prisma.empleado.findMany({
+                where: {
+                    AND: [
+                        {
+                            cedula: cedula
+                        }, {
+                            tipoDoc: tipoDoc
+                        },
+                        {
+                            NOT: {
+                                idEmp: parseInt(req.params.id)
+                            }
+                        }
+                    ]
+                }
+            })
+            if (result.length > 0) {
+                return res.status(200).json(true)
+            } else {
+                return res.status(200).json(false)
+            }
+        }
+
+
+        if (result.length > 0) {
+            return res.status(200).json(true)
+        } else {
+            return res.status(200).json(false)
+        }
+    } catch (error) {
+        console.log(json({ message: error.message }));
+        return res.status(500).json({ message: error.message })
+    }
+})
+
+router.put("/empleados/searchDocid/:id", async (req, res) => {
+    try {
+        const { cedula, tipoDoc } = req.body
+
+        const result = await prisma.empleado.findMany({
+            where: {
+                AND: [
+                    {
+                        cedula: cedula
+                    }, {
+                        tipoDoc: tipoDoc
+                    }
+                ]
+            }
+        })
+        if (req.params.id) {
+            const result = await prisma.empleado.findMany({
+                where: {
+                    AND: [
+                        {
+                            cedula: cedula
+                        }, {
+                            tipoDoc: tipoDoc
+                        },
+                        {
+                            NOT: {
+                                idEmp: parseInt(req.params.id)
+                            }
+                        }
+                    ]
+                }
+            })
+            if (result.length > 0) {
+                return res.status(200).json(true)
+            } else {
+                return res.status(200).json(false)
+            }
+        }
+
+
+        if (result.length > 0) {
+            return res.status(200).json(true)
+        } else {
+            return res.status(200).json(false)
+        }
+    } catch (error) {
+        console.log(json({ message: error.message }));
+        return res.status(500).json({ message: error.message })
+    }
+})
+
+router.put("/empleados/searchEmail", async (req, res) => {
+    try {
+        const { email } = req.body
+        const result = await prisma.empleado.findMany({
+            where: {
+                email: email
+
+            }
+        })
+        if (req.params.id) {
+            const result = await prisma.empleado.findMany({
+                where: {
+                    email: email
+                }
+            })
+            if (result.length > 0) {
+                return res.status(200).json(true)
+            } else {
+                return res.status(200).json(false)
+            }
+        }
+
+
         if (result.length > 0) {
             return res.status(200).json(true)
         } else {
@@ -296,6 +420,7 @@ router.get("/rolesEmpleado/:id", async (req, res) => {
             select: {
                 rol: {
                     select: {
+                        idRol: true,
                         nombre: true
                     }
                 }

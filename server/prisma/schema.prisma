@@ -16,19 +16,19 @@ model categoria {
 }
 
 model cliente {
-  idCli       Int     @id @default(autoincrement())
-  nombre      String? @db.VarChar(70)
-  apellidos   String? @db.VarChar(50)
-  email       String? @db.VarChar(100)
-  direccion   String? @db.VarChar(50)
-  telefono    String? @db.VarChar(10)
-  tipoDoc     String? @db.VarChar(50)
-  cedula      String? @db.VarChar(10)
-  fecha_nac   String? @db.VarChar(50)
+  idCli       Int      @id @default(autoincrement())
+  nombre      String?  @db.VarChar(70)
+  apellidos   String?  @db.VarChar(50)
+  email       String?  @db.VarChar(100)
+  direccion   String?  @db.VarChar(50)
+  telefono    String?  @db.VarChar(10)
+  tipoDoc     String?  @db.VarChar(50)
+  cedula      String?  @db.VarChar(10)
+  fecha_nac   String?  @db.VarChar(50)
   estado      Int?
-  constrasena String? @db.VarChar(200)
-  salt        String  @db.VarChar(200)
-  createdAt        DateTime           @default(dbgenerated("(curdate())")) @db.Date
+  constrasena String?  @db.VarChar(200)
+  salt        String   @db.VarChar(200)
+  createdAt   DateTime @default(dbgenerated("(curdate())")) @db.Date
   obras       obras[]
 }
 
@@ -49,8 +49,8 @@ model compras_detalle {
   id         Int         @id @default(autoincrement())
   idCompra   Int
   idMat      Int?
-  precio     Int?
   cantidad   Int?
+  precio     Int?
   subtotal   Int?
   compras    compras     @relation(fields: [idCompra], references: [idCom], onUpdate: Restrict, map: "compras_detalle_ibfk_1")
   materiales materiales? @relation(fields: [idMat], references: [idMat], onDelete: Restrict, onUpdate: Restrict, map: "compras_detalle_ibfk_2")
@@ -62,18 +62,18 @@ model compras_detalle {
 model empleado {
   idEmp                 Int                     @id @default(autoincrement())
   nombre                String?                 @db.VarChar(50)
-  apellidos             String?                 @db.VarChar(50)
   direccion             String?                 @db.VarChar(50)
   estado                Int?
-
   email                 String?                 @unique @db.VarChar(100)
-  contrasena            String?                 @db.VarChar(250)
   telefono              String?                 @db.VarChar(10)
   cedula                String?                 @db.VarChar(10)
   tipoDoc               String?                 @db.VarChar(10)
+  apellidos             String?                 @db.VarChar(50)
+  contrasena            String?                 @db.VarChar(250)
   createdAt             DateTime                @default(dbgenerated("(curdate())")) @db.Date
   detalle_obra          detalle_obra[]
   empleado_especialidad empleado_especialidad[]
+  obras                 obras[]
   rolpermisoempleado    rolpermisoempleado[]
 }
 
@@ -116,11 +116,14 @@ model obras {
   idCliente    Int?
   estado       String?        @db.VarChar(50)
   precio       Int?
-  createdAt        DateTime           @default(dbgenerated("(curdate())")) @db.Date
+  idEmp        Int
+  createdAt    DateTime       @default(dbgenerated("(curdate())")) @db.Date
   detalle_obra detalle_obra[]
+  empleado     empleado       @relation(fields: [idEmp], references: [idEmp], onUpdate: Restrict, map: "FK_idEmp")
   cliente      cliente?       @relation(fields: [idCliente], references: [idCli], onDelete: Restrict, onUpdate: Restrict, map: "obras_ibfk_3")
 
   @@index([idCliente], map: "idCliente")
+  @@index([idEmp], map: "FK_idEmp")
 }
 
 model permiso {
@@ -153,17 +156,17 @@ model rol {
 }
 
 model detalle_obra {
-  id         Int        @id @default(autoincrement())
-  actividad  String?    @db.VarChar(60)
-  fechaini   String?    @db.VarChar(50)
-  fechafin   String?    @db.VarChar(50)
-  idEmp      Int
-  idMat      Int
-  estado     String?    @db.VarChar(50)
+  id         Int         @id @default(autoincrement())
+  actividad  String?     @db.VarChar(60)
+  fechaini   String?     @db.VarChar(50)
+  fechafin   String?     @db.VarChar(50)
+  idEmp      Int?
+  idMat      Int?
+  estado     String?     @db.VarChar(50)
   idObra     Int
-  obras      obras      @relation(fields: [idObra], references: [idObra], onUpdate: Restrict, map: "detalle_obra_ibfk_1")
-  empleado   empleado   @relation(fields: [idEmp], references: [idEmp], onUpdate: Restrict, map: "detalle_obra_ibfk_2")
-  materiales materiales @relation(fields: [idMat], references: [idMat], onUpdate: Restrict, map: "detalle_obra_ibfk_3")
+  obras      obras       @relation(fields: [idObra], references: [idObra], onUpdate: Restrict, map: "detalle_obra_ibfk_1")
+  empleado   empleado?   @relation(fields: [idEmp], references: [idEmp], onDelete: Restrict, onUpdate: Restrict, map: "detalle_obra_ibfk_2")
+  materiales materiales? @relation(fields: [idMat], references: [idMat], onDelete: Restrict, onUpdate: Restrict, map: "detalle_obra_ibfk_3")
 
   @@index([idEmp], map: "idEmp")
   @@index([idMat], map: "idMat")
@@ -171,7 +174,6 @@ model detalle_obra {
 }
 
 model rolpermisoempleado {
-
   id       Int       @id @default(autoincrement())
   idRol    Int
   idPer    Int
@@ -183,7 +185,6 @@ model rolpermisoempleado {
   @@index([idEmp], map: "idEmp")
   @@index([idPer], map: "idPer")
   @@index([idRol], map: "idRol")
-
 }
 
 model codigos {
@@ -192,5 +193,4 @@ model codigos {
   email  String?   @db.VarChar(255)
   estado Int?
   fecha  DateTime? @default(now()) @db.Timestamp(0)
-
 }

@@ -4,11 +4,12 @@ import { Form, Formik, Field } from "formik";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { useRol } from "../../context/roles/RolesProvider";
-import * as yup from "yup"
+import * as yup from "yup";
+
 const RolSchema = yup.object().shape({
   nombre: yup
     .string()
-    .trim() // Elimina espacios en blanco al principio y al final
+    .trim()
     .matches(/^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]+$/, 'El nombre no puede contener caracteres especiales ni números')
     .required('El nombre del rol es obligatorio'),
   permisos: yup.array().min(1, 'Debe seleccionar al menos un permiso'),
@@ -27,16 +28,6 @@ const fetchPermisos = async (url) => {
   }
 };
 
-const fetchData = async (url) => {
-  try {
-    const response = await axios.get(url);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    return [];
-  }
-};
-
 const RolesForm = () => {
   const hasWhitespace = (value) => /\s/.test(value);
   const validateWhitespace = (value) => {
@@ -44,13 +35,14 @@ const RolesForm = () => {
   };
 
   const [permisos, setPermisos] = useState([]);
-  const [roles, setRoles] = useState({});;
+  const [roles, setRoles] = useState({});
   const { createRol, updateRol, getRol } = useRol();
   const navigate = useNavigate();
   const params = useParams();
-  const [key, setKey] = useState(0)
+  const [key, setKey] = useState(0);
   const [defaultOptions, setDefaultOptions] = useState([]);
-  const [permisoSelected, setPermisoSelected] = useState(defaultOptions)
+  const [permisoSelected, setPermisoSelected] = useState(defaultOptions);
+
   useEffect(() => {
     const loadPermisos = async () => {
       const permisosData = await fetchPermisos("http://localhost:4000/permisosAct");
@@ -68,11 +60,12 @@ const RolesForm = () => {
           });
           const defaul = rol.rolpermisoempleado.map((item) => ({
             value: item.permiso.idPer,
-            label: item.permiso.permiso
-          }))
-          setDefaultOptions(defaul)
-          setPermisoSelected(defaul)
-          setKey(prevKey => prevKey + 1)
+            label: item.permiso.permiso,
+            idPer: item.permiso.idPer
+          }));
+          setDefaultOptions(defaul);
+          setPermisoSelected(defaul);
+          setKey((prevKey) => prevKey + 1);
         } catch (error) {
           console.error("Error fetching role data:", error);
         }
@@ -90,8 +83,8 @@ const RolesForm = () => {
   };
 
   const alertConfirm = (type) => {
-    $.confirm({
-      title: `Rol ` + type + ` con éxito!`,
+    window.$.confirm({
+      title: `Rol ${type} con éxito!`,
       content: "Redireccionando a listado de roles...",
       icon: "fa fa-check",
       theme: "modern",
@@ -118,8 +111,7 @@ const RolesForm = () => {
           const rolObject = {
             ...values,
             permisos: permisoSelected
-          }
-          console.log(rolObject)
+          };
           if (params.id) {
             await updateRol(params.id, rolObject);
             alertConfirm("actualizado");
