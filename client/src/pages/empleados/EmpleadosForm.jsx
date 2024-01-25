@@ -16,7 +16,7 @@ const fetchData1 = async (url) => {
   }
 };
 export default function EmpleadosForm() {
-  const { createEmpleado, getEmpleado, updateEmpleado, especialidades, Especialidades, searchDoc,searchEmail } = useEmpleados();
+  const { createEmpleado, getEmpleado, updateEmpleado, especialidades, Especialidades, searchDoc, searchEmail } = useEmpleados();
   const params = useParams();
   const navigate = useNavigate();
   const [key, setKey] = useState(0);
@@ -46,7 +46,7 @@ export default function EmpleadosForm() {
 
   useEffect(() => {
     fetchData1("http://localhost:4000/rolesAct").then((data) => {
-      const rol = data.filter(item => item.estado == 1).map(item => ({ value: item.idRol, label: item.nombre }))
+      const rol = data.filter(item=> item.estado ==1).map(item => ({ value: item.idRol, label: item.nombre }))
       setKeyRol(prevKey => prevKey + 1)
       setRol(rol)
     })
@@ -99,12 +99,12 @@ export default function EmpleadosForm() {
     loadEmpleados();
   }, []);
 
-  const handleMenuClose = () => {
+  const handleMenuClose = () =>{
     const focusHelper = document.getElementById('focusHelper')
     if (focusHelper) {
-      focusHelper.focus()
+        focusHelper.focus()
     }
-  }
+}
 
   const alertConfirm = (type) => {
     var message = "";
@@ -135,7 +135,7 @@ export default function EmpleadosForm() {
     <div className="container">
       <div className="row">
         <div className="col-md-12">
-          <Formik
+        <Formik
             initialValues={empleado}
             enableReinitialize={true}
             validationSchema={EmpleadoSchema}
@@ -145,52 +145,14 @@ export default function EmpleadosForm() {
                 ...values,
                 especialidad: selectedEsp,
               };
-
+              const validateEmail = await searchEmail(empleadoObject)
+              const validateDoc = await searchDoc(empleadoObject);
               if (params.id) {
-                const validateEmail = await searchEmail(empleadoObject,params.id)
-                const validateDoc = await searchDoc(empleadoObject,params.id);
                 console.log(values)
-                if (validateDoc === true) {
-                  window.$.confirm({
-                    title: `Error`,
-                    content: `El tipo documento: ` + values.tipoDoc + ` y número documento: ` + values.cedula + ` ya existe, por favor ingrese uno diferente`,
-                    icon: 'fa fa-circle-xmark',
-                    theme: 'modern',
-                    closeIcon: true,
-                    animation: 'zoom',
-                    closeAnimation: 'scale',
-                    animationSpeed: 500,
-                    type: 'red',
-                    columnClass: 'col-md-6 col-md-offset-3',
-                    buttons: {
-                      Cerrar: function () { },
-                    }
-                  });
-                }if (validateEmail === true) {
-                  window.$.confirm({
-                    title: `Error`,
-                    content: `El email:` + values.email + ` ya existe, por favor ingrese uno diferente`,
-                    icon: 'fa fa-circle-xmark',
-                    theme: 'modern',
-                    closeIcon: true,
-                    animation: 'zoom',
-                    closeAnimation: 'scale',
-                    animationSpeed: 500,
-                    type: 'red',
-                    columnClass: 'col-md-6 col-md-offset-3',
-                    buttons: {
-                      Cerrar: function () { },
-                    }
-                  });
-                }else{
                 await updateEmpleado(params.id, empleadoObject);
                 alertConfirm('update');
                 setTimeout(() => navigate("/empleados"));
-                }
-                
               } else {
-                const validateEmail = await searchEmail(empleadoObject)
-                const validateDoc = await searchDoc(empleadoObject);
                 if (validateDoc === true) {
                   window.$.confirm({
                     title: `Error`,
@@ -207,10 +169,10 @@ export default function EmpleadosForm() {
                       Cerrar: function () { },
                     }
                   });
-                  if (validateEmail === true) {
+                  if(validateEmail === true){
                     window.$.confirm({
                       title: `Error`,
-                      content: `El email:` + values.email + ` ya existe, por favor ingrese uno diferente`,
+                      content: `El email:` + values.email +` ya existe, por favor ingrese uno diferente`,
                       icon: 'fa fa-circle-xmark',
                       theme: 'modern',
                       closeIcon: true,
@@ -241,7 +203,7 @@ export default function EmpleadosForm() {
                   <h1 className="h4 text-gray-900 mb-4">{params.id ? "Editar" : "Agregar"} empleado</h1>
                   <div className="card-body">
                     <div className="row">
-                      <div id="focusHelper"></div>
+                    <div id="focusHelper"></div>
                       <div className="col-md-6 mt-3">
                         <Field type="text" className="form-control form-control-user" id="nombre" name="nombre" placeholder="Nombres*" />
                         {errors.nombre && touched.nombre ? (
@@ -322,9 +284,8 @@ export default function EmpleadosForm() {
                           options={options}
                           className="basic-multi-select"
                           classNamePrefix="select"
-                          onChange={(selectedEsp) => {
-                            setSelectedEsp(selectedEsp)
-                            setFieldValue("especialidad", selectedEsp)
+                          onChange={(selectedEsp) => {setSelectedEsp(selectedEsp)
+                          setFieldValue("especialidad", selectedEsp)
                           }}
                         />
                         {errors.especialidad && touched.especialidad ? (
@@ -334,23 +295,23 @@ export default function EmpleadosForm() {
                       <div className="col-md-6 mt-3">
                         <label htmlFor="rol" className="form-label">Rol<span className="text-danger">*</span></label>
                         <Select
-                          key={keyRol}
-                          placeholder={<div>Seleccione rol</div>}
-                          defaultValue={defaultOptionsRol}
-                          name="rol"
-                          options={rol}
-                          className="basic-multi-select"
-                          classNamePrefix="select"
-                          onChange={(selectedRol) => {
-                            setSelectedRol(selectedRol)
-                            handleMenuClose
-                            setFieldValue("rol", selectedRol)
-                          }}
+                            key={keyRol}
+                            placeholder={<div>Seleccione rol</div>}
+                            defaultValue={defaultOptionsRol}
+                            name="rol"
+                            options={rol}
+                            className="basic-multi-select"
+                            classNamePrefix="select"
+                            onChange={(selectedRol) => {
+                                setSelectedRol(selectedRol)
+                                handleMenuClose
+                                setFieldValue("rol",selectedRol)
+                            }}
                         />
                         {
                           errors.rol && touched.rol ? (
                             <div className="alert alert-danger">{errors.rol}</div>
-                          ) : null
+                          ):null
                         }
                       </div>
                     </div>
