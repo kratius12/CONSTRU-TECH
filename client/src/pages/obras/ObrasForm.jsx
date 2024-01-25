@@ -147,35 +147,7 @@ const ObrasForm = () => {
     loadMaterialesEmpleados();
     loadObra();
   }, [params.id, getObra]);
-  useEffect(async() => {
-    if (params.id) {
-      const obra = await getObra(params.id)
-      const initialValues = {
-        cliente: obra.clienteId,
-        empleado: obra.empleadoId,
-        area: obra.area,
-        fechaini: obra.fechaInicio,
-        fechafin: obra.fechaFin,
-        precio: obra.precio,
-        descripcion: obra.descripcion,
-        actividades: obra.detalle_obra.map((actividad) => ({
-          descripcion: detalle_obra.descripcion,
-          fechaini: detalle_obra.fechaInicio,
-          fechafin: detalle_obra.fechaFin,
-          materiales: detalle_obra.materiales.map((material) => ({
-            value: material.idMat,
-            label: material.nombre,
-          })),
-          empleados: detalle_obra.empleados.map((empleado) => ({
-            value: empleado.idEmp,
-            label: empleado.nombre,
-          })),
-          estadoAct: detalle_obra.estadoAct,
-        })),
-      };
-      setInitialValues(initialValues);
-    }
-  }, [params.id, obra]);
+
   const [initialValues, setInitialValues] = useState({
     cliente: '',
     empleado: '',
