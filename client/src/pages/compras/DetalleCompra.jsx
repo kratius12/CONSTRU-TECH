@@ -97,7 +97,7 @@ const CompraDetalle = () => {
                             <Card className="detalle-card">
                                 <div><strong>Material: </strong> {detalle.materiales.nombre}</div>
                                 <div><strong>Cantidad:</strong> {detalle.cantidad}</div>
-                                <div><strong>Precio:</strong> {detalle.precio}</div>
+                                <div><strong>Precio:</strong>${detalle.precio.toLocaleString()}</div>
                                 <div><strong>Subtotal:</strong> ${detalle.subtotal.toLocaleString()}</div>
                             </Card>
                         </div></>
@@ -106,7 +106,6 @@ const CompraDetalle = () => {
                 <div className="card-footer text-center mt-3">
                     <div className="row">
                         <a type="button" href="" className="btn btn-danger btn-icon-split mx-auto w-50" onClick={() => navigate(`/compras`)}>
-
                             <span className="text">Regresar</span>
                         </a>
                     </div>

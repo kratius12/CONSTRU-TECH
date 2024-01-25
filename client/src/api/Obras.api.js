@@ -17,7 +17,7 @@ export const GetObraRequest = async (idObra) => {
 }
 
 export const UpdateObraRequest = async (idObra, newFields) =>{
-    return await axios.put(`http://localhost:4000/obra/${idObra}`, newFields)
+    return await axios.put(`http://localhost:4000/obra/${idObra}`, newFields,{timeout:500})
 }
 
 export const ToggleObraStatusRequest = async (idObra, status) =>{

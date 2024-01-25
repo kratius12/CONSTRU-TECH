@@ -8,7 +8,7 @@ import materialSchema from "./MaterialesValidator";
 
 export default function MaterialesForm() {
   //   const [agreed, setAgreed] = useState(false)
-  const { createMaterial, getMaterial, updateMaterial, getCategorias,  categorias } = useMateriales()
+  const { createMaterial, getMaterial, updateMaterial, getCategorias, categorias } = useMateriales()
   useEffect(() => {
     getCategorias()
   }, [])
@@ -41,11 +41,11 @@ export default function MaterialesForm() {
   }
   const validateWhitespace = (value) => {
     return hasWhitespace(value) ? 'No se permiten espacios en blanco' : undefined;
-};
+  };
   const params = useParams()
   const navigate = useNavigate()
   const [material, setMaterial] = useState({
-    nombre: "", 
+    nombre: "",
     cantidad: "",
     idCategoria: "",
     estado: ""
@@ -56,7 +56,7 @@ export default function MaterialesForm() {
       if (params.id) {
         const material = await getMaterial(params.id)
         setMaterial({
-          nombre: material.nombre, 
+          nombre: material.nombre,
           cantidad: material.cantidad,
           idCategoria: material.idCategoria,
           estado: material.estado
@@ -107,8 +107,8 @@ export default function MaterialesForm() {
                   <div className="card-body">
                     <div className="row">
                       <div className="col-md-6 mt-3">
-                        <input type="text" className="form-control form-control-user" id="nombre" onChange={handleChange} value={values.nombre} placeholder="Nombre*"onBlur={() => setFieldValue('nombre', values.nombre.trim())} // Eliminar espacios en blanco al salir del campo
-                                                    validate={validateWhitespace} />
+                        <input type="text" className="form-control form-control-user" id="nombre" onChange={handleChange} value={values.nombre} placeholder="Nombre*" onBlur={() => setFieldValue('nombre', values.nombre.trim())} // Eliminar espacios en blanco al salir del campo
+                          validate={validateWhitespace} />
                         {errors.nombre && touched.nombre ? (
                           <div className="alert alert-danger" role="alert">{errors.nombre}</div>
                         ) : null}

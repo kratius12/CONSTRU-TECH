@@ -86,6 +86,7 @@ export const ObraSchema = Yup.object().shape({
     value: Yup.string(),
     label: Yup.string()
   }).nullable().required('El empleado es requerido, seleccione uno')
+  
 });
 
 
@@ -93,7 +94,7 @@ export const getValidate = (values, hasId) => {
   const errors = {};
   console.log(values);
   if (hasId) {
-      // Validación para la descripción
+      // Validación para la descripción   
     if (!values.descripcion) {
       errors.descripcion = 'La descripción es requerida';
     } else if (values.descripcion.trim().length < 8) {
@@ -101,7 +102,7 @@ export const getValidate = (values, hasId) => {
     } else if (values.descripcion.trim().length > 100) {
       errors.descripcion = 'La descripción no puede contener más de 100 caracteres';
     }
-    if (values.descripcion && !/^[a-zA-Z0-9\s]+$/.test(values.descripcion)) {
+    if (values.descripcion && !/^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]+$/.test(values.descripcion)) {
       errors.descripcion = 'No se permiten caracteres especiales en la descripción';
     }
 

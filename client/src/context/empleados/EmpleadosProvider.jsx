@@ -8,7 +8,8 @@ import { CreateEmpleadoRequest,
     ToggleEmpleadoStatusRequest,
     GetEspecialidadesRequest,
     CreateEspecialidadesRequest,
-    SearchDocRequest
+    SearchDocRequest,
+    SearchEmailRequest
 } from "../../api/Empleados.api";
 import { EmpleadoContext } from "./EmpleadosContext";
 
@@ -109,9 +110,17 @@ export const EmpleadoContextProvider = ({children}) => {
             console.error(error)
         }
     }
+    const searchEmail = async (empleado) => {
+        try {
+            const response = await SearchEmailRequest(empleado)
+            return response.data
+        } catch (error) {
+            console.error(error)
+        }
+    }
 
     return (
-        <EmpleadoContext.Provider value={{empleados, Empleados, deleteEmpleado, createEmpleado, getEmpleado, updateEmpleado, toggleEmpleadoStatus, especialidades, Especialidades, createEspecialidad, searchDoc}}>
+        <EmpleadoContext.Provider value={{empleados, Empleados, deleteEmpleado, createEmpleado, getEmpleado, updateEmpleado, toggleEmpleadoStatus, especialidades, Especialidades, createEspecialidad, searchDoc, searchEmail}}>
             {children}
         </EmpleadoContext.Provider>
     )

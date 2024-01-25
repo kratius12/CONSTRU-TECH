@@ -1,751 +1,498 @@
-import { Form, Formik, Field, ErrorMessage } from "formik";
-import { useParams, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Select from "react-select";
+import { Formik, Field, Form, FieldArray, ErrorMessage } from "formik";
+import axios from "axios";
+import { Route, useNavigate, useParams } from "react-router-dom";
 import { useObras } from "../../context/obras/ObrasProvider";
-import { ObraSchema, getValidate } from "../../components/ValidatorObra";
-import * as Yup from "yup";
-function ObrasForm() {
-  const {
-    createObra,
-    getObra,
-    updateObra,
-    Clientes,
-    Materiales,
-    Empleados,
-  } = useObras();
-  const params = useParams();
-  const navigate = useNavigate();
-  const [keyEmp, setKeyEmp] = useState(0);
-  const [keyCli, setKeyCli] = useState(0);
+import { obraSchemaAgg, obraSchemaEdit } from "./ValidateObra"
+import * as Yup from "yup"
+const fetchData = async (url) => {
+  try {
+    const response = await axios.get(url);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    return [];
+  }
+}
 
-
-  const [optionsMat, setOptionsMat] = useState([]);
-  const [defaultOptionsMat, setDefaultOptionsMat] = useState([]);
-  const [selectedMat, setSelectedMat] = useState([]);
-
-  const [optionsEmp, setOptionsEmp] = useState([]);
-  const [defaultOptionsEmp, setDefaultOptionsEmp] = useState([]);
-  const [selectedEmp, setSelectedEmp] = useState([]);
-
-  const [optionsCli, setOptionsCli] = useState([]);
-  const [defaultOptionsCli, setDefaultOptionsCli] = useState([]);
-  const [selectedCli, setSelectedCli] = useState(null);
-
-
-  const optsEstadoAct = [
-    { value: "En curso", label: "En curso" },
-    { value: "En revision", label: "En revision" },
-    { value: "Terminada", label: "Terminada" },
-  ];
-  const [actividadCounter, setActividadCounter] = useState(0);
-
-  const [obra, setObra] = useState({
-    descripcion: "",
-    area: "",
-    estado: "",
-    fechaini: "",
-    fechafin: "",
-    precio: "",
-    cliente: "",
-    actividades: [
-        {
-            actividad:'',
-            fechaini:'',
-            fechafin:'',
-            empleados:[],
-            materiales:[],
-            estadoAct:''
-        }
-    ]
-  });
-
-  useEffect(() => {
-    const loadObras = async () => {
-      if (params.id) {
-        const obra = await getObra(params.id);
-        setObra({
-          descripcion: obra.descripcion,
-          area: obra.area,
-          estado: obra.estado,
-          fechaini: obra.fechaini,
-          fechafin: obra.fechafin,
-          precio: obra.precio,
-          cliente: {value: obra.idCliente, label: obra.cliente.nombre+" - "+obra.cliente.apellidos},
-          actividades: 
-          obra.actividades || 
-          [
-            {
-                actividad:'',
-                fechaini:'',
-                fechafin:'',
-                empleados:[],
-                materiales:[],
-                estadoAct:''
-            }
-        ]
-        });
-
-        const defaultOptionsCli = [
-          {
-            value: obra.cliente.idCli,
-            label: obra.cliente.nombre+" - "+obra.cliente.apellidos,
-          },
-        ];
-        setDefaultOptionsCli(defaultOptionsCli);
-        setSelectedCli(defaultOptionsCli);
-        setKeyCli((prevKey) => prevKey + 1);
-      }
-    };
-
-
-    loadObras();
-  }, [ params.id ]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const materialesData = await Materiales()
-      const opcionesMat = materialesData.filter(item=> item.estado ==1).map(item => ({ value: item.idMat, label: item.nombre }))
-      setOptionsMat(opcionesMat)
-
-      const empleadosData = await Empleados();
-      const opcionesEmp = empleadosData
-        .filter((item) => item.estado == 1)
-        .map((item) => ({
-          value: item.idEmp,
-          label: item.nombre + "-" + item.apellidos,
-        }));
-      setOptionsEmp(opcionesEmp);
-
-      const clientesData = await Clientes();
-      const opcionesClientes = clientesData
-        .filter((item) => item.estado == 1)
-        .map((item) => ({ value: item.idCli, label: item.nombre }));
-      setOptionsCli(opcionesClientes);
-      setKeyCli((prevKey) => prevKey + 1);
-    };
-    fetchData();
-  }, [defaultOptionsCli, defaultOptionsEmp, defaultOptionsMat]);
-
-
-  const validate = (values) => {
-    const hasId = params.id ? params.id : "";
-    const errors = getValidate(values, hasId);
-
-    return errors;
-  };
-
-  const handleMenuClose = () => {
-    const focusHelper = document.getElementById("focusHelper");
-    if (focusHelper) {
-      focusHelper.focus();
-    }
-  };
-
-  const handleAgregarActividad = () => {
-    setActividadCounter(actividadCounter + 1);
-    setObra((prevObra) => ({
-        ...prevObra,
-        actividades:[
-            ...prevObra.actividades,
-            {
-                actividad:'',
-                fechaini:'',
-                fechafin:'',
-                empleados:[],
-                materiales:[],
-                estadoAct:''
-            }
-        ]
+const fetchMaterial = async (url) => {
+  try {
+    const responseMat = await axios.get(url);
+    return responseMat.data.map((item) => ({
+      value: item.idMat,
+      label: item.nombre
     }))
-  };
+  } catch (error) {
+    console.error("Error fetching materiales:", error);
+  }
+}
 
-  const handleChangeActividad = (actividadIndex, field, value) => {
-    setObra((prevObra) => {
-        const newActividades = [...prevObra.actividades]
-        newActividades[actividadIndex] = {
-            ...newActividades[actividadIndex],
-            [field]: value
-        }
-        return {...prevObra, actividades: newActividades}
-    })
-  };
+const fetchEmpleados = async (url) => {
+  try {
+    const response = await axios.get(url);
+    return response.data.map((item) => ({
+      value: item.idEmp,
+      label: item.nombre,
+    }));
+  } catch (error) {
+    console.error("Error fetching empleados:", error);
+    return [];
+  }
+};
 
-  const actividadesAgrupadas = obra.actividades.reduce((agrupadas, actividad) => {
-    const existente = agrupadas.find((ag) => ag.actividad === actividad.actividad);
-  
-    if (existente) {
-      existente.empleados.push(actividad.empleado);
-      existente.materiales.push(actividad.materiales);
+const ObrasForm = () => {
+  const params = useParams();
+  const { createObra, updateObra, getObra } = useObras();
+  const navigate = useNavigate();
+
+  const [clientes, setCliente] = useState([]);
+  const [materiales, setMateriales] = useState([]);
+  const [empleados, setEmpleados] = useState([]);
+  const [asesores, setAsesores] = useState([]);
+  const alertConfirm = () => {
+    var message = ""
+    if (params.id) {
+      message = "actualizado"
     } else {
-      agrupadas.push({
-        actividad: actividad.actividad,
-        empleados: [actividad.empleado],
-        materiales: [actividad.materiales],
-      });
+      message = "agregado"
     }
-  
-    return agrupadas;
-  }, []);
-
-  const showEmpleados = (empleados) => {
-    for (const key in empleados) {
-      if (empleados.hasOwnProperty(key) && empleados[key] === undefined) {
-          return '';
-      }else{
-        return empleados.map((item, indexI) => ({
-               value: item.idEmp || '',
-               label: `${item.nombre || ''} ${item.apellidos || ''}`,
-              }))
+    // eslint-disable-next-line no-undef
+    $.confirm({
+      title: `Material ${message} con éxito!`,
+      content: "Redireccionando a listado de materiales...",
+      icon: 'fa fa-check',
+      theme: 'modern',
+      closeIcon: true,
+      animation: 'news',
+      closeAnimation: 'news',
+      type: 'green',
+      columnClass: 'col-md-6 col-md-offset-3',
+      autoClose: 'okay|4000',
+      buttons: {
+        okay: function () {
+        },
       }
-
-    }
-
+    })
   }
 
-  const alertConfirm = (type) => {
-    var message = "";
-    if (type == "update") {
-      message = "Actualizado";
-    } else {
-      message = "Agregada";
-    }
-    $.confirm({
-      title: `Obra ` + message + ` con exito!`,
-      content: "Redirecionando a listado de obras...",
-      icon: "fa fa-check",
-      theme: "modern",
-      closeIcon: true,
-      animation: "zoom",
-      closeAnimation: "scale",
-      animationSpeed: 500,
-      type: "green",
-      columnClass: "col-md-6 col-md-offset-3",
-      autoClose: "okay|4000",
-      buttons: {
-        okay: function () {},
-      },
+  useEffect(() => {
+    const loadMaterialesEmpleados = async () => {
+      const materialesData = await fetchMaterial("http://localhost:4000/materialesAc");
+      const empleadosData = await fetchEmpleados("http://localhost:4000/empleadosAct");
+      setMateriales(materialesData);
+      setEmpleados(empleadosData);
+    };
+
+    fetchData("http://localhost:4000/clientes").then((data) => {
+      setCliente(data);
     });
-  };
+
+    fetchData("http://localhost:4000/empleadosAct").then((data) => {
+      setAsesores(data)
+    });
+
+    const loadObra = async () => {
+      if (params.id) {
+        try {
+          const obra = await getObra(params.id);
+
+          const defaultMateriales = obra.actividades.flatMap((actividad) =>
+            actividad.materiales.map((material) => ({
+              value: material.idMat,
+              label: material.nombre,
+            }))
+          );
+
+          const defaultEmpleados = obra.actividades.flatMap((actividad) =>
+            actividad.empleados.map((empleado) => ({
+              value: empleado.idEmp,
+              label: empleado.nombre,
+            }))
+          );
+
+          const initialValues = {
+            cliente: obra.clienteId,
+            empleado: obra.empleadoId,
+            area: obra.area,
+            fechaini: obra.fechaInicio,
+            fechafin: obra.fechaFin,
+            precio: obra.precio,
+            descripcion: obra.descripcion,
+            actividades: obra.detalle_obra.map((actividad) => ({
+              descripcion: actividad.descripcion,
+              fechaini: actividad.fechaInicio,
+              fechafin: actividad.fechaFin,
+              materiales: actividad.materiales.map((material) => ({
+                value: material.idMat,
+                label: material.nombre,
+              })),
+              empleados: actividad.empleados.map((empleado) => ({
+                value: empleado.idEmp,
+                label: empleado.nombre,
+              })),
+              estadoAct: actividad.estadoAct,
+            })),
+          };
+
+          setInitialValues(initialValues);
+          setDefaultMateriales(defaultMateriales);
+          setDefaultEmpleados(defaultEmpleados);
+        } catch (error) {
+          console.error("Error fetching obra data:", error);
+        }
+      }
+    };
+
+    loadMaterialesEmpleados();
+    loadObra();
+  }, [params.id, getObra]);
+  useEffect(async() => {
+    if (params.id) {
+      const obra = await getObra(params.id)
+      const initialValues = {
+        cliente: obra.clienteId,
+        empleado: obra.empleadoId,
+        area: obra.area,
+        fechaini: obra.fechaInicio,
+        fechafin: obra.fechaFin,
+        precio: obra.precio,
+        descripcion: obra.descripcion,
+        actividades: obra.detalle_obra.map((actividad) => ({
+          descripcion: detalle_obra.descripcion,
+          fechaini: detalle_obra.fechaInicio,
+          fechafin: detalle_obra.fechaFin,
+          materiales: detalle_obra.materiales.map((material) => ({
+            value: material.idMat,
+            label: material.nombre,
+          })),
+          empleados: detalle_obra.empleados.map((empleado) => ({
+            value: empleado.idEmp,
+            label: empleado.nombre,
+          })),
+          estadoAct: detalle_obra.estadoAct,
+        })),
+      };
+      setInitialValues(initialValues);
+    }
+  }, [params.id, obra]);
+  const [initialValues, setInitialValues] = useState({
+    cliente: '',
+    empleado: '',
+    area: '',
+    fechaini: '',
+    fechafin: '',
+    precio: '',
+    descripcion: '',
+    actividades: [
+      {
+        descripcion: '',
+        fechaini: '',
+        fechafin: '',
+        materiales: [],
+        empleados: [],
+        estadoAct: '',
+      },
+    ],
+  });
+  const obraSchemaAgg = Yup.object().shape({
+    cliente: Yup.string().required("Seleccione el cliente"),
+    empleado: Yup.string().required("El empleado es requerido"),
+    area: Yup.string().required("El area es requerida"),
+    fechaini: Yup.date().required("La fecha de incio de la obra es requerida"),
+    fechafin: Yup.date().required("La fecha de fin de la obra es requerida"),
+    precio: Yup.string().required("El precio de la obra es requerido"),
+    descripcion:Yup.string().required("La descripción de obra de requerida"),
+    estado: Yup.string().required("El estado es requerido"),
+})
+const obraSchemaEdit = Yup.object().shape({
+    cliente: Yup.string().required("Seleccione el cliente"),
+    empleados: Yup.string().required("El empleado es requerido"),
+    area: Yup.string().required("El area es requerida"),
+    fechaini: Yup.date().required("La fecha de incio de la obra es requerida"),
+    fechafin: Yup.date().required("La fecha de fin de la obra es requerida"),
+    precio: Yup.string().required("El precio de la obra es requerido"),
+    descripcion:Yup.string().required("La descripción de obra de requerida"),
+    estado: Yup.string().required("El estado es requerido"),
+    actividades: Yup.array().of(
+        Yup.object().shape({
+            descripcion: Yup.string().required("La descripción de la actividad es requerida"),
+            fechaini: Yup.date().required("La fecha de inicio de la actividad es requerida"),
+            fechafin: Yup.date().required("La fecha de fin de la actividad es requerida"),
+            materiales: Yup.array().min(1,"Debe seleccionar al menos un material"),
+            empleados: Yup.array().min(1,"Debe seleccionar al menos un empleado"),
+            estadoAct: Yup.string().required("El estado de la actividad es requerido")
+        })
+    )
+})
+ var  validateSchema = ""
+  if (params.id) {
+    validateSchema = obraSchemaEdit
+  } else {
+    validateSchema = obraSchemaAgg
+  }
   return (
-    <div className="container">
-      <div className="row">
-        <div className="col-md-12">
-          <Formik
-            initialValues={obra}
-            enableReinitialize={true}
-            validate={validate}
-            onSubmit={async (values) => {
-              const cleannedDescription = values.descripcion
-                .replace(/\s{2,}/g, " ")
-                .trim();
-              const cleannedArea = values.area.replace(/\s{2,}/g, " ").trim();
-              const obraObject = {
-                ...values,
-                area: cleannedArea,
-                descripcion: cleannedDescription,
-                cliente: selectedCli,
-              };
-              if (params.id) {
-                console.log(obraObject)
-                await updateObra(params.id, obraObject);
-                alertConfirm("update");
-                setTimeout(navigate("/obras"), 5000);
-                // navigate("/obras")
-              } else {
-                await createObra(obraObject);
-                // navigate("/obras")
-                alertConfirm();
-                setTimeout(navigate("/obras"), 5000);
-              }
-              setObra({
-                descripcion: "",
-                area: "",
-                estado: "",
-                precio: "",
-                fechaini: "",
-                fechafin: "",
-                cliente: "",
-                actividades: [
-                    {
-                        actividad:'',
-                        fechaini:'',
-                        fechafin:'',
-                        empleados:[],
-                        materiales:[],
-                        estadoAct:''
-                    }
-                ],
-              });
-            }}
+    <div>
+      <Formik
+        initialValues={initialValues}
+        enableReinitialize={true}
+        validationSchema={validateSchema}
+        onSubmit={(values) => {
+          const formattedValues = {
+            ...values,
+            actividades: values.actividades.map((actividad) => ({
+              ...actividad,
+              materiales: actividad.materiales.map((material) => material.value),
+              empleados: actividad.empleados.map((empleado) => empleado.value),
+            })),
+          };
+          console.log(values)
+          if (params.id) {
+            updateObra(params.id, formattedValues)
+            alertConfirm("update")
+            navigate("/obras")
+          } else {
+            createObra(formattedValues)
+            alertConfirm()
+            navigate("/obras")
+          }
+        }}
+      >
+        {({ values, setFieldValue, isSubmitting, handleSubmit, setFieldTouched, errors, touched, handleChange }) => (
+          <Form
+            className='user'
+            onSubmit={handleSubmit}
           >
-            {({
-              handleChange,
-              handleSubmit,
-              setFieldValue,
-              setFieldTouched,
-              values,
-              isSubmitting,
-              errors,
-              touched,
-            }) => (
-              <Form onSubmit={handleSubmit} className="user">
-                <div className="card text-center w-100">
-                  <h2>{params.id ? "Editar" : "Agregar"} obra</h2>
-                  <div className="card-body">
-                    <div className="row">
-                      <div id="focusHelper"></div>
-                      {params.id ? (
-                        <>
-                          <div className="col-md-6 mt-3">
-                            <label htmlFor="cliente" className="form-label">
-                              Cliente<span className="text-danger">*</span>
-                            </label>
-                            <Select
-                              key={keyCli}
-                              placeholder={<div>Selecciona cliente</div>}
-                              defaultValue={defaultOptionsCli}
-                              name="cliente"
-                              id="cliente"
-                              options={optionsCli}
-                              className="basic-multi-select"
-                              classNamePrefix="select"
-                              onChange={(selectedCli) => {
-                                setSelectedCli(selectedCli);
-                                handleMenuClose;
-                              }}
-                            />
-                            {errors.cliente && touched.cliente ? (
-                              <div className="alert alert-danger" role="alert">
-                                {errors.cliente}
-                              </div>
-                            ) : null}
-                          </div>
-                          <div className="col-md-6 mt-3">
-                            <label htmlFor="estado" className="form-label">
-                              Estado<span className="text-danger">*</span>
-                            </label>
-                            <Select
-                              id="estado"
-                              className="basic-multi-select"
-                              classNamePrefix="select"
-                              options={[
-                                { value: "En sesoria", label: "En sesoria" },
-                                { value: "Pendiente", label: "Pendiente" },
-                                {
-                                  value: "En construccion",
-                                  label: "En construccion",
-                                },
-                                { value: "Terminado", label: "Terminado" },
-                              ]}
-                              value={{
-                                value: values.estado,
-                                label:
-                                  values.estado === ""
-                                    ? "Seleccione estado*"
-                                    : values.estado,
-                              }}
-                              onChange={(selectedOption) => {
-                                setFieldValue("estado", selectedOption.value);
-                                setFieldTouched("estado", true);
-                              }}
-                              onBlur={() => setFieldTouched("estado", true)}
-                            />
-                            {errors.estado && touched.estado ? (
-                              <div className="alert alert-danger" role="alert">
-                                {errors.estado}
-                              </div>
-                            ) : null}
-                          </div>
-                          <div className="col-md-6 mt-3">
-                            <label htmlFor="fechaini" className="form-label">
-                              Fecha inicio<span className="text-danger">*</span>
-                            </label>
-                            <input
-                              type="date"
-                              className="form-control"
-                              id="fechaini"
-                              onChange={handleChange}
-                              value={values.fechaini}
-                            />
-                            {errors.fechaini && touched.fechaini ? (
-                              <div className="alert alert-danger" role="alert">
-                                {errors.fechaini}
-                              </div>
-                            ) : null}
-                          </div>
-                          <div className="col-md-6 mt-3">
-                            <label htmlFor="fechafin" className="form-label">
-                              Fecha fin<span className="text-danger">*</span>
-                            </label>
-                            <input
-                              type="date"
-                              className="form-control"
-                              id="fechafin"
-                              onChange={handleChange}
-                              value={values.fechafin || ""}
-                            />
-                            {errors.fechafin && touched.fechafin ? (
-                              <div className="alert alert-danger" role="alert">
-                                {errors.fechafin}
-                              </div>
-                            ) : null}
-                          </div>
-                          <div className="col-md-6 mt-3">
-                            <label htmlFor="area" className="form-label">
-                              Área de la obra
-                              <span className="text-danger">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control form-control-user"
-                              id="area"
-                              onChange={handleChange}
-                              value={values.area || ""}
-                              placeholder="Area de la obra*"
-                            />
-                            {errors.area && touched.area ? (
-                              <div className="alert alert-danger" role="alert">
-                                {errors.area}
-                              </div>
-                            ) : null}
-                          </div>
-                          <div className="col-md-6 mt-3">
-                            <label htmlFor="precio" className="form-label">
-                              Precio de la obra
-                              <span className="text-danger">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control form-control-user"
-                              id="precio"
-                              onChange={handleChange}
-                              value={values.precio || ""}
-                              placeholder="Precio de la obra*"
-                            />
-                            {errors.precio && touched.precio ? (
-                              <div className="alert alert-danger" role="alert">
-                                {errors.precio} 
-                              </div>
-                            ) : null}
-                          </div>
-                          <div className="col-md-12">
-                            <hr />
-                            { actividadesAgrupadas.map((actividadAgrupada, index) => (
-                                    <div key={index} className="row my-4 px-4">
-                                      <div className="col-md-4">
-                                        <label
-                                          htmlFor={`actividad-${index}`}
-                                          className="form-label"
-                                        >
-                                          Actividad
-                                          <span className="text-danger">*</span>
-                                        </label>
-                                        <input
-                                          type="text" 
-                                          className="form-control form-control-user"
-                                          name={`actividades[${index}].actividad`}
-                                          value={actividadAgrupada.actividad}
-                                          onChange={(e) => {
-                                            handleChange(e);
-                                            handleActividadChange(index, e.target.value);
-                                          }}
-                                        />
-                                        {errors.actividades && errors.actividades[index] && errors.actividades[index].actividad && (
-                                                <div className="text-danger">{errors.actividades[index].actividad}</div>
-                                              )}                                      
-                                      </div>
-                                      <div className="col-md-4">
-                                        <label
-                                          htmlFor={`fechaini-${index}`}
-                                          className="form-label"
-                                        >
-                                          Fecha inicio (actividad)
-                                          <span className="text-danger">*</span>
-                                        </label>
-                                        <input
-                                          type="date"
-                                          className="form-control form-control-user"
-                                          id={`fechaini-${index}`}
-                                          onChange={(e) =>
-                                            handleChangeActividad(
-                                              index,
-                                              "fechaini",
-                                              e.target.value
-                                            )
-                                          }
-                                          value={obra.actividades[index]?.fechaini || ""}
-                                          placeholder="Fecha de inicio de la actividad*"
-                                        />
-                                      </div>
-                                      <div className="col-md-4">
-                                        <label
-                                          htmlFor={`fechafin-${index}`}
-                                          className="form-label"
-                                        >
-                                          Fecha fin (actividad)
-                                          <span className="text-danger">*</span>
-                                        </label>
-                                        <input
-                                          type="date"
-                                          className="form-control form-control-user"
-                                          id={`fechafin-${index}`}
-                                          onChange={(e) =>
-                                            handleChangeActividad(
-                                              index,
-                                              "fechafin",
-                                              e.target.value
-                                            )
-                                          }
-                                          value={obra.actividades[index]?.fechafin || ""}
-                                          placeholder="Fecha de finalizacion de la actividad*"
-                                        />
-                                      </div>
-                                      <div className="col-md-4 my-4">
-                                          <label htmlFor={`empleados-${index}`} className="form-label">
-                                              Empleados<span className="text-danger">*</span>
-                                          </label>
-                                          <Select
-                                            isMulti
-                                            name={`actividades[${index}].empleados`}
-                                            // value={
-                                            //   actividadAgrupada.empleados.map((item, indexI) => ({
-                                            //     value: item.idEmp || '',
-                                            //     label: `${item.nombre || ''} ${item.apellidos || ''}`,
-                                            //   }))
-                                            // }
-                                            defaultValue={showEmpleados(actividadAgrupada.empleados) || []}
-                                            options={optionsEmp}
-                                          />
-                                      </div>
-                                      <div className="col-md-4 my-4">
-                                          <label htmlFor={`materiales-${index}`} className="form-label">
-                                              Materiales<span className="text-danger">*</span>
-                                          </label>
-                                          <Select
-                                            isMulti
-                                            options={optionsMat}
-                                            name={`actividades[${index}].materiales`}
-                                            defaultValue={
-                                              actividadAgrupada.materiales ? actividadAgrupada.materiales.map((item, indexI) => ({
-                                                value: item.idMat || '',
-                                                label: `${item.nombre || ''}`,
-                                              })) : ''
-
-                                            }
-
-                                          />
-                                      </div>
-                                      <div className="col-md-4 my-4">
-                                        <label
-                                          htmlFor={`estadoAct-${index}`}
-                                          className="form-label"
-                                        >
-                                          Estado<span className="text-danger">*</span>
-                                        </label>
-                                        
-                                        <Select
-                                          placeholder={<div>Selecciona estado</div>}
-                                          name={`estadoAct-${index}`}
-                                          value={
-                                            [{ 
-                                              value: obra.actividades[index]?.estado,
-                                              label: obra.actividades[index]?.estado
-                                            }]
-                                          }
-                                          options={optsEstadoAct}
-                                          className="basic-select"
-                                          classNamePrefix="select"
-                                          onChange={(selectedEst) => {
-                                            handleChangeActividad(index, 'estadoAct', selectedEst);
-                                            handleMenuClose();
-                                          }}
-                                          onBlur={() =>
-                                            setFieldTouched(`estadoAct-${index}`, true)
-                                          }
-                                          onMenuClose={handleMenuClose}
-                                        />
-                                      </div>
-                                      <hr />
-                                    </div>
-                                ))}
-                            <button
-                              type="button"
-                              className="btn btn-primary"
-                              onClick={handleAgregarActividad}
-                            >
-                              Agregar Actividad
-                            </button>
-                          </div>
-                          <div className="col-md-12 mt-3">
-                            <label htmlFor="descripcion" className="form-label">
-                              Descripcion de la obra
-                              <span className="text-danger">*</span>
-                            </label>
-                            <textarea
-                              type="text"
-                              className="form-control form-control-user"
-                              id="descripcion"
-                              onChange={handleChange}
-                              value={values.descripcion}
-                              placeholder="Descripción de la obra*"
-                            />
-                            {errors.descripcion && touched.descripcion ? (
-                              <div className="alert alert-danger" role="alert">
-                                {errors.descripcion}
-                              </div>
-                            ) : null}
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <div className="col-md-6 mt-3">
-                            <label htmlFor="cliente" className="form-label">
-                              Cliente<span className="text-danger">*</span>
-                            </label>
-                            <Select
-                              placeholder={<div>Selecciona cliente</div>}
-                              name="cliente"
-                              value={selectedCli}
-                              options={optionsCli}
-                              className="basic-multi-select"
-                              classNamePrefix="select"
-                              onChange={(selectedCli) => {
-                                setFieldValue("cliente", selectedCli);
-                                setSelectedCli(selectedCli);
-                                handleMenuClose;
-                              }}
-                              onBlur={() => setFieldTouched("cliente", true)}
-                              onMenuClose={handleMenuClose}
-                            />
-                            {errors.cliente && touched.cliente ? (
-                              <div className="alert alert-danger" role="alert">
-                                {errors.cliente}
-                              </div>
-                            ) : null}
-                          </div>
-                          <div className="col-md-6 mt-3">
-                            <label htmlFor="empleados" className="form-label">
-                              Asignar asesor
-                              <span className="text-danger">*</span>
-                            </label>
-                            <Select
-                              key={keyEmp}
-                              placeholder={<div>Asignar asesor</div>}
-                              name="empleados"
-                              options={optionsEmp}
-                              className="basic-multi-select"
-                              classNamePrefix="select"
-                              onChange={(selectedEmp) => {
-                                setFieldValue("empleados", selectedEmp);
-                                setSelectedEmp(selectedEmp);
-                                handleMenuClose;
-                              }}
-                              onBlur={() => setFieldTouched("empleados", true)}
-                            />
-                            {errors.empleados && touched.empleados ? (
-                              <div className="alert alert-danger" role="alert">
-                                {errors.empleados}
-                              </div>
-                            ) : null}
-                          </div>
-                          <div className="col-md-6 mt-3">
-                            <label htmlFor="estado" className="form-label">
-                              Estado<span className="text-danger">*</span>
-                            </label>
-                            <select
-                              id="estado"
-                              className="form-select form-control-user"
-                              onChange={handleChange}
-                              defaultValue={values.estado}
-                              disabled
-                            >
-                              <option value="Pendiente">Pendiente</option>
-                            </select>
-                            {errors.estado && touched.estado ? (
-                              <div className="alert alert-danger" role="alert">
-                                {errors.estado}
-                              </div>
-                            ) : null}
-                          </div>
-
-                          <div className="col-md-6 mt-3">
-                            <label htmlFor="fechaini" className="form-label">
-                              Fecha inicio<span className="text-danger">*</span>
-                            </label>
-                            <input
-                              type="date"
-                              className="form-control"
-                              id="fechaini"
-                              onChange={handleChange}
-                              value={values.fechaini}
-                            />
-                            {errors.fechaini && touched.fechaini ? (
-                              <div className="alert alert-danger" role="alert">
-                                {errors.fechaini}
-                              </div>
-                            ) : null}
-                          </div>
-                          <div className="col-md-12 mt-3">
-                            <label htmlFor="descripcion" className="form-label">
-                              Descripcion de la obra
-                              <span className="text-danger">*</span>
-                            </label>
-                            <textarea
-                              type="text"
-                              className="form-control form-control-user"
-                              id="descripcion"
-                              onChange={handleChange}
-                              value={values.descripcion}
-                              placeholder="Descripción de la obra*"
-                            />
-                            {errors.descripcion && touched.descripcion ? (
-                              <div className="alert alert-danger" role="alert">
-                                {errors.descripcion}
-                              </div>
-                            ) : null}
-                          </div>
-                        </>
-                      )}
-                    </div>
+            <div className='card text-center w-100'>
+              <h2>{params.id ? "Editar" : "Agregar"} obra</h2>
+              <div className='card-body'>
+                <div className='row'>
+                  <div className='col-md-3 mt-3 mx-auto'>
+                    <label htmlFor="cliente">Seleccione el cliente:</label>
+                    <Field as="select" name="cliente" label="Cliente" className="form-select form-control-user" value={values.cliente}>
+                      <option value="">Seleccione el cliente</option>
+                      {clientes.map((cliente) => (
+                        <option key={cliente.idCli} value={cliente.idCli}>
+                          {cliente.nombre}
+                        </option>
+                      ))}
+                    </Field>
+                    {
+                      errors.cliente && touched.cliente ? (
+                        <div className="alert alert-danger">{errors.cliente}</div>
+                      ) : null
+                    }
                   </div>
-                  <div className="card-footer text-center">
-                    <div className="row">
-                      <div className="col-md-6">
-                        <button
-                          type="submit"
-                          disabled={isSubmitting}
-                          className="btn btn-primary btn-icon-split w-50"
-                        >
-                          <span className="text-white-50">
-                            <i className="fas fa-plus"></i>
-                          </span>
-                          <span className="text">
-                            {params.id ? "Editar" : "Agregar"}
-                          </span>
-                        </button>
-                      </div>
-                      <div className="col-md-6">
-                        <a
-                          type="button"
-                          href=""
-                          className="btn btn-danger btn-icon-split w-50"
-                          onClick={() => navigate(`/obras`)}
-                        >
-                          <span className="text-white-50">
-                            <i className="fa-solid fa-x"></i>
-                          </span>
-                          <span className="text">Cancelar</span>
-                        </a>
-                      </div>
-                    </div>
+                  <div className='col-md-3 mt-3 mx-auto'>
+                    <label htmlFor="empleado">Seleccione el asesor:</label>
+                    <Field as="select" id="empleado" name="empleado" label="empleado" className="form-select form-control-user" value={values.empleado}>
+                      <option value="">Seleccione un asesor</option>
+                      {asesores.map((empleado) => (
+                        <option key={empleado.idEmp} value={empleado.idEmp}>
+                          {empleado.nombre}
+                        </option>
+                      ))}
+                    </Field>
+                    {
+                      errors.empleado && touched.empleado ? (
+                        <div className="alert alert-danger">{errors.empleado}</div>
+                      ) : null
+                    }
+                  </div>
+                  <div className='col-md-3 mt-3 mx-auto'>
+                    <label htmlFor="area">Ingrese el area de la obra</label>
+                    <Field type="text" name="area" label="Area" className="form-control form-control-user" placeholder="Area" />
+                    {
+                      errors.area && touched.area ? (
+                        <div className="alert alert-danger">{errors.area}</div>
+                      ) : null
+                    }
+                  </div>
+                  <div className='col-md-3 mt-3 mx-auto'>
+                    <label htmlFor="fechaini">Seleccione la fecha de inicio de la obra</label>
+                    <input type="date" name="fechaini" label="Fecha Inicio" className="form-control form-control-user" value={values.fechaini} onChange={handleChange} />
+                    {
+                      errors.fechaini && touched.fechaini ? (
+                        <div className="alert alert-danger">{errors.fechaini}</div>
+                      ) : null
+                    }
+                  </div>
+                  <div className='col-md-3 mt-3 mx-auto'>
+                    <label htmlFor="fechafin">Seleccione la fecha de fin de la obra</label>
+                    <input type="date" name="fechafin" label="Fecha Fin" className="form-control form-control-user" value={values.fechafin} onChange={handleChange} />
+                    {
+                      errors.fechafin && touched.fechafin ? (
+                        <div className="alert alert-danger">{errors.fechafin}</div>
+                      ) : null
+                    }
+                  </div>
+                  <div className='col-md-4 mt-3 mx-auto'>
+                    <label htmlFor="precio">Ingrese el precio de la obra</label>
+                    <Field type="text" name="precio" label="Precio" className="form-control form-control-user" defaultValue={values.precio || ''} onChange={handleChange} />
+                    {
+                      errors.precio && touched.precio ? (
+                        <div className="alert alert-danger">{errors.precio}</div>
+                      ) : null
+                    }
+                  </div>
+                  <div className='col-md-4 mt-3 mx-auto'>
+                    <label htmlFor="estado">Seleccione el estado de la obra</label>
+                    <select name="estado" id="estado" className="form-select form-control-user" onChange={handleChange}>
+                      <option value="">Seleccione una opción</option>
+                      <option value="En asesoria">En asesoria</option>
+                      <option value="Pendiente">Pendiente</option>
+                      <option value="En construcción">En construcción</option>
+                      <option value="Terminado">Terminado</option>
+                    </select>
+                    {
+                      errors.estado && touched.estado ? (
+                        <div className="alert alert-danger">{errors.estado}</div>
+                      ) : null
+                    }
+                  </div>
+                  <div className='col-md-16 mt-3 mx-auto'>
+                    <label htmlFor="descripcion">Ingrese la descripcion de la obra</label>
+                    <Field as="textarea" name="descripcion" label="Descripción" className="form-control form-control" />
+                  </div>
+                  {
+                    errors.descripcion && touched.descripcion ? (
+                      <div className="alert alert-danger">{errors.descripcion}</div>
+                    ) : null
+                  }
+                  {params.id ? (
+                    <FieldArray name="actividades">
+                      {({ push, remove }) => (
+                        <div>
+                          {values.actividades.map((actividad, index) => (
+                            <div key={index} className="row mt-3">
+                              <hr />
+                              <h3>Información de la actividad #{index + 1}</h3>
+                              <div className='col-md-4'>
+                                <label htmlFor={`actividades[${index}].descripcion`}>Descripción de la actividad</label>
+                                <Field as="textarea" name={`actividades[${index}].descripcion`} className="form-control form-control-user" />
+                                {errors.actividades && errors.actividades[index] && errors.actividades[index].descripcion && touched.actividades && touched.actividades[index] ? (
+                                  <div className="alert alert-danger" role="alert">
+                                    {errors.actividades[index].descripcion}
+                                  </div>
+                                ) : null}
+                              </div>
+                              <div className='col-md-4'>
+                                <label htmlFor={`actividades[${index}].fechaini`}>Fecha Inicio</label>
+                                <Field type="date" name={`actividades[${index}].fechaini`} className="form-control form-control-user" />
+                                {errors.actividades && errors.actividades[index] && errors.actividades[index].fechaini && touched.actividades && touched.actividades[index] ? (
+                                  <div className="alert alert-danger" role="alert">
+                                    {errors.actividades[index].fechaini}
+                                  </div>
+                                ) : null}
+                              </div>
+                              <div className='col-md-4'>
+                                <label htmlFor={`actividades[${index}].fechafin`}>Fecha Fin</label>
+                                <Field type="date" name={`actividades[${index}].fechafin`} className="form-control form-control-user" />
+                                {errors.actividades && errors.actividades[index] && errors.actividades[index].fechafin && touched.actividades && touched.actividades[index] ? (
+                                  <div className="alert alert-danger" role="alert">
+                                    {errors.actividades[index].fechafin}
+                                  </div>
+                                ) : null}
+                              </div>
+                              <div className="col-md-4 mt-3 mx-auto">
+                                <label htmlFor={`actividades[${index}].materiales`}>Materiales:</label>
+                                <Select
+                                  id={`actividades[${index}].materiales`}
+                                  options={materiales}
+                                  isMulti
+                                  value={actividad.materiales}
+                                  onChange={(selectedMateriales) => setFieldValue(`actividades[${index}].materiales`, selectedMateriales)}
+                                  onBlur={() => setFieldTouched(`actividades[${index}].materiales`, true)}
+                                />
+                                {errors.actividades && errors.actividades[index] && errors.actividades[index].materiales && touched.actividades && touched.actividades[index] ? (
+                                  <div className="alert alert-danger" role="alert">
+                                    {errors.actividades[index].materiales}
+                                  </div>
+                                ) : null}
+                              </div>
+                              <div className="col-md-4 mt-3 mx-auto">
+                                <label htmlFor={`actividades[${index}].empleados`}>Empleados:</label>
+                                <Select
+                                  id={`actividades[${index}].empleados`}
+                                  options={empleados}
+                                  isMulti
+                                  value={actividad.empleados}
+                                  onChange={(selectedEmpleados) => setFieldValue(`actividades[${index}].empleados`, selectedEmpleados)}
+                                  onBlur={() => setFieldTouched(`actividades[${index}].empleados`, true)}
+                                />
+                                {errors.actividades && errors.actividades[index] && errors.actividades[index].empleados && touched.actividades && touched.actividades[index] ? (
+                                  <div className="alert alert-danger" role="alert">
+                                    {errors.actividades[index].empleados}
+                                  </div>
+                                ) : null}
+                              </div>
+                              <div className='col-md-4'>
+                                <label htmlFor={`actividades[${index}].estadoAct`}>Estado</label>
+                                <Field as="select" name={`actividades[${index}].estadoAct`} className="form-select form-control-user">
+                                  <option value="">Seleccione un estado</option>
+                                  <option value="En curso">En curso</option>
+                                  <option value="En revisión">En revisión</option>
+                                  <option value="Terminada">Terminada</option>
+                                </Field>
+                                {errors.actividades && errors.actividades[index] && errors.actividades[index].estadoAct && touched.actividades && touched.actividades[index] ? (
+                                  <div className="alert alert-danger" role="alert">
+                                    {errors.actividades[index].estadoAct}
+                                  </div>
+                                ) : null}
+                              </div>
+                              <div className='col-md92 mt-3'>
+                                <button type="button" className="btn btn-danger" onClick={() => remove(index)}>
+                                  Eliminar actividad
+                                </button>
+                              </div>
+                              <hr className='mt-4' />
+                            </div>
+                          ))}
+                          <div className="row mt-3">
+                            <div className='col-md-12'>
+                              <button type="button" className='btn btn-success' onClick={() => push({ descripcion: '', fechaini: '', fechafin: '', materiales: [], empleados: [], estadoAct: '' })}>
+                                Agregar actividad
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </FieldArray>) : null
+                  }
+                </div>
+              </div>
+              <div className="card-footer text-center">
+                <div className="row">
+                  <div className="col-md-6">
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="btn btn-primary btn-icon-split w-50"
+                    >
+                      <span className="text-white-50">
+                        <i className="fas fa-plus"></i>
+                      </span>
+                      <span className="text">{params.id? "Editar":"Agregar"}</span>
+                    </button>
+                  </div>
+                  <div className="col-md-6">
+                    <a
+                      type="button"
+                      className="btn btn-danger btn-icon-split w-50"
+                      onClick={() => navigate(`/obras`)}
+                    >
+                      <span className="text-white-50">
+                        <i className="fa-solid fa-x"></i>
+                      </span>
+                      <span className="text">Cancelar</span>
+                    </a>
                   </div>
                 </div>
-              </Form>
-            )}
-          </Formik>
-        </div>
-      </div>
+              </div>
+            </div>
+          </Form>
+        )}
+      </Formik>
     </div>
   );
 }

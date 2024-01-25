@@ -7,6 +7,13 @@ const router = Router()
 router.get("/roles", async (req, res) => {
     try {
         const roles = await prisma.rol.findMany({
+            include:{
+                rolpermisoempleado:{
+                    include:{
+                        permiso:true
+                    }
+                }
+            }
         })
         return res.send(roles)
     } catch (error) {
@@ -36,7 +43,8 @@ router.get("/rol/:id", async (req, res) => {
                     select: {
                         permiso: {
                             select: {
-                                permiso: true
+                                permiso: true,
+                                idPer:true
                             }
                         }
                     }
@@ -115,7 +123,11 @@ router.put("/rol/:id", async (req, res) => {
                             idEmp: null
                         }
                     });
-                } else {
+                } 
+                else if (!elemento.hasOwnProperty('value')) {
+                    const trin = elemento.hasOwnProperty("label")
+                    console.log(trin)
+                }else {
                     console.error('El objeto en permisos no tiene la propiedad "value"');
                 }
             }

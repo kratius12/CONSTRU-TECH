@@ -39,3 +39,7 @@ export const ToggleEmpleadoStatusRequest = async (idEmp, status) =>{
 export const SearchDocRequest = async (fields) =>{
     return await axios.put(`http://localhost:4000/empleados/searchDoc`, fields)
 }
+
+export const SearchEmailRequest = async (fields)=>{
+    return await axios.put(`http://localhost:4000/empleados/searchEmail`,fields)
+}
