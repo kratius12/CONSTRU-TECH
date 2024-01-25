@@ -383,22 +383,8 @@ router.put("/empleados/searchEmail", async (req, res) => {
         const result = await prisma.empleado.findMany({
             where: {
                 email: email
-
             }
         })
-        if (req.params.id) {
-            const result = await prisma.empleado.findMany({
-                where: {
-                    email: email
-                }
-            })
-            if (result.length > 0) {
-                return res.status(200).json(true)
-            } else {
-                return res.status(200).json(false)
-            }
-        }
-
 
         if (result.length > 0) {
             return res.status(200).json(true)
@@ -408,6 +394,26 @@ router.put("/empleados/searchEmail", async (req, res) => {
     } catch (error) {
         console.log(json({ message: error.message }));
         return res.status(500).json({ message: error.message })
+    }
+})
+router.put("empleados/searchEmail/:id",async(req,res)=>{
+    try {
+        const {email} = req.body
+        const emailS = await prisma.empleado.findMany({
+            where:{
+                email:email,
+                NOT:{
+                    idEmp:parseInt(req.params.id)
+                }
+            }
+        })
+        if(emailS.length>0){
+            return res.status(200).json(true)
+        }else{
+            return res.status(200).json(false)
+        }
+    } catch (error) {
+        
     }
 })
 

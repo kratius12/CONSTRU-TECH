@@ -110,6 +110,14 @@ export const EmpleadoContextProvider = ({children}) => {
             console.error(error)
         }
     }
+    const searchDocid = async (idEmp,empleado) => {
+        try {
+            const response = await SearchDocRequest(idEmp,empleado)
+            return response.data
+        } catch (error) {
+            console.error(error)
+        }
+    }
     const searchEmail = async (empleado) => {
         try {
             const response = await SearchEmailRequest(empleado)
@@ -118,9 +126,17 @@ export const EmpleadoContextProvider = ({children}) => {
             console.error(error)
         }
     }
+    const searchEmailid = async (idEmp,empleado) => {
+        try {
+            const response = await SearchEmailRequest(idEmp,empleado)
+            return response.data
+        } catch (error) {
+            console.error(error)
+        }
+    }
 
     return (
-        <EmpleadoContext.Provider value={{empleados, Empleados, deleteEmpleado, createEmpleado, getEmpleado, updateEmpleado, toggleEmpleadoStatus, especialidades, Especialidades, createEspecialidad, searchDoc, searchEmail}}>
+        <EmpleadoContext.Provider value={{empleados, Empleados, deleteEmpleado, createEmpleado, getEmpleado, updateEmpleado, toggleEmpleadoStatus, especialidades, Especialidades, createEspecialidad, searchDoc, searchEmail,searchDocid,searchEmailid}}>
             {children}
         </EmpleadoContext.Provider>
     )
