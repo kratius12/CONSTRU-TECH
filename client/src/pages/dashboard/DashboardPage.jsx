@@ -89,13 +89,15 @@ function DashboardPage() {
               animationSpeed: 500,
               type: "red",
               columnClass: "col-md-6 col-md-offset-3",
-              autoClose: "okay|6000",
+              autoClose: "okay|3000",
               buttons: {
                 okay: function () {},
               },
             });
           }
-        alertRoutes(from)
+        if (redirected && from) {
+            alertRoutes(from)
+        }
 
     }, []);
     useEffect(() => {

@@ -170,11 +170,11 @@ function App() {
         },
         body: JSON.stringify({username, password})
       })
-
+      console.log(response)
       if (response.status === 404) {
         $.confirm({
           title:'Credenciales incorrectas',
-          content: "Usuario o contraseña incorrectss...",
+          content: "Usuario inactivo o credenciales incorrectas...",
           icon: 'fa fa-x-mark',
           theme: 'modern',
           closeIcon: true,
@@ -199,9 +199,10 @@ function App() {
           const decodedToken = JSON.parse(atob(payload));
           if (decodedToken) {
               localStorage.setItem('userData', JSON.stringify(decodedToken));
+              const userData = JSON.parse(localStorage.getItem('userData'))
               $.confirm({
-                title:'Inicio de sesion con exito!',
-                content: "Redirecionando...",
+                title:'Inicio de sesión con exito!',
+                content: `Bienvenido ${userData.nombres}`,
                 icon: 'fa fa-check',
                 theme: 'modern',
                 closeIcon: true,
@@ -241,7 +242,7 @@ function App() {
     const formHtml = ReactDOMServer.renderToString(<EmailForm onSubmit={onSubmit}/>)
 
     $.confirm({
-      title: 'Olvide mi contraseña',
+      title: 'Olvidé mi contraseña',
       content: formHtml, // Renderiza el formulario de React dentro de la confirmación de jQuery
       icon: 'fa fa-user-lock',
       theme: 'modern',

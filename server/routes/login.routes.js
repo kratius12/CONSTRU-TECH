@@ -17,6 +17,7 @@ router.post('/login', async (req, res) => {
       const user = await prisma.empleado.findUnique({
         where: {
           email: username,
+          estado: 1
         }, 
         include:{
             rolpermisoempleado:{

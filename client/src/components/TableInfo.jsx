@@ -134,6 +134,7 @@ function TableInfo({ dataHeader, dataBody, routeEdit, viewDetail, entity, toggle
                       id={cell.row.original[cell.column.columnDef.idProperty]}
                       initialStatus={cell.row.original.estado}
                       toggleApi={toggleApi}
+                      entity={entity}
                     >
                       <Link
                         to={`/${routeEdit}/${cell.row.original[cell.column.columnDef.idProperty]}`}

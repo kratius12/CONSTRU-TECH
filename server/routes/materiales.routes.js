@@ -137,7 +137,7 @@ router.put("/materialEstado/:id", async (req, res) => {
             type: "green",
           });
         } else if(material.categoria.estado==0){
-          return res.status(404).json({
+          return res.status(204).json({
             message: "No se puede editar el estado del material si el estado de la categoría es 0",
             type: "red",
           });
