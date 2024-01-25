@@ -92,7 +92,7 @@ export const MaterialContextProvider = ({children}) => {
             } else {
                 estado = 1
             }
-            await ToggleMaterialStatusRequest(idProv, { estado })
+            return await ToggleMaterialStatusRequest(idProv, { estado })
             
         } catch (error) {
             console.error(error)
