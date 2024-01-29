@@ -243,7 +243,7 @@ function App() {
 
     $.confirm({
       title: 'Olvidé mi contraseña',
-      content: formHtml, // Renderiza el formulario de React dentro de la confirmación de jQuery
+      content: formHtml, 
       icon: 'fa fa-user-lock',
       theme: 'modern',
       closeIcon: true,
@@ -264,12 +264,12 @@ function App() {
               $.alert('Por favor, ingrese un correo electrónico válido');
               return false;
             }
-            // Puedes hacer algo con el email aquí si es necesario
+
             onSubmit(email);
           },
         },
         cancelar: function () {
-          // Cierra la confirmación
+
         },
       },
       onContentReady: function () {
@@ -308,6 +308,7 @@ function App() {
         });
       } else if (response.status === 404) {
         $.alert('Error, código invalido.');
+        return false;
       }
     } catch (error) {
       console.log(error);
@@ -353,10 +354,12 @@ function App() {
               if (response.status === 200) {
                 const data = await response.json();
                 setEmail(data.code)
-                // Ahora, después de la verificación del código, decidimos qué hacer
+                localStorage.setItem('email', data.code)
+
                 handleCodeDialog(data);
               } else if (response.status === 404) {
                 $.alert('Error, código invalido.');
+                return false;
               }
             } catch (error) {
               console.log(error);
@@ -364,7 +367,7 @@ function App() {
           },
         },
         cancelar: function () {
-          // Cierra la confirmación
+
         },
       },
       onContentReady: function () {
@@ -417,6 +420,7 @@ function App() {
             }
   
             try {
+              const email = localStorage.getItem('email')
               const response = await fetch('http://localhost:4000/password', {
                 method: 'POST',
                 headers: {
@@ -427,8 +431,10 @@ function App() {
   
               if (response.status === 200) {
                 $.alert('Cambio de contraseña exitoso!');
+                localStorage.removeItem('email')
               } else if (response.status === 404) {
-                $.alert('Error, código invalido.');
+                $.alert('Error, el correo ingresado no existe.');
+                
               }
             } catch (error) {
               console.log(error);
@@ -436,7 +442,7 @@ function App() {
           },
         },
         cancelar: function () {
-          // Cierra la confirmación
+
         },
       },
       onContentReady: function () {
@@ -465,7 +471,7 @@ function App() {
           
           
         }else if(response.status === 404){
-          $.alert('Error, codigo invalido.');
+          $.alert('Error, no se pudo cambiar la contraseña.');
         }
 
       } catch (error) {

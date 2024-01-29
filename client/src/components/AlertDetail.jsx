@@ -28,7 +28,7 @@ const AlertDetail = ({ id, entity, getApi }) => {
     fetchData();
   }, [getApi, id]);
 
-  const excludedFields = ['createdAt', 'updatedAt', 'idObra', 'Id', 'idEmp', 'idCli', 'idMat', 'idcat', 'idCliente', 'actividades', 'empleado_especialidad', 'contrasena'];
+  const excludedFields = ['createdAt', 'updatedAt', 'idObra', 'Id', 'idEmp', 'idCli', 'idMat', 'idcat', 'idCliente', 'actividades', 'empleado_especialidad', 'contrasena', 'idRol', 'idPer'];
   const [textStatus, setTextStatus] = useState(1);
   const text = textStatus === 1 ? 'Activo' : 'Inactivo';
 
@@ -50,10 +50,9 @@ const AlertDetail = ({ id, entity, getApi }) => {
           <div className="form-group">
             <label htmlFor="">{key}</label>
             {Array.isArray(value) ? (
-              // Si es un array, muestra la información en cards
-              value.map((item, index) => (
-                <div key={index} className="card" style={{ width: '18rem' }}>
-                  <div className="card-header">{key}</div>
+              <div key={value} className="card text-left" style={{ width: '18rem' }}>
+                <div className="card-header text-center">{key}</div>
+                {value.map((item) => (
                   <ul className="list-group list-group-flush">
                     {Object.entries(item).map(([subKey, subValue]) => (
                       <li key={subKey} className="list-group-item">
@@ -61,13 +60,13 @@ const AlertDetail = ({ id, entity, getApi }) => {
                       </li>
                     ))}
                   </ul>
-                </div>
-              ))
+                ))}
+              </div>
             ): typeof value === 'object'?  (
               <input 
               type="text"
               className="form-control form-control-user"
-              value={renderObjectProperties(value, ['idObra', 'Id', 'idEmp', 'idCli', 'idMat', 'idcat', 'idCliente', 'actividades'])}
+              value={renderObjectProperties(value, ['idObra', 'Id', 'idEmp', 'idCli', 'idMat', 'idcat', 'idCliente', 'actividades', 'idRol', 'idPer', 'idEmp'])}
               readOnly              
               />
             ) : (
