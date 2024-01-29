@@ -169,6 +169,7 @@ router.put("/empleado/:id", async (req, res) => {
             }))
         }
         var elemento = rol.value;
+
         if (elemento) {
             const upRol = await prisma.rolpermisoempleado.updateMany({
                 where: {
