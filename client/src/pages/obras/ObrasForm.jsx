@@ -50,6 +50,7 @@ const ObrasForm = () => {
   const [materiales, setMateriales] = useState([]);
   const [empleados, setEmpleados] = useState([]);
   const [asesores, setAsesores] = useState([]);
+  const [actividad, setActividad] = useState([])
   const [obra, setObra] = useState({
     idCliente: '',
     idEmp: '',
@@ -58,7 +59,7 @@ const ObrasForm = () => {
     fechafin: '',
     precio: '',
     descripcion: '',
-    estado:"",
+    estado: "",
     actividades: []
   });
   const [defaultMateriales, setDefaultMateriales] = useState([]); // Inicializa como array vacío
@@ -105,6 +106,10 @@ const ObrasForm = () => {
     fetchData("http://localhost:4000/empleadosAct").then((data) => {
       setAsesores(data)
     });
+    fetchData(`http://localhost:4000/actividades/${params.id}`).then((data) => {
+      setActividad(data)
+      setFieldValue("actividades",data)
+    })
 
     const loadObra = async () => {
       if (params.id) {
@@ -158,36 +163,7 @@ const ObrasForm = () => {
     estado: obra.estado,
     actividades: obra.actividades || [], // Asegúrate de inicializar como un array
   };
-  const obraSchemaAgg = Yup.object().shape({
-    idCLiente: Yup.string().required("Seleccione el cliente"),
-    idEmp: Yup.string().required("El empleado es requerido"),
-    // area: Yup.string().required("El area es requerida"),
-    fechaini: Yup.date().required("La fecha de incio de la obra es requerida"),
-    // fechafin: Yup.date().required("La fecha de fin de la obra es requerida"),
-    // precio: Yup.string().required("El precio de la obra es requerido"),
-    descripcion: Yup.string().required("La descripción de obra de requerida"),
-    // estado: Yup.string().required("El estado es requerido"),
-  })
-  const obraSchemaEdit = Yup.object().shape({
-    idCliente: Yup.string().required("Seleccione el cliente"),
-    idEmp: Yup.string().required("El empleado es requerido"),
-    area: Yup.string().required("El area es requerida"),
-    fechaini: Yup.date().required("La fecha de incio de la obra es requerida"),
-    fechafin: Yup.date().required("La fecha de fin de la obra es requerida"),
-    precio: Yup.string().required("El precio de la obra es requerido"),
-    descripcion: Yup.string().required("La descripción de obra de requerida"),
-    estado: Yup.string().required("El estado es requerido"),
-    actividades: Yup.array().of(
-      Yup.object().shape({
-        descripcion: Yup.string().required("La descripción de la actividad es requerida"),
-        fechaini: Yup.date().required("La fecha de inicio de la actividad es requerida"),
-        fechafin: Yup.date().required("La fecha de fin de la actividad es requerida"),
-        materiales: Yup.array().min(1, "Debe seleccionar al menos un material"),
-        empleados: Yup.array().min(1, "Debe seleccionar al menos un empleado"),
-        estadoAct: Yup.string().required("El estado de la actividad es requerido")
-      })
-    ).min(1, "Debe agregar al menos una actividad")
-  })
+
 
   return (
     <div>
@@ -311,12 +287,12 @@ const ObrasForm = () => {
                     ) : null
                   }
                   <div className='col-md-4 mt-3 mx-auto'>
-                  <label htmlFor="estado">Seleccione el estado de la obra</label>
+                    <label htmlFor="estado">Seleccione el estado de la obra</label>
                     {params.id ? (
-                      <select name="estado"  id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado}>
+                      <select name="estado" id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado}>
                         <option value="">Seleccione una opción</option>
                         <option value="En asesoria">En asesoria</option>
-                        <option  value="Pendiente">Pendiente</option>
+                        <option value="Pendiente">Pendiente</option>
                         <option value="En construcción">En construcción</option>
                         <option value="Terminado">Terminado</option>
                       </select>
@@ -324,12 +300,12 @@ const ObrasForm = () => {
                       <select name="estado" disabled id="estado" className="form-select form-control-user" onChange={handleChange}>
                         <option value="">Seleccione una opción</option>
                         <option value="En asesoria">En asesoria</option>
-                        <option selected  value="Pendiente">Pendiente</option>
+                        <option selected value="Pendiente">Pendiente</option>
                         <option value="En construcción">En construcción</option>
                         <option value="Terminado">Terminado</option>
                       </select>
                     )}
-                    
+
                     {
                       errors.estado && touched.estado ? (
                         <div className="alert alert-danger">{errors.estado}</div>
@@ -356,29 +332,17 @@ const ObrasForm = () => {
                               <div className='col-md-4'>
                                 <label htmlFor={`actividades[${index}].descripcion`}>Descripción de la actividad</label>
                                 <Field as="textarea" name={`actividades[${index}].descripcion`} className="form-control form-control-user" />
-                                {errors.actividades && errors.actividades[index] && errors.actividades[index].descripcion && touched.actividades && touched.actividades[index] ? (
-                                  <div className="alert alert-danger" role="alert">
-                                    {errors.actividades[index].descripcion}
-                                  </div>
-                                ) : null}
+                                <ErrorMessage name={`actividades[${index}].descripcion`} component="div" className="alert alert-danger" />
                               </div>
                               <div className='col-md-4'>
                                 <label htmlFor={`actividades[${index}].fechaini`}>Fecha Inicio</label>
                                 <Field type="date" name={`actividades[${index}].fechaini`} className="form-control form-control-user" />
-                                {errors.actividades && errors.actividades[index] && errors.actividades[index].fechaini && touched.actividades && touched.actividades[index] ? (
-                                  <div className="alert alert-danger" role="alert">
-                                    {errors.actividades[index].fechaini}
-                                  </div>
-                                ) : null}
+                                <ErrorMessage name={`actividades[${index}].fechaini`} component="div" className="alert alert-danger" />
                               </div>
                               <div className='col-md-4'>
                                 <label htmlFor={`actividades[${index}].fechafin`}>Fecha Fin</label>
                                 <Field type="date" name={`actividades[${index}].fechafin`} className="form-control form-control-user" />
-                                {errors.actividades && errors.actividades[index] && errors.actividades[index].fechafin && touched.actividades && touched.actividades[index] ? (
-                                  <div className="alert alert-danger" role="alert">
-                                    {errors.actividades[index].fechafin}
-                                  </div>
-                                ) : null}
+                                <ErrorMessage name={`actividades[${index}].fechafin`} component="div" className="alert alert-danger" />
                               </div>
                               <div className="col-md-4 mt-3 mx-auto">
                                 <label htmlFor={`actividades[${index}].materiales`}>Materiales:</label>
@@ -390,11 +354,7 @@ const ObrasForm = () => {
                                   onChange={(selectedMateriales) => setFieldValue(`actividades[${index}].materiales`, selectedMateriales)}
                                   onBlur={() => setFieldTouched(`actividades[${index}].materiales`, true)}
                                 />
-                                {errors.actividades && errors.actividades[index] && errors.actividades[index].materiales && touched.actividades && touched.actividades[index] ? (
-                                  <div className="alert alert-danger" role="alert">
-                                    {errors.actividades[index].materiales}
-                                  </div>
-                                ) : null}
+                                <ErrorMessage name={`actividades[${index}].materiales`} component="div" className="alert alert-danger" />
                               </div>
                               <div className="col-md-4 mt-3 mx-auto">
                                 <label htmlFor={`actividades[${index}].empleados`}>Empleados:</label>
@@ -406,11 +366,7 @@ const ObrasForm = () => {
                                   onChange={(selectedEmpleados) => setFieldValue(`actividades[${index}].empleados`, selectedEmpleados)}
                                   onBlur={() => setFieldTouched(`actividades[${index}].empleados`, true)}
                                 />
-                                {errors.actividades && errors.actividades[index] && errors.actividades[index].empleados && touched.actividades && touched.actividades[index] ? (
-                                  <div className="alert alert-danger" role="alert">
-                                    {errors.actividades[index].empleados}
-                                  </div>
-                                ) : null}
+                                <ErrorMessage name={`actividades[${index}].empleados`} component="div" className="alert alert-danger" />
                               </div>
                               <div className='col-md-4'>
                                 <label htmlFor={`actividades[${index}].estadoAct`}>Estado</label>
@@ -420,18 +376,13 @@ const ObrasForm = () => {
                                   <option value="En revisión">En revisión</option>
                                   <option value="Terminada">Terminada</option>
                                 </Field>
-                                {errors.actividades && errors.actividades[index] && errors.actividades[index].estadoAct && touched.actividades && touched.actividades[index] ? (
-                                  <div className="alert alert-danger" role="alert">
-                                    {errors.actividades[index].estadoAct}
-                                  </div>
-                                ) : null}
+                                <ErrorMessage name={`actividades[${index}].estadoAct`} component="div" className="alert alert-danger" />
                               </div>
-                              <div className='col-md92 mt-3'>
+                              <div className='col-md-4 mt-3'>
                                 <button type="button" className="btn btn-danger" onClick={() => remove(index)}>
                                   Eliminar actividad
                                 </button>
                               </div>
-
                             </div>
                           ))}
                           <hr className='mt-4' />
@@ -444,8 +395,8 @@ const ObrasForm = () => {
                           </div>
                         </div>
                       )}
-                    </FieldArray>) : null
-                  }
+                    </FieldArray>
+                  ) : null}
                 </div>
               </div>
               <div className="card-footer text-center">

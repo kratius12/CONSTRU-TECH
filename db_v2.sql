@@ -198,6 +198,7 @@ CREATE TABLE `obras` (
 -- Estructura de tabla para la tabla `permiso`
 --
 
+
 CREATE TABLE `permiso` (
   `idPer` int(11) NOT NULL,
   `permiso` varchar(30) DEFAULT NULL,
@@ -205,13 +206,26 @@ CREATE TABLE `permiso` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `permiso`(`permiso`,`estado`) VALUES
-(`Roles`,1),
-(`Empleados`,1),
-(`Especialidades`,1),
-(`Proveedores`,1),
-(`Materiales`,1),
-(`Obras y tiempos`,1),
-(`Clientes`,1)
+('Roles',1),
+('Empleados',1),
+('Especialidades',1),
+('Proveedores',1),
+('Materiales',1),
+('Obras',1),
+('Clientes',1),
+('Categorias',1),
+('Compras',1);
+
+INSERT INTO `rolpermisoempleado` (`id`, `idRol`, `idPer`, `idEmp`) VALUES
+( 1, 1, 1),
+( 1, 2, 1),
+( 1, 3, 1),
+( 1, 4, 1),
+( 1, 5, 1),
+( 1, 6, 1),
+( 1, 7, 1),
+( 1, 8, 1),
+( 1, 9, 1);
 
 -- --------------------------------------------------------
 

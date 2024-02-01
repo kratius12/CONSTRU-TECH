@@ -183,7 +183,7 @@ export default function ProveedoresForm() {
             initialValues={proveedor}
             enableReinitialize={true}
             validateOnChange={true}
-            validationSchema={proveedorSchema}
+            // validationSchema={proveedorSchema}
             onSubmit={async (values) => {
               try {
                 if (params.id) {
