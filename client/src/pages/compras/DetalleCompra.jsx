@@ -16,7 +16,7 @@ const CompraDetalle = () => {
 
     const handleOpenModal = () => setShowModal(true);
     const handleCloseModal = () => setShowModal(false);
-    useEffect(() => {
+    useEffect(() => { 
         const fetchCompraDetalle = async () => {
             try {
                 const response = await axios.get(`http://localhost:4000/compra/${id}`);

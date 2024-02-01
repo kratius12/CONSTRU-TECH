@@ -46,6 +46,7 @@ import Navbar from "./components/Navbar"
 import DetalleCompra from "./pages/compras/DetalleCompra";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import ObraDetalle from "./pages/obras/ObrasDetalle";
 
 const EmailForm = ({ onSubmit }) => {
   const [email, setEmail] = useState('');
@@ -537,6 +538,13 @@ function App() {
                     <Route path="/editarObra/:id" element={
                       tienePermisos(['obras'])? (
                         <ObrasForm />
+                      ):(
+                        redirectToDashboard('obras')
+                      )
+                    } />
+                    <Route path="/detalleObra/:id" element={
+                      tienePermisos(['obras'])? (
+                        <ObraDetalle />
                       ):(
                         redirectToDashboard('obras')
                       )

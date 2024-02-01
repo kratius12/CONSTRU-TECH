@@ -297,7 +297,7 @@ const ComprasForm = () => {
                           onClick={() => {
                             arrayHelpers.push({
                               idMat: "",
-                              cantidad: "",
+                              cantidad: "", 
                               precio: "",
                               subtotal: "",
                             });
