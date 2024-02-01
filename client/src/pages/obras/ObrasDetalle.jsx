@@ -32,7 +32,8 @@ const ObraDetalle = ()=>{
                 <div className="card-body">
                     <div className="row">
                         <div className="col-md-2 ">
-
+                            <h1>{obra.descripcion}</h1>
+                            
                         </div>
                     </div>
                 </div>
