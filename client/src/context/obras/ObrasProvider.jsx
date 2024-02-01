@@ -4,7 +4,8 @@ import { GetObrasRequest,
     GetObraRequest, 
     DeleteObraRequest, 
     UpdateObraRequest, 
-    ToggleObraStatusRequest
+    ToggleObraStatusRequest,
+    GetActividadesRequest
 } from "../../api/Obras.api";
 import {getClientsRequest} from "../../api/Clientes.api";
 import {GetEmpleadosRequest} from "../../api/Empleados.api";
@@ -64,6 +65,15 @@ export const ObraContextProvider = ({children}) => {
         }
     }
 
+    const getActividades = async (idObra)=>{
+        try {
+            const result = await GetActividadesRequest(idObra)
+            return result.data 
+        } catch (error) {
+            console.error(error)            
+        }
+    }
+
     const deleteObra = async (idObra) => {
         try {
             const response = await DeleteObraRequest(idObra)
@@ -99,7 +109,7 @@ export const ObraContextProvider = ({children}) => {
         }
     }
     return (
-        <ObraContext.Provider value={{obras, Obras, clientes, Clientes, empleados, Empleados, materiales, Materiales, deleteObra, createObra, getObra, updateObra, toggleObraStatus}}>
+        <ObraContext.Provider value={{obras, Obras, clientes, Clientes, empleados, Empleados, materiales, Materiales, deleteObra, createObra, getObra, updateObra, toggleObraStatus, getActividades}}>
             {children}
         </ObraContext.Provider>
     )
