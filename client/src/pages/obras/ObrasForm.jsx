@@ -43,13 +43,27 @@ const fetchEmpleados = async (url) => {
 
 const ObrasForm = () => {
   const params = useParams();
-  const { createObra, updateObra, getObra } = useObras();
+  const { createObra, updateObra, getObra, getActividades } = useObras();
   const navigate = useNavigate();
 
   const [clientes, setCliente] = useState([]);
   const [materiales, setMateriales] = useState([]);
   const [empleados, setEmpleados] = useState([]);
   const [asesores, setAsesores] = useState([]);
+  const [obra, setObra] = useState({
+    idCliente: '',
+    idEmp: '',
+    area: '',
+    fechaini: '',
+    fechafin: '',
+    precio: '',
+    descripcion: '',
+    estado:"",
+    actividades: []
+  });
+  const [defaultMateriales, setDefaultMateriales] = useState([]); // Inicializa como array vacío
+  const [defaultEmpleados, setDefaultEmpleados] = useState([]); // Inicializa como array vacío
+
   const alertConfirm = () => {
     var message = ""
     if (params.id) {
@@ -96,6 +110,17 @@ const ObrasForm = () => {
       if (params.id) {
         try {
           const obra = await getObra(params.id);
+          setObra({
+            idCliente: obra.idCliente,
+            idEmp: obra.idEmp,
+            area: obra.area,
+            fechaini: obra.fechaini,
+            fechafin: obra.fechafin,
+            precio: obra.precio,
+            descripcion: obra.descripcion,
+            estado: obra.estado,
+            actividades: []
+          })
 
           const defaultMateriales = obra.actividades.flatMap((actividad) =>
             actividad.materiales.map((material) => ({
@@ -110,32 +135,6 @@ const ObrasForm = () => {
               label: empleado.nombre,
             }))
           );
-
-          const initialValues = {
-            cliente: obra.clienteId,
-            empleado: obra.empleadoId,
-            area: obra.area,
-            fechaini: obra.fechaInicio,
-            fechafin: obra.fechaFin,
-            precio: obra.precio,
-            descripcion: obra.descripcion,
-            actividades: obra.detalle_obra.map((actividad) => ({
-              descripcion: actividad.descripcion,
-              fechaini: actividad.fechaInicio,
-              fechafin: actividad.fechaFin,
-              materiales: actividad.materiales.map((material) => ({
-                value: material.idMat,
-                label: material.nombre,
-              })),
-              empleados: actividad.empleados.map((empleado) => ({
-                value: empleado.idEmp,
-                label: empleado.nombre,
-              })),
-              estadoAct: actividad.estadoAct,
-            })),
-          };
-
-          setInitialValues(initialValues);
           setDefaultMateriales(defaultMateriales);
           setDefaultEmpleados(defaultEmpleados);
         } catch (error) {
@@ -148,67 +147,56 @@ const ObrasForm = () => {
     loadObra();
   }, [params.id, getObra]);
 
-  const [initialValues, setInitialValues] = useState({
-    cliente: '',
-    empleado: '',
-    area: '',
-    fechaini: '',
-    fechafin: '',
-    precio: '',
-    descripcion: '',
-    actividades: [
-      {
-        descripcion: '',
-        fechaini: '',
-        fechafin: '',
-        materiales: [],
-        empleados: [],
-        estadoAct: '',
-      },
-    ],
-  });
+  const initialValues = {
+    idCliente: obra.idCliente,
+    idEmp: obra.idEmp,
+    area: obra.area,
+    fechaini: obra.fechaini,
+    fechafin: obra.fechafin,
+    precio: obra.precio,
+    descripcion: obra.descripcion,
+    estado: obra.estado,
+    actividades: obra.actividades || [], // Asegúrate de inicializar como un array
+  };
   const obraSchemaAgg = Yup.object().shape({
-    cliente: Yup.string().required("Seleccione el cliente"),
-    empleado: Yup.string().required("El empleado es requerido"),
+    idCLiente: Yup.string().required("Seleccione el cliente"),
+    idEmp: Yup.string().required("El empleado es requerido"),
+    // area: Yup.string().required("El area es requerida"),
+    fechaini: Yup.date().required("La fecha de incio de la obra es requerida"),
+    // fechafin: Yup.date().required("La fecha de fin de la obra es requerida"),
+    // precio: Yup.string().required("El precio de la obra es requerido"),
+    descripcion: Yup.string().required("La descripción de obra de requerida"),
+    // estado: Yup.string().required("El estado es requerido"),
+  })
+  const obraSchemaEdit = Yup.object().shape({
+    idCliente: Yup.string().required("Seleccione el cliente"),
+    idEmp: Yup.string().required("El empleado es requerido"),
     area: Yup.string().required("El area es requerida"),
     fechaini: Yup.date().required("La fecha de incio de la obra es requerida"),
     fechafin: Yup.date().required("La fecha de fin de la obra es requerida"),
     precio: Yup.string().required("El precio de la obra es requerido"),
-    descripcion:Yup.string().required("La descripción de obra de requerida"),
-    estado: Yup.string().required("El estado es requerido"),
-})
-const obraSchemaEdit = Yup.object().shape({
-    cliente: Yup.string().required("Seleccione el cliente"),
-    empleados: Yup.string().required("El empleado es requerido"),
-    area: Yup.string().required("El area es requerida"),
-    fechaini: Yup.date().required("La fecha de incio de la obra es requerida"),
-    fechafin: Yup.date().required("La fecha de fin de la obra es requerida"),
-    precio: Yup.string().required("El precio de la obra es requerido"),
-    descripcion:Yup.string().required("La descripción de obra de requerida"),
+    descripcion: Yup.string().required("La descripción de obra de requerida"),
     estado: Yup.string().required("El estado es requerido"),
     actividades: Yup.array().of(
-        Yup.object().shape({
-            descripcion: Yup.string().required("La descripción de la actividad es requerida"),
-            fechaini: Yup.date().required("La fecha de inicio de la actividad es requerida"),
-            fechafin: Yup.date().required("La fecha de fin de la actividad es requerida"),
-            materiales: Yup.array().min(1,"Debe seleccionar al menos un material"),
-            empleados: Yup.array().min(1,"Debe seleccionar al menos un empleado"),
-            estadoAct: Yup.string().required("El estado de la actividad es requerido")
-        })
-    )
-})
- var  validateSchema = ""
-  if (params.id) {
-    validateSchema = obraSchemaEdit
-  } else {
-    validateSchema = obraSchemaAgg
-  }
+      Yup.object().shape({
+        descripcion: Yup.string().required("La descripción de la actividad es requerida"),
+        fechaini: Yup.date().required("La fecha de inicio de la actividad es requerida"),
+        fechafin: Yup.date().required("La fecha de fin de la actividad es requerida"),
+        materiales: Yup.array().min(1, "Debe seleccionar al menos un material"),
+        empleados: Yup.array().min(1, "Debe seleccionar al menos un empleado"),
+        estadoAct: Yup.string().required("El estado de la actividad es requerido")
+      })
+    ).min(1, "Debe agregar al menos una actividad")
+  })
+
   return (
     <div>
       <Formik
         initialValues={initialValues}
         enableReinitialize={true}
-        validationSchema={validateSchema}
+        validationSchema={params.id ? (
+          obraSchemaEdit
+        ) : obraSchemaAgg}
         onSubmit={(values) => {
           const formattedValues = {
             ...values,
@@ -240,8 +228,8 @@ const obraSchemaEdit = Yup.object().shape({
               <div className='card-body'>
                 <div className='row'>
                   <div className='col-md-3 mt-3 mx-auto'>
-                    <label htmlFor="cliente">Seleccione el cliente:</label>
-                    <Field as="select" name="cliente" label="Cliente" className="form-select form-control-user" value={values.cliente}>
+                    <label htmlFor="idCliente">Seleccione el cliente:</label>
+                    <Field as="select" name="idCliente" label="idCliente" className="form-select form-control-user" value={values.idCliente}>
                       <option value="">Seleccione el cliente</option>
                       {clientes.map((cliente) => (
                         <option key={cliente.idCli} value={cliente.idCli}>
@@ -250,14 +238,14 @@ const obraSchemaEdit = Yup.object().shape({
                       ))}
                     </Field>
                     {
-                      errors.cliente && touched.cliente ? (
-                        <div className="alert alert-danger">{errors.cliente}</div>
+                      errors.idCliente && touched.idCliente ? (
+                        <div className="alert alert-danger">{errors.idCliente}</div>
                       ) : null
                     }
                   </div>
                   <div className='col-md-3 mt-3 mx-auto'>
-                    <label htmlFor="empleado">Seleccione el asesor:</label>
-                    <Field as="select" id="empleado" name="empleado" label="empleado" className="form-select form-control-user" value={values.empleado}>
+                    <label htmlFor="idEmp">Seleccione el asesor:</label>
+                    <Field as="select" id="idEmp" name="idEmp" label="idEmp" className="form-select form-control-user" value={values.idEmp}>
                       <option value="">Seleccione un asesor</option>
                       {asesores.map((empleado) => (
                         <option key={empleado.idEmp} value={empleado.idEmp}>
@@ -271,15 +259,22 @@ const obraSchemaEdit = Yup.object().shape({
                       ) : null
                     }
                   </div>
-                  <div className='col-md-3 mt-3 mx-auto'>
-                    <label htmlFor="area">Ingrese el area de la obra</label>
-                    <Field type="text" name="area" label="Area" className="form-control form-control-user" placeholder="Area" />
-                    {
-                      errors.area && touched.area ? (
-                        <div className="alert alert-danger">{errors.area}</div>
-                      ) : null
-                    }
-                  </div>
+                  {
+                    params.id ? (
+                      <div className='col-md-3 mt-3 mx-auto'>
+                        <label htmlFor="area">Ingrese el area de la obra</label>
+                        <Field type="text" name="area" label="Area" className="form-control form-control-user" placeholder="Area" />
+                        {
+                          errors.area && touched.area ? (
+                            <div className="alert alert-danger">{errors.area}</div>
+                          ) : null
+                        }
+                      </div>
+                    ) : null
+                  }
+
+
+
                   <div className='col-md-3 mt-3 mx-auto'>
                     <label htmlFor="fechaini">Seleccione la fecha de inicio de la obra</label>
                     <input type="date" name="fechaini" label="Fecha Inicio" className="form-control form-control-user" value={values.fechaini} onChange={handleChange} />
@@ -289,33 +284,52 @@ const obraSchemaEdit = Yup.object().shape({
                       ) : null
                     }
                   </div>
-                  <div className='col-md-3 mt-3 mx-auto'>
-                    <label htmlFor="fechafin">Seleccione la fecha de fin de la obra</label>
-                    <input type="date" name="fechafin" label="Fecha Fin" className="form-control form-control-user" value={values.fechafin} onChange={handleChange} />
-                    {
-                      errors.fechafin && touched.fechafin ? (
-                        <div className="alert alert-danger">{errors.fechafin}</div>
-                      ) : null
-                    }
-                  </div>
+                  {
+                    params.id ? (
+                      <div className='col-md-3 mt-3 mx-auto'>
+                        <label htmlFor="fechafin">Seleccione la fecha de fin de la obra</label>
+                        <input type="date" name="fechafin" label="Fecha Fin" className="form-control form-control-user" value={values.fechafin} onChange={handleChange} />
+                        {
+                          errors.fechafin && touched.fechafin ? (
+                            <div className="alert alert-danger">{errors.fechafin}</div>
+                          ) : null
+                        }
+                      </div>
+                    ) : null
+                  }
+                  {
+                    params.id ? (
+                      <div className='col-md-4 mt-3 mx-auto'>
+                        <label htmlFor="precio">Ingrese el precio de la obra</label>
+                        <Field type="text" name="precio" label="Precio" className="form-control form-control-user" defaultValue={values.precio || ''} onChange={handleChange} />
+                        {
+                          errors.precio && touched.precio ? (
+                            <div className="alert alert-danger">{errors.precio}</div>
+                          ) : null
+                        }
+                      </div>
+                    ) : null
+                  }
                   <div className='col-md-4 mt-3 mx-auto'>
-                    <label htmlFor="precio">Ingrese el precio de la obra</label>
-                    <Field type="text" name="precio" label="Precio" className="form-control form-control-user" defaultValue={values.precio || ''} onChange={handleChange} />
-                    {
-                      errors.precio && touched.precio ? (
-                        <div className="alert alert-danger">{errors.precio}</div>
-                      ) : null
-                    }
-                  </div>
-                  <div className='col-md-4 mt-3 mx-auto'>
-                    <label htmlFor="estado">Seleccione el estado de la obra</label>
-                    <select name="estado" id="estado" className="form-select form-control-user" onChange={handleChange}>
-                      <option value="">Seleccione una opción</option>
-                      <option value="En asesoria">En asesoria</option>
-                      <option value="Pendiente">Pendiente</option>
-                      <option value="En construcción">En construcción</option>
-                      <option value="Terminado">Terminado</option>
-                    </select>
+                  <label htmlFor="estado">Seleccione el estado de la obra</label>
+                    {params.id ? (
+                      <select name="estado"  id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado}>
+                        <option value="">Seleccione una opción</option>
+                        <option value="En asesoria">En asesoria</option>
+                        <option  value="Pendiente">Pendiente</option>
+                        <option value="En construcción">En construcción</option>
+                        <option value="Terminado">Terminado</option>
+                      </select>
+                    ) : (
+                      <select name="estado" disabled id="estado" className="form-select form-control-user" onChange={handleChange}>
+                        <option value="">Seleccione una opción</option>
+                        <option value="En asesoria">En asesoria</option>
+                        <option selected  value="Pendiente">Pendiente</option>
+                        <option value="En construcción">En construcción</option>
+                        <option value="Terminado">Terminado</option>
+                      </select>
+                    )}
+                    
                     {
                       errors.estado && touched.estado ? (
                         <div className="alert alert-danger">{errors.estado}</div>
@@ -417,9 +431,10 @@ const obraSchemaEdit = Yup.object().shape({
                                   Eliminar actividad
                                 </button>
                               </div>
-                              <hr className='mt-4' />
+
                             </div>
                           ))}
+                          <hr className='mt-4' />
                           <div className="row mt-3">
                             <div className='col-md-12'>
                               <button type="button" className='btn btn-success' onClick={() => push({ descripcion: '', fechaini: '', fechafin: '', materiales: [], empleados: [], estadoAct: '' })}>
@@ -444,7 +459,7 @@ const obraSchemaEdit = Yup.object().shape({
                       <span className="text-white-50">
                         <i className="fas fa-plus"></i>
                       </span>
-                      <span className="text">{params.id? "Editar":"Agregar"}</span>
+                      <span className="text">{params.id ? "Editar" : "Agregar"}</span>
                     </button>
                   </div>
                   <div className="col-md-6">

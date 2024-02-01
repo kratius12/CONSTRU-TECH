@@ -67,17 +67,17 @@ router.get("/obra/:id", async (req, res) => {
 
 router.post("/obras", async (req, res) => {
   try {
-    const { descripcion, fechaini, cliente, area, precio, actividad, empleado, fechafin } = req.body;
+    const { descripcion, fechaini, idCliente, area, precio, actividad, idEmp, fechafin } = req.body;
     const obra = await prisma.obras.create({
       data: {
         descripcion: descripcion,
         fechaini: fechaini,
         estado: "Pendiente",
-        idCliente: parseInt(cliente),
-        fechafin: fechafin,
-        area: area,
-        precio: parseInt(precio),
-        idEmp: parseInt(empleado)
+        idCliente: parseInt(idCliente),
+        // fechafin: fechafin,
+        // area: area,
+        // precio: parseInt(precio),
+        idEmp: parseInt(idEmp)
       },
     });
 
@@ -93,7 +93,7 @@ router.post("/obras", async (req, res) => {
 
 router.put("/obra/:id", async (req, res) => {
   try {
-    const { descripcion, area, cliente, actividades, estado, fechafin, fechaini, precio } = req.body;
+    const { descripcion, area, idCliente, actividades, estado, fechafin, fechaini, precio } = req.body;
     // const clienteValue = cliente.length > 0 ? cliente[0].value : null;
 
     // Update obra
@@ -107,7 +107,7 @@ router.put("/obra/:id", async (req, res) => {
         estado: estado,
         fechaini: fechaini,
         fechafin: fechafin,
-        idCliente: parseInt(cliente),
+        idCliente: parseInt(idCliente),
         precio: parseInt(precio),
 
       }
@@ -172,6 +172,19 @@ router.put("/obraStatus/:id", async (req, res) => {
 
   } catch (error) {
     return res.status(500).json({ message: error.message })
+  }
+})
+
+router.get("/actividades/:id", async (req,res)=>{
+  try {
+    const actividades = await prisma.detalle_obra.findMany({
+      where:{
+        idObra: parseInt(req.params.id)
+      }
+    })
+    return res.json(actividades)
+  } catch (error) {
+    
   }
 })
 

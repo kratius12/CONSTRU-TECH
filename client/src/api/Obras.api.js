@@ -23,3 +23,7 @@ export const UpdateObraRequest = async (idObra, newFields) =>{
 export const ToggleObraStatusRequest = async (idObra, status) =>{
     return await axios.put(`http://localhost:4000/obra/${idObra}`, status)
 }
+
+export const GetActividadesRequest = async (idObra)=>{
+    return await axios.get(`http://localhost:4000/actividades/${idObra}`)
+}
