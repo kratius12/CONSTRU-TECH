@@ -211,6 +211,7 @@ router.get("/empleadosEsp", async (req, res) => {
                 nombre: true,
                 telefono: true,
                 cedula: true,
+                tipoDoc:true,
                 estado: true,
                 empleado_especialidad: {
                     select: {
@@ -436,6 +437,48 @@ router.get("/rolesEmpleado/:id", async (req, res) => {
         return res.status(200).json(rol)
     } catch (error) {
 
+    }
+})
+
+router.get("/checkDocEmp/:cedula/:tipoDoc", async (req, res) => {
+    try {
+    //     const {status} = req.body
+        const result = await prisma.empleado.findFirst({
+            where:{
+             AND:{
+              cedula:req.params.cedula,
+              tipoDoc:req.params.tipoDoc
+             }
+            },
+            select:{
+             cedula:true,
+             tipoDoc:true
+            }
+        })       
+        if (result) {
+            return res.status(203).json({message: 'El documento ingresado ya existe'})                
+        }
+        return res.status(200).json({message: result})
+    } catch (error) {
+        return res.status(500).json({message: error.message})
+    }
+}) 
+router.get("/checkEmailEmp/:email", async (req, res) => {
+    try {
+        const result = await prisma.empleado.findFirst({
+            where:{
+             email:req.params.email
+            },
+            select:{
+             email:true
+            }
+        })       
+        if (result) {
+            return res.status(203).json({message: 'El Correo ingresado ya existe'})                
+        }
+        return res.status(200).json({message: result})
+    } catch (error) {
+        return res.status(500).json({message: error.message})
     }
 })
 

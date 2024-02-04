@@ -39,7 +39,8 @@ export default function EmpleadosForm() {
   };
 
   const [empleado, setEmpleado] = useState(initialState);
-
+  const [email, setEmail] = useState(true)
+  const [doc, setDoc] = useState(true)
   const [rol, setRol] = useState([])
   const [defaultOptionsRol, setDefaultOptionsRol] = useState([]);
   const [selectedRol, setSelectedRol] = useState(null)
@@ -131,6 +132,76 @@ export default function EmpleadosForm() {
     });
   };
 
+  const checkEmail = async (email) => {
+    console.log(email)
+    try {
+      const response = await fetch('http://localhost:4000/checkEmailEmp/'+email, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+      if (response.status === 203) {
+        $.confirm({
+          title:`El correo ingresado ya existe, por favor intente con uno diferente`,
+          content: "",
+          icon: 'fa fa-x-mark',
+          theme: 'modern',
+          closeIcon: true,
+          animation: 'zoom',
+          closeAnimation: 'scale',
+          animationSpeed: 500,
+          type: 'red',
+          columnClass: 'col-md-6 col-md-offset-3',
+          buttons: {
+            cerrar: function () {
+            },
+          }
+        })
+        setEmail(true)
+      }else{
+        setEmail(false)
+      }
+       
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const checkDoc = async (tipoDoc, cedula) => {
+    try {
+      const response = await fetch('http://localhost:4000/checkDocEmp/'+cedula+'/'+tipoDoc, {
+        method: 'GET',
+        headers:{
+          'Content-Type': 'application/json',
+        }
+      })
+      if (response.status === 203) {
+        $.confirm({
+          title:`El numero y tipo de documento ingresado ya existe`,
+          content: "",
+          icon: 'fa fa-x-mark',
+          theme: 'modern',
+          closeIcon: true,
+          animation: 'zoom',
+          closeAnimation: 'scale',
+          animationSpeed: 500,
+          type: 'red',
+          columnClass: 'col-md-6 col-md-offset-3',
+          buttons: {
+            cerrar: function () {
+            },
+          }
+        })  
+        setDoc(true)
+      }else{
+        setDoc(false)
+      }   
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   return (
     <div className="container">
       <div className="row">
@@ -145,54 +216,64 @@ export default function EmpleadosForm() {
                 ...values,
                 especialidad: selectedEsp,
               };
-              const validateEmail = await searchEmail(empleadoObject)
-              const validateDoc = await searchDoc(empleadoObject);
-              if (params.id) {
-                console.log(values)
-                await updateEmpleado(params.id, empleadoObject);
-                alertConfirm('update');
-                setTimeout(() => navigate("/empleados"));
-              } else {
-                if (validateDoc === true) {
-                  window.$.confirm({
-                    title: `Error`,
-                    content: `El tipo documento: ` + values.tipoDoc + ` y número documento: ` + values.cedula + ` ya existe, por favor ingrese uno diferente`,
-                    icon: 'fa fa-circle-xmark',
-                    theme: 'modern',
-                    closeIcon: true,
-                    animation: 'zoom',
-                    closeAnimation: 'scale',
-                    animationSpeed: 500,
-                    type: 'red',
-                    columnClass: 'col-md-6 col-md-offset-3',
-                    buttons: {
-                      Cerrar: function () { },
-                    }
-                  });
-                  if(validateEmail === true){
-                    window.$.confirm({
-                      title: `Error`,
-                      content: `El email:` + values.email +` ya existe, por favor ingrese uno diferente`,
-                      icon: 'fa fa-circle-xmark',
-                      theme: 'modern',
-                      closeIcon: true,
-                      animation: 'zoom',
-                      closeAnimation: 'scale',
-                      animationSpeed: 500,
-                      type: 'red',
-                      columnClass: 'col-md-6 col-md-offset-3',
-                      buttons: {
-                        Cerrar: function () { },
-                      }
-                    });
-                  }
-
-                } else {
+              // const validateEmail = await searchEmail(empleadoObject)
+              // const validateDoc = await searchDoc(empleadoObject);
+              checkEmail(values.email)
+              checkDoc(values.tipoDoc, values.cedula)     
+              if (email === false && doc === false) {
+                if (params.id) {
+                  console.log(values)
+                  await updateEmpleado(params.id, empleadoObject);
+                  alertConfirm('update');
+                  setTimeout(() => navigate("/empleados"));
+                }else{
                   await createEmpleado(empleadoObject);
                   alertConfirm();
                   setTimeout(() => navigate("/empleados"));
-                }
-              }
+                }         
+              }         
+               
+              //else {
+                // if (validateDoc === true) {
+                //   window.$.confirm({
+                //     title: `Error`,
+                //     content: `El tipo documento: ` + values.tipoDoc + ` y número documento: ` + values.cedula + ` ya existe, por favor ingrese uno diferente`,
+                //     icon: 'fa fa-circle-xmark',
+                //     theme: 'modern',
+                //     closeIcon: true,
+                //     animation: 'zoom',
+                //     closeAnimation: 'scale',
+                //     animationSpeed: 500,
+                //     type: 'red',
+                //     columnClass: 'col-md-6 col-md-offset-3',
+                //     buttons: {
+                //       Cerrar: function () { },
+                //     }
+                //   });
+                //   if(validateEmail === true){
+                //     window.$.confirm({
+                //       title: `Error`,
+                //       content: `El email:` + values.email +` ya existe, por favor ingrese uno diferente`,
+                //       icon: 'fa fa-circle-xmark',
+                //       theme: 'modern',
+                //       closeIcon: true,
+                //       animation: 'zoom',
+                //       closeAnimation: 'scale',
+                //       animationSpeed: 500,
+                //       type: 'red',
+                //       columnClass: 'col-md-6 col-md-offset-3',
+                //       buttons: {
+                //         Cerrar: function () { },
+                //       }
+                //     });
+                //   }
+
+                // } else {
+                //   await createEmpleado(empleadoObject);
+                //   alertConfirm();
+                //   setTimeout(() => navigate("/empleados"));
+                // }
+              //}
 
             }}
           >
@@ -217,7 +298,10 @@ export default function EmpleadosForm() {
                         ) : null}
                       </div>
                       <div className="col-md-6 mt-3">
-                        <input type="text" className="form-control form-control-user" id="email" onChange={handleChange} value={values.email} placeholder="Email*" />
+                        <input type="text" className="form-control form-control-user" id="email" onChange={(e) =>{
+                          handleChange(e)
+                          checkEmail(e.target.value)
+                        }} value={values.email} placeholder="Email*" />
                         {errors.email && touched.email ? (
                           <div className="alert alert-danger" role="alert">{errors.email}</div>
                         ) : null}
@@ -229,7 +313,10 @@ export default function EmpleadosForm() {
                         ) : null}
                       </div>
                       <div className="col-md-6 mt-3">
-                        <select id="tipoDoc" className="form-select form-control-user" onChange={handleChange} value={values.tipoDoc}>
+                        <select id="tipoDoc" className="form-select form-control-user" onChange={(e) => {
+                          handleChange(e)
+                          
+                        }} value={values.tipoDoc}>
                           <option value="">Seleccione tipo documento*</option>
                           <option value="CC">Cedula de ciudadanía</option>
                           <option value="CE">Cedula de extranjería</option>
@@ -240,7 +327,10 @@ export default function EmpleadosForm() {
                         ) : null}
                       </div>
                       <div className="col-md-6 mt-3">
-                        <input type="text" className="form-control form-control-user" id="cedula" onChange={handleChange} value={values.cedula} placeholder="Número de documento*" />
+                        <input type="text" className="form-control form-control-user" id="cedula" onChange={(e) => {
+                          handleChange(e)
+                          params.id ? '': checkDoc(values.tipoDoc, e.target.value)
+                        }} value={values.cedula} placeholder="Número de documento*" />
                         {errors.cedula && touched.cedula ? (
                           <div className="alert alert-danger" role="alert">{errors.cedula}</div>
                         ) : null}

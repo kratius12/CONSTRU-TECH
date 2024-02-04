@@ -150,6 +150,46 @@ router.delete('/cliente/:id', async (req, res) => {
             return res.status(500).json({message: error.message})
         }
     })
-    
+    router.get("/checkDoc/:cedula/:tipoDoc", async (req, res) => {
+        try {
+        //     const {status} = req.body
+            const result = await prisma.cliente.findFirst({
+                where:{
+                 AND:{
+                  cedula:req.params.cedula,
+                  tipoDoc:req.params.tipoDoc
+                 }
+                },
+                select:{
+                 cedula:true,
+                 tipoDoc:true
+                }
+            })       
+            if (result) {
+                return res.status(203).json({message: 'El documento ingresado ya existe'})                
+            }
+            return res.status(200).json({message: result})
+        } catch (error) {
+            return res.status(500).json({message: error.message})
+        }
+    }) 
+    router.get("/checkEmail/:email", async (req, res) => {
+        try {
+            const result = await prisma.cliente.findFirst({
+                where:{
+                 email:req.params.email
+                },
+                select:{
+                 email:true
+                }
+            })       
+            if (result) {
+                return res.status(203).json({message: 'El Correo ingresado ya existe'})                
+            }
+            return res.status(200).json({message: result})
+        } catch (error) {
+            return res.status(500).json({message: error.message})
+        }
+    })        
 
 export default router
