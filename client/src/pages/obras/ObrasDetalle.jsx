@@ -53,22 +53,24 @@ const ObraDetalle = () => {
     const [empleados, setEmpleados] = useState([])
     const [asesores, setAsesores] = useState([])
     const [actividades, setActividades] = useState([])
+    
     const handleAgregarActividad = () => {
         setModalVisible(true)
     }
     const handleCerrarForm = () => {
+        
         setModalVisible(false);
     };
     const alertConfirm = () => {
         var message = ""
         if (params.id) {
-            message = "actualizado"
+            message = "actualizada"
         } else {
-            message = "agregado"
+            message = "agregada"
         }
         // eslint-disable-next-line no-undef
         $.confirm({
-            title: `Material ${message} con éxito!`,
+            title: `Obra ${message} con éxito!`,
             content: "Redireccionando a listado de materiales...",
             icon: 'fa fa-check',
             theme: 'modern',
@@ -79,8 +81,11 @@ const ObraDetalle = () => {
             columnClass: 'col-md-6 col-md-offset-3',
             autoClose: 'okay|4000',
             buttons: {
-                okay: function () {
+                okay: function ()
+                {
+                    navigate("/obras")
                 },
+
             }
         })
     }
@@ -107,6 +112,7 @@ const ObraDetalle = () => {
             try {
                 const response = await axios.get(`http://localhost:4000/obra/${id}`);
                 setObra(response.data)
+                console.log(response.data)
             } catch (error) {
                 console.error("Ocurrio un error al obtener la información de la obra")
             }
@@ -145,7 +151,7 @@ const ObraDetalle = () => {
                     alertConfirm("update")
                 }}
             >
-                {({ values, setFieldValue, isSubmitting, handleSubmit, setFieldTouched, errors, touched, handleChange }) => (
+                {({ values, isSubmitting, errors, touched, handleSubmit, handleChange }) => (
                     <Form
                         className="user"
                         onSubmit={handleSubmit}
@@ -262,15 +268,14 @@ const ObraDetalle = () => {
                                     {actividades.length>0 ?(
                                     
                                     actividades.map((detalle) => (
-                                        
                                         <> 
                                         <div key={detalle.id}>
                                             <Card className="detalle-card">
                                                 <div><strong>Actividad: </strong> {detalle.actividad}</div>
                                                 <div><strong>Fecha de inicio:</strong> {detalle.fechaini}</div>
                                                 <div><strong>Fecha de fin:</strong>{detalle.fechafin}</div>
-                                                <div><strong>Materiales:</strong>{detalle.materiales}</div>
-                                                <div><strong>Empleados:</strong>{detalle.empleados}</div>
+                                                <div><strong>Materiales:</strong>{detalle.materiales.value}</div>
+                                                <div><strong>Empleados:</strong>{detalle.empleados.value}</div>
                                                 <div><strong>Estado:</strong>{detalle.estado}</div>
                                                 <div className="mt-3">
                                                     <button className="btn btn-secondary">
@@ -279,12 +284,18 @@ const ObraDetalle = () => {
                                                 </div>
                                             </Card>
                                         </div></>
-                                    ))):null}
+                                    )
+                                    
+                                    )):null}
                                 </div>
+
+                                <div className="mt-3">
+                                    <hr  className="mt-3"/>
                                 <div className="col-md-3 mt-3 mx-auto">
                                     <Button className="btn btn-success" onClick={handleAgregarActividad}>
                                         Agregar Actividad
                                     </Button>
+                                </div>
                                 </div>
                                 <Modal isOpen={modalVisible} toggle={handleCerrarForm} onClosed={handleCerrarForm}>
                                     <ModalHeader toggle={handleCerrarForm}>Agregar actividad</ModalHeader>
@@ -309,6 +320,7 @@ const ObraDetalle = () => {
                                                     createActividad(id, values)
                                                     handleCerrarForm()
                                                     alertConfirmAct()
+                                                    navigate(`/detalleObra/${id}`)
 
                                                 } catch (error) {
                                                     console.error('Error al guardar:', error);
@@ -359,6 +371,7 @@ const ObraDetalle = () => {
                                                             <option value="En curso">En curso</option>
                                                             <option value="En revisión">En revisión</option>
                                                             <option value="Terminada">Terminada</option>
+                                                            <option value="Cancelada">Cancelada</option>
                                                         </select>
                                                     </div>
                                                     <div className="card-footer">
@@ -400,7 +413,7 @@ const ObraDetalle = () => {
                                             <span className="text-white-50">
                                                 <i className="fa-solid fa-x"></i>
                                             </span>
-                                            <span className="text">Cancelar</span>
+                                            <span className="text">Regresar</span>
                                         </a>
                                     </div>
                                 </div>

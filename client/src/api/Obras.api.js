@@ -29,5 +29,5 @@ export const GetActividadesRequest = async (idObra)=>{
 }
 
 export const CreateActividadRequest = async (idObra,actividad) =>{
-    return await axios.post(`http://localhost:4000/guardarActividad/${idObra}`, actividad, {timeout:1000})
+    return await axios.post(`http://localhost:4000/guardarActividad/${idObra}`, actividad)
 }

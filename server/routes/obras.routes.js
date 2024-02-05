@@ -76,12 +76,14 @@ router.get("/obra/:id", async (req, res) => {
     const materialesUnicos = [...new Set(mats.map((mat) => mat.idMat))];
     const actividadesConEmpleadosMaterialesUnicos = actividad.map((act) => ({
       ...act,
-      empleados: empleadosUnicos,
-      materiales: materialesUnicos,
+      empleados: {value:empleadosUnicos, },
+      materiales: {value:materialesUnicos},
     }));
 
     const response = {
       ...result,
+      empleadosUnicos,
+      materialesUnicos,
       actividadesConEmpleadosMaterialesUnicos
     }
     res.status(200).json(response)
@@ -209,11 +211,12 @@ router.get("/actividades/:id", async (req, res) => {
         distinct: ["idMat"],
       })
       .then((mats) => mats.map((mat) => mat.idMat));
+      
 
     const actividadesConEmpleadosMaterialesUnicos = actividades.map((act) => ({
       ...act,
-      empleados: empleadosUnicos,
-      materiales: materialesUnicos,
+      empleados: {value: empleadosUnicos},
+      materiales: {value: materialesUnicos},
     }));
 
     return res.json(actividadesConEmpleadosMaterialesUnicos);
@@ -226,25 +229,60 @@ router.get("/actividades/:id", async (req, res) => {
 
 router.post("/guardarActividad/:id", async (req, res) => {
   try {
-    const { descripcion, fechaini, fechafin, estado } = req.body;
-    const obra = await prisma.detalle_obra.create({
+    const { descripcion, fechaini, fechafin, estado, actividades } = req.body;
+    const result = await prisma.detalle_obra.create({
       data: {
         actividad: descripcion,
         fechaini: fechaini,
+        fechafin: fechafin,
+        idEmp: null,
+        idMat: null,
         estado: estado,
-       fechafin:fechafin,
         idObra: parseInt(req.params.id)
-      },
-    });
+      }
+    })
 
-
-    console.log(obra);
-    res.status(200).json(obra);
+    const { materiales, empleados } = actividades
+    console.log(materiales)
+    for (const empleado of empleados) {
+      for (const material of materiales) {
+        const materialesa = await prisma.detalle_obra.createMany({
+          data: {
+            actividad: descripcion,
+            fechaini: fechaini,
+            fechafin: fechafin,
+            idEmp: parseInt(empleado.value),
+            idMat: parseInt(material.value),
+            estado: estado,
+            idObra: parseInt(req.params.id)
+          }
+        })
+      }
+    }
+    console.log(materiales);
+    console.log(empleados)
+    res.status(200).json(materiales);
   } catch (error) {
     console.log("message:" + error.message);
-    return res.status(500).json({ message: error.message });
+  }finally{
+    var message = "Acción ejecutada con exito!! mamaguevo"
+    return message
   }
 });
+
+router.put("actualizarAct", async (req,res) => {
+  try {
+    const deleteAct = await prisma.detalle_obra.deleteMany({
+      where:{
+        actividad: {
+          equals: req.body.actividad
+        }
+      }
+    })
+  } catch (error) {
+    
+  }
+})
 
 
 export default router
