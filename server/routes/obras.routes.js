@@ -54,8 +54,16 @@ router.get("/obra/:id", async (req, res) => {
       },
       select: {
         idEmp: true,
+        empleado: {
+          select: {
+            idEmp:true,
+            nombre: true,
+            apellidos: true
+          }
+        }
       },
     });
+    
     const mats = await prisma.detalle_obra.findMany({
       where: {
         AND: [
@@ -70,20 +78,24 @@ router.get("/obra/:id", async (req, res) => {
       },
       select: {
         idMat: true,
+        materiales: {
+          select: {
+            idMat: true,
+            nombre: true
+          }
+        }
       },
     });
     const empleadosUnicos = [...new Set(emps.map((emp) => emp.idEmp))];
     const materialesUnicos = [...new Set(mats.map((mat) => mat.idMat))];
     const actividadesConEmpleadosMaterialesUnicos = actividad.map((act) => ({
       ...act,
-      empleados: {value:empleadosUnicos, },
-      materiales: {value:materialesUnicos},
+      empleados:  empleadosUnicos.map((idEmp) => emps.find((emp) => emp.idEmp === idEmp).empleado),
+      materiales:  materialesUnicos.map((idMat) => mats.find((mat) => mat.idMat === idMat).materiales),
     }));
 
     const response = {
       ...result,
-      empleadosUnicos,
-      materialesUnicos,
       actividadesConEmpleadosMaterialesUnicos
     }
     res.status(200).json(response)
@@ -118,7 +130,7 @@ router.post("/obras", async (req, res) => {
 
 router.put("/obra/:id", async (req, res) => {
   try {
-    const { descripcion, area, idCliente, actividades, estado, fechafin, fechaini, precio } = req.body;
+    const { descripcion, area, idCliente,  estado, fechafin, fechaini, precio } = req.body;
     const result = await prisma.obras.update({
       where: {
         idObra: parseInt(req.params.id)
@@ -134,48 +146,11 @@ router.put("/obra/:id", async (req, res) => {
 
       }
     });
-    const borrar = await prisma.detalle_obra.deleteMany({
-      where: {
-        idObra: parseInt(req.params.id)
-      }
-    })
-    for (const actividad of actividades) {
-      const { descripcion, fechaini, fechafin, materiales, empleados, estadoAct } = actividad
-      console.log(materiales)
-
-      const result = await prisma.detalle_obra.createMany({
-        data: {
-          actividad: descripcion,
-          fechaini: fechaini,
-          fechafin: fechafin,
-          idEmp: null,
-          idMat: null,
-          estado: estadoAct,
-          idObra: parseInt(req.params.id)
-        }
-      })
-      for (const empleado of empleados) {
-        for (const material of materiales) {
-          const materialesa = await prisma.detalle_obra.createMany({
-            data: {
-              actividad: descripcion,
-              fechaini: fechaini,
-              fechafin: fechafin,
-              idEmp: parseInt(empleado),
-              idMat: parseInt(material),
-              estado: estadoAct,
-              idObra: parseInt(req.params.id)
-            }
-          })
-        }
-      }
-    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
-
 
 router.get("/actividades/:id", async (req, res) => {
   try {
@@ -186,8 +161,6 @@ router.get("/actividades/:id", async (req, res) => {
       },
     });
 
-    // Puedes simplificar las consultas utilizando directamente el where en findMany
-
     const empleadosUnicos = await prisma.detalle_obra
       .findMany({
         where: {
@@ -197,8 +170,14 @@ router.get("/actividades/:id", async (req, res) => {
           },
         },
         distinct: ["idEmp"],
-      })
-      .then((emps) => emps.map((emp) => emp.idEmp));
+        include:{
+          empleado:{
+            select:{
+              nombre:true
+            }
+          }
+        }
+      });
 
     const materialesUnicos = await prisma.detalle_obra
       .findMany({
@@ -209,15 +188,30 @@ router.get("/actividades/:id", async (req, res) => {
           },
         },
         distinct: ["idMat"],
-      })
-      .then((mats) => mats.map((mat) => mat.idMat));
-      
+        include:{
+          materiales:{
+            select:{
+              nombre:true
+            }
+          }
+        }
+      });
 
-    const actividadesConEmpleadosMaterialesUnicos = actividades.map((act) => ({
-      ...act,
-      empleados: {value: empleadosUnicos},
-      materiales: {value: materialesUnicos},
-    }));
+    const actividadesConEmpleadosMaterialesUnicos = actividades.map((act) => {
+      const empleadosAsociados = empleadosUnicos
+        .filter((emp) => emp.idObra === act.idObra)
+        .map((emp) => emp.empleado);
+
+      const materialesAsociados = materialesUnicos
+        .filter((mat) => mat.idObra === act.idObra)
+        .map((mat) => mat.materiales);
+
+      return {
+        ...act,
+        empleados: empleadosAsociados,
+        materiales: materialesAsociados,
+      };
+    });
 
     return res.json(actividadesConEmpleadosMaterialesUnicos);
   } catch (error) {
@@ -225,6 +219,7 @@ router.get("/actividades/:id", async (req, res) => {
     return res.status(500).json({ error: "Error interno del servidor" });
   }
 });
+
 
 
 router.post("/guardarActividad/:id", async (req, res) => {
@@ -264,23 +259,42 @@ router.post("/guardarActividad/:id", async (req, res) => {
     res.status(200).json(materiales);
   } catch (error) {
     console.log("message:" + error.message);
-  }finally{
+  } finally {
     var message = "Acción ejecutada con exito!! mamaguevo"
     return message
   }
 });
 
-router.put("actualizarAct", async (req,res) => {
+router.put("actualizarAct", async (req, res) => {
   try {
     const deleteAct = await prisma.detalle_obra.deleteMany({
-      where:{
+      where: {
         actividad: {
           equals: req.body.actividad
         }
       }
     })
   } catch (error) {
-    
+
+  }
+})
+
+router.get("/actividadA/:id", async (req, res) => {
+  try {
+    const { actividad } = req.body
+    const agrup = await prisma.detalle_obra.findMany({
+      where: {
+        AND: [{
+          idObra: parseInt(req.params.id)
+        },{
+          actividad:{endsWith:actividad}
+        }
+      ]        
+      },
+    })
+    return res.status(200).json(agrup)
+  } catch (error) {
+    console.log(error)
   }
 })
 

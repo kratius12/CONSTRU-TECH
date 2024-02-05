@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { Modal, Button, ModalHeader, ModalBody, ModalFooter, Card } from "reactstrap"
 import { useNavigate, useParams } from "react-router-dom";
 import { useObras } from "../../context/obras/ObrasProvider";
-import { create } from "superstruct";
+import {actividades} from "./ValidateObra"
 const fetchData = async (url) => {
     try {
         const response = await axios.get(url);
@@ -42,7 +42,7 @@ const fetchEmpleados = async (url) => {
 };
 
 const ObraDetalle = () => {
-    const { createActividad } = useObras()
+    const { createActividad, updateObra } = useObras()
     const { id } = useParams()
     const params = useParams()
     const [obra, setObra] = useState(null);
@@ -53,12 +53,12 @@ const ObraDetalle = () => {
     const [empleados, setEmpleados] = useState([])
     const [asesores, setAsesores] = useState([])
     const [actividades, setActividades] = useState([])
-    
+
     const handleAgregarActividad = () => {
         setModalVisible(true)
     }
     const handleCerrarForm = () => {
-        
+
         setModalVisible(false);
     };
     const alertConfirm = () => {
@@ -81,8 +81,7 @@ const ObraDetalle = () => {
             columnClass: 'col-md-6 col-md-offset-3',
             autoClose: 'okay|4000',
             buttons: {
-                okay: function ()
-                {
+                okay: function () {
                     navigate("/obras")
                 },
 
@@ -103,6 +102,7 @@ const ObraDetalle = () => {
             autoClose: 'okay|4000',
             buttons: {
                 okay: function () {
+                    navigate(`/detalleObra/${id}`)
                 },
             }
         })
@@ -148,7 +148,9 @@ const ObraDetalle = () => {
                 initialValues={obra}
                 enableReinitialize={true}
                 onSubmit={(values) => {
+                    updateObra(id, values)
                     alertConfirm("update")
+                    navigate("/obras")
                 }}
             >
                 {({ values, isSubmitting, errors, touched, handleSubmit, handleChange }) => (
@@ -257,45 +259,51 @@ const ObraDetalle = () => {
                                 <hr />
                                 <div className="detalle-container mt-4">
                                     {
-                                        actividades.length>0 ? (
-                                            
+                                        actividades.length > 0 ? (
+
                                             <h3 className="text-center w-100">Actividades</h3>
-                                        ): (
+                                        ) : (
                                             <h3 className="text-center w-100">La obra no tiene actividades asociadas</h3>
                                         )
                                     }
-                                    <br/>
-                                    {actividades.length>0 ?(
-                                    
-                                    actividades.map((detalle) => (
-                                        <> 
-                                        <div key={detalle.id}>
-                                            <Card className="detalle-card">
-                                                <div><strong>Actividad: </strong> {detalle.actividad}</div>
-                                                <div><strong>Fecha de inicio:</strong> {detalle.fechaini}</div>
-                                                <div><strong>Fecha de fin:</strong>{detalle.fechafin}</div>
-                                                <div><strong>Materiales:</strong>{detalle.materiales.value}</div>
-                                                <div><strong>Empleados:</strong>{detalle.empleados.value}</div>
-                                                <div><strong>Estado:</strong>{detalle.estado}</div>
-                                                <div className="mt-3">
-                                                    <button className="btn btn-secondary">
-                                                        Editar actividad
-                                                    </button>
-                                                </div>
-                                            </Card>
-                                        </div></>
-                                    )
-                                    
-                                    )):null}
+                                    <br />
+                                    {actividades.length > 0 ? (
+
+                                        actividades.map((detalle) => (
+                                            <>
+                                                <div key={detalle.id}>
+                                                    <Card className="detalle-card">
+                                                        <div><strong>Actividad: </strong> {detalle.actividad}</div>
+                                                        <div><strong>Fecha de inicio:</strong> {detalle.fechaini}</div>
+                                                        <div><strong>Fecha de fin:</strong>{detalle.fechafin}</div>
+                                                        <div><strong>Materiales:</strong>{detalle.materiales.idMat}</div>
+                                                        <div><strong>Empleados:</strong>{detalle.empleados.idEmp}</div>
+                                                        <div><strong>Estado:</strong>{detalle.estado}</div>
+                                                        <div className="mt-3">
+                                                            <button className="btn btn-secondary">
+                                                                <i class="fa-solid fa-pen-to-square"></i>
+                                                            </button>
+                                                            <button className="btn btn-secondary ml-3">
+                                                                <i class="fa-solid fa-eye"></i>
+                                                            </button>
+                                                        </div>
+                                                        <div className="mt-3">
+                                                           
+                                                        </div>
+                                                    </Card>
+                                                </div></>
+                                        )
+
+                                        )) : null}
                                 </div>
 
                                 <div className="mt-3">
-                                    <hr  className="mt-3"/>
-                                <div className="col-md-3 mt-3 mx-auto">
-                                    <Button className="btn btn-success" onClick={handleAgregarActividad}>
-                                        Agregar Actividad
-                                    </Button>
-                                </div>
+                                    <hr className="mt-3" />
+                                    <div className="col-md-3 mt-3 mx-auto">
+                                        <Button className="btn btn-success" onClick={handleAgregarActividad}>
+                                            Agregar Actividad
+                                        </Button>
+                                    </div>
                                 </div>
                                 <Modal isOpen={modalVisible} toggle={handleCerrarForm} onClosed={handleCerrarForm}>
                                     <ModalHeader toggle={handleCerrarForm}>Agregar actividad</ModalHeader>
@@ -312,16 +320,14 @@ const ObraDetalle = () => {
                                                 },
                                                 estado: ''
                                             }}
+                                            validationSchema={actividades}
                                             enableReinitialize={true}
                                             onSubmit={(values) => {
                                                 try {
-
                                                     console.log(values)
                                                     createActividad(id, values)
                                                     handleCerrarForm()
                                                     alertConfirmAct()
-                                                    navigate(`/detalleObra/${id}`)
-
                                                 } catch (error) {
                                                     console.error('Error al guardar:', error);
                                                 }
@@ -335,6 +341,11 @@ const ObraDetalle = () => {
                                                 >
                                                     <div>
                                                         <input type="text" className="form-control form-control" id="descripcion" name="descripcion" placeholder="Descripción de la actividad*" value={values.descripcion} onChange={handleChange} />
+                                                        {
+                                                            errors.actividades && touched.actividades ? (
+                                                                <div className="alert">{errors.actividades}</div>
+                                                            ):null
+                                                        }
                                                     </div>
                                                     <div className="mt-3">
                                                         <label htmlFor="fechaini">Seleccione la fecha de inicio</label>
