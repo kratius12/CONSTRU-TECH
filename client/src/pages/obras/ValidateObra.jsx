@@ -19,14 +19,13 @@ export const obraSchemaEdit = Yup.object().shape({
     precio: Yup.string().required("El precio de la obra es requerido"),
     descripcion: Yup.string().required("La descripción de obra de requerida"),
     estado: Yup.string().required("El estado es requerido"),
-    actividades: Yup.array().of(
-        Yup.object().shape({
-            descripcion: Yup.string().required("La descripción de la actividad es requerida"),
-            fechaini: Yup.date().required("La fecha de inicio de la actividad es requerida"),
-            fechafin: Yup.date().required("La fecha de fin de la actividad es requerida"),
-            materiales: Yup.array().min(1, "Debe seleccionar al menos un material"),
-            empleados: Yup.array().min(1, "Debe seleccionar al menos un empleado"),
-            estadoAct: Yup.string().required("El estado de la actividad es requerido")
-        })
-    ).min(1, "Debe agregar al menos una actividad")
 })
+
+export const actividades = Yup.object().shape({
+        descripcion: Yup.string().required("La descripción de la actividad es requerida"),
+        fechaini: Yup.date().required("La fecha de inicio de la actividad es requerida"),
+        fechafin: Yup.date().required("La fecha de fin de la actividad es requerida"),
+        materiales: Yup.array().min(1, "Debe seleccionar al menos un material"),
+        empleados: Yup.array().min(1, "Debe seleccionar al menos un empleado"),
+        estadoAct: Yup.string().required("El estado de la actividad es requerido")
+    })
