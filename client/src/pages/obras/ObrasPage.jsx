@@ -142,7 +142,7 @@ function ObrasPage() {
                                                 />
                                             <Link
                                                 className={`btn bg-secondary text-white ${cell.row.original.estado === 0 ? 'disabled' : ''}`}
-                                                to={`/editarObra/${cell.row.original[cell.column.columnDef.idProperty]}`}
+                                                to={`/detalleObra/${cell.row.original[cell.column.columnDef.idProperty]}`}
                                             >
                                                 Editar <i className="fa-solid fa-pencil" />
                                             </Link>

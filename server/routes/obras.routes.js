@@ -175,74 +175,74 @@ router.put("/obra/:id", async (req, res) => {
 });
 
 
-
-router.put("/obraStatus/:id", async (req, res) => {
-  try {
-    const { status } = req.body
-    const result = await prisma.obras.update({
-      where: {
-        idObra: parseInt(req.params.id)
-      },
-      data: {
-        estado: parseInt(status)
-      }
-    })
-    console.log(status)
-    return res.status(200).json(result)
-
-  } catch (error) {
-    return res.status(500).json({ message: error.message })
-  }
-});
-
 router.get("/actividades/:id", async (req, res) => {
   try {
-    const actividad = await prisma.detalle_obra.groupBy({
-      by: ["actividad", "fechafin", "fechafin", "estado", "idObra"],
-    });
-    const emps = await prisma.detalle_obra.findMany({
+    const actividades = await prisma.detalle_obra.groupBy({
+      by: ["actividad", "fechaini", "fechafin", "estado", "idObra"],
       where: {
-        AND: [
-          {
-            idObra: parseInt(req.params.id),
-          }, {
-            NOT: {
-              idEmp: null
-            }
-          }
-        ],
-      },
-      select: {
-        idEmp: true,
+        idObra: parseInt(req.params.id),
       },
     });
-    const mats = await prisma.detalle_obra.findMany({
-      where: {
-        AND: [
-          {
-            idObra: parseInt(req.params.id),
-          }, {
-            NOT: {
-              idMat: null
-            }
-          }
-        ],
-      },
-      select: {
-        idMat: true,
-      },
-    });
-    const empleadosUnicos = [...new Set(emps.map((emp) => emp.idEmp))];
-    const materialesUnicos = [...new Set(mats.map((mat) => mat.idMat))];
-    const actividadesConEmpleadosMaterialesUnicos = actividad.map((act) => ({
+
+    // Puedes simplificar las consultas utilizando directamente el where en findMany
+
+    const empleadosUnicos = await prisma.detalle_obra
+      .findMany({
+        where: {
+          idObra: parseInt(req.params.id),
+          NOT: {
+            idEmp: null,
+          },
+        },
+        distinct: ["idEmp"],
+      })
+      .then((emps) => emps.map((emp) => emp.idEmp));
+
+    const materialesUnicos = await prisma.detalle_obra
+      .findMany({
+        where: {
+          idObra: parseInt(req.params.id),
+          NOT: {
+            idMat: null,
+          },
+        },
+        distinct: ["idMat"],
+      })
+      .then((mats) => mats.map((mat) => mat.idMat));
+
+    const actividadesConEmpleadosMaterialesUnicos = actividades.map((act) => ({
       ...act,
       empleados: empleadosUnicos,
       materiales: materialesUnicos,
     }));
+
     return res.json(actividadesConEmpleadosMaterialesUnicos);
   } catch (error) {
     console.error("Error fetching actividades:", error);
     return res.status(500).json({ error: "Error interno del servidor" });
+  }
+});
+
+
+router.post("/guardarActividad/:id", async (req, res) => {
+  try {
+    const { descripcion, fechaini, fechafin, estado } = req.body;
+    const obra = await prisma.detalle_obra.create({
+      data: {
+        actividad: descripcion,
+        fechaini: fechaini,
+        estado: estado,
+       fechafin:fechafin,
+        idObra: parseInt(req.params.id)
+      },
+    });
+
+
+    console.log(obra);
+    res.status(200).json(obra);
+  } catch (error) {
+    console.log("message:" + error.message);
+    return res.status(500).json({ message: error.message });
   }
 });
 

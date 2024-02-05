@@ -50,7 +50,6 @@ const ObrasForm = () => {
   const [materiales, setMateriales] = useState([]);
   const [empleados, setEmpleados] = useState([]);
   const [asesores, setAsesores] = useState([]);
-  const [actividad, setActividad] = useState([])
   const [obra, setObra] = useState({
     idCliente: '',
     idEmp: '',
@@ -90,6 +89,31 @@ const ObrasForm = () => {
       }
     })
   }
+  const alertConfirmAct = () => {
+    var message = ""
+    if (params.id) {
+      message = "actualizada"
+    } else {
+      message = "agregada"
+    }
+    // eslint-disable-next-line no-undef
+    $.confirm({
+      title: `Actividad ${message} con éxito!`,
+      content: "Redireccionando a listado de materiales...",
+      icon: 'fa fa-check',
+      theme: 'modern',
+      closeIcon: true,
+      animation: 'news',
+      closeAnimation: 'news',
+      type: 'green',
+      columnClass: 'col-md-6 col-md-offset-3',
+      autoClose: 'okay|4000',
+      buttons: {
+        okay: function () {
+        },
+      }
+    })
+  }
 
   useEffect(() => {
     const loadMaterialesEmpleados = async () => {
@@ -106,10 +130,6 @@ const ObrasForm = () => {
     fetchData("http://localhost:4000/empleadosAct").then((data) => {
       setAsesores(data)
     });
-    fetchData(`http://localhost:4000/actividades/${params.id}`).then((data)=>{
-      setActividad(data)
-
-    }) 
 
     const loadObra = async () => {
       if (params.id) {
@@ -163,16 +183,23 @@ const ObrasForm = () => {
     estado: obra.estado,
     actividades: obra.actividades || [], // Asegúrate de inicializar como un array
   };
-  
+  const obraSchemaAgg = Yup.object().shape({
+    idCliente: Yup.string().required("Seleccione el cliente"),
+    idEmp: Yup.string().required("El empleado es requerido"),
+    // area: Yup.string().required("El area es requerida"),
+    fechaini: Yup.date().required("La fecha de incio de la obra es requerida"),
+    // fechafin: Yup.date().required("La fecha de fin de la obra es requerida"),
+    // precio: Yup.string().required("El precio de la obra es requerido"),
+    descripcion: Yup.string().required("La descripción de obra de requerida"),
+    // estado: Yup.string().required("El estado es requerido"),
+  })
 
   return (
     <div>
       <Formik
         initialValues={initialValues}
         enableReinitialize={true}
-        validationSchema={params.id ? (
-          obraSchemaEdit
-        ) : obraSchemaAgg}
+        validationSchema={obraSchemaAgg}
         onSubmit={(values) => {
           const formattedValues = {
             ...values,

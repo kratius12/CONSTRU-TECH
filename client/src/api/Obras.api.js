@@ -27,3 +27,7 @@ export const ToggleObraStatusRequest = async (idObra, status) =>{
 export const GetActividadesRequest = async (idObra)=>{
     return await axios.get(`http://localhost:4000/actividades/${idObra}`)
 }
+
+export const CreateActividadRequest = async (idObra,actividad) =>{
+    return await axios.post(`http://localhost:4000/guardarActividad/${idObra}`, actividad, {timeout:1000})
+}
