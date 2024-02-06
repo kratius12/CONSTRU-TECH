@@ -6,7 +6,8 @@ import { GetObrasRequest,
     UpdateObraRequest, 
     ToggleObraStatusRequest,
     GetActividadesRequest,
-    CreateActividadRequest
+    CreateActividadRequest,
+    UpdateActividadRequest
 } from "../../api/Obras.api";
 import {getClientsRequest} from "../../api/Clientes.api";
 import {GetEmpleadosRequest} from "../../api/Empleados.api";
@@ -118,8 +119,17 @@ export const ObraContextProvider = ({children}) => {
             console.error(error)
         }
     }
+
+    const updateActividad = async(idObra,actividad)=>{
+        try {
+            const response = await UpdateActividadRequest(idObra,actividad)
+            console.log(response)
+        } catch (error) {
+            
+        }
+    }
     return (
-        <ObraContext.Provider value={{obras, Obras, clientes, Clientes, empleados, Empleados, materiales, Materiales, deleteObra, createObra, getObra, updateObra, toggleObraStatus, getActividades, createActividad}}>
+        <ObraContext.Provider value={{obras, Obras, clientes, Clientes, empleados, Empleados, materiales, Materiales, deleteObra, createObra, getObra, updateObra, toggleObraStatus, getActividades, createActividad,updateActividad}}>
             {children}
         </ObraContext.Provider>
     )
