@@ -13,7 +13,6 @@ import {
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Table as BTable } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import AlertDetail from '../../components/AlertDetail';
 function ObrasPage() {
 
     const dataHeader = [
@@ -135,11 +134,6 @@ function ObrasPage() {
                                         <td key={cell.id}>
                                         {cell.column.id === 'accion' ? (
                                             <>
-                                            <AlertDetail
-                                                id={cell.row.original[cell.column.columnDef.idProperty]}
-                                                entity={'Obra'}
-                                                getApi={getObra}
-                                                />
                                             <Link
                                                 className={`btn bg-secondary text-white ${cell.row.original.estado === 0 ? 'disabled' : ''}`}
                                                 to={`/detalleObra/${cell.row.original[cell.column.columnDef.idProperty]}`}

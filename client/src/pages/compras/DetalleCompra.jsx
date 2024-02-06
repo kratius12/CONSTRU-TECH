@@ -87,7 +87,6 @@ const CompraDetalle = () => {
                             </Button>
                         </Modal.Footer>
                     </Modal>
-
                 </div>
                 <hr />
                 <h3>Materiales:</h3>

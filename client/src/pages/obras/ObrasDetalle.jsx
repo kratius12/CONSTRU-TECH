@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { Modal, Button, ModalHeader, ModalBody, ModalFooter, Card } from "reactstrap"
 import { useNavigate, useParams } from "react-router-dom";
 import { useObras } from "../../context/obras/ObrasProvider";
-import {actividades} from "./ValidateObra"
+import {actividad, obraSchemaEdit} from "./ValidateObra"
 const fetchData = async (url) => {
     try {
         const response = await axios.get(url);
@@ -147,6 +147,7 @@ const ObraDetalle = () => {
             <Formik
                 initialValues={obra}
                 enableReinitialize={true}
+                validationSchema={obraSchemaEdit}
                 onSubmit={(values) => {
                     updateObra(id, values)
                     alertConfirm("update")
@@ -293,7 +294,6 @@ const ObraDetalle = () => {
                                                     </Card>
                                                 </div></>
                                         )
-
                                         )) : null}
                                 </div>
 
@@ -320,7 +320,7 @@ const ObraDetalle = () => {
                                                 },
                                                 estado: ''
                                             }}
-                                            validationSchema={actividades}
+                                            validationSchema={actividad}
                                             enableReinitialize={true}
                                             onSubmit={(values) => {
                                                 try {
@@ -343,7 +343,7 @@ const ObraDetalle = () => {
                                                         <input type="text" className="form-control form-control" id="descripcion" name="descripcion" placeholder="Descripción de la actividad*" value={values.descripcion} onChange={handleChange} />
                                                         {
                                                             errors.actividades && touched.actividades ? (
-                                                                <div className="alert">{errors.actividades}</div>
+                                                                <div className="alert alert-danger" role="alert">{errors.actividades}</div>
                                                             ):null
                                                         }
                                                     </div>
