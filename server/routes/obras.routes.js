@@ -56,14 +56,14 @@ router.get("/obra/:id", async (req, res) => {
         idEmp: true,
         empleado: {
           select: {
-            idEmp:true,
+            idEmp: true,
             nombre: true,
             apellidos: true
           }
         }
       },
     });
-    
+
     const mats = await prisma.detalle_obra.findMany({
       where: {
         AND: [
@@ -90,8 +90,8 @@ router.get("/obra/:id", async (req, res) => {
     const materialesUnicos = [...new Set(mats.map((mat) => mat.idMat))];
     const actividadesConEmpleadosMaterialesUnicos = actividad.map((act) => ({
       ...act,
-      empleados:  empleadosUnicos.map((idEmp) => emps.find((emp) => emp.idEmp === idEmp).empleado),
-      materiales:  materialesUnicos.map((idMat) => mats.find((mat) => mat.idMat === idMat).materiales),
+      empleados: empleadosUnicos.map((idEmp) => emps.find((emp) => emp.idEmp === idEmp).empleado),
+      materiales: materialesUnicos.map((idMat) => mats.find((mat) => mat.idMat === idMat).materiales),
     }));
 
     const response = {
@@ -117,9 +117,6 @@ router.post("/obras", async (req, res) => {
         idEmp: parseInt(idEmp)
       },
     });
-
-
-    console.log(obra);
     res.status(200).json(obra);
   } catch (error) {
     console.log("message:" + error.message);
@@ -130,7 +127,7 @@ router.post("/obras", async (req, res) => {
 
 router.put("/obra/:id", async (req, res) => {
   try {
-    const { descripcion, area, idCliente,  estado, fechafin, fechaini, precio } = req.body;
+    const { descripcion, area, idCliente, estado, fechafin, fechaini, precio } = req.body;
     const result = await prisma.obras.update({
       where: {
         idObra: parseInt(req.params.id)
@@ -170,10 +167,10 @@ router.get("/actividades/:id", async (req, res) => {
           },
         },
         distinct: ["idEmp"],
-        include:{
-          empleado:{
-            select:{
-              nombre:true
+        include: {
+          empleado: {
+            select: {
+              nombre: true
             }
           }
         }
@@ -188,10 +185,10 @@ router.get("/actividades/:id", async (req, res) => {
           },
         },
         distinct: ["idMat"],
-        include:{
-          materiales:{
-            select:{
-              nombre:true
+        include: {
+          materiales: {
+            select: {
+              nombre: true
             }
           }
         }
@@ -224,10 +221,10 @@ router.get("/actividades/:id", async (req, res) => {
 
 router.post("/guardarActividad/:id", async (req, res) => {
   try {
-    const { descripcion, fechaini, fechafin, estado, actividades } = req.body;
+    const { actividad, fechaini, fechafin, estado, actividades } = req.body;
     const result = await prisma.detalle_obra.create({
       data: {
-        actividad: descripcion,
+        actividad: actividad,
         fechaini: fechaini,
         fechafin: fechafin,
         idEmp: null,
@@ -238,7 +235,6 @@ router.post("/guardarActividad/:id", async (req, res) => {
     })
 
     const { materiales, empleados } = actividades
-    console.log(materiales)
     for (const empleado of empleados) {
       for (const material of materiales) {
         const materialesa = await prisma.detalle_obra.createMany({
@@ -254,28 +250,23 @@ router.post("/guardarActividad/:id", async (req, res) => {
         })
       }
     }
-    console.log(materiales);
-    console.log(empleados)
     res.status(200).json(materiales);
   } catch (error) {
     console.log("message:" + error.message);
-  } finally {
-    var message = "Acción ejecutada con exito!! mamaguevo"
-    return message
   }
 });
 
-router.put("actualizarAct", async (req, res) => {
+router.get("/actualizarAct", async (req, res) => {
   try {
-    const deleteAct = await prisma.detalle_obra.deleteMany({
+    const { actividad } = req.body
+    const result = await prisma.detalle_obra.findMany({
       where: {
-        actividad: {
-          equals: req.body.actividad
-        }
+        actividad: actividad
       }
     })
+    return res.status(200).json(result)
   } catch (error) {
-
+    console.log(error)
   }
 })
 
@@ -286,12 +277,13 @@ router.get("/actividadA/:id", async (req, res) => {
       where: {
         AND: [{
           idObra: parseInt(req.params.id)
-        },{
-          actividad:{endsWith:actividad}
+        }, {
+          actividad: { startsWith: actividad }
         }
-      ]        
+        ]
       },
     })
+    console.log(agrup)
     return res.status(200).json(agrup)
   } catch (error) {
     console.log(error)

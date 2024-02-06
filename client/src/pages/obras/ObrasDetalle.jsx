@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { Modal, Button, ModalHeader, ModalBody, ModalFooter, Card } from "reactstrap"
 import { useNavigate, useParams } from "react-router-dom";
 import { useObras } from "../../context/obras/ObrasProvider";
-import {actividad, obraSchemaEdit} from "./ValidateObra"
+import { actividad, obraSchemaEdit } from "./ValidateObra"
 const fetchData = async (url) => {
     try {
         const response = await axios.get(url);
@@ -42,7 +42,7 @@ const fetchEmpleados = async (url) => {
 };
 
 const ObraDetalle = () => {
-    const { createActividad, updateObra } = useObras()
+    const { createActividad, updateObra, updateActividad } = useObras()
     const { id } = useParams()
     const params = useParams()
     const [obra, setObra] = useState(null);
@@ -53,10 +53,13 @@ const ObraDetalle = () => {
     const [empleados, setEmpleados] = useState([])
     const [asesores, setAsesores] = useState([])
     const [actividades, setActividades] = useState([])
+    const [selectedActivity, setSelectedActivity] = useState(null);
+    const handleAgregarActividad = (actividad = null) => {
+        setSelectedActivity(actividad);
+        setModalVisible(true);
+    };
 
-    const handleAgregarActividad = () => {
-        setModalVisible(true)
-    }
+
     const handleCerrarForm = () => {
 
         setModalVisible(false);
@@ -268,6 +271,113 @@ const ObraDetalle = () => {
                                         )
                                     }
                                     <br />
+                                    <Modal isOpen={modalVisible} toggle={handleCerrarForm} onClosed={handleCerrarForm}>
+                                        <ModalHeader toggle={handleCerrarForm}>Agregar actividad</ModalHeader>
+                                        <ModalBody>
+                                            <Formik
+                                                initialValues={{
+                                                    actividad: selectedActivity ? selectedActivity.actividad : '',
+                                                    fechaini: selectedActivity ? selectedActivity.fechaini : '',
+                                                    fechafin: selectedActivity ? selectedActivity.fechafin : '',
+                                                    actividades: {
+                                                        materiales: selectedActivity ? selectedActivity.materiales : [],
+                                                        empleados: selectedActivity ? selectedActivity.empleados : [],
+                                                    },
+                                                    estado: selectedActivity ? selectedActivity.estado : '',
+                                                }}
+                                                // validationSchema={actividad}
+                                                enableReinitialize={true}
+                                                onSubmit={(values) => {
+                                                    try {
+                                                        // if (selectedActivity) {
+                                                        //     updateActividad(id, values)
+                                                        //     handleCerrarForm()
+                                                        //     alertConfirmAct("update")
+                                                        // } else if (!selectedActivity){
+                                                        console.log(values)
+                                                        createActividad(id, values)
+                                                        handleCerrarForm()
+                                                        alertConfirmAct()
+                                                        // }
+                                                    } catch (error) {
+                                                        console.error('Error al guardar:', error);
+                                                    }
+
+                                                }}
+                                            >
+                                                {({ values, setFieldValue, isSubmitting, handleSubmit, setFieldTouched, errors, touched, handleChange }) => (
+                                                    <Form
+                                                        className="user"
+                                                        onSubmit={handleSubmit}
+                                                    >
+                                                        <div>
+                                                            <label htmlFor="actividad">Ingrese la descripción de la actividad</label>
+                                                            <input type="text" className="form-control form-control" id="actividad" name="actividad" placeholder="Descripción de la actividad*" value={values.actividad} onChange={handleChange} />
+                                                            {
+                                                                errors.actividades && touched.actividades ? (
+                                                                    <div className="alert alert-danger" role="alert">{errors.actividades}</div>
+                                                                ) : null
+                                                            }
+                                                        </div>
+                                                        <div className="mt-3">
+                                                            <label htmlFor="fechaini">Seleccione la fecha de inicio</label>
+                                                            <input type="date" id="fechaini" name="fechaini" className="form-control  form-control" value={values.fechaini} onChange={handleChange} />
+                                                        </div>
+                                                        <div className="mt-3">
+                                                            <label htmlFor="fechafin">Seleccione la fecha de fin</label>
+                                                            <input type="date" name="fechafin" id="fechafin" className="form-control form-control" value={values.fechafin} onChange={handleChange} />
+                                                        </div>
+                                                        <div className="mt-3">
+                                                            <label htmlFor="materiales">Seleccione los materiales</label>
+                                                            <Select
+                                                                id={`materiales`}
+                                                                options={materiales}
+                                                                isMulti
+                                                                value={values.actividades.materiales}
+                                                                onChange={(selectedMateriales) => setFieldValue(`actividades.materiales`, selectedMateriales)}
+                                                                onBlur={() => setFieldTouched(`actividades.materiales`, true)}
+                                                                
+                                                            />
+                                                        </div>
+                                                        <div className="mt-3">
+                                                            <label htmlFor="empleados">Seleccione los empleados</label>
+                                                            <Select
+                                                                id={`actividades.empleados`}
+                                                                options={empleados}
+                                                                isMulti
+                                                                value={values.actividades.empleados}
+                                                                onChange={(selectedEmpleados) => setFieldValue(`actividades.empleados`, selectedEmpleados)}
+                                                                onBlur={() => setFieldTouched(`actividades.empleados`, true)}
+                                                                getOptionLabel={(option) => option.nombre} // Mostrar el nombre en lugar del ID
+                                                                getOptionValue={(option) => option.idEmp}
+                                                            />
+                                                        </div>
+
+                                                        <div className="mt-3">
+                                                            <label htmlFor="estado">Seleccione el estado de la actividad</label>
+                                                            <select name="estado" id="estado" className="form-select form-control" value={values.estado} onChange={handleChange}>
+                                                                <option value="">Seleccione el estado de la actividad</option>
+                                                                <option value="En curso">En curso</option>
+                                                                <option value="En revisión">En revisión</option>
+                                                                <option value="Terminada">Terminada</option>
+                                                                <option value="Cancelada">Cancelada</option>
+                                                            </select>
+                                                        </div>
+                                                        <div className="card-footer">
+                                                            <ModalFooter>
+                                                                <Button color="secondary" onClick={handleCerrarForm}>
+                                                                    Cancelar
+                                                                </Button>
+                                                                <button className="btn btn-primary" color="primary" type="submit" >
+                                                                    Guardar
+                                                                </button>
+                                                            </ModalFooter>
+                                                        </div>
+                                                    </Form>
+                                                )}
+                                            </Formik>
+                                        </ModalBody>
+                                    </Modal>
                                     {actividades.length > 0 ? (
 
                                         actividades.map((detalle) => (
@@ -277,19 +387,22 @@ const ObraDetalle = () => {
                                                         <div><strong>Actividad: </strong> {detalle.actividad}</div>
                                                         <div><strong>Fecha de inicio:</strong> {detalle.fechaini}</div>
                                                         <div><strong>Fecha de fin:</strong>{detalle.fechafin}</div>
-                                                        <div><strong>Materiales:</strong>{detalle.materiales.idMat}</div>
-                                                        <div><strong>Empleados:</strong>{detalle.empleados.idEmp}</div>
+                                                        <div><strong>Materiales:</strong> {detalle.materiales.map((material) => material.nombre).join(', ')}</div>
+                                                        <div><strong>Empleados:</strong> {detalle.empleados.map((empleado) => empleado.nombre).join(', ')}</div>
                                                         <div><strong>Estado:</strong>{detalle.estado}</div>
                                                         <div className="mt-3">
-                                                            <button className="btn btn-secondary">
-                                                                <i class="fa-solid fa-pen-to-square"></i>
-                                                            </button>
-                                                            <button className="btn btn-secondary ml-3">
-                                                                <i class="fa-solid fa-eye"></i>
-                                                            </button>
+                                                            <Button
+                                                                className="btn btn-secondary"
+                                                                onClick={() => handleAgregarActividad(detalle)}
+                                                            >
+                                                                <i className="fa-solid fa-pen-to-square"></i>
+                                                            </Button>
+                                                            {/* <button className="btn btn-secondary ml-3">
+                                                                <i class="fa-solid fa-eye">Ver</i>
+                                                            </button> */}
                                                         </div>
                                                         <div className="mt-3">
-                                                           
+
                                                         </div>
                                                     </Card>
                                                 </div></>
@@ -305,101 +418,7 @@ const ObraDetalle = () => {
                                         </Button>
                                     </div>
                                 </div>
-                                <Modal isOpen={modalVisible} toggle={handleCerrarForm} onClosed={handleCerrarForm}>
-                                    <ModalHeader toggle={handleCerrarForm}>Agregar actividad</ModalHeader>
-                                    <ModalBody>
-                                        <Formik
-                                            initialValues={{
-                                                descripcion: '',
-                                                fechaini: '',
-                                                fechafin: '',
-                                                actividades: {
-                                                    materiales: [],
-                                                    empleados: [],
 
-                                                },
-                                                estado: ''
-                                            }}
-                                            validationSchema={actividad}
-                                            enableReinitialize={true}
-                                            onSubmit={(values) => {
-                                                try {
-                                                    console.log(values)
-                                                    createActividad(id, values)
-                                                    handleCerrarForm()
-                                                    alertConfirmAct()
-                                                } catch (error) {
-                                                    console.error('Error al guardar:', error);
-                                                }
-
-                                            }}
-                                        >
-                                            {({ values, setFieldValue, isSubmitting, handleSubmit, setFieldTouched, errors, touched, handleChange }) => (
-                                                <Form
-                                                    className="user"
-                                                    onSubmit={handleSubmit}
-                                                >
-                                                    <div>
-                                                        <input type="text" className="form-control form-control" id="descripcion" name="descripcion" placeholder="Descripción de la actividad*" value={values.descripcion} onChange={handleChange} />
-                                                        {
-                                                            errors.actividades && touched.actividades ? (
-                                                                <div className="alert alert-danger" role="alert">{errors.actividades}</div>
-                                                            ):null
-                                                        }
-                                                    </div>
-                                                    <div className="mt-3">
-                                                        <label htmlFor="fechaini">Seleccione la fecha de inicio</label>
-                                                        <input type="date" id="fechaini" name="fechaini" className="form-control  form-control" value={values.fechaini} onChange={handleChange} />
-                                                    </div>
-                                                    <div className="mt-3">
-                                                        <label htmlFor="fechafin">Seleccione la fecha de fin</label>
-                                                        <input type="date" name="fechafin" id="fechafin" className="form-control form-control" value={values.fechafin} onChange={handleChange} />
-                                                    </div>
-                                                    <div className="mt-3">
-                                                        <label htmlFor="fechaInicio">Fecha Inicial</label>
-                                                        <Select
-                                                            id={`materiales`}
-                                                            options={materiales}
-                                                            isMulti
-                                                            value={values.actividades.materiales}
-                                                            onChange={(selectedMateriales) => setFieldValue(`actividades.materiales`, selectedMateriales)}
-                                                            onBlur={() => setFieldTouched(`actividades.materiales`, true)}
-                                                        />
-                                                    </div>
-                                                    <div className="mt-3">
-                                                        <Select
-                                                            id={`actividades.empleados`}
-                                                            options={empleados}
-                                                            isMulti
-                                                            value={values.actividades.empleados}
-                                                            onChange={(selectedEmpleados) => setFieldValue(`actividades.empleados`, selectedEmpleados)}
-                                                            onBlur={() => setFieldTouched(`actividades.empleados`, true)}
-                                                        />
-                                                    </div>
-                                                    <div className="mt-3">
-                                                        <select name="estado" id="estado" className="form-select form-control" value={values.estado} onChange={handleChange}>
-                                                            <option value="">Seleccione el estado de la actividad</option>
-                                                            <option value="En curso">En curso</option>
-                                                            <option value="En revisión">En revisión</option>
-                                                            <option value="Terminada">Terminada</option>
-                                                            <option value="Cancelada">Cancelada</option>
-                                                        </select>
-                                                    </div>
-                                                    <div className="card-footer">
-                                                        <ModalFooter>
-                                                            <Button color="secondary" onClick={handleCerrarForm}>
-                                                                Cancelar
-                                                            </Button>
-                                                            <button className="btn btn-primary" color="primary" type="submit" >
-                                                                Guardar
-                                                            </button>
-                                                        </ModalFooter>
-                                                    </div>
-                                                </Form>
-                                            )}
-                                        </Formik>
-                                    </ModalBody>
-                                </Modal>
                             </div>
                             <div className="card-footer text-center">
                                 <div className="row">
