@@ -16,7 +16,7 @@ const CompraDetalle = () => {
 
     const handleOpenModal = () => setShowModal(true);
     const handleCloseModal = () => setShowModal(false);
-    useEffect(() => { 
+    useEffect(() => {
         const fetchCompraDetalle = async () => {
             try {
                 const response = await axios.get(`http://localhost:4000/compra/${id}`);
@@ -28,7 +28,21 @@ const CompraDetalle = () => {
 
         fetchCompraDetalle();
     }, [id]);
+    const handleDownloadPdf = () => {
+        // Assuming that the filename is available in the `compra.imagen` field
+        const pdfUrl = `http://localhost:4000/images/${compra.imagen}`;
 
+        // Open the PDF in a new tab
+        const newTab = window.open(pdfUrl, '_blank');
+
+        if (newTab) {
+            // If the new tab is successfully opened
+            newTab.focus();
+        } else {
+            // If the new tab couldn't be opened (e.g., due to browser settings)
+            alert("No se pudo abrir una nueva pestaña para el PDF. Puede intentar descargarlo directamente.");
+        }
+    };
     if (!compra) {
         return <div>Cargando...</div>;
     }
@@ -72,14 +86,24 @@ const CompraDetalle = () => {
                     </button>
                     <Modal show={showModal} onHide={handleCloseModal}>
                         <Modal.Header closeButton>
-                            <Modal.Title>Imagen de factura</Modal.Title>
+                            {compra.imagen.endsWith(".pdf") ? (<Modal.Title>Ver pdf de factura</Modal.Title>
+                            ) : <Modal.Title>Ver imagen de factura</Modal.Title>}
+
                         </Modal.Header>
                         <Modal.Body>
-                            <img
-                                src={`http://localhost:4000/images/${compra.imagen}`}
-                                alt="Imagen de factura"
-                                style={{ width: '100%' }}
-                            />
+                            {compra.imagen.endsWith(".pdf") ? (
+                                <div className="col-md-4 mx-auto">
+                                    <button className="btn btn-secondary m" onClick={handleDownloadPdf}>
+                                        Ver factura
+                                    </button>
+                                </div>
+                            ) : (
+                                <img
+                                    src={`http://localhost:4000/images/${compra.imagen}`}
+                                    alt="Imagen de factura"
+                                    style={{ width: '100%' }}
+                                />
+                            )}
                         </Modal.Body>
                         <Modal.Footer>
                             <Button variant="secondary" onClick={handleCloseModal}>

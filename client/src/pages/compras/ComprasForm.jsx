@@ -97,6 +97,7 @@ const ComprasForm = () => {
         validationSchema={comprasSchema}
         enableReinitialize={true}
         onSubmit={async (values, { setSubmitting }) => {
+          console.log(values)
           const validateFact = await searchFact(values)
           if (validateFact === true) {
             $.confirm({

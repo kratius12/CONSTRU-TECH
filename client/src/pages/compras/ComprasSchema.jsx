@@ -8,12 +8,12 @@ const comprasSchema = Yup.object().shape({
 
   imagen: Yup.mixed()
     .required("Factura es requerida")
-    .test('es-imagen', 'Solo se permiten archivos de imagen', (value) => {
+    .test('es-imagen', 'Solo se permiten archivos de imagen o pdf', (value) => {
       if (!value) {
         return false; // Archivo no proporcionado
       }
 
-      const allowedFormats = ['image/jpeg', 'image/png', 'image/gif', "image/jpg"]; // Puedes ampliar esta lista según tus necesidades
+      const allowedFormats = ['image/jpeg', 'image/png', 'image/gif', "image/jpg", 'application/pdf']; // Puedes ampliar esta lista según tus necesidades
 
       // Verificar el tipo de archivo
       return allowedFormats.includes(value.type);
