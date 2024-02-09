@@ -17,3 +17,11 @@ strong {
   border: 1px solid #ddd;
   border-radius: 5px;
 }
+/* Add this to your CSS file or style block */
+.modal-fullscreen {
+  width: 100vw;
+  height: 100vh;
+  max-width: none;
+  margin: 0;
+}
+
