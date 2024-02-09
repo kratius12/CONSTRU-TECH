@@ -13,6 +13,29 @@
     .pagination button {
       font-size: 18px; /* Ajusta según sea necesario */
       height: 33px; /* Ajusta según sea necesario */
+      cursor: pointer;
     }
   }
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pagination button.active {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.input-group-append button {
+  cursor: pointer;
+  background-color: gray;
+}
+
+.search-input {
+  height: 50px;
+}
+.search-icon {
+  color: white;
+}
   
