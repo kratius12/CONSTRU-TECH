@@ -13,8 +13,15 @@ const CompraDetalle = () => {
     const [compra, setCompra] = useState(null);
     const navigate = useNavigate();
     const [showModal, setShowModal] = useState(false);
+    // Inside your component
+const [fullscreen, setFullscreen] = useState(false);
 
-    const handleOpenModal = () => setShowModal(true);
+
+    const handleOpenModal = () => {
+        setShowModal(true);
+        setFullscreen(false); // Reset fullscreen state when opening the modal
+    };
+    
     const handleCloseModal = () => setShowModal(false);
     useEffect(() => {
         const fetchCompraDetalle = async () => {
@@ -84,7 +91,7 @@ const CompraDetalle = () => {
 
                         Ver factura de compra
                     </button>
-                    <Modal show={showModal} onHide={handleCloseModal}>
+                    <Modal show={showModal} onHide={handleCloseModal} dialogClassName={fullscreen ? "modal-fullscreen" : ""}>
                         <Modal.Header closeButton>
                             {compra.imagen.endsWith(".pdf") ? (<Modal.Title>Ver pdf de factura</Modal.Title>
                             ) : <Modal.Title>Ver imagen de factura</Modal.Title>}
@@ -102,7 +109,9 @@ const CompraDetalle = () => {
                                     src={`http://localhost:4000/images/${compra.imagen}`}
                                     alt="Imagen de factura"
                                     style={{ width: '100%' }}
+                                    onClick={() => setFullscreen(!fullscreen)}
                                 />
+
                             )}
                         </Modal.Body>
                         <Modal.Footer>

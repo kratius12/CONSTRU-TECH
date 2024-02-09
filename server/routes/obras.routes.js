@@ -221,7 +221,22 @@ router.get("/actividades/:id", async (req, res) => {
 
 router.post("/guardarActividad/:id", async (req, res) => {
   try {
-    const { actividad, fechaini, fechafin, estado, actividades } = req.body;
+    // console.log(req.body)
+
+    const { actividad, fechaini, fechafin, estado, actividades, antiguo } = req.body;
+    if (antiguo) {
+      const deleteAct = await prisma.detalle_obra.deleteMany({
+        where: {
+          AND: [
+            {
+              actividad: req.body.antiguo
+            }, {
+              idObra: parseInt(req.params.id)
+            }
+          ]
+        }
+      })
+    }
     const result = await prisma.detalle_obra.create({
       data: {
         actividad: actividad,
@@ -233,13 +248,12 @@ router.post("/guardarActividad/:id", async (req, res) => {
         idObra: parseInt(req.params.id)
       }
     })
-
     const { materiales, empleados } = actividades
     for (const empleado of empleados) {
       for (const material of materiales) {
         const materialesa = await prisma.detalle_obra.createMany({
           data: {
-            actividad: descripcion,
+            actividad: actividad,
             fechaini: fechaini,
             fechafin: fechafin,
             idEmp: parseInt(empleado.value),
@@ -256,20 +270,6 @@ router.post("/guardarActividad/:id", async (req, res) => {
   }
 });
 
-router.get("/actualizarAct", async (req, res) => {
-  try {
-    const { actividad } = req.body
-    const result = await prisma.detalle_obra.findMany({
-      where: {
-        actividad: actividad
-      }
-    })
-    return res.status(200).json(result)
-  } catch (error) {
-    console.log(error)
-  }
-})
-
 router.get("/actividadA/:id", async (req, res) => {
   try {
     const { actividad } = req.body
@@ -284,9 +284,34 @@ router.get("/actividadA/:id", async (req, res) => {
       },
     })
     console.log(agrup)
+    
+
+
     return res.status(200).json(agrup)
   } catch (error) {
     console.log(error)
+  }
+})
+
+router.put("/searchActividad/:id", async (req,res)=>{
+  try {
+    const {actividad} = req.body
+    const buscar = await prisma.detalle_obra.findMany({
+      where:{
+        actividad: req.body.actividad,
+        NOT:{
+          idObra: parseInt(req.params.id)
+        }
+      }
+    })
+    if(buscar.length>0){
+      return res.status(200).json(true)
+    }else{
+      return res.status(200).json(false)
+    }
+
+  } catch (error) {
+    
   }
 })
 

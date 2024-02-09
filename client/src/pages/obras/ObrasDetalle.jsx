@@ -2,10 +2,12 @@ import axios from "axios";
 import Select from "react-select";
 import { Form, Formik, Field } from "formik";
 import { useEffect, useState } from "react";
-import { Modal, Button, ModalHeader, ModalBody, ModalFooter, Card } from "reactstrap"
+import { Modal, Button, ModalHeader, ModalBody, ModalFooter } from "reactstrap"
 import { useNavigate, useParams } from "react-router-dom";
 import { useObras } from "../../context/obras/ObrasProvider";
-import { actividad, obraSchemaEdit } from "./ValidateObra"
+import { obraSchemaEdit } from "./ValidateObra"
+import _ from "lodash"
+import "./obras.css"
 const fetchData = async (url) => {
     try {
         const response = await axios.get(url);
@@ -42,7 +44,19 @@ const fetchEmpleados = async (url) => {
 };
 
 const ObraDetalle = () => {
-    const { createActividad, updateObra, updateActividad } = useObras()
+    const Alert = ({ message }) => {
+        if (!message) {
+            return null;
+        }
+
+        return (
+            <div className="alert alert-danger mt-2" role="alert">
+                {message}
+            </div>
+        );
+    };
+
+    const { createActividad, updateObra, searchAct } = useObras()
     const { id } = useParams()
     const params = useParams()
     const [obra, setObra] = useState(null);
@@ -55,9 +69,21 @@ const ObraDetalle = () => {
     const [actividades, setActividades] = useState([])
     const [selectedActivity, setSelectedActivity] = useState(null);
     const handleAgregarActividad = (actividad = null) => {
+
         setSelectedActivity(actividad);
         setModalVisible(true);
     };
+    const [currentPage, setCurrentPage] = useState(1);
+    const activitiesPerPage = 4;
+    const indexOfLastActivity = currentPage * activitiesPerPage;
+    const indexOfFirstActivity = indexOfLastActivity - activitiesPerPage;
+    const currentActivities = actividades.slice(indexOfFirstActivity, indexOfLastActivity);
+    const totalPages = Math.ceil(actividades.length / activitiesPerPage);
+
+    const paginate = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    };
+
     const alertConfirmAct = async () => {
         try {
             const updatedActividades = await fetchData(`http://localhost:4000/actividades/${params.id}`);
@@ -86,7 +112,7 @@ const ObraDetalle = () => {
 
     const handleCerrarForm = () => {
         setModalVisible(false);
-        alertConfirmAct()
+        // alertConfirmAct()
     };
     const alertConfirm = () => {
         var message = ""
@@ -117,7 +143,7 @@ const ObraDetalle = () => {
     }
 
 
-    
+
     useEffect(() => {
         const fetchObraDetalle = async () => {
             try {
@@ -295,11 +321,17 @@ const ObraDetalle = () => {
                                                 // validationSchema={actividad}
                                                 enableReinitialize={true}
                                                 onSubmit={async (values) => {
-                                                    await createActividad(id, values);
-                                                    alertConfirmAct();
-                                                }
 
-                                                }
+                                                    const formattedShare = {
+                                                        ...values,
+                                                        antiguo: selectedActivity.actividad
+                                                    }
+                                                    await createActividad(id, formattedShare);
+                                                    console.log(formattedShare)
+                                                    alertConfirmAct();
+                                                }}
+
+
                                             >
                                                 {({ values, setFieldValue, isSubmitting, handleSubmit, setFieldTouched, errors, touched, handleChange }) => (
                                                     <Form
@@ -371,34 +403,53 @@ const ObraDetalle = () => {
                                             </Formik>
                                         </ModalBody>
                                     </Modal>
-                                    <div className="row">
-                                        {actividades.length > 0 ? (
-
-                                            actividades.map((detalle) => (
-                                                <>
+                                    <div className="container">
+                                        <div className="row">
+                                            {actividades.length > 0 ? (
+                                                currentActivities.map((detalle) => (
                                                     <div key={detalle.id} className="col-md-3 mt-3">
-                                                        <Card >
-                                                            <div><strong>Actividad: </strong> {detalle.actividad}</div>
-                                                            <div><strong>Fecha de inicio:</strong> {detalle.fechaini}</div>
-                                                            <div><strong>Fecha de fin:</strong>{detalle.fechafin}</div>
-                                                            <div><strong>Materiales:</strong> {detalle.materiales.map((material) => material.nombre).join(', ')}</div>
-                                                            <div><strong>Empleados:</strong> {detalle.empleados.map((empleado) => empleado.nombre).join(', ')}</div>
-                                                            <div><strong>Estado:</strong>{detalle.estado}</div>
-                                                            <div className="mt-3">
-                                                                <Button
-                                                                    className="btn btn-secondary"
-                                                                    onClick={() => handleAgregarActividad(detalle)}
-                                                                >
-                                                                    <i className="fa-solid fa-pen-to-square"></i>
-                                                                </Button>
+                                                        <div className="card">
+                                                            <div className="card-body">
+                                                                <h5 className="card-title">Actividad: {detalle.actividad}</h5>
+                                                                <p className="card-text">Fecha de inicio: {detalle.fechaini}</p>
+                                                                <p className="card-text">Fecha de fin: {detalle.fechafin}</p>
+                                                                <p className="card-text">Materiales: {detalle.materiales.map((material) => material.nombre).join(', ')}</p>
+                                                                <p className="card-text">Empleados: {detalle.empleados.map((empleado) => empleado.nombre).join(', ')}</p>
+                                                                <p className="card-text">Estado: {detalle.estado}</p>
+                                                                <div className="mt-3">
+                                                                    <Button
+                                                                        className="btn btn-secondary"
+                                                                        onClick={() => handleAgregarActividad(detalle)}
+                                                                    >
+                                                                        <i className="fa-solid fa-pen-to-square"></i>
+                                                                        &nbsp;Editar
+                                                                    </Button>
+                                                                </div>
                                                             </div>
-                                                            <div className="mt-3">
+                                                        </div>
+                                                    </div>
+                                                ))
+                                            ) : null}
+                                            <div className="container">
+                                                <div className="row">
+                                                <div className="pagination col-md-1 mt-3 mx-auto">
+                                                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNumber) => (
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn-outline-primary"
+                                                        key={pageNumber}
+                                                        onClick={() => paginate(pageNumber)}
+                                                    >
+                                                        {pageNumber}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                                </div>
+                                            </div>
+                                            
 
-                                                            </div>
-                                                        </Card>
-                                                    </div></>
-                                            )
-                                            )) : null}
+
+                                        </div>
                                     </div>
 
                                 </div>

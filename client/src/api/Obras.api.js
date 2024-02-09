@@ -32,6 +32,6 @@ export const CreateActividadRequest = async (idObra,actividad) =>{
     return await axios.post(`http://localhost:4000/guardarActividad/${idObra}`, actividad)
 }
 
-export const UpdateActividadRequest = async (idObra, actividad) =>{
-    return await axios.put(`http://localhost:4000/actualizarAct/${idObra}`,actividad)
+export const SearchActividadRequest = async (idObra, actividad) =>{
+    return await axios.put(`http://localhost:4000/searchActividad/${idObra}`, actividad)
 }
