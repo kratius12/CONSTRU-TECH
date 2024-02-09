@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { Modal, Button, ModalHeader, ModalBody, ModalFooter } from "reactstrap"
 import { useNavigate, useParams } from "react-router-dom";
 import { useObras } from "../../context/obras/ObrasProvider";
-import { obraSchemaEdit } from "./ValidateObra"
+import { obraSchemaEdit, actividadSchema } from "./ValidateObra"
 import _ from "lodash"
 import "./obras.css"
 const fetchData = async (url) => {
@@ -58,6 +58,8 @@ const ObraDetalle = () => {
 
     const { createActividad, updateObra, searchAct } = useObras()
     const { id } = useParams()
+    const [searchTerm, setSearchTerm] = useState('');
+
     const params = useParams()
     const [obra, setObra] = useState(null);
     const navigate = useNavigate()
@@ -75,14 +77,25 @@ const ObraDetalle = () => {
     };
     const [currentPage, setCurrentPage] = useState(1);
     const activitiesPerPage = 4;
-    const indexOfLastActivity = currentPage * activitiesPerPage;
-    const indexOfFirstActivity = indexOfLastActivity - activitiesPerPage;
-    const currentActivities = actividades.slice(indexOfFirstActivity, indexOfLastActivity);
-    const totalPages = Math.ceil(actividades.length / activitiesPerPage);
 
     const paginate = (pageNumber) => {
+        if (pageNumber < 1 || pageNumber > totalPages) {
+            return;
+        }
         setCurrentPage(pageNumber);
     };
+    const filteredActivities = actividades.filter((detalle) => {
+        return Object.values(detalle).some((value) =>
+            value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    });
+
+    // Lógica de paginación
+    const indexOfLastActivity = currentPage * activitiesPerPage;
+    const indexOfFirstActivity = indexOfLastActivity - activitiesPerPage;
+    const currentActivities = filteredActivities.slice(indexOfFirstActivity, indexOfLastActivity);
+    const totalPages = Math.ceil(filteredActivities.length / activitiesPerPage);
+
 
     const alertConfirmAct = async () => {
         try {
@@ -141,7 +154,9 @@ const ObraDetalle = () => {
             }
         })
     }
-
+    const handleSearch = () => {
+        setCurrentPage(1);
+    };
 
 
     useEffect(() => {
@@ -298,8 +313,32 @@ const ObraDetalle = () => {
                                 <div className="detalle-container mt-4">
                                     {
                                         actividades.length > 0 ? (
+                                            <>
+                                                <h3 className="ml-3 w-50">Actividades</h3>
+                                                <div className="col-md-4 input-group">
+                                                    <input
+                                                        type="text"
+                                                        id="search"
+                                                        name="search"
+                                                        className="form-control search-input"
+                                                        placeholder="Buscar actividad"
+                                                        value={searchTerm}
+                                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                                    />
+                                                    <div className="input-group-append">
+                                                        <button
+                                                            className="btn btn-secondary"
+                                                            type="button"
+                                                            onClick={handleSearch}
+                                                        >
+                                                            <i className="fa fa-search"></i>
+                                                        </button>
+                                                    </div>
 
-                                            <h3 className="text-center w-100">Actividades</h3>
+                                                </div>
+                                            </>
+
+
                                         ) : (
                                             <h3 className="text-center w-100">La obra no tiene actividades asociadas</h3>
                                         )
@@ -318,9 +357,9 @@ const ObraDetalle = () => {
                                                     },
                                                     estado: selectedActivity ? selectedActivity.estado : '',
                                                 }}
-                                                // validationSchema={actividad}
+                                                validationSchema={actividadSchema}
                                                 enableReinitialize={true}
-                                                onSubmit={async (values) => {
+                                                onSubmit={async (values, { setSubmitting }) => {
 
                                                     const formattedShare = {
                                                         ...values,
@@ -329,9 +368,8 @@ const ObraDetalle = () => {
                                                     await createActividad(id, formattedShare);
                                                     console.log(formattedShare)
                                                     alertConfirmAct();
+                                                    setSubmitting(false);
                                                 }}
-
-
                                             >
                                                 {({ values, setFieldValue, isSubmitting, handleSubmit, setFieldTouched, errors, touched, handleChange }) => (
                                                     <Form
@@ -342,18 +380,40 @@ const ObraDetalle = () => {
                                                             <label htmlFor="actividad">Ingrese la descripción de la actividad</label>
                                                             <input type="text" className="form-control form-control" id="actividad" name="actividad" placeholder="Descripción de la actividad*" value={values.actividad} onChange={handleChange} />
                                                             {
-                                                                errors.actividades && touched.actividades ? (
-                                                                    <div className="alert alert-danger" role="alert">{errors.actividades}</div>
+                                                                errors.actividad && touched.actividad ? (
+                                                                    <div className="alert alert-danger" role="alert">
+                                                                        {
+                                                                            errors.actividad
+                                                                        }
+                                                                    </div>
                                                                 ) : null
                                                             }
                                                         </div>
                                                         <div className="mt-3">
                                                             <label htmlFor="fechaini">Seleccione la fecha de inicio de la actividad</label>
                                                             <input type="date" id="fechaini" name="fechaini" className="form-control  form-control" value={values.fechaini} onChange={handleChange} />
+                                                            {
+                                                                errors.fechaini && touched.fechaini ? (
+                                                                    <div className="alert alert-danger" role="alert">
+                                                                        {
+                                                                            errors.fechaini
+                                                                        }
+                                                                    </div>
+                                                                ) : null
+                                                            }
                                                         </div>
                                                         <div className="mt-3">
                                                             <label htmlFor="fechafin">Seleccione la fecha de fin de la actividad</label>
                                                             <input type="date" name="fechafin" id="fechafin" className="form-control form-control" value={values.fechafin} onChange={handleChange} />
+                                                            {
+                                                                errors.fechafin && touched.fechafin ? (
+                                                                    <div className="alert alert-danger" role="alert">
+                                                                        {
+                                                                            errors.fechafin
+                                                                        }
+                                                                    </div>
+                                                                ) : null
+                                                            }
                                                         </div>
                                                         <div className="mt-3">
                                                             <label htmlFor="materiales">Seleccione los materiales necesarios para la actividad</label>
@@ -363,9 +423,16 @@ const ObraDetalle = () => {
                                                                 isMulti
                                                                 value={values.actividades.materiales}
                                                                 onChange={(selectedMateriales) => setFieldValue(`actividades.materiales`, selectedMateriales)}
-                                                                onBlur={() => setFieldTouched(`actividades.materiales`, true)}
-
+                                                                onBlur={() => setFieldTouched(`values.actividades.materiales`, true)}
                                                             />
+                                                            {
+                                                                errors.actividades && errors.actividades.materiales && touched.actividades ? (
+                                                                    <div>
+                                                                        {errors.actividades}
+                                                                    </div>
+                                                                    
+                                                                ) : null
+                                                            }
                                                         </div>
                                                         <div className="mt-3">
                                                             <label htmlFor="empleados">Seleccione los empleados encargados de la actividad</label>
@@ -375,8 +442,13 @@ const ObraDetalle = () => {
                                                                 isMulti
                                                                 value={values.actividades.empleados}
                                                                 onChange={(selectedEmpleados) => setFieldValue(`actividades.empleados`, selectedEmpleados)}
-                                                                onBlur={() => setFieldTouched(`actividades.empleados`, true)}
+                                                                onBlur={() => setFieldTouched(`values.actividades.empleados`, true)}
                                                             />
+                                                            {
+                                                                errors.actividades && touched.actividades ? (
+                                                                    <div>{errors.actividades.empleados}</div>
+                                                                ):null
+                                                            }
                                                         </div>
                                                         <div className="mt-3">
                                                             <label htmlFor="estado">Seleccione el estado de la actividad</label>
@@ -387,15 +459,30 @@ const ObraDetalle = () => {
                                                                 <option value="Terminada">Terminada</option>
                                                                 <option value="Cancelada">Cancelada</option>
                                                             </select>
+                                                            {
+                                                                errors.estado && touched.estado ? (
+                                                                    <div className="alert alert-danger" role="alert">
+                                                                        {errors.estado}
+                                                                    </div>
+                                                                ):null
+                                                            }
                                                         </div>
                                                         <div className="card-footer">
                                                             <ModalFooter>
                                                                 <Button color="secondary" onClick={handleCerrarForm}>
                                                                     Cancelar
                                                                 </Button>
-                                                                <button className="btn btn-primary" color="primary" type="submit" onClick={handleCerrarForm} >
+                                                                <button
+                                                                    className="btn btn-primary"
+                                                                    color="primary"
+                                                                    type="submit"
+                                                                    // onClick={handleCerrarForm}
+                                                                    // disabled={isSubmitting || Object.keys(errors).length > 0}
+                                                                >
+
                                                                     Guardar
                                                                 </button>
+
                                                             </ModalFooter>
                                                         </div>
                                                     </Form>
@@ -405,7 +492,7 @@ const ObraDetalle = () => {
                                     </Modal>
                                     <div className="container">
                                         <div className="row">
-                                            {actividades.length > 0 ? (
+                                            {filteredActivities.length > 0 ? (
                                                 currentActivities.map((detalle) => (
                                                     <div key={detalle.id} className="col-md-3 mt-3">
                                                         <div className="card">
@@ -429,24 +516,45 @@ const ObraDetalle = () => {
                                                         </div>
                                                     </div>
                                                 ))
-                                            ) : null}
+                                            ) : <h3>No se encontraron actividades con los parametros de búsqueda ingresados</h3>}
                                             <div className="container">
                                                 <div className="row">
-                                                <div className="pagination col-md-1 mt-3 mx-auto">
-                                                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNumber) => (
-                                                    <button
-                                                        type="button"
-                                                        className="btn btn-outline-primary"
-                                                        key={pageNumber}
-                                                        onClick={() => paginate(pageNumber)}
-                                                    >
-                                                        {pageNumber}
-                                                    </button>
-                                                ))}
-                                            </div>
+                                                    <div className="pagination col-md-1 mt-3 mx-auto">
+                                                        {totalPages > 1 && (
+                                                            <>
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-outline-primary"
+                                                                    onClick={() => paginate(currentPage - 1)}
+                                                                    disabled={currentPage === 1}
+                                                                >
+                                                                    Anterior
+                                                                </button>
+                                                                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNumber) => (
+                                                                    <button
+                                                                        type="button"
+                                                                        className={`btn btn-outline-primary mr-2 ml-1 ${pageNumber === currentPage ? 'active' : ''}`}
+                                                                        key={pageNumber}
+                                                                        onClick={() => paginate(pageNumber)}
+                                                                    >
+                                                                        {pageNumber}
+                                                                    </button>
+                                                                ))}
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-outline-primary"
+                                                                    onClick={() => paginate(currentPage + 1)}
+                                                                    disabled={currentPage === totalPages}
+                                                                >
+                                                                    Siguiente
+                                                                </button>
+                                                            </>
+                                                        )}
+                                                    </div>
+
                                                 </div>
                                             </div>
-                                            
+
 
 
                                         </div>
