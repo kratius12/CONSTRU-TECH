@@ -214,7 +214,8 @@ INSERT INTO `permiso`(`permiso`,`estado`) VALUES
 ('Obras',1),
 ('Clientes',1),
 ('Categorias',1),
-('Compras',1);
+('Compras',1),
+('Permisos',1);
 
 INSERT INTO `rolpermisoempleado` (`id`, `idRol`, `idPer`, `idEmp`) VALUES
 ( 1, 1, 1),
@@ -225,7 +226,8 @@ INSERT INTO `rolpermisoempleado` (`id`, `idRol`, `idPer`, `idEmp`) VALUES
 ( 1, 6, 1),
 ( 1, 7, 1),
 ( 1, 8, 1),
-( 1, 9, 1);
+( 1, 9, 1),
+( 1, 10, 1);
 
 -- --------------------------------------------------------
 

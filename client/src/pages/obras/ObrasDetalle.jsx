@@ -23,7 +23,7 @@ const fetchMaterial = async (url) => {
         const responseMat = await axios.get(url);
         return responseMat.data.map((item) => ({
             value: item.idMat,
-            label: item.nombre
+            label: item.nombre,
         }))
     } catch (error) {
         console.error("Error fetching materiales:", error);
@@ -44,22 +44,9 @@ const fetchEmpleados = async (url) => {
 };
 
 const ObraDetalle = () => {
-    const Alert = ({ message }) => {
-        if (!message) {
-            return null;
-        }
-
-        return (
-            <div className="alert alert-danger mt-2" role="alert">
-                {message}
-            </div>
-        );
-    };
-
     const { createActividad, updateObra, searchAct } = useObras()
     const { id } = useParams()
     const [searchTerm, setSearchTerm] = useState('');
-
     const params = useParams()
     const [obra, setObra] = useState(null);
     const navigate = useNavigate()
@@ -71,7 +58,6 @@ const ObraDetalle = () => {
     const [actividades, setActividades] = useState([])
     const [selectedActivity, setSelectedActivity] = useState(null);
     const handleAgregarActividad = (actividad = null) => {
-
         setSelectedActivity(actividad);
         setModalVisible(true);
     };
@@ -85,11 +71,27 @@ const ObraDetalle = () => {
         setCurrentPage(pageNumber);
     };
     const filteredActivities = actividades.filter((detalle) => {
-        return Object.values(detalle).some((value) =>
+        // Filtra por el término de búsqueda en todas las propiedades del detalle
+        const detalleValues = Object.values(detalle);
+    
+        // Filtra por el nombre de los materiales y empleados
+        const materialesYEmpleados = detalleValues.reduce((acc, value) => {
+            if (Array.isArray(value)) {
+                // Si el valor es un array, asume que son materiales o empleados y extrae los nombres
+                const nombres = value.map(item => item.nombre); // Ajusta según la estructura de tus materiales y empleados
+                acc = [...acc, ...nombres];
+            } else if (typeof value === 'object' && value !== null) {
+                // Si el valor es un objeto, asume que es un material o un empleado y extrae el nombre
+                acc.push(value.nombre); // Ajusta según la estructura de tus materiales y empleados
+            }
+            return acc;
+        }, []);
+    
+        return [...detalleValues, ...materialesYEmpleados].some((value) =>
             value.toString().toLowerCase().includes(searchTerm.toLowerCase())
         );
     });
-
+    
     // Lógica de paginación
     const indexOfLastActivity = currentPage * activitiesPerPage;
     const indexOfFirstActivity = indexOfLastActivity - activitiesPerPage;
@@ -134,7 +136,6 @@ const ObraDetalle = () => {
         } else {
             message = "agregada"
         }
-        // eslint-disable-next-line no-undef
         $.confirm({
             title: `Obra ${message} con éxito!`,
             content: "Redireccionando a listado de materiales...",
@@ -157,14 +158,20 @@ const ObraDetalle = () => {
     const handleSearch = () => {
         setCurrentPage(1);
     };
-
+    const defaultMateriales = _.filter(materiales, {actividad: true}).map(item=>({
+        value: item.idMat,
+        label: item.nombre
+    }));
+    const defaultEmpleados = _.filter(empleados, {actividad:true}).map(item=>({
+        value: item.idMat,
+        label: item.nombre
+    }))
 
     useEffect(() => {
         const fetchObraDetalle = async () => {
             try {
                 const response = await axios.get(`http://localhost:4000/obra/${id}`);
                 setObra(response.data)
-                console.log(response.data)
             } catch (error) {
                 console.error("Ocurrio un error al obtener la información de la obra")
             }
@@ -176,17 +183,19 @@ const ObraDetalle = () => {
             setEmpleados(empleadosData);
         };
 
+       
+
         fetchData("http://localhost:4000/clientes").then((data) => {
             setCliente(data);
         });
         fetchData(`http://localhost:4000/actividades/${params.id}`).then((data) => {
             setActividades(data)
-            console.log(data)
         })
 
         fetchData("http://localhost:4000/empleadosAct").then((data) => {
             setAsesores(data)
         });
+        
         loadMaterialesEmpleados()
         fetchObraDetalle()
     }, [id]);
@@ -310,8 +319,10 @@ const ObraDetalle = () => {
                                     }
                                 </div>
                                 <hr />
+                                
                                 <div className="detalle-container mt-4">
                                     {
+
                                         actividades.length > 0 ? (
                                             <>
                                                 <h3 className="ml-3 w-50">Actividades</h3>
@@ -344,7 +355,7 @@ const ObraDetalle = () => {
                                         )
                                     }
                                     <Modal isOpen={modalVisible} toggle={handleCerrarForm} onClosed={handleCerrarForm}>
-                                        <ModalHeader toggle={handleCerrarForm}>Agregar actividad</ModalHeader>
+                                        <ModalHeader toggle={handleCerrarForm}>Guardar actividad</ModalHeader>
                                         <ModalBody>
                                             <Formik
                                                 initialValues={{
@@ -360,18 +371,17 @@ const ObraDetalle = () => {
                                                 validationSchema={actividadSchema}
                                                 enableReinitialize={true}
                                                 onSubmit={async (values, { setSubmitting }) => {
-
                                                     const formattedShare = {
                                                         ...values,
                                                         antiguo: selectedActivity.actividad
                                                     }
                                                     await createActividad(id, formattedShare);
-                                                    console.log(formattedShare)
                                                     alertConfirmAct();
                                                     setSubmitting(false);
+                                                    setModalVisible(false)
                                                 }}
                                             >
-                                                {({ values, setFieldValue, isSubmitting, handleSubmit, setFieldTouched, errors, touched, handleChange }) => (
+                                                {({ values, setFieldValue, handleSubmit, setFieldTouched, errors, touched, handleChange }) => (
                                                     <Form
                                                         className="user"
                                                         onSubmit={handleSubmit}
@@ -421,6 +431,7 @@ const ObraDetalle = () => {
                                                                 id={`materiales`}
                                                                 options={materiales}
                                                                 isMulti
+                                                                defaultValue={defaultMateriales}
                                                                 value={values.actividades.materiales}
                                                                 onChange={(selectedMateriales) => setFieldValue(`actividades.materiales`, selectedMateriales)}
                                                                 onBlur={() => setFieldTouched(`values.actividades.materiales`, true)}
@@ -430,7 +441,7 @@ const ObraDetalle = () => {
                                                                     <div>
                                                                         {errors.actividades}
                                                                     </div>
-                                                                    
+
                                                                 ) : null
                                                             }
                                                         </div>
@@ -442,12 +453,13 @@ const ObraDetalle = () => {
                                                                 isMulti
                                                                 value={values.actividades.empleados}
                                                                 onChange={(selectedEmpleados) => setFieldValue(`actividades.empleados`, selectedEmpleados)}
+                                                                defaultValue={defaultEmpleados}
                                                                 onBlur={() => setFieldTouched(`values.actividades.empleados`, true)}
                                                             />
                                                             {
                                                                 errors.actividades && touched.actividades ? (
                                                                     <div>{errors.actividades.empleados}</div>
-                                                                ):null
+                                                                ) : null
                                                             }
                                                         </div>
                                                         <div className="mt-3">
@@ -464,7 +476,7 @@ const ObraDetalle = () => {
                                                                     <div className="alert alert-danger" role="alert">
                                                                         {errors.estado}
                                                                     </div>
-                                                                ):null
+                                                                ) : null
                                                             }
                                                         </div>
                                                         <div className="card-footer">
@@ -476,10 +488,7 @@ const ObraDetalle = () => {
                                                                     className="btn btn-primary"
                                                                     color="primary"
                                                                     type="submit"
-                                                                    // onClick={handleCerrarForm}
-                                                                    // disabled={isSubmitting || Object.keys(errors).length > 0}
                                                                 >
-
                                                                     Guardar
                                                                 </button>
 
@@ -554,14 +563,9 @@ const ObraDetalle = () => {
 
                                                 </div>
                                             </div>
-
-
-
                                         </div>
                                     </div>
-
                                 </div>
-
                                 <div className="mt-3">
                                     <hr className="mt-3" />
                                     <div className="col-md-3 mt-3 mx-auto">
