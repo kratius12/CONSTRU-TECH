@@ -17,7 +17,14 @@ router.post('/login', async (req, res) => {
       const user = await prisma.empleado.findUnique({
         where: {
           email: username,
-          estado: 1
+          estado: 1,
+          rolpermisoempleado:{
+            some:{
+               rol:{
+                estado: 1
+               }
+            }
+          }
         }, 
         include:{
             rolpermisoempleado:{
@@ -73,18 +80,33 @@ router.post('/sendCode', async (req, res) => {
         }
       })
 
-      const {data, error} = await resend.emails.send({
-        from:"onboarding@resend.dev",
-        to: email,
-        subject:'Codigo de confirmacion',
-        html: `Codigo de confirmacion: ${code}`
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth:{
+          user:"construtech.soporte@gmail.com",
+          pass:"tabqtlxuhpqvzajl"
+        }
       })
 
-      if (error) {
-        return res.status(400).json({error})
-        
+      const mail_config = {
+        from:"construtech.soporte@gmail.com",
+        to: email,
+        subject:'Codigo de confirmacion',
+        text: `Codigo de confirmacion: ${code}`
       }
-      return res.status(200).json({data})
+
+      transporter.sendMail(mail_config, function (error, info){
+        if (error) {
+          console.log(error)
+          return res.status(204).json({message: 'Ha ocurrido un error'})
+        }
+        return res.status(200).json({message: 'Email enviado con exito'})
+      })
+
+      // if (error) {
+      //   return res.status(400).json({error})
+        
+      // }
       
     }else{
       res.status(404).json({error: `No se encontro el email enviado: ${email}`})
