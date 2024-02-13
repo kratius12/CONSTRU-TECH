@@ -56,10 +56,33 @@ const ObraDetalle = () => {
     const [empleados, setEmpleados] = useState([])
     const [asesores, setAsesores] = useState([])
     const [actividades, setActividades] = useState([])
+    const [matDefault, setMatDefault] = useState([])
+    const [empDefault, setEmpDefault] = useState([])
     const [selectedActivity, setSelectedActivity] = useState(null);
-    const handleAgregarActividad = (actividad = null) => {
-        setSelectedActivity(actividad);
+    const handleAgregarActividad = (activity = null) => {
+        setSelectedActivity(activity);
+        setMatDefault([]);
+        setEmpDefault([]);
+        console.log(activity.actividad)
         setModalVisible(true);
+        if (activity) {
+            const initialMaterials = activity.materiales.map((material) => ({
+                value: material.idMat,
+                label: material.nombre,
+            }));
+
+            const initialEmployees = activity.empleados.map((employee) => ({
+                value: employee.idEmp,
+                label: employee.nombre,
+            }));
+
+            setMatDefault(initialMaterials);
+            setEmpDefault(initialEmployees);
+        } else if (!activity.actividad) {
+            setMatDefault([]);
+            setEmpDefault([]);
+        }
+
     };
     const [currentPage, setCurrentPage] = useState(1);
     const activitiesPerPage = 4;
@@ -363,8 +386,8 @@ const ObraDetalle = () => {
                                                     fechaini: selectedActivity ? selectedActivity.fechaini : '',
                                                     fechafin: selectedActivity ? selectedActivity.fechafin : '',
                                                     actividades: {
-                                                        materiales: selectedActivity ? selectedActivity.materiales : [],
-                                                        empleados: selectedActivity ? selectedActivity.empleados : [],
+                                                        materiales: selectedActivity ? matDefault : [],
+                                                        empleados: selectedActivity ? empDefault : [],
                                                     },
                                                     estado: selectedActivity ? selectedActivity.estado : '',
                                                 }}
