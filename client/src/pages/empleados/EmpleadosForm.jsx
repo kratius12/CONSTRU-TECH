@@ -35,7 +35,7 @@ export default function EmpleadosForm() {
     especialidad: [],
     email: "",
     contrasena: "",
-    rol: ""
+    rol: []
   };
 
   const [empleado, setEmpleado] = useState(initialState);
@@ -65,7 +65,7 @@ export default function EmpleadosForm() {
             tipoDoc: empleado.tipoDoc,
             cedula: empleado.cedula,
             especialidad: empleado.empleado_especialidad,
-            contrasena: empleado.contrasena,
+            contrasena: '',
             rol: empleado.rolpermisoempleado
           });
           const defaultOpts = empleado.empleado_especialidad.map((item) => ({
@@ -76,12 +76,12 @@ export default function EmpleadosForm() {
             value: item.rol.idRol,
             label: item.rol.nombre
           }));
-          console.log(defaultOptionsRol)
           setDefaultOptionsRol(defaultOptionsRol)
           setSelectedRol(defaultOptionsRol)
           setDefaultOptions(defaultOpts);
           setKeyRol(prevKey => prevKey + 1)
           setKey((prevKey) => prevKey + 1);
+          console.log(empleado);
         }
       } else {
         setEmpleado(initialState);
@@ -135,7 +135,7 @@ export default function EmpleadosForm() {
   const checkEmail = async (email) => {
     console.log(email)
     try {
-      const response = await fetch('http://localhost:4000/checkEmailEmp/'+email, {
+      const response = await fetch(`http://localhost:4000/checkEmailEmp/${email}/${params.id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -170,7 +170,7 @@ export default function EmpleadosForm() {
 
   const checkDoc = async (tipoDoc, cedula) => {
     try {
-      const response = await fetch('http://localhost:4000/checkDocEmp/'+cedula+'/'+tipoDoc, {
+      const response = await fetch(`http://localhost:4000/checkDocEmp/${cedula}/${tipoDoc}/${params.id}`, {
         method: 'GET',
         headers:{
           'Content-Type': 'application/json',
@@ -215,11 +215,12 @@ export default function EmpleadosForm() {
               const empleadoObject = {
                 ...values,
                 especialidad: selectedEsp,
+                
               };
               // const validateEmail = await searchEmail(empleadoObject)
-              // const validateDoc = await searchDoc(empleadoObject);
+              // const validateDoc = await searchDoc(empleadoObject);     
               checkEmail(values.email)
-              checkDoc(values.tipoDoc, values.cedula)     
+              checkDoc(values.tipoDoc, values.cedula)
               if (email === false && doc === false) {
                 if (params.id) {
                   console.log(values)
@@ -227,11 +228,11 @@ export default function EmpleadosForm() {
                   alertConfirm('update');
                   setTimeout(() => navigate("/empleados"));
                 }else{
-                  await createEmpleado(empleadoObject);
-                  alertConfirm();
-                  setTimeout(() => navigate("/empleados"));
-                }         
-              }         
+                    await createEmpleado(empleadoObject);
+                    alertConfirm();
+                    setTimeout(() => navigate("/empleados"));  
+                }
+              }       
                
               //else {
                 // if (validateDoc === true) {
@@ -329,6 +330,7 @@ export default function EmpleadosForm() {
                       <div className="col-md-6 mt-3">
                         <input type="text" className="form-control form-control-user" id="cedula" onChange={(e) => {
                           handleChange(e)
+                          checkDoc(values.tipoDoc, values.cedula)
                           params.id ? '': checkDoc(values.tipoDoc, e.target.value)
                         }} value={values.cedula} placeholder="Número de documento*" />
                         {errors.cedula && touched.cedula ? (

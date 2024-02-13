@@ -136,6 +136,7 @@ router.post("/empleados", async (req, res) => {
 router.put("/empleado/:id", async (req, res) => {
     try {
         const { nombre, apellidos, direccion, estado, telefono, tipoDoc, cedula, especialidad, email, contrasena, rol } = req.body
+        console.log(req.body)
         const { hash, salt } = await generarHash(contrasena);
         const result = await prisma.empleado.update({
             where: {
@@ -168,20 +169,45 @@ router.put("/empleado/:id", async (req, res) => {
                 })
             }))
         }
-        var elemento = rol.value;
-
-        if (elemento) {
-            const upRol = await prisma.rolpermisoempleado.updateMany({
-                where: {
-                    idEmp: parseInt(req.params.id)
-                }, data: {
-                    idRol: parseInt(elemento)
-                }
-            })
-        } else {
-            console.log("ni idea de cual es el error rey")
-        }
-        res.status(200).json(result)
+        // var elemento = rol.value;
+        const getRolPermisos = await prisma.rolpermisoempleado.findMany({
+            where:{
+                AND: [
+                    {idRol: rol.value},
+                    {idEmp: null}
+                ]
+            }
+        })
+        const cleanEmpRolPermisos = await prisma.rolpermisoempleado.deleteMany({
+            where:{
+                idEmp:parseInt(req.params.id)
+            }
+        })
+        await Promise.all(getRolPermisos.map(async (item) => {
+            try {
+                const addPermisosEmp = await prisma.rolpermisoempleado.create({
+                    data:{
+                        idRol:rol.value,
+                        idPer:item.idPer,
+                        idEmp:parseInt(req.params.id)
+                    }
+                })
+            } catch (error) {
+                console.log(error)
+            }
+        }))
+        // if (elemento) {
+        //     const upRol = await prisma.rolpermisoempleado.updateMany({
+        //         where: {
+        //             idEmp: parseInt(req.params.id)
+        //         }, data: {
+        //             idRol: parseInt(elemento)
+        //         }
+        //     })
+        // } else {
+        //     console.log("ni idea de cual es el error rey")
+        // }
+        res.status(200).json({message:'Empleado editado!'})
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: error.message })
@@ -440,43 +466,93 @@ router.get("/rolesEmpleado/:id", async (req, res) => {
     }
 })
 
-router.get("/checkDocEmp/:cedula/:tipoDoc", async (req, res) => {
+router.get("/checkDocEmp/:cedula/:tipoDoc/:id", async (req, res) => {
     try {
-    //     const {status} = req.body
-        const result = await prisma.empleado.findFirst({
-            where:{
-             AND:{
-              cedula:req.params.cedula,
-              tipoDoc:req.params.tipoDoc
-             }
-            },
-            select:{
-             cedula:true,
-             tipoDoc:true
+        if (parseInt(req.params.id) > 0) {
+            const result = await prisma.empleado.findFirst({
+                where:{
+                    cedula:{
+                        equals:req.params.cedula
+                    },
+                    tipoDoc:{
+                        equals: req.params.tipoDoc
+                    },
+                    idEmp:{
+                        not: parseInt(req.params.id)
+                     }
+                //  AND:{
+                //   cedula:req.params.cedula,
+                //   tipoDoc:req.params.tipoDoc
+                //  },
+                //  NOT:{
+    
+                //  }
+                },
+                select:{
+                 cedula:true,
+                 tipoDoc:true
+                }
+            })       
+            if (result) {
+                return res.status(203).json({message: 'El documento ingresado ya existe'})                
             }
-        })       
-        if (result) {
-            return res.status(203).json({message: 'El documento ingresado ya existe'})                
+            return res.status(200).json({message: result})            
+        } else {
+            const result = await prisma.empleado.findFirst({
+                where:{
+                 AND:{
+                  cedula:req.params.cedula,
+                  tipoDoc:req.params.tipoDoc
+                 }
+                },
+                select:{
+                 cedula:true,
+                 tipoDoc:true
+                }
+            })       
+            if (result) {
+                return res.status(203).json({message: 'El documento ingresado ya existe'})                
+            }
+            return res.status(200).json({message: result})            
         }
-        return res.status(200).json({message: result})
     } catch (error) {
         return res.status(500).json({message: error.message})
     }
 }) 
-router.get("/checkEmailEmp/:email", async (req, res) => {
+router.get("/checkEmailEmp/:email/:id", async (req, res) => {
     try {
-        const result = await prisma.empleado.findFirst({
-            where:{
-             email:req.params.email
-            },
-            select:{
-             email:true
+        if (parseInt(req.params.id) > 0) {
+            const result = await prisma.empleado.findFirst({
+                where:{
+                 email:{
+                    equals: req.params.email
+                 },
+                 idEmp:{
+                    not: parseInt(req.params.id)
+                 }
+                },
+                select:{
+                 email:true
+                }
+            })       
+            if (result) {
+                return res.status(203).json({message: 'El Correo ingresado ya existe'})                
             }
-        })       
-        if (result) {
-            return res.status(203).json({message: 'El Correo ingresado ya existe'})                
+            return res.status(200).json({message: result})            
+        }else{
+            const result = await prisma.empleado.findFirst({
+                where:{
+                 email:req.params.email
+                },
+                select:{
+                 email:true
+                }
+            })       
+            if (result) {
+                return res.status(203).json({message: 'El Correo ingresado ya existe'})                
+            }
+            return res.status(200).json({message: result})
         }
-        return res.status(200).json({message: result})
     } catch (error) {
         return res.status(500).json({message: error.message})
     }
