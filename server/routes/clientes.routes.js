@@ -150,43 +150,86 @@ router.delete('/cliente/:id', async (req, res) => {
             return res.status(500).json({message: error.message})
         }
     })
-    router.get("/checkDoc/:cedula/:tipoDoc", async (req, res) => {
+    router.get("/checkDoc/:cedula/:tipoDoc/:id", async (req, res) => {
         try {
-        //     const {status} = req.body
-            const result = await prisma.cliente.findFirst({
-                where:{
-                 AND:{
-                  cedula:req.params.cedula,
-                  tipoDoc:req.params.tipoDoc
-                 }
-                },
-                select:{
-                 cedula:true,
-                 tipoDoc:true
+            if (parseInt(req.params.id) > 0) {
+                const result = await prisma.cliente.findFirst({
+                    where:{
+                        cedula:{
+                            equals:req.params.cedula
+                        },
+                        tipoDoc:{
+                            equals: req.params.tipoDoc
+                        },
+                        idCli:{
+                            not: parseInt(req.params.id)
+                         }
+                    },
+                    select:{
+                     cedula:true,
+                     tipoDoc:true
+                    }
+                })       
+                if (result) {
+                    return res.status(203).json({message: 'El documento ingresado ya existe'})                
                 }
-            })       
-            if (result) {
-                return res.status(203).json({message: 'El documento ingresado ya existe'})                
+                return res.status(200).json({message: result})            
+            } else {
+                const result = await prisma.cliente.findFirst({
+                    where:{
+                     AND:{
+                      cedula:req.params.cedula,
+                      tipoDoc:req.params.tipoDoc
+                     }
+                    },
+                    select:{
+                     cedula:true,
+                     tipoDoc:true
+                    }
+                })       
+                if (result) {
+                    return res.status(203).json({message: 'El documento ingresado ya existe'})                
+                }
+                return res.status(200).json({message: result})            
             }
-            return res.status(200).json({message: result})
         } catch (error) {
             return res.status(500).json({message: error.message})
         }
-    }) 
-    router.get("/checkEmail/:email", async (req, res) => {
+    })
+    router.get("/checkEmail/:email/:id", async (req, res) => {
         try {
-            const result = await prisma.cliente.findFirst({
-                where:{
-                 email:req.params.email
-                },
-                select:{
-                 email:true
+            if (parseInt(req.params.id) > 0) {
+                const result = await prisma.cliente.findFirst({
+                    where:{
+                     email:{
+                        equals: req.params.email
+                     },
+                     idCli:{
+                        not: parseInt(req.params.id)
+                     }
+                    },
+                    select:{
+                     email:true
+                    }
+                })       
+                if (result) {
+                    return res.status(203).json({message: 'El Correo ingresado ya existe'})                
                 }
-            })       
-            if (result) {
-                return res.status(203).json({message: 'El Correo ingresado ya existe'})                
+                return res.status(200).json({message: result})            
+            }else{
+                const result = await prisma.cliente.findFirst({
+                    where:{
+                     email:req.params.email
+                    },
+                    select:{
+                     email:true
+                    }
+                })       
+                if (result) {
+                    return res.status(203).json({message: 'El Correo ingresado ya existe'})                
+                }
+                return res.status(200).json({message: result})
             }
-            return res.status(200).json({message: result})
         } catch (error) {
             return res.status(500).json({message: error.message})
         }

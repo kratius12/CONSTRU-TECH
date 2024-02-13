@@ -39,7 +39,7 @@ export default function ClientsForm() {
           cedula: cliente.cedula,
           fecha_nac: cliente.fecha_nac,
           estado: cliente.estado === "0" ? "0" : "1",
-          contrasena: cliente.constrasena
+          contrasena: ''
         })
 
       }
@@ -50,7 +50,7 @@ export default function ClientsForm() {
   const checkEmail = async (email) => {
     console.log(email)
     try {
-      const response = await fetch('http://localhost:4000/checkEmail/'+email, {
+      const response = await fetch(`http://localhost:4000/checkEmail/${email}/${params.id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -85,7 +85,7 @@ export default function ClientsForm() {
 
   const checkDoc = async (tipoDoc, cedula) => {
     try {
-      const response = await fetch('http://localhost:4000/checkDoc/'+cedula+'/'+tipoDoc, {
+      const response = await fetch(`http://localhost:4000/checkDoc/${cedula}/${tipoDoc}/${params.id}`, {
         method: 'GET',
         headers:{
           'Content-Type': 'application/json',
@@ -126,7 +126,9 @@ export default function ClientsForm() {
             enableReinitialize={true}
             validationSchema={ClientSchema}
             onSubmit={async (values) => {
-
+              checkEmail(values.email)
+              checkDoc(values.tipoDoc, values.cedula)
+              if (email === false && doc === false) {
                 if (params.id) {
                   await updateClient(params.id, values)
                   navigate("/clientes")
@@ -139,20 +141,8 @@ export default function ClientsForm() {
                     navigate("/clientes")
                   }
 
-                }
-                setCliente({
-                  nombre: "",
-                  apellidos: "",
-                  email: "",
-                  direccion: "",
-                  telefono: "",
-                  tipoDoc: "",
-                  cedula: "",
-                  fecha_nac: "",
-                  estado: "",
-                  contrasena: ""
-                })                
-               
+                }                
+              }
             }}
           >
             {({ handleChange, handleSubmit, values, isSubmitting, errors, touched }) => (
@@ -214,7 +204,7 @@ export default function ClientsForm() {
                       <div className="col-md-6 mt-3 mx-auto">
                         <input type="text" className="form-control  form-control-user" id="cedula" onChange={(e) => {
                           handleChange(e)
-                          params.id ? '':checkDoc(values.tipoDoc, e.target.value)
+                          checkDoc(values.tipoDoc, e.target.value)
                         }} value={values.cedula} placeholder="Número de documento de identidad*" />
                         {errors.cedula && touched.cedula ? (
                           <div className="alert alert-danger" role="alert">{errors.cedula}</div>

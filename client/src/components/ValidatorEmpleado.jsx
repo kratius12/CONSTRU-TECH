@@ -4,7 +4,7 @@ const EmpleadoSchema = Yup.object().shape({
   nombre: Yup.string().required('El nombre es obligatorio').matches(/^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]+$/, 'El nombre no puede contener caracteres especiales ni números').trim(),
   apellidos: Yup.string().required('Los apellidos son obligatorios').matches(/^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]+$/, 'El nombre no puede contener caracteres especiales ni números').trim(),
   email: Yup.string().email('Ingresa un correo electrónico válido').required('El email es obligatorio').trim(),
-  contrasena: Yup.string().required('La contraseña es obligatoria').min(8, 'La contraseña debe tener al menos 6 caracteres').trim().matches(
+  contrasena: Yup.string().min(8, 'La contraseña debe tener al menos 6 caracteres').trim().matches(
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
     "La contraseña debe contener al menos una letra mayúscula, una letra minúscula y un número"
   ),
@@ -21,7 +21,7 @@ const EmpleadoSchemaEdit = Yup.object().shape({
   nombre: Yup.string().required('El nombre es obligatorio').matches(/^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]+$/, 'El nombre no puede contener caracteres especiales ni números').trim(),
   apellidos: Yup.string().required('Los apellidos son obligatorios').matches(/^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]+$/, 'El nombre no puede contener caracteres especiales ni números').trim(),
   email: Yup.string().email('Ingresa un correo electrónico válido').required('El email es obligatorio').trim(),
-  contrasena: Yup.string().required('La contraseña es obligatoria').min(8, 'La contraseña debe tener al menos 6 caracteres').trim().matches(
+  contrasena: Yup.string().min(8, 'La contraseña debe tener al menos 6 caracteres').trim().matches(
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
     "La contraseña debe contener al menos una letra mayúscula, una letra minúscula y un número"
   ),
