@@ -116,8 +116,8 @@ model obras {
   idCliente    Int?
   estado       String?        @db.VarChar(50)
   precio       Int?
-  createdAt    DateTime       @default(dbgenerated("(curdate())")) @db.Date
   idEmp        Int
+  createdAt    DateTime       @default(dbgenerated("(curdate())")) @db.Date
   detalle_obra detalle_obra[]
   empleado     empleado       @relation(fields: [idEmp], references: [idEmp], onUpdate: Restrict, map: "FK_idEmp")
   cliente      cliente?       @relation(fields: [idCliente], references: [idCli], onDelete: Restrict, onUpdate: Restrict, map: "obras_ibfk_3")
