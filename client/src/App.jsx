@@ -154,10 +154,36 @@ function App() {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userData');
-    setLoggedIn(false)
-    navigate('/signin')
+
+    $.confirm({
+      title:`Desea salir de la aplicaciòn ?`,
+      content:"",
+      icon: 'fa fa-question-circle',
+      theme: 'modern',
+      closeIcon: true,
+      animation: 'zoom',
+      closeAnimation: 'scale',
+      animationSpeed: 500,
+      type: 'red',
+      columnClass:'col-md-6 col-md-offset-3',
+      buttons: {
+          confirmar: {
+              btnClass: 'btn-danger',
+              action: async function () {
+                localStorage.removeItem('token');
+                localStorage.removeItem('userData');
+                setLoggedIn(false)
+                navigate('/signin')  
+              }                    
+          },
+          cancelar: {
+              btnClass: 'btn-default',
+              action: function(){
+                  $.alert('Accion cancelada!');
+              }
+          }
+      }            
+  })
   }
 
   const handleSubmit = async (e) => {
