@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import EmpleadoTable from "../../components/EmpleadoTable";
 import { useEmpleados } from "../../context/empleados/EmpleadosProvider";
-import TableInfo from "../../components/TableInfo";
+import TableInfo from "../../components/table/TableInfo";
 function EmpleadosPage() {
 
     const dataHeader = [

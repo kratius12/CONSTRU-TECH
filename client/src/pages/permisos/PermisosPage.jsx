@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { usePermiso } from "../../context/permisos/PermisosProvider";
-import TableInfo from "../../components/TableInfo";
+import TableInfo from "../../components/table/TableInfo";
 
 function PermisosPage() {
 

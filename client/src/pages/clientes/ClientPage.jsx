@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useClients } from "../../context/clientes/ClientesProvider";
-import TableInfo from "../../components/TableInfo";
+import TableInfo from "../../components/table/TableInfo";
 
 function ClientPage() {
 

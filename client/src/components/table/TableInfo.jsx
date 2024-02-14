@@ -10,8 +10,8 @@ import { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Table as BTable, Card } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import StatusToggle from '../components/StatusToggle';
-import AlertDetail from '../components/AlertDetail';
+import StatusToggle from '../togglEstado/StatusToggle';
+import AlertDetail from '../togglEstado/AlertDetail';
 import "./Tableinfo.css"
 
 function TableInfo({ dataHeader, dataBody, routeEdit, viewDetail, entity, toggleApi, onChangeStatus, getApi }) {

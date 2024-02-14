@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-// import EspecialidadTable  from "../components/EspecialidadTable"
 import { useEspecialidades } from "../../context/especialidades/EspecialidadesProvider";
 
-import TableInfo from "../../components/TableInfo";
+import TableInfo from "../../components/table/TableInfo";
 function EspecialidadesPage() {
 
     const dataHeader = [

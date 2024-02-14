@@ -4,7 +4,7 @@ import { Form, Formik, Field } from "formik";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEmpleados } from "../../context/empleados/EmpleadosProvider";
-import EmpleadoSchema from "../../components/ValidatorEmpleado"
+import EmpleadoSchema from "../../components/empleados/ValidatorEmpleado"
 
 const fetchData1 = async (url) => {
   try {

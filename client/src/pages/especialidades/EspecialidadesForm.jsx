@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Form, Formik } from "formik";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEspecialidades } from "../../context/especialidades/EspecialidadesProvider";
-import EspecialidadSchema from '../../components/ValidatorEspecialidad'
+import EspecialidadSchema from '../../components/especialidades/ValidatorEspecialidad'
 
 export default function EspecialidadesForm() {
   //   const [agreed, setAgreed] = useState(false)

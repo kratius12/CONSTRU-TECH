@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Form, Formik } from "formik";
 import { useParams, useNavigate } from "react-router-dom";
 import { useClients } from "../../context/clientes/ClientesProvider";
-import ClientSchema from "../../components/ValidatorCliente";
+import ClientSchema from "../../components/clientes/ValidatorCliente";
 
 export default function ClientsForm() {
   const { createClient, getClient, updateClient } = useClients()
@@ -26,12 +26,12 @@ export default function ClientsForm() {
   const alertConfirm = () => {
     var message = ""
     if (params.id) {
-        message = "actualizada"
+        message = "actualizado"
     } else {
-        message = "agregada"
+        message = "agregado"
     }
     $.confirm({
-        title: `Obra ${message} con éxito!`,
+        title: `Cliente ${message} con éxito!`,
         content: "Redireccionando a listado de materiales...",
         icon: 'fa fa-check',
         theme: 'modern',
