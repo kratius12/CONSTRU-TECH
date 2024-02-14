@@ -13,14 +13,14 @@ const ClientSchema = Yup.object().shape({
         .matches(/^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]+$/, 'El nombre no puede contener caracteres especiales ni números'),
     email: Yup.string().email('Formato de correo electrónico invalido').required('Correo electrónico requerido'),
     direccion: Yup.string()
-        .min(5, 'La dirección debe contener al menos 5 caracteres')
+        .min(10, 'La dirección debe contener al menos 10 caracteres')
         .max(50, 'La dirección no puede contener mas de 50 caracteres')
         .required('La dirección es requerida'),
     telefono: Yup.string()
         .min(7, 'El número telefónico debe tener al menos 7 caracteres')
-        .max(12, 'El número telefónico no puede tener mas de 12 caracteres')
+        .max(13, 'El número telefónico no puede tener mas de 13 caracteres')
         .required('El número telefónico es requerido')
-        .matches(/^[0-9]+$/, 'El número de documento de identidad solo puede contener numeros'),
+        .matches(/^[0-9-+]+$/, 'El número de documento de identidad solo puede contener numeros'),
     tipoDoc: Yup.string()
         .required('El tipo de documento es requerido'),
     cedula: Yup.string()
