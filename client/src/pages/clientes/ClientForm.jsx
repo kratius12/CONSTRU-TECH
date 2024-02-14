@@ -23,7 +23,32 @@ export default function ClientsForm() {
     contrasena: ""
   })
 
+  const alertConfirm = () => {
+    var message = ""
+    if (params.id) {
+        message = "actualizada"
+    } else {
+        message = "agregada"
+    }
+    $.confirm({
+        title: `Obra ${message} con éxito!`,
+        content: "Redireccionando a listado de materiales...",
+        icon: 'fa fa-check',
+        theme: 'modern',
+        closeIcon: true,
+        animation: 'news',
+        closeAnimation: 'news',
+        type: 'green',
+        columnClass: 'col-md-6 col-md-offset-3',
+        autoClose: 'okay|4000',
+        buttons: {
+            okay: function () {
+                navigate("/clientes")
+            },
 
+        }
+    })
+}
 
   useEffect(() => {
     const loadClients = async () => {
@@ -132,6 +157,7 @@ export default function ClientsForm() {
                 if (params.id) {
                   await updateClient(params.id, values)
                   navigate("/clientes")
+                  alertConfirm("update")
                 } else {
                   checkEmail(values.email)
                   checkDoc(values.tipoDoc, values.cedula)              
@@ -139,6 +165,7 @@ export default function ClientsForm() {
                     console.log(email,doc)
                     await createClient(values)
                     navigate("/clientes")
+                    alertConfirm()
                   }
 
                 }                

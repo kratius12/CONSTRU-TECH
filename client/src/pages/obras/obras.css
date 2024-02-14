@@ -1,0 +1,41 @@
+/* Estilos generales para tamaños de pantalla más grandes */
+.card {
+    width: 100%;
+  }
+  
+  /* Estilos específicos para tamaños de pantalla más pequeños */
+  @media (max-width: 768px) {
+    .card {
+      width: 90%; /* Ajusta según sea necesario */
+    }
+  
+    /* Estilos adicionales para botones de paginación */
+    .pagination button {
+      font-size: 18px; /* Ajusta según sea necesario */
+      height: 33px; /* Ajusta según sea necesario */
+      cursor: pointer;
+    }
+  }
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pagination button.active {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.input-group-append button {
+  cursor: pointer;
+  background-color: gray;
+}
+
+.search-input {
+  height: 50px;
+}
+.search-icon {
+  color: white;
+}
+  

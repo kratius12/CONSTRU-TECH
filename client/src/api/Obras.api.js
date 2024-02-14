@@ -23,3 +23,15 @@ export const UpdateObraRequest = async (idObra, newFields) =>{
 export const ToggleObraStatusRequest = async (idObra, status) =>{
     return await axios.put(`http://localhost:4000/obra/${idObra}`, status)
 }
+
+export const GetActividadesRequest = async (idObra)=>{
+    return await axios.get(`http://localhost:4000/actividades/${idObra}`)
+}
+
+export const CreateActividadRequest = async (idObra,actividad) =>{
+    return await axios.post(`http://localhost:4000/guardarActividad/${idObra}`, actividad)
+}
+
+export const SearchActividadRequest = async (idObra, actividad) =>{
+    return await axios.put(`http://localhost:4000/searchActividad/${idObra}`, actividad)
+}

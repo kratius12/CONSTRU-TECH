@@ -97,6 +97,7 @@ const ComprasForm = () => {
         validationSchema={comprasSchema}
         enableReinitialize={true}
         onSubmit={async (values, { setSubmitting }) => {
+          console.log(values)
           const validateFact = await searchFact(values)
           if (validateFact === true) {
             $.confirm({
@@ -297,7 +298,7 @@ const ComprasForm = () => {
                           onClick={() => {
                             arrayHelpers.push({
                               idMat: "",
-                              cantidad: "",
+                              cantidad: "", 
                               precio: "",
                               subtotal: "",
                             });
