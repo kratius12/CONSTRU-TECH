@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Form, Formik } from "formik";
 import { useParams, useNavigate } from "react-router-dom";
 import { useProveedores } from "../../context/proveedores/ProveedorProvider";
-import proveedorSchema from './ProveedorValidator';
+import validateForm from "./ProveedorValidator";
 
 export default function ProveedoresForm() {
   const { createProveedor, getProveedor, updateProveedor, Proveedores, searchNit } = useProveedores();
@@ -11,21 +11,7 @@ export default function ProveedoresForm() {
     Proveedores();
   }, []);
 
-  const [errors, setErrors] = useState({
-    nombreContacto: '',
-    telefonoContacto: '',
-    emailContacto: '',
-  });
-
-  const [fieldErrors, setFieldErrors] = useState({
-    nombreContacto: '',
-    telefonoContacto: '',
-    emailContacto: '',
-  });
-
-  const validateWhitespace = (value) => {
-    return hasWhitespace(value) ? 'No se permiten espacios en blanco' : undefined;
-  };
+ 
 
   const [placeholders, setPlaceholders] = useState({
     nit: "Número de identificación*",
@@ -54,53 +40,6 @@ export default function ProveedoresForm() {
     }
   };
 
-  const isValidEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  const validateFields = (values) => {
-    const newErrors = { ...errors };
-    const newFieldErrors = { ...fieldErrors };
-
-    if (values.tipo === 'Juridico') {
-      if (!values.nombreContacto || values.nombreContacto.trim().length < 3) {
-        newErrors.nombreContacto = 'El nombre de contacto debe tener al menos 3 caracteres';
-        newFieldErrors.nombreContacto = newErrors.nombreContacto;
-      } else {
-        newErrors.nombreContacto = '';
-        newFieldErrors.nombreContacto = '';
-      }
-
-      if (!values.telefonoContacto || values.telefonoContacto.trim().length < 7) {
-        newErrors.telefonoContacto = 'El teléfono de contacto debe tener al menos 7 caracteres';
-        newFieldErrors.telefonoContacto = newErrors.telefonoContacto;
-      } else {
-        newErrors.telefonoContacto = '';
-        newFieldErrors.telefonoContacto = '';
-      }
-
-      if (!values.emailContacto || !isValidEmail(values.emailContacto)) {
-        newErrors.emailContacto = 'Formato de correo electrónico inválido para el contacto';
-        newFieldErrors.emailContacto = newErrors.emailContacto;
-      } else {
-        newErrors.emailContacto = '';
-        newFieldErrors.emailContacto = '';
-      }
-    } else {
-      newErrors.nombreContacto = '';
-      newErrors.telefonoContacto = '';
-      newErrors.emailContacto = '';
-      newFieldErrors.nombreContacto = '';
-      newFieldErrors.telefonoContacto = '';
-      newFieldErrors.emailContacto = '';
-    }
-
-    setErrors(newErrors);
-    setFieldErrors(newFieldErrors);
-
-    return Object.values(newErrors).every((error) => !error);
-  };
 
   const hasWhitespace = (value) => {
     return /\s/.test(value);
@@ -182,27 +121,27 @@ export default function ProveedoresForm() {
           <Formik
             initialValues={proveedor}
             enableReinitialize={true}
+            validate={validateForm}
             validateOnChange={true}
-            // validationSchema={proveedorSchema}
             onSubmit={async (values) => {
+              
               try {
                 if (params.id) {
                   await updateProveedor(params.id, { ...values, tipo: tipo });
                   navigate("/proveedores");
                   alertConfirm();
+                  
                 } else {
                   const validateFact = await searchNit(values);
 
                   if (validateFact === true) {
                     alert(`Error: El ${placeholders.nit} ${values.nit} ya existe, por favor ingrese uno diferente`);
                   } else {
-                    const isFieldsValid = validateFields(values);
-
-                    if (isFieldsValid) {
+                    
                       await createProveedor({ ...values, tipo: tipo });
                       navigate("/proveedores");
                       alertConfirm();
-                    }
+                    
                   }
                 }
 
@@ -221,10 +160,14 @@ export default function ProveedoresForm() {
               } catch (error) {
                 console.error(error);
               }
-            }}
+            }
+            
+
+          }
+            
           >
 
-            {({ handleChange, handleSubmit, values, isSubmitting, touched, setFieldValue }) => (
+            {({ handleChange, handleSubmit, values, isSubmitting, touched, setFieldValue, errors }) => (
               <Form onSubmit={handleSubmit} className="user">
                 <div className="card text-center w-100">
                   <h2>{params.id ? "Editar" : "Agregar"} proveedor</h2>
@@ -233,7 +176,7 @@ export default function ProveedoresForm() {
                       <div className="col-md-6 mt-3">
                         <select
                           id="tipo"
-                          className={`form-select form-control-user ${errors.tipo ? 'is-invalid' : ''}`}
+                          className={`form-select form-control-user `}
                           onChange={(e) => {
                             handleSelectChange(e);
                             handleChange(e);
@@ -244,72 +187,101 @@ export default function ProveedoresForm() {
                           <option value="Natural">Natural</option>
                           <option value="Juridico">Juridico</option>
                         </select>
-                        {errors.tipo && <div className="invalid-feedback">{errors.tipo}</div>}
+                        {
+                          errors.tipo && touched.tipo ? (
+                            <div className="alert alert-danger" role="alert">{errors.tipo}</div>
+                          ):null
+                        }
+
                       </div>
                       <div className="col-md-6 mt-3">
                         <input
                           type="text"
-                          className={`form-control form-control-user ${fieldErrors.nit && 'is-invalid'}`}
+                          className={`form-control form-control-user`}
                           id="nit"
                           onChange={handleChange}
                           value={values.nit}
                           placeholder={placeholders.nit}
                           onBlur={() => setFieldValue('nit', values.nit.trim())}
-                          validate={validateWhitespace}
+                          // validate={validateWhitespace}
                         />
-                        {fieldErrors.nit && <div className="invalid-feedback">{fieldErrors.nit}</div>}
+                        {
+                          errors.nit && touched.nit? (
+                            <div className="alert alert-danger" role="alert">{errors.nit}</div>
+                          ):null
+                        }
+                        
                       </div>
                       <div className="col-md-6 mt-3">
                         <input
                           type="text"
-                          className={`form-control form-control-user ${fieldErrors.nombre && 'is-invalid'}`}
+                          className={`form-control form-control-user`}
                           id="nombre"
                           onChange={handleChange}
                           value={values.nombre}
                           placeholder={placeholders.nombre}
                           onBlur={() => setFieldValue('nombre', values.nombre.trim())}
-                          validate={validateWhitespace}
+                          // validate={validateWhitespace}
                         />
-                        {fieldErrors.nombre && <div className="invalid-feedback">{fieldErrors.nombre}</div>}
+                        {
+                          errors.nombre && touched.nombre? (
+                            <div className="alert alert-danger" role="alert">{errors.nombre}</div>
+                          ):null
+                        }
+                        
                       </div>
                       <div className="col-md-6 mt-3">
                         <input
                           type="text"
-                          className={`form-control form-control-user ${fieldErrors.email && 'is-invalid'}`}
+                          className={`form-control form-control-user`}
                           id="email"
                           onChange={handleChange}
                           value={values.email}
                           placeholder="Correo electrónico*"
                           onBlur={() => setFieldValue('email', values.email.trim())}
-                          validate={validateWhitespace}
+                          // validate={validateWhitespace}
                         />
-                        {fieldErrors.email && <div className="invalid-feedback">{fieldErrors.email}</div>}
+                        {
+                          errors.email && touched.email? (
+                            <div className="alert alert-danger" role="alert">{errors.email}</div>
+                          ):null
+                        }
+                        
                       </div>
                       <div className="col-md-6 mt-3">
                         <input
                           type="text"
-                          className={`form-control form-control-user ${fieldErrors.direccion && 'is-invalid'}`}
+                          className={`form-control form-control-user`}
                           id="direccion"
                           onChange={handleChange}
                           value={values.direccion}
                           placeholder="Dirección*"
                           onBlur={() => setFieldValue('direccion', values.direccion.trim())}
-                          validate={validateWhitespace}
+                          // validate={validateWhitespace}
                         />
-                        {fieldErrors.direccion && <div className="invalid-feedback">{fieldErrors.direccion}</div>}
+                        {
+                          errors.direccion && touched.direccion? (
+                            <div className="alert alert-danger" role="alert">{errors.direccion}</div>
+                          ):null
+                        }                        
                       </div>
                       <div className="col-md-6 mt-3">
                         <input
                           type="text"
-                          className={`form-control form-control-user ${fieldErrors.telefono && 'is-invalid'}`}
+                          className={`form-control form-control-user`}
                           id="telefono"
                           onChange={handleChange}
                           value={values.telefono}
                           placeholder="Teléfono*"
                           onBlur={() => setFieldValue('telefono', values.telefono.trim())}
-                          validate={validateWhitespace}
+                          // validate={validateWhitespace}
                         />
-                        {fieldErrors.telefono && <div className="invalid-feedback">{fieldErrors.telefono}</div>}
+                        {
+                          errors.telefono && touched.telefono? (
+                            <div className="alert alert-danger" role="alert">{errors.telefono}</div>
+                          ):null
+                        }
+                        
                       </div>
                       <div className="col-md-6 mt-3">
                         {params.id ? (
@@ -334,9 +306,7 @@ export default function ProveedoresForm() {
                             <option value="1">Activo</option>
                           </select>
                         )}
-                        {/* {errors.estado && touched.estado ? (
-                            <div className="alert alert-danger" role="alert">{errors.estado}</div>
-                        ) : null} */}
+                        
                       </div>
 
                     </div>
@@ -355,7 +325,14 @@ export default function ProveedoresForm() {
                             placeholder="Nombre del contacto*"
                             onBlur={() => setFieldValue('nombreContacto', values.nombreContacto.trim())}
                           />
-                          {fieldErrors.nombreContacto && <div className="alert alert-danger">{fieldErrors.nombreContacto}</div>}
+                          {
+                            errors.nombreContacto && touched.nombreContacto? (
+                              <div className="alert alert-danger" role="alert">
+                                {errors.nombreContacto}
+                              </div>
+                            ): null
+                          }
+                          
                         </div>
                         <div className="col-md-6 mt-3">
                           <input
@@ -367,7 +344,14 @@ export default function ProveedoresForm() {
                             placeholder="Teléfono del contacto*"
                             onBlur={() => setFieldValue('telefonoContacto', values.telefonoContacto.trim())}
                           />
-                          {fieldErrors.telefonoContacto && touched.telefonoContacto ? (<div className="alert alert-danger" role="alert">{fieldErrors.telefonoContacto}</div>):null}
+                          {
+                            errors.telefonoContacto && touched.telefonoContacto? (
+                              <div className="alert alert-danger" role="alert">
+                                {errors.telefonoContacto}
+                              </div>
+                            ): null
+                          }
+                          
                         </div>
                         <div className="col-md-6 mt-3">
                           <input
@@ -378,7 +362,14 @@ export default function ProveedoresForm() {
                             value={values.emailContacto}
                             placeholder="Email del contacto*"
                           />
-                          {fieldErrors.emailContacto && <div className="alert alert-danger">{fieldErrors.emailContacto}</div>}
+                          {
+                            errors.emailContacto && touched.emailContacto? (
+                              <div className="alert alert-danger" role="alert">
+                                {errors.emailContacto}
+                              </div>
+                            ): null
+                          }
+                          
                         </div>
                       </div>
                     </div>

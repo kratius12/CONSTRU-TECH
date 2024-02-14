@@ -14,7 +14,7 @@ const EmpleadoSchema = Yup.object().shape({
   direccion: Yup.string().required('La dirección es obligatoria').trim(),
   estado: Yup.string().required('Seleccione estado').trim(),
   especialidad: Yup.array().min(1, "Debe seleccionar al menos una especialidad"),
-  rol: Yup.object().nullable().required("El rol es requerido"),
+  rol: Yup.string().required("El rol es requerido"),
 });
 
 const EmpleadoSchemaEdit = Yup.object().shape({

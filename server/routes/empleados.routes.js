@@ -43,21 +43,26 @@ router.get("/empleado/:id", async (req, res) => {
                         especialidad: true
                     }
                 },
-                rolpermisoempleado: {
-                    distinct: ["idRol"],
-                    select: {
-                        rol: {
-                            select: {
-                                idRol: true,
-                                nombre: true
-                            }
-                        }
-                    },
-                }
 
             }
         })
-        res.status(200).json(result);
+        const rol = await prisma.rolpermisoempleado.findFirst({
+            where:{
+                idEmp:parseInt(req.params.id)
+            },select:{
+                idRol:true,
+                rol:{
+                    select:{
+                        nombre:true
+                    }
+                }
+            }
+        })
+        const enviar = {
+            ...result,
+           rol: {idRol: rol.idRol, nombre: rol.rol.nombre}
+        } 
+        res.status(200).json(enviar);
     } catch (error) {
         console.log(error)
         return res.status(500).json({ message: error.message })
@@ -114,7 +119,7 @@ router.post("/empleados", async (req, res) => {
         }));
         const role = await prisma.rolpermisoempleado.findMany({
             where: {
-                idRol: parseInt(rol.value),
+                idRol: parseInt(rol),
                 idEmp: null
             }
         })
@@ -136,7 +141,6 @@ router.post("/empleados", async (req, res) => {
 router.put("/empleado/:id", async (req, res) => {
     try {
         const { nombre, apellidos, direccion, estado, telefono, tipoDoc, cedula, especialidad, email, contrasena, rol } = req.body
-        console.log(req.body)
         const { hash, salt } = await generarHash(contrasena);
         const result = await prisma.empleado.update({
             where: {
@@ -169,11 +173,10 @@ router.put("/empleado/:id", async (req, res) => {
                 })
             }))
         }
-        // var elemento = rol.value;
         const getRolPermisos = await prisma.rolpermisoempleado.findMany({
             where:{
                 AND: [
-                    {idRol: rol.value},
+                    {idRol: parseInt(rol)},
                     {idEmp: null}
                 ]
             }
@@ -187,7 +190,7 @@ router.put("/empleado/:id", async (req, res) => {
             try {
                 const addPermisosEmp = await prisma.rolpermisoempleado.create({
                     data:{
-                        idRol:rol.value,
+                        idRol:parseInt(rol),
                         idPer:item.idPer,
                         idEmp:parseInt(req.params.id)
                     }
@@ -196,17 +199,6 @@ router.put("/empleado/:id", async (req, res) => {
                 console.log(error)
             }
         }))
-        // if (elemento) {
-        //     const upRol = await prisma.rolpermisoempleado.updateMany({
-        //         where: {
-        //             idEmp: parseInt(req.params.id)
-        //         }, data: {
-        //             idRol: parseInt(elemento)
-        //         }
-        //     })
-        // } else {
-        //     console.log("ni idea de cual es el error rey")
-        // }
         res.status(200).json({message:'Empleado editado!'})
     } catch (error) {
         console.log(error);
@@ -221,7 +213,6 @@ router.delete("/empleado/:id", async (req, res) => {
             }
         })
         res.status(200).json(result)
-        console.log(result);
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: error.message })
