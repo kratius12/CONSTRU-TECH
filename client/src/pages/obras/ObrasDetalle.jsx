@@ -30,6 +30,7 @@ const fetchMaterial = async (url) => {
     }
 }
 
+
 const fetchEmpleados = async (url) => {
     try {
         const response = await axios.get(url);
@@ -42,6 +43,7 @@ const fetchEmpleados = async (url) => {
         return [];
     }
 };
+
 
 const ObraDetalle = () => {
     const { createActividad, updateObra, searchAct } = useObras()
@@ -96,7 +98,7 @@ const ObraDetalle = () => {
     const filteredActivities = actividades.filter((detalle) => {
         // Filtra por el término de búsqueda en todas las propiedades del detalle
         const detalleValues = Object.values(detalle);
-    
+
         // Filtra por el nombre de los materiales y empleados
         const materialesYEmpleados = detalleValues.reduce((acc, value) => {
             if (Array.isArray(value)) {
@@ -109,19 +111,21 @@ const ObraDetalle = () => {
             }
             return acc;
         }, []);
-    
+
         return [...detalleValues, ...materialesYEmpleados].some((value) =>
             value.toString().toLowerCase().includes(searchTerm.toLowerCase())
         );
     });
-    
+
+    console.clear()
+
     // Lógica de paginación
     const indexOfLastActivity = currentPage * activitiesPerPage;
     const indexOfFirstActivity = indexOfLastActivity - activitiesPerPage;
     const currentActivities = filteredActivities.slice(indexOfFirstActivity, indexOfLastActivity);
     const totalPages = Math.ceil(filteredActivities.length / activitiesPerPage);
 
-
+    const [values, setValues] = useState([])
     const alertConfirmAct = async () => {
         try {
             const updatedActividades = await fetchData(`http://localhost:4000/actividades/${params.id}`);
@@ -150,7 +154,8 @@ const ObraDetalle = () => {
 
     const handleCerrarForm = () => {
         setModalVisible(false);
-        // alertConfirmAct()
+        setMatDefault([]);
+        setEmpDefault([]);
     };
     const alertConfirm = () => {
         var message = ""
@@ -181,14 +186,7 @@ const ObraDetalle = () => {
     const handleSearch = () => {
         setCurrentPage(1);
     };
-    const defaultMateriales = _.filter(materiales, {actividad: true}).map(item=>({
-        value: item.idMat,
-        label: item.nombre
-    }));
-    const defaultEmpleados = _.filter(empleados, {actividad:true}).map(item=>({
-        value: item.idMat,
-        label: item.nombre
-    }))
+
 
     useEffect(() => {
         const fetchObraDetalle = async () => {
@@ -205,8 +203,15 @@ const ObraDetalle = () => {
             setMateriales(materialesData);
             setEmpleados(empleadosData);
         };
+        fetchEmpleados(`http://localhost:4000/actividades/${params.id}`).then((data) => {
+            setEmpDefault(data);
+        });
 
-       
+        fetchMaterial(`http://localhost:4000/actividades/${params.id}`).then((data) => {
+            setMatDefault(data);
+        });
+
+
 
         fetchData("http://localhost:4000/clientes").then((data) => {
             setCliente(data);
@@ -215,17 +220,28 @@ const ObraDetalle = () => {
             setActividades(data)
         })
 
+
+
         fetchData("http://localhost:4000/empleadosAct").then((data) => {
             setAsesores(data)
         });
-        
+
         loadMaterialesEmpleados()
         fetchObraDetalle()
     }, [id]);
     if (!obra) {
         return <div>Error al cargar la información de la obra</div>
     }
-
+    const resetForm = () => {
+        const initialValues = {
+            ...selectedActivity,
+            actividades: {
+                materiales: [],
+                empleados: [],
+            },
+        };
+        setValues(initialValues);
+    };
     return (
         <div>
             <Formik
@@ -342,7 +358,7 @@ const ObraDetalle = () => {
                                     }
                                 </div>
                                 <hr />
-                                
+
                                 <div className="detalle-container mt-4">
                                     {
 
@@ -377,7 +393,7 @@ const ObraDetalle = () => {
                                             <h3 className="text-center w-100">La obra no tiene actividades asociadas</h3>
                                         )
                                     }
-                                    <Modal isOpen={modalVisible} toggle={handleCerrarForm} onClosed={handleCerrarForm}>
+                                    <Modal isOpen={modalVisible} toggle={handleCerrarForm} onClosed={() => resetForm()}>
                                         <ModalHeader toggle={handleCerrarForm}>Guardar actividad</ModalHeader>
                                         <ModalBody>
                                             <Formik
@@ -390,21 +406,30 @@ const ObraDetalle = () => {
                                                         empleados: selectedActivity ? empDefault : [],
                                                     },
                                                     estado: selectedActivity ? selectedActivity.estado : '',
+                                                    obra:{
+                                                        fechainiObra: obra.fechaini,
+                                                        fechafinObra:obra.fechafin
+                                                    }
                                                 }}
-                                                validationSchema={actividadSchema}
-                                                enableReinitialize={true}
+                                                
+                                                validationSchema={actividadSchema({
+                                                    fechainiObra: obra.fechaini,
+                                                    fechafinObra:obra.fechafin,
+                                                    ...values
+                                                })}
                                                 onSubmit={async (values, { setSubmitting }) => {
                                                     const formattedShare = {
                                                         ...values,
-                                                        antiguo: selectedActivity.actividad
-                                                    }
+                                                        antiguo: selectedActivity.actividad,
+                                                    };
                                                     await createActividad(id, formattedShare);
                                                     alertConfirmAct();
                                                     setSubmitting(false);
-                                                    setModalVisible(false)
+                                                    setModalVisible(false);
+                                                    console.clear()
                                                 }}
                                             >
-                                                {({ values, setFieldValue, handleSubmit, setFieldTouched, errors, touched, handleChange }) => (
+                                                {({ values, setFieldValue, handleSubmit, setFieldTouched, errors, touched, handleChange, resetForm }) => (
                                                     <Form
                                                         className="user"
                                                         onSubmit={handleSubmit}
@@ -452,21 +477,20 @@ const ObraDetalle = () => {
                                                             <label htmlFor="materiales">Seleccione los materiales necesarios para la actividad</label>
                                                             <Select
                                                                 id={`materiales`}
-                                                                options={materiales}
+                                                                options={
+                                                                    materiales
+                                                                }
                                                                 isMulti
-                                                                defaultValue={defaultMateriales}
+
+                                                                // defaultValue={matDefault}
                                                                 value={values.actividades.materiales}
                                                                 onChange={(selectedMateriales) => setFieldValue(`actividades.materiales`, selectedMateriales)}
                                                                 onBlur={() => setFieldTouched(`values.actividades.materiales`, true)}
+                                                                
                                                             />
-                                                            {
-                                                                errors.actividades && errors.actividades.materiales && touched.actividades ? (
-                                                                    <div>
-                                                                        {errors.actividades}
-                                                                    </div>
-
-                                                                ) : null
-                                                            }
+                                                           {errors.actividades?.materiales && touched.actividades?.materiales && (
+                                                                <div className="alert alert-danger">{errors.actividades.materiales}</div>
+                                                            )}
                                                         </div>
                                                         <div className="mt-3">
                                                             <label htmlFor="empleados">Seleccione los empleados encargados de la actividad</label>
@@ -476,14 +500,14 @@ const ObraDetalle = () => {
                                                                 isMulti
                                                                 value={values.actividades.empleados}
                                                                 onChange={(selectedEmpleados) => setFieldValue(`actividades.empleados`, selectedEmpleados)}
-                                                                defaultValue={defaultEmpleados}
+                                                                // defaultValue={empDefault}
                                                                 onBlur={() => setFieldTouched(`values.actividades.empleados`, true)}
+                                                                
                                                             />
-                                                            {
-                                                                errors.actividades && touched.actividades ? (
-                                                                    <div>{errors.actividades.empleados}</div>
-                                                                ) : null
-                                                            }
+                                                            {errors.actividades?.empleados && touched.actividades?.empleados && (
+                                                                <div className="alert alert-danger">{errors.actividades.empleados}</div>
+                                                            )}
+
                                                         </div>
                                                         <div className="mt-3">
                                                             <label htmlFor="estado">Seleccione el estado de la actividad</label>
@@ -518,8 +542,10 @@ const ObraDetalle = () => {
                                                             </ModalFooter>
                                                         </div>
                                                     </Form>
+
                                                 )}
                                             </Formik>
+
                                         </ModalBody>
                                     </Modal>
                                     <div className="container">
