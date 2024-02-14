@@ -115,7 +115,20 @@ const ObraDetalle = () => {
         return [...detalleValues, ...materialesYEmpleados].some((value) =>
             value.toString().toLowerCase().includes(searchTerm.toLowerCase())
         );
-    });
+    })
+        .sort((a, b) => {
+            // Ordena por el estado "En curso" primero
+            const estadoA = a.estado.toLowerCase();
+            const estadoB = b.estado.toLowerCase();
+
+            if (estadoA === "en curso" && estadoB !== "en curso") {
+                return -1;
+            } else if (estadoA !== "en curso" && estadoB === "en curso") {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
 
     console.clear()
 
@@ -406,15 +419,15 @@ const ObraDetalle = () => {
                                                         empleados: selectedActivity ? empDefault : [],
                                                     },
                                                     estado: selectedActivity ? selectedActivity.estado : '',
-                                                    obra:{
+                                                    obra: {
                                                         fechainiObra: obra.fechaini,
-                                                        fechafinObra:obra.fechafin
+                                                        fechafinObra: obra.fechafin
                                                     }
                                                 }}
-                                                
+
                                                 validationSchema={actividadSchema({
                                                     fechainiObra: obra.fechaini,
-                                                    fechafinObra:obra.fechafin,
+                                                    fechafinObra: obra.fechafin,
                                                     ...values
                                                 })}
                                                 onSubmit={async (values, { setSubmitting }) => {
@@ -486,9 +499,9 @@ const ObraDetalle = () => {
                                                                 value={values.actividades.materiales}
                                                                 onChange={(selectedMateriales) => setFieldValue(`actividades.materiales`, selectedMateriales)}
                                                                 onBlur={() => setFieldTouched(`values.actividades.materiales`, true)}
-                                                                
+
                                                             />
-                                                           {errors.actividades?.materiales && touched.actividades?.materiales && (
+                                                            {errors.actividades?.materiales && touched.actividades?.materiales && (
                                                                 <div className="alert alert-danger">{errors.actividades.materiales}</div>
                                                             )}
                                                         </div>
@@ -502,7 +515,7 @@ const ObraDetalle = () => {
                                                                 onChange={(selectedEmpleados) => setFieldValue(`actividades.empleados`, selectedEmpleados)}
                                                                 // defaultValue={empDefault}
                                                                 onBlur={() => setFieldTouched(`values.actividades.empleados`, true)}
-                                                                
+
                                                             />
                                                             {errors.actividades?.empleados && touched.actividades?.empleados && (
                                                                 <div className="alert alert-danger">{errors.actividades.empleados}</div>
