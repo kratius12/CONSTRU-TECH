@@ -37,12 +37,12 @@ import ForgotPage from "./pages/login/ForgotPage";
 
 import ComprasPage from "./pages/compras/Compraspage";
 import ComprasForm from "./pages/compras/ComprasForm";
-import Sidebar from "./components/Sidebar";
+import Sidebar from "./components/navegacion/Sidebar";
 import EspecialidadesPage from "./pages/especialidades/EspecialidadesPage";
 import EspecialidadesForm from "./pages/especialidades/EspecialidadesForm";
 import CategoriasPage from "./pages/categorias/CategoriasPage";
 import CategoriasForm from "./pages/categorias/CategoriasForm";
-import Navbar from "./components/Navbar"
+import Navbar from "./components/navegacion/Navbar"
 import DetalleCompra from "./pages/compras/DetalleCompra";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ComprasTable from "../../components/compras/ComprasTable"
 import { useProveedores } from "../../context/proveedores/ProveedorProvider";
-import TableInfo from "../../components/TableInfo";
+import TableInfo from "../../components/table/TableInfo";
 function ProveedoresPage() {
     const dataHeader = [
         {

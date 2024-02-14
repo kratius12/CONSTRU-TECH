@@ -305,22 +305,28 @@ router.get("/actividadA/:id", async (req, res) => {
   }
 })
 
-router.put("/searchActividad/:id", async (req, res) => {
+router.get("/searchActividad/:id", async (req, res) => {
   try {
     const { actividad } = req.body
     const buscar = await prisma.detalle_obra.findMany({
       where: {
-        actividad: req.body.actividad,
-        NOT: {
-          idObra: parseInt(req.params.id)
-        }
+        AND:[{
+        actividad:{
+          contains: actividad
+        },
+      }, {
+        idObra:parseInt(req.params.id)
       }
+      
+      ]
+      }, 
     })
     if (buscar.length > 0) {
       return res.status(200).json(true)
     } else {
       return res.status(200).json(false)
     }
+    // return res.json(buscar)
 
   } catch (error) {
 

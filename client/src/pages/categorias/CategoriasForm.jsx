@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Form, Formik } from "formik";
 import { useParams, useNavigate } from "react-router-dom";
 import { useCategorias } from "../../context/categorias/CategoriasProvider";
-import CategoriaSchema from "../../components/ValidatorCategoria";
+import CategoriaSchema from "../../components/categorias/ValidatorCategoria";
 
 
 export default function CategoriasForm() {
@@ -19,6 +19,32 @@ export default function CategoriasForm() {
   const validateWhitespace = (value) => {
     return hasWhitespace(value) ? 'No se permiten espacios en blanco' : undefined;
   };
+  const alertConfirm = () => {
+    var message = ""
+    if (params.id) {
+        message = "actualizada"
+    } else {
+        message = "agregada"
+    }
+    $.confirm({
+        title: `Categoria ${message} con éxito!`,
+        content: "Redireccionando a listado de materiales...",
+        icon: 'fa fa-check',
+        theme: 'modern',
+        closeIcon: true,
+        animation: 'news',
+        closeAnimation: 'news',
+        type: 'green',
+        columnClass: 'col-md-6 col-md-offset-3',
+        autoClose: 'okay|4000',
+        buttons: {
+            okay: function () {
+                navigate("/categorias")
+            },
+
+        }
+    })
+}
   useEffect(() => {
     const loadEspecialidades = async () => {
       if (params.id) {
@@ -44,9 +70,11 @@ export default function CategoriasForm() {
               if (params.id) {
                 await updateCategoria(params.id, values)
                 navigate("/categorias")
+                alertConfirm()
               } else {
                 await createCategoria(values)
                 navigate("/categorias")
+                alertConfirm("update")
               }
               setCategoria({
                 nombre: "",

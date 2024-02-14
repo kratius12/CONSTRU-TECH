@@ -3,7 +3,7 @@ import { Formik, Field, Form, FieldArray, ErrorMessage } from "formik";
 import { useNavigate } from "react-router-dom";
 import { useCompras } from "../../context/compras/ComprasProvider";
 import axios from "axios";
-import comprasSchema from "./ComprasSchema";
+import comprasSchema from "../../components/compras/ComprasSchema";
 
 const fetchData = async (url) => {
   try {

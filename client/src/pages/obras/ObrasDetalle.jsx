@@ -5,9 +5,9 @@ import { useEffect, useState } from "react";
 import { Modal, Button, ModalHeader, ModalBody, ModalFooter } from "reactstrap"
 import { useNavigate, useParams } from "react-router-dom";
 import { useObras } from "../../context/obras/ObrasProvider";
-import { obraSchemaEdit, actividadSchema } from "./ValidateObra"
+import { obraSchemaEdit, actividadSchema } from "../../components/obras/ValidateObra"
 import _ from "lodash"
-import "./obras.css"
+import "../../components/obras/obras.css"
 const fetchData = async (url) => {
     try {
         const response = await axios.get(url);
@@ -130,7 +130,7 @@ const ObraDetalle = () => {
             }
         });
 
-    console.clear()
+    // console.clear()
 
     // Lógica de paginación
     const indexOfLastActivity = currentPage * activitiesPerPage;
@@ -164,6 +164,8 @@ const ObraDetalle = () => {
             console.error("Error al recuperar actividades:", error);
         }
     }
+    const [existingActivities, setExistingActivities] = useState([]);
+    const [activityExists, setActivityExists] = useState(false);
 
     const handleCerrarForm = () => {
         setModalVisible(false);
@@ -238,10 +240,13 @@ const ObraDetalle = () => {
         fetchData("http://localhost:4000/empleadosAct").then((data) => {
             setAsesores(data)
         });
+        const activityDescriptions = actividades.map((activity) => activity.actividad);
+        setExistingActivities(activityDescriptions);
 
         loadMaterialesEmpleados()
         fetchObraDetalle()
-    }, [id]);
+    }, [id, actividades]);
+
     if (!obra) {
         return <div>Error al cargar la información de la obra</div>
     }
@@ -303,8 +308,8 @@ const ObraDetalle = () => {
                                             ))}
                                         </Field>
                                         {
-                                            errors.empleado && touched.empleado ? (
-                                                <div className="alert alert-danger">{errors.empleado}</div>
+                                            errors.idEmp && touched.idEmp ? (
+                                                <div className="alert alert-danger">{errors.idEmp}</div>
                                             ) : null
                                         }
                                     </div>
@@ -435,6 +440,31 @@ const ObraDetalle = () => {
                                                         ...values,
                                                         antiguo: selectedActivity.actividad,
                                                     };
+                                                    for(const actividad of actividades){
+                                                        
+                                                        if(actividad.actividad === values.actividad){
+                                                            $.confirm({
+                                                                title: `Error`,
+                                                                content: `La actividad ${actividad.actividad} ya exite para esta obra`,
+                                                                icon: 'fa fa-circle-xmark',
+                                                                theme: 'modern',
+                                                                closeIcon: true,
+                                                                animation: 'zoom',
+                                                                closeAnimation: 'scale',
+                                                                animationSpeed: 500,
+                                                                type: 'red',
+                                                                columnClass: 'col-md-6 col-md-offset-3',
+                                                                buttons: {
+                                                                  Cerrar: function () {
+                                                                  },
+                                                                }
+                                                              })  
+                                                            setSubmitting(false)
+                                                            return
+                                                        }else{
+                                                            setSubmitting(true)
+                                                        }
+                                                    }  
                                                     await createActividad(id, formattedShare);
                                                     alertConfirmAct();
                                                     setSubmitting(false);
