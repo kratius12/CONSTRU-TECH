@@ -105,6 +105,7 @@ router.put("/rol/:id", async (req, res) => {
     try {
         const { nombre, estado, permisos } = req.body;
 
+        
         const rol = await prisma.rol.update({
             data: {
                 nombre: nombre,
@@ -115,77 +116,55 @@ router.put("/rol/:id", async (req, res) => {
             },
         });
 
-        const empleados = await prisma.rolpermisoempleado.findMany({
-            where: {
-                AND: [
-                    {
-                        idRol: parseInt(req.params.id),
-                    },
-                    {
-                        NOT: [
-                            {
-                                idEmp: null,
-                            },
-                        ],
-                    },
-                ],
+        const empleadosPermisos = await prisma.rolpermisoempleado.findMany({
+            where:{
+                idEmp:{
+                    gt: 0
+                },
+                idRol:parseInt(req.params.id)
             },
-            select: {
-                idEmp: true,
+            select:{
+                idEmp: true
             },
-        });
-        // console.log(empleados)
-
-        // Deduplicar empleados
-        const empleadosUnicos = [...new Set(empleados.map((emp) => emp.idEmp))];
-        console.log(empleadosUnicos)
-
+            distinct:['idEmp']
+        })
+        
         const deletePer = await prisma.rolpermisoempleado.deleteMany({
             where: {
-                idRol: parseInt(req.params.id),
+                idRol: parseInt(req.params.id)
             },
         });
 
-        // Crear registros con idEmp = null
-        for (var i = 0; i < permisos.length; i++) {
-            var elemento = permisos[i];
-            if (elemento.hasOwnProperty("value")) {
-                var value = elemento.value;
-                const create = await prisma.rolpermisoempleado.createMany({
-                    data: {
-                        idPer: parseInt(value),
-                        idRol: parseInt(rol.idRol),
-                        idEmp: null,
-                    },
-                });
-                console.log(create)
-            } else if (!elemento.hasOwnProperty("value")) {
-                const trin = elemento.hasOwnProperty("label");
-                console.log(trin);
-            } else {
-                console.error(
-                    'El objeto en permisos no tiene la propiedad "value"'
-                );
+        await Promise.all(permisos.map(async (item) => {
+            try {
+                const addPermisosRol = await prisma.rolpermisoempleado.create({
+                    data:{
+                        idRol: parseInt(req.params.id),
+                        idPer: parseInt(item.value)
+                    }
+                })
+            } catch (error) {
+                console.log(error)
             }
+        }))
+        if (empleadosPermisos.length > 0) {
+            console.log(empleadosPermisos)
+            empleadosPermisos.map(async (id) => {
+                await Promise.all(permisos.map(async (item) => {
+                    try {
+                        const addPermisosEmp = await prisma.rolpermisoempleado.create({
+                            data:{
+                                idEmp: parseInt(id.idEmp),
+                                idRol: parseInt(req.params.id),
+                                idPer: parseInt(item.value)
+                            }
+                        });
+                    } catch (error) {
+                        console.error('Error al agregar permiso para empleado:', id, 'y permiso:', item.idPer, '-', error);
+                    }
+                }));
+            });
         }
-
-        // // Crear registros con el mismo idEmp para todos los idPer
-        
-        // for (var i = 0; i < empleadosUnicos.length; i++){
-        //     const idEmp = empleadosUnicos.length > 0 ? empleadosUnicos[0] : null;
-        // for (var i = 0; i < permisos.length; i++) {
-        //     var elemento = permisos[i];
-        //     if (elemento.hasOwnProperty("value")) {
-        //         var value = elemento.value;
-        //         await prisma.rolpermisoempleado.createMany({
-        //             data: {
-        //                 idPer: parseInt(value),
-        //                 idRol: parseInt(rol.idRol),
-        //                 idEmp: idEmp,
-        //             },
-        //         });
-        //     }
-        // }}
         return res
             .status(201)
             .send({ message: "Rol actualizado exitosamente" });

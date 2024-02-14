@@ -6,6 +6,8 @@ import ClientSchema from "../../components/ValidatorCliente";
 
 export default function ClientsForm() {
   const { createClient, getClient, updateClient } = useClients()
+  const [email, setEmail] = useState(true)
+  const [doc, setDoc] = useState(true)
   const params = useParams()
   const navigate = useNavigate()
   const [cliente, setCliente] = useState({
@@ -62,13 +64,84 @@ export default function ClientsForm() {
           cedula: cliente.cedula,
           fecha_nac: cliente.fecha_nac,
           estado: cliente.estado === "0" ? "0" : "1",
-          contrasena: cliente.constrasena
+          contrasena: ''
         })
 
       }
     }
     loadClients()
   }, [getClient, params.id])
+
+  const checkEmail = async (email) => {
+    console.log(email)
+    try {
+      const response = await fetch(`http://localhost:4000/checkEmail/${email}/${params.id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+      if (response.status === 203) {
+        $.confirm({
+          title:`El correo ingresado ya existe, por favor intente con uno diferente`,
+          content: "",
+          icon: 'fa fa-x-mark',
+          theme: 'modern',
+          closeIcon: true,
+          animation: 'zoom',
+          closeAnimation: 'scale',
+          animationSpeed: 500,
+          type: 'red',
+          columnClass: 'col-md-6 col-md-offset-3',
+          buttons: {
+            cerrar: function () {
+            },
+          }
+        })
+        setEmail(true)
+      }else{
+        setEmail(false)
+      }
+       
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const checkDoc = async (tipoDoc, cedula) => {
+    try {
+      const response = await fetch(`http://localhost:4000/checkDoc/${cedula}/${tipoDoc}/${params.id}`, {
+        method: 'GET',
+        headers:{
+          'Content-Type': 'application/json',
+        }
+      })
+      if (response.status === 203) {
+        $.confirm({
+          title:`El numero y tipo de documento ingresado ya existe`,
+          content: "",
+          icon: 'fa fa-x-mark',
+          theme: 'modern',
+          closeIcon: true,
+          animation: 'zoom',
+          closeAnimation: 'scale',
+          animationSpeed: 500,
+          type: 'red',
+          columnClass: 'col-md-6 col-md-offset-3',
+          buttons: {
+            cerrar: function () {
+            },
+          }
+        })  
+        setDoc(true)
+      }else{
+        setDoc(false)
+      }   
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  
   console.clear()
   return (
     <div className="container">
@@ -78,27 +151,25 @@ export default function ClientsForm() {
             enableReinitialize={true}
             validationSchema={ClientSchema}
             onSubmit={async (values) => {
-              if (params.id) {
-                await updateClient(params.id, values)
-                navigate("/clientes")
-                alertConfirm()
-              } else {
-                await createClient(values)
-                navigate("/clientes")
-                alertConfirm("update")
+              checkEmail(values.email)
+              checkDoc(values.tipoDoc, values.cedula)
+              if (email === false && doc === false) {
+                if (params.id) {
+                  await updateClient(params.id, values)
+                  navigate("/clientes")
+                  alertConfirm("update")
+                } else {
+                  checkEmail(values.email)
+                  checkDoc(values.tipoDoc, values.cedula)              
+                  if (email === false && doc === false) {
+                    console.log(email,doc)
+                    await createClient(values)
+                    navigate("/clientes")
+                    alertConfirm()
+                  }
+
+                }                
               }
-              setCliente({
-                nombre: "",
-                apellidos: "",
-                email: "",
-                direccion: "",
-                telefono: "",
-                tipoDoc: "",
-                cedula: "",
-                fecha_nac: "",
-                estado: "",
-                contrasena: ""
-              })
             }}
           >
             {({ handleChange, handleSubmit, values, isSubmitting, errors, touched }) => (
@@ -121,7 +192,15 @@ export default function ClientsForm() {
                         ) : null}
                       </div>
                       <div className="col-md-6 mt-3 mx-auto">
-                        <input type="text" className="form-control  form-control-user" id="email" onChange={handleChange} value={values.email} placeholder="Correo electronico*" />
+                        <input type="text" 
+                        className="form-control  form-control-user" 
+                        id="email" 
+                        onChange={(e) => {
+                          handleChange(e)
+                          params.id ? '': checkEmail(e.target.value)
+                        }} 
+                        value={values.email} 
+                        placeholder="Correo electronico*" />
                         {errors.email && touched.email ? (
                           <div className="alert alert-danger" role="alert">{errors.email}</div>
                         ) : null}
@@ -150,7 +229,10 @@ export default function ClientsForm() {
                         ) : null}
                       </div>
                       <div className="col-md-6 mt-3 mx-auto">
-                        <input type="text" className="form-control  form-control-user" id="cedula" onChange={handleChange} value={values.cedula} placeholder="Número de documento de identidad*" />
+                        <input type="text" className="form-control  form-control-user" id="cedula" onChange={(e) => {
+                          handleChange(e)
+                          checkDoc(values.tipoDoc, e.target.value)
+                        }} value={values.cedula} placeholder="Número de documento de identidad*" />
                         {errors.cedula && touched.cedula ? (
                           <div className="alert alert-danger" role="alert">{errors.cedula}</div>
                         ) : null}
@@ -199,7 +281,7 @@ export default function ClientsForm() {
                   <div className="card-footer text-center">
                     <div className="row">
                       <div className="col-md-6">
-                        <button type="submit" disabled={isSubmitting} className="btn btn-primary btn-icon-split w-50">
+                        <button type="submit" disabled={isSubmitting} className={`btn btn-primary btn-icon-split w-50`} >
                           <span className="text-white-50">
                             <i className="fas fa-plus"></i>
                           </span>

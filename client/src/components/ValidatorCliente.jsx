@@ -38,7 +38,7 @@ const ClientSchema = Yup.object().shape({
     }),
     estado: Yup.string()
         .required('El estado es requerido'),
-    contrasena: Yup.string().required('La contraseña es obligatoria').min(8, 'La contraseña debe tener al menos 8 caracteres').trim().matches(
+    contrasena: Yup.string().min(8, 'La contraseña debe tener al menos 8 caracteres').trim().matches(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
         "La contraseña debe contener al menos una letra mayúscula, una letra minúscula y un número"
     ),
