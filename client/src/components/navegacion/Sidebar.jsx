@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import Logo from "../assets/img/logo1.png";
+import Logo from "../../assets/img/logo1.png";
 import { useLocation } from "react-router-dom";
 export default function Sidebar({userData}) {
   function HeaderView() {

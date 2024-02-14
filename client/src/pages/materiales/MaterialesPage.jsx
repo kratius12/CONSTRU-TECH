@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMateriales } from "../../context/materiales/MaterialesProvider";
-import MaterialTable from "../../components/materiales/MaterialesTable";
-import TableInfo from "../../components/TableInfo";
+import TableInfo from "../../components/table/TableInfo";
 function MaterialesPage() {
 
     const dataHeader = [

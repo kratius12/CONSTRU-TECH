@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Form, Formik } from "formik";
 import { useParams, useNavigate } from "react-router-dom";
 import { useMateriales } from "../../context/materiales/MaterialesProvider";
-import materialSchema from "./MaterialesValidator";
+import materialSchema from "../../components/materiales/MaterialesValidator";
 
 
 

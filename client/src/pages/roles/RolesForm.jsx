@@ -4,16 +4,7 @@ import { Form, Formik, Field } from "formik";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { useRol } from "../../context/roles/RolesProvider";
-import * as yup from "yup";
-
-const RolSchema = yup.object().shape({
-  nombre: yup
-    .string()
-    .trim()
-    .matches(/^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]+$/, 'El nombre no puede contener caracteres especiales ni números')
-    .required('El nombre del rol es obligatorio'),
-  permisos: yup.array().min(1, 'Debe seleccionar al menos un permiso'),
-});
+import RolSchema from "../../components/roles/RolesValidator";
 
 const fetchPermisos = async (url) => {
   try {

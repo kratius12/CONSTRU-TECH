@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Form, Formik } from "formik";
 import { useParams, useNavigate } from "react-router-dom";
 import { useProveedores } from "../../context/proveedores/ProveedorProvider";
-import validateForm from "./ProveedorValidator";
+import validateForm from "../../components/proveedores/ProveedorValidator";
 
 export default function ProveedoresForm() {
   const { createProveedor, getProveedor, updateProveedor, Proveedores, searchNit } = useProveedores();

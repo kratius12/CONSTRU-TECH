@@ -1,8 +1,9 @@
+
 import { Link } from 'react-router-dom'
-import undraw_profile1 from "../assets/img/undraw_profile_1.svg";
-import undraw_profile2 from "../assets/img/undraw_profile_2.svg";
-import undraw_profile3 from "../assets/img/undraw_profile_3.svg";
-import undraw_profile from "../assets/img/undraw_profile.svg";
+import undraw_profile1 from "../../assets/img/undraw_profile_1.svg";
+import undraw_profile2 from "../../assets/img/undraw_profile_2.svg";
+import undraw_profile3 from "../../assets/img/undraw_profile_3.svg";
+import undraw_profile from "../../assets/img/undraw_profile.svg";
 import { useNavigate } from 'react-router-dom'
 function Navbar({ handleLogout, userData }) {
 

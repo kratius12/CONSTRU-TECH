@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from "react"
 import { Form, Formik } from "formik";
-import LoginSchema from "../../components/ValidatorLogin";
+import LoginSchema from "../../components/empleados/ValidatorLogin";
 import { useClients } from "../../context/clientes/ClientesProvider";
 import { useNavigate } from "react-router-dom";
 function LoginPage() {

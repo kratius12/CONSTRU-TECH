@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 // import CategoriaTable  from "../components/CategoriaTable"
 import { useCategorias } from "../../context/categorias/CategoriasProvider";
 
-import TableInfo from "../../components/TableInfo";
+import TableInfo from "../../components/table/TableInfo";
 function CategoriasPage() {
     const dataHeader = [
         {
