@@ -134,6 +134,7 @@ router.put("/rol/:id", async (req, res) => {
                 idRol: parseInt(req.params.id)
             },
         });
+
         await Promise.all(permisos.map(async (item) => {
             try {
                 const addPermisosRol = await prisma.rolpermisoempleado.create({

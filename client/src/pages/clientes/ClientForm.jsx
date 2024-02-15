@@ -157,6 +157,7 @@ export default function ClientsForm() {
                 if (params.id) {
                   await updateClient(params.id, values)
                   navigate("/clientes")
+                  alertConfirm("update")
                 } else {
                   checkEmail(values.email)
                   checkDoc(values.tipoDoc, values.cedula)              
@@ -164,6 +165,7 @@ export default function ClientsForm() {
                     console.log(email,doc)
                     await createClient(values)
                     navigate("/clientes")
+                    alertConfirm()
                   }
 
                 }                
