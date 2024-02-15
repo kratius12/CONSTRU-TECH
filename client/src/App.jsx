@@ -197,7 +197,6 @@ function App() {
         },
         body: JSON.stringify({username, password})
       })
-      console.log(response)
       if (response.status === 404) {
         $.confirm({
           title:'Credenciales incorrectas',
@@ -370,12 +369,13 @@ function App() {
             }
   
             try {
+              const currentDate = new Date().toISOString().replace('T', ' ').split('.')[0];
               const response = await fetch('http://localhost:4000/checkCode', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ code }),
+                body: JSON.stringify({ code, date: currentDate }),
               });
   
               if (response.status === 200) {
@@ -384,7 +384,9 @@ function App() {
                 localStorage.setItem('email', data.code)
 
                 handleCodeDialog(data);
-              } else if (response.status === 404) {
+              }else if (response.status === 203) {
+                $.alert(`El código ingresado ha excedido el tiempo máximo (15 minutos) para ser ingresado`)
+              }else if (response.status === 404) {
                 $.alert('Error, código invalido.');
                 return false;
               }
