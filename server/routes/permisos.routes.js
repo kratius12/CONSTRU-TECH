@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { PrismaClient } from '@prisma/client';
-
+import { ucfirst } from '../plugins';
 const prisma = new PrismaClient();
 const router = Router();
 
@@ -47,7 +47,7 @@ router.post('/permisos', async (req, res) => {
                 const { permiso, estado } = req.body
                 const result = await prisma.permiso.create({
                         data: {
-                                permiso: permiso,
+                                permiso: ucfirst(permiso),
                                 estado: parseInt(estado)
                         }
                 })
@@ -65,7 +65,7 @@ router.put('/permisos/:id', async (req, res) => {
                         where: {
                                 idPer: parseInt(req.params.id)
                         }, data: {
-                                permiso: permiso,
+                                permiso: ucfirst(permiso),
                                 estado: parseInt(estado)
                         }
                 })

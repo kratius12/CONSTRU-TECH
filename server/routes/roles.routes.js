@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
-
+import { ucfirst } from "../plugins";
 const prisma = new PrismaClient();
 const router = Router();
 
@@ -66,7 +66,7 @@ router.post("/rol", async (req, res) => {
         const { nombre, permisos } = req.body;
         const rol = await prisma.rol.create({
             data: {
-                nombre: nombre,
+                nombre: ucfirst(nombre),
                 estado: 1,
             },
         });
@@ -108,7 +108,7 @@ router.put("/rol/:id", async (req, res) => {
         
         const rol = await prisma.rol.update({
             data: {
-                nombre: nombre,
+                nombre: ucfirst(nombre),
                 estado: parseInt(estado),
             },
             where: {
