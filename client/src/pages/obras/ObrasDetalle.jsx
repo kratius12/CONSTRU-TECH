@@ -61,6 +61,7 @@ const ObraDetalle = () => {
     const [matDefault, setMatDefault] = useState([])
     const [empDefault, setEmpDefault] = useState([])
     const [selectedActivity, setSelectedActivity] = useState(null);
+    const [disabled, setDisabled] = useState("disabled")
     const handleAgregarActividad = (activity = null) => {
         setSelectedActivity(activity);
         setMatDefault([]);
@@ -165,7 +166,6 @@ const ObraDetalle = () => {
         }
     }
     const [existingActivities, setExistingActivities] = useState([]);
-    const [activityExists, setActivityExists] = useState(false);
 
     const handleCerrarForm = () => {
         setModalVisible(false);
@@ -226,16 +226,12 @@ const ObraDetalle = () => {
             setMatDefault(data);
         });
 
-
-
         fetchData("http://localhost:4000/clientes").then((data) => {
             setCliente(data);
         });
         fetchData(`http://localhost:4000/actividades/${params.id}`).then((data) => {
             setActividades(data)
         })
-
-
 
         fetchData("http://localhost:4000/empleadosAct").then((data) => {
             setAsesores(data)
@@ -429,7 +425,6 @@ const ObraDetalle = () => {
                                                         fechafinObra: obra.fechafin
                                                     }
                                                 }}
-
                                                 validationSchema={actividadSchema({
                                                     fechainiObra: obra.fechaini,
                                                     fechafinObra: obra.fechafin,
@@ -440,9 +435,8 @@ const ObraDetalle = () => {
                                                         ...values,
                                                         antiguo: selectedActivity.actividad,
                                                     };
-                                                    for(const actividad of actividades){
-                                                        
-                                                        if(actividad.actividad === values.actividad){
+                                                    for (const actividad of actividades) {
+                                                        if (actividad.actividad === values.actividad && selectedActivity.actividad) {
                                                             $.confirm({
                                                                 title: `Error`,
                                                                 content: `La actividad ${actividad.actividad} ya exite para esta obra`,
@@ -455,16 +449,36 @@ const ObraDetalle = () => {
                                                                 type: 'red',
                                                                 columnClass: 'col-md-6 col-md-offset-3',
                                                                 buttons: {
-                                                                  Cerrar: function () {
-                                                                  },
+                                                                    Cerrar: function () {
+                                                                    },
                                                                 }
-                                                              })  
+                                                            })
                                                             setSubmitting(false)
                                                             return
-                                                        }else{
+                                                        } else if (selectedActivity.actividad != values.actividad && actividad.actividad === values.actividad) {
+                                                            $.confirm({
+                                                                title: `Error`,
+                                                                content: `La actividad ${actividad.actividad} ya exite para esta obra`,
+                                                                icon: 'fa fa-circle-xmark',
+                                                                theme: 'modern',
+                                                                closeIcon: true,
+                                                                animation: 'zoom',
+                                                                closeAnimation: 'scale',
+                                                                animationSpeed: 500,
+                                                                type: 'red',
+                                                                columnClass: 'col-md-6 col-md-offset-3',
+                                                                buttons: {
+                                                                    Cerrar: function () {
+                                                                    },
+                                                                }
+                                                            })
+                                                            setSubmitting(false)
+                                                            return
+                                                        }
+                                                        else {
                                                             setSubmitting(true)
                                                         }
-                                                    }  
+                                                    }
                                                     await createActividad(id, formattedShare);
                                                     alertConfirmAct();
                                                     setSubmitting(false);
@@ -661,7 +675,8 @@ const ObraDetalle = () => {
                                 <div className="mt-3">
                                     <hr className="mt-3" />
                                     <div className="col-md-3 mt-3 mx-auto">
-                                        <Button className="btn btn-success" onClick={handleAgregarActividad}>
+                                        <Button className="btn btn-success"
+                                            onClick={handleAgregarActividad}>
                                             Agregar Actividad
                                         </Button>
                                     </div>

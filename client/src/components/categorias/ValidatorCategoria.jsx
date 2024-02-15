@@ -7,8 +7,6 @@ const CategoriaSchema = Yup.object().shape({
     .required('El nombre es requerido').trim(),
   medida: Yup.string()
     .required('La unidad de medida es requerida'),
-  // estado: Yup.string()
-  //   .required('El estado es requerido')
 });
 
 export default CategoriaSchema

@@ -15,13 +15,13 @@ const fetchData = async (url) => {
   }
 };
 const ComprasForm = () => {
-  const { createCompra,searchFact } = useCompras();
+  const { createCompra, searchFact } = useCompras();
   const [materiales, setMateriales] = useState([]);
   const [proveedores, setProveedores] = useState([]);
   const navigate = useNavigate();
 
 
- const alertConfirm = (type) => {
+  const alertConfirm = (type) => {
     var message = ""
     if (type == "update") {
       message = "Actualizado"
@@ -58,7 +58,7 @@ const ComprasForm = () => {
     });
     setTotalGeneral(total);
   };
- 
+
 
   const initialValues = {
     fecha: "",
@@ -84,6 +84,14 @@ const ComprasForm = () => {
       setProveedores(data);
     });
   }, []);
+  const [selectedMaterials, setSelectedMaterials] = useState([]);
+
+  // Function to update selected materials array
+  const updateSelectedMaterials = (index, materialId) => {
+    const newSelectedMaterials = [...selectedMaterials];
+    newSelectedMaterials[index] = materialId;
+    setSelectedMaterials(newSelectedMaterials);
+  };
 
   useEffect(() => {
     calcularTotalGeneral(initialValues.detalles);
@@ -102,7 +110,7 @@ const ComprasForm = () => {
           if (validateFact === true) {
             $.confirm({
               title: `Error`,
-              content: `El codigo de factura: `+values.codigoFactura+` ya existe, por favor ingrese uno diferente`,
+              content: `El codigo de factura: ` + values.codigoFactura + ` ya existe, por favor ingrese uno diferente`,
               icon: 'fa fa-circle-xmark',
               theme: 'modern',
               closeIcon: true,
@@ -115,34 +123,35 @@ const ComprasForm = () => {
                 Cerrar: function () {
                 },
               }
-            })                
-          }else{
-          const formData = new FormData();
-          formData.append("fecha", values.fecha);
-          formData.append("imagen", values.imagen);
-          formData.append("idProv", values.idProv);
-          formData.append("codigoFactura", values.codigoFactura);
-          formData.append("total_compra", totalGeneral)
-          values.detalles.forEach((detalle, index) => {
-            formData.append(`detalles[${index}][idMat]`, detalle.idMat);
-            formData.append(`detalles[${index}][cantidad]`, detalle.cantidad);
-            formData.append(`detalles[${index}][precio]`, detalle.precio);
-            formData.append(`detalles[${index}][subtotal]`, detalle.subtotal);
-          });
-          
+            })
+          } else {
+            const formData = new FormData();
+            formData.append("fecha", values.fecha);
+            formData.append("imagen", values.imagen);
+            formData.append("idProv", values.idProv);
+            formData.append("codigoFactura", values.codigoFactura);
+            formData.append("total_compra", totalGeneral)
+            values.detalles.forEach((detalle, index) => {
+              formData.append(`detalles[${index}][idMat]`, detalle.idMat);
+              formData.append(`detalles[${index}][cantidad]`, detalle.cantidad);
+              formData.append(`detalles[${index}][precio]`, detalle.precio);
+              formData.append(`detalles[${index}][subtotal]`, detalle.subtotal);
+            });
 
-          try {
-            console.log(formData)
-            await createCompra(formData);
-            alertConfirm();
-            navigate("/compras");
-          } catch (error) {
-            console.error("Error al crear la compra:", error);
-          } finally {
-            setSubmitting(false);
+
+            try {
+              console.log(formData)
+              await createCompra(formData);
+              alertConfirm();
+              navigate("/compras");
+            } catch (error) {
+              console.error("Error al crear la compra:", error);
+            } finally {
+              setSubmitting(false);
+            }
+
           }
-
-        }}}
+        }}
       >
         {({ handleSubmit, values, isSubmitting, setFieldValue, errors, touched }) => (
           <Form onSubmit={handleSubmit} className="user" encType="multipart/form-data">
@@ -219,13 +228,27 @@ const ComprasForm = () => {
                                 name={`detalles.${index}.idMat`}
                                 value={detalle.idMat}
                                 key={`detalles.${index}.idMat`}
+                                onChange={(e) => {
+                                  arrayHelpers.replace(index, {
+                                    idMat: e.target.value,
+                                    cantidad: "",
+                                    precio: "",
+                                    subtotal: "",
+                                  });
+                                  updateSelectedMaterials(index, e.target.value);
+                                }}
                               >
                                 <option value="">Seleccione un material</option>
-                                {materiales.map((material) => (
-                                  <option key={material.idMat} value={material.idMat}>
-                                    {material.nombre}
-                                  </option>
-                                ))}
+                                {materiales
+                                  .filter(
+                                    (material) =>
+                                      !selectedMaterials.includes(material.idMat)
+                                  )
+                                  .map((material) => (
+                                    <option key={material.idMat} value={material.idMat}>
+                                      {material.nombre}
+                                    </option>
+                                  ))}
                               </Field>
                               <ErrorMessage
                                 name={`detalles.${index}.idMat`}
@@ -298,7 +321,7 @@ const ComprasForm = () => {
                           onClick={() => {
                             arrayHelpers.push({
                               idMat: "",
-                              cantidad: "", 
+                              cantidad: "",
                               precio: "",
                               subtotal: "",
                             });

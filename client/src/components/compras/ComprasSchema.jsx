@@ -12,9 +12,7 @@ const comprasSchema = Yup.object().shape({
       if (!value) {
         return false; // Archivo no proporcionado
       }
-
       const allowedFormats = ['image/jpeg', 'image/png', 'image/gif', "image/jpg", 'application/pdf']; // Puedes ampliar esta lista según tus necesidades
-
       // Verificar el tipo de archivo
       return allowedFormats.includes(value.type);
     }),
