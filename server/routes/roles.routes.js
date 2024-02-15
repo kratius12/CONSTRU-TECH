@@ -165,6 +165,24 @@ router.put("/rol/:id", async (req, res) => {
                 }));
             });
         }
+
+        // // Crear registros con el mismo idEmp para todos los idPer
+        
+        // for (var i = 0; i < empleadosUnicos.length; i++){
+        //     const idEmp = empleadosUnicos.length > 0 ? empleadosUnicos[0] : null;
+        // for (var i = 0; i < permisos.length; i++) {
+        //     var elemento = permisos[i];
+        //     if (elemento.hasOwnProperty("value")) {
+        //         var value = elemento.value;
+        //         await prisma.rolpermisoempleado.createMany({
+        //             data: {
+        //                 idPer: parseInt(value),
+        //                 idRol: parseInt(rol.idRol),
+        //                 idEmp: idEmp,
+        //             },
+        //         });
+        //     }
+        // }}
         return res
             .status(201)
             .send({ message: "Rol actualizado exitosamente" });

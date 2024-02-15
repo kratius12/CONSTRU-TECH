@@ -119,31 +119,38 @@ router.post('/sendCode', async (req, res) => {
 
 router.post('/checkCode', async (req, res) =>{
   try {
-    const {code} = req.body
-
+    const {code, date} = req.body
+    console.log(code, date)
     const validCode = await prisma.codigos.findUnique({
       where:{
         codigo:code,
       }
     })
+    console.log(validCode)
     if (validCode) {
-      const checkedCode = await prisma.codigos.update({
-        where:{
-          Id:parseInt(validCode.Id)
-        },
-        data:{
-          estado:0
+      const dateStored = validCode.fecha
+      const validDate = Math.abs((new Date(date) - new Date(dateStored))/ (1000 * 60))
+      if (validDate <= 15) {
+        const checkedCode = await prisma.codigos.update({
+          where:{
+            Id:parseInt(validCode.Id)
+          },
+          data:{
+            estado:0
+          }
+        })
+  
+        if (!checkedCode) {
+          return res.status(404).json({error: "Codigo invalido."})
+          
         }
-      })
-
-      if (!checkedCode) {
-        return res.status(404).json({error: "Codigo invalido"})
-        
+        return res.status(200).json({success:true, code: validCode.email})        
+      }else{
+        return res.status(203).json({error: `El codigo ingresado ha excedido el tiempo maximo (15 minutos) para ser ingresado`})
       }
-      return res.status(200).json({success:true, code: validCode.email})
       
     }else{
-      res.status(404).json({error: `Codigo incorrecto`})
+      res.status(404).json({error: "Codigo invalido"})
     }
 
   } catch (error) {

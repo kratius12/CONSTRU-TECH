@@ -4,7 +4,7 @@ import { Formik, Field, Form, FieldArray, ErrorMessage } from "formik";
 import axios from "axios";
 import { Route, useNavigate, useParams } from "react-router-dom";
 import { useObras } from "../../context/obras/ObrasProvider";
-import { obraSchemaAgg, obraSchemaEdit } from "./ValidateObra"
+import { obraSchemaAgg, obraSchemaEdit } from "../../components/obras/ValidateObra"
 import * as Yup from "yup"
 const fetchData = async (url) => {
   try {
