@@ -2,6 +2,7 @@ import { Router, json } from "express";
 
 
 import { PrismaClient } from "@prisma/client";
+import { ucfirst } from "../plugins";
 
 const prisma = new PrismaClient()
 const router = Router()
@@ -110,7 +111,7 @@ router.post("/obras", async (req, res) => {
     const { descripcion, fechaini, idCliente, idEmp } = req.body;
     const obra = await prisma.obras.create({
       data: {
-        descripcion: descripcion,
+        descripcion: ucfirst(descripcion),
         fechaini: fechaini,
         estado: "Pendiente",
         idCliente: parseInt(idCliente),
@@ -133,7 +134,7 @@ router.put("/obra/:id", async (req, res) => {
         idObra: parseInt(req.params.id)
       },
       data: {
-        descripcion: descripcion,
+        descripcion: ucfirst(descripcion),
         area: area,
         estado: estado,
         fechaini: fechaini,
@@ -249,7 +250,7 @@ router.post("/guardarActividad/:id", async (req, res) => {
     // Create the new activity
     const result = await prisma.detalle_obra.create({
       data: {
-        actividad: actividad,
+        actividad: ucfirst(actividad),
         fechaini: fechaini,
         fechafin: fechafin,
         idEmp: null,
@@ -264,7 +265,7 @@ router.post("/guardarActividad/:id", async (req, res) => {
       for (const material of materiales) {
         await prisma.detalle_obra.create({
           data: {
-            actividad: actividad,
+            actividad: ucfirst(actividad),
             fechaini: fechaini,
             fechafin: fechafin,
             idEmp: parseInt(empleado.value),

@@ -1,6 +1,6 @@
 import { Router, json } from "express";
 import { PrismaClient } from "@prisma/client"
-
+import { ucfirst } from "../plugins";
 const prisma = new PrismaClient()
 const router = Router()
 
@@ -35,7 +35,7 @@ router.post("/especialidades", async (req, res) => {
         const {especialidad, estado} = req.body
         const result = await prisma.especialidad.create({
             data:{
-                especialidad: especialidad,
+                especialidad: ucfirst(especialidad),
                 estado:parseInt(estado)
             }
         })
@@ -54,7 +54,7 @@ router.put("/especialidad/:id", async (req, res) => {
                 id:parseInt(req.params.id)
             },
             data:{
-                especialidad: especialidad,
+                especialidad: ucfirst(especialidad),
                 estado:parseInt(estado)
             }
         })

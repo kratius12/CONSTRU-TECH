@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
+import { ucfirst } from "../plugins";
 const prisma = new PrismaClient()
 
 const router = Router()
@@ -56,7 +57,7 @@ router.post("/materiales", async (req, res) => {
         const { nombre, idCategoria } = req.body
         const result = await prisma.materiales.create({
             data: {
-                nombre: nombre,
+                nombre: ucfirst(nombre),
                 estado: 1,
                 idCategoria:parseInt(idCategoria),
             },
@@ -76,7 +77,7 @@ router.put("/material/:id", async (req, res) => {
                 idMat: parseInt(idMat)
             },
             data: {
-                nombre: nombre,
+                nombre: ucfirst(nombre),
                 cantidad: cantidad,
                 estado: estado,
                 idCategoria: idCategoria

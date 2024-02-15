@@ -1,7 +1,7 @@
 import { Router, json } from "express";
 import bcrypt from "bcrypt"
 import { PrismaClient } from "@prisma/client"
-
+import { ucfirst } from "../plugins";
 const prisma = new PrismaClient()
 const router = Router()
 
@@ -94,10 +94,10 @@ router.post("/empleados", async (req, res) => {
         const { hash, salt } = await generarHash(contrasena);
         const result = await prisma.empleado.create({
             data: {
-                nombre: nombre,
+                nombre: ucfirst(nombre),
 
-                apellidos: apellidos,
-                direccion: direccion,
+                apellidos: ucfirst(apellidos),
+                direccion: ucfirst(direccion),
                 telefono: telefono,
                 tipoDoc: tipoDoc,
                 cedula: cedula,
@@ -147,9 +147,9 @@ router.put("/empleado/:id", async (req, res) => {
                 idEmp: parseInt(req.params.id)
             },
             data: {
-                nombre: nombre,
-                apellidos: apellidos,
-                direccion: direccion,
+                nombre: ucfirst(nombre),
+                apellidos: ucfirst(apellidos),
+                direccion: ucfirst(direccion),
                 telefono: telefono,
                 tipoDoc: tipoDoc,
                 cedula: cedula,

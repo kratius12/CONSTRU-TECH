@@ -1,5 +1,6 @@
 import { Router, json } from "express";
 import { PrismaClient } from "@prisma/client"
+import { ucfirst } from "../plugins";
 
 const prisma = new PrismaClient()
 const router = Router()
@@ -47,7 +48,7 @@ router.post("/categorias", async (req, res) => {
         const {nombre, estado, medida} = req.body
         const result = await prisma.categoria.create({
             data:{
-                nombre: nombre,
+                nombre: ucfirst(nombre),
                 estado:1,
                 medida:medida
             }
@@ -66,7 +67,7 @@ router.put("/categoria/:id", async (req, res) => {
                 idcat:parseInt(req.params.id)
             },
             data:{
-                nombre: nombre,
+                nombre: ucfirst(nombre),
                 estado:parseInt(estado),
                 medida:medida
             }

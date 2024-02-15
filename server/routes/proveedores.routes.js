@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
+import { ucfirst } from "../plugins";
 const prisma = new PrismaClient()
 
 
@@ -43,8 +44,8 @@ router.put('/prov/:idProv', async (req, res) => {
         const { nombre, direccion, nit, tipo, estado, email, telefono, nombreContacto, telefonoContacto, emailContacto } = req.body
 
         let updateData = {
-            nombre: nombre,
-            direccion: direccion,
+            nombre: ucfirst(nombre),
+            direccion: ucfirst(direccion),
             nit: nit,
             tipo: tipo,
             estado: parseInt(estado),
@@ -64,7 +65,7 @@ router.put('/prov/:idProv', async (req, res) => {
             // If tipo is 'Juridico', include contacto details
             updateData = {
                 ...updateData,
-                nombreContacto: nombreContacto,
+                nombreContacto: ucfirst(nombreContacto),
                 telefonoContacto: telefonoContacto,
                 emailContacto: emailContacto,
             };
@@ -116,7 +117,7 @@ router.post('/newprov', async (req, res) => {
 
         if (tipo === 'Juridico') {
             contactoData = {
-                nombreContacto: nombreContacto,
+                nombreContacto: ucfirst(nombreContacto),
                 telefonoContacto: telefonoContacto,
                 emailContacto: emailContacto,
             };
@@ -130,7 +131,7 @@ router.post('/newprov', async (req, res) => {
 
         const newProv = await prisma.proveedor.create({
             data: {
-                nombre: nombre,
+                nombre: ucfirst(nombre),
                 direccion: direccion,
                 nit: nit,
                 tipo: tipo,
