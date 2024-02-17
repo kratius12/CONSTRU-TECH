@@ -123,8 +123,7 @@ export default function ProveedoresForm() {
             enableReinitialize={true}
             validate={validateForm}
             validateOnChange={true}
-            onSubmit={async (values) => {
-              
+            onSubmit={async (values, {setSubmitting}) => {
               try {
                 if (params.id) {
                   await updateProveedor(params.id, { ...values, tipo: tipo });

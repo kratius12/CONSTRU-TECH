@@ -92,26 +92,93 @@ const RolesForm = () => {
     });
   };
 
+  const errorcitos = () => {
+    $.confirm({
+      title: `Error`,
+      content: `La actividad ${actividad.actividad} ya exite para esta obra`,
+      icon: 'fa fa-circle-xmark',
+      theme: 'modern',
+      closeIcon: true,
+      animation: 'zoom',
+      closeAnimation: 'scale',
+      animationSpeed: 500,
+      type: 'red',
+      columnClass: 'col-md-6 col-md-offset-3',
+      buttons: {
+        Cerrar: function () {
+        },
+      }
+    })
+  }
+
   return (
     <div className="container">
       <Formik
         initialValues={initialValues}
         enableReinitialize={true}
         validationSchema={RolSchema}
-        onSubmit={async (values) => {
+        onSubmit={async (values, {setSubmitting}) => {
           const rolObject = {
             ...values,
             permisos: permisoSelected
           };
-          if (params.id) {
-            await updateRol(params.id, rolObject);
-            alertConfirm("actualizado");
-            setTimeout(() => navigate("/roles"));
-          } else {
-            await createRol(rolObject);
-            alertConfirm("agregado");
-            setTimeout(() => navigate("/roles"));
+          console.log(values.nombre)
+          if(params.id){
+            const validateRol = await axios.put(`http://localhost:4000/rolSE/${params.id}`,{nombre:rolObject.nombre})
+            console.log(validateRol.data)
+            if(validateRol.data == true){
+              $.confirm({
+                title: `Error`,
+                content: `El rol ${values.nombre} ya exite, por favor ingrese otro`,
+                icon: 'fa fa-circle-xmark',
+                theme: 'modern',
+                closeIcon: true,
+                animation: 'zoom',
+                closeAnimation: 'scale',
+                animationSpeed: 500,
+                type: 'red',
+                columnClass: 'col-md-6 col-md-offset-3',
+                buttons: {
+                  Cerrar: function () {
+                  },
+                }
+              },
+              setSubmitting(false))
+            }else{
+              setSubmitting(true)
+              await updateRol(params.id, rolObject);
+              alertConfirm("actualizado");
+              setTimeout(() => navigate("/roles"));
+            }
+          }else{
+            const validateRol = await axios.put(`http://localhost:4000/rolSA`,{nombre:rolObject.nombre},{timeout:500})
+            if (validateRol.d == true) {
+              console.log(validateRol)
+              $.confirm({
+                title: `Error`,
+                content: `El rol ${rolObject.nombre} ya exite, por favor ingrese otro`,
+                icon: 'fa fa-circle-xmark',
+                theme: 'modern',
+                closeIcon: true,
+                animation: 'zoom',
+                closeAnimation: 'scale',
+                animationSpeed: 500,
+                type: 'red',
+                columnClass: 'col-md-6 col-md-offset-3',
+                buttons: {
+                  Cerrar: function () {
+                  },
+                }
+              }, setSubmitting(false))
+             
+            }else{
+              await createRol(rolObject);
+              alertConfirm("agregado");
+              setTimeout(() => navigate("/roles"));
+              setSubmitting(true)
+            }
           }
+          
         }}
       >
         {({ handleSubmit, handleChange, values, isSubmitting, setFieldValue, errors, touched }) => (
