@@ -105,7 +105,7 @@ router.put("/rol/:id", async (req, res) => {
     try {
         const { nombre, estado, permisos } = req.body;
 
-        
+
         const rol = await prisma.rol.update({
             data: {
                 nombre: ucfirst(nombre),
@@ -117,18 +117,18 @@ router.put("/rol/:id", async (req, res) => {
         });
 
         const empleadosPermisos = await prisma.rolpermisoempleado.findMany({
-            where:{
-                idEmp:{
+            where: {
+                idEmp: {
                     gt: 0
                 },
-                idRol:parseInt(req.params.id)
+                idRol: parseInt(req.params.id)
             },
-            select:{
+            select: {
                 idEmp: true
             },
-            distinct:['idEmp']
+            distinct: ['idEmp']
         })
-        
+
         const deletePer = await prisma.rolpermisoempleado.deleteMany({
             where: {
                 idRol: parseInt(req.params.id)
@@ -138,7 +138,7 @@ router.put("/rol/:id", async (req, res) => {
         await Promise.all(permisos.map(async (item) => {
             try {
                 const addPermisosRol = await prisma.rolpermisoempleado.create({
-                    data:{
+                    data: {
                         idRol: parseInt(req.params.id),
                         idPer: parseInt(item.value)
                     }
@@ -153,7 +153,7 @@ router.put("/rol/:id", async (req, res) => {
                 await Promise.all(permisos.map(async (item) => {
                     try {
                         const addPermisosEmp = await prisma.rolpermisoempleado.create({
-                            data:{
+                            data: {
                                 idEmp: parseInt(id.idEmp),
                                 idRol: parseInt(req.params.id),
                                 idPer: parseInt(item.value)
@@ -165,24 +165,6 @@ router.put("/rol/:id", async (req, res) => {
                 }));
             });
         }
-
-        // // Crear registros con el mismo idEmp para todos los idPer
-        
-        // for (var i = 0; i < empleadosUnicos.length; i++){
-        //     const idEmp = empleadosUnicos.length > 0 ? empleadosUnicos[0] : null;
-        // for (var i = 0; i < permisos.length; i++) {
-        //     var elemento = permisos[i];
-        //     if (elemento.hasOwnProperty("value")) {
-        //         var value = elemento.value;
-        //         await prisma.rolpermisoempleado.createMany({
-        //             data: {
-        //                 idPer: parseInt(value),
-        //                 idRol: parseInt(rol.idRol),
-        //                 idEmp: idEmp,
-        //             },
-        //         });
-        //     }
-        // }}
         return res
             .status(201)
             .send({ message: "Rol actualizado exitosamente" });
@@ -191,15 +173,6 @@ router.put("/rol/:id", async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 });
-
-
-
-
-
-
-
-
-
 
 
 router.put("/estadoRol/:id", async (req, res) => {
@@ -213,6 +186,7 @@ router.put("/estadoRol/:id", async (req, res) => {
                 estado: parseInt(estado),
             },
         });
+
         if (estado === 0) {
             const empIn = await prisma.rolpermisoempleado.findMany({
                 where: {
@@ -224,9 +198,19 @@ router.put("/estadoRol/:id", async (req, res) => {
                     idRol: true,
                 },
             });
+
+            const uniqueIdEmps = new Set();
+
+            empIn.forEach((item) => {
+                uniqueIdEmps.add(item.idEmp);
+            });
+
+            const idEmpsArray = Array.from(uniqueIdEmps);
             const inactivarEmpleado = await prisma.empleado.updateMany({
                 where: {
-                    idEmp: empIn.idEmp,
+                    idEmp: {
+                        in: idEmpsArray,
+                    },
                 },
                 data: {
                     estado: 0,
@@ -237,6 +221,7 @@ router.put("/estadoRol/:id", async (req, res) => {
         console.error(error);
     }
 });
+
 
 router.get("/prueba/:id", async (req, res) => {
     try {
@@ -262,7 +247,7 @@ router.get("/prueba/:id", async (req, res) => {
             },
         });
 
-        // Deduplicar empleados
+
         const empleadosUnicos = [...new Set(empleados.map((emp) => emp.idEmp))];
 
         return res.status(200).json({ empleados: empleadosUnicos });
@@ -271,6 +256,54 @@ router.get("/prueba/:id", async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 });
+
+
+router.put("/rolSE/:id", async (req, res) => {
+    try {
+        const { nombre } = req.body       
+            const rol = await prisma.rol.findFirst({
+                where: {
+                    nombre:nombre,
+                    NOT: {
+                        idRol: parseInt(req.params.id)
+                    }
+                }
+            })
+            console.log(rol)
+            if (rol != null) {
+                return res.json(true)
+            } else if(rol == null) {
+                return res.json(false)
+            }
+       
+
+
+    } catch (error) {
+        console.error(error)
+    }
+})
+
+router.put("/rolSA", async (req,res)=>{
+    try {
+        const {nombre} = req.body
+        console.log(req.body)
+        const rol = await prisma.rol.findFirst({
+            where:{
+                nombre
+            }
+        })
+        console.log(rol)
+        if(rol != 0){
+            console.log(false)
+            return res.json(false)
+        }else{
+            console.log(true)
+            return res.json(true)
+        }
+    } catch (error) {
+        console.error(error)
+    }
+})
 
 
 export default router;
