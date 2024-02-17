@@ -66,7 +66,6 @@ const ObraDetalle = () => {
         setSelectedActivity(activity);
         setMatDefault([]);
         setEmpDefault([]);
-        console.log(activity.actividad)
         setModalVisible(true);
         if (activity) {
             const initialMaterials = activity.materiales.map((material) => ({
@@ -201,7 +200,7 @@ const ObraDetalle = () => {
     const handleSearch = () => {
         setCurrentPage(1);
     };
-
+    console.clear()
 
     useEffect(() => {
         const fetchObraDetalle = async () => {
@@ -241,7 +240,7 @@ const ObraDetalle = () => {
 
         loadMaterialesEmpleados()
         fetchObraDetalle()
-    }, [id, actividades]);
+    }, [id]);
 
     if (!obra) {
         return <div>Error al cargar la información de la obra</div>
@@ -426,8 +425,8 @@ const ObraDetalle = () => {
                                                     }
                                                 }}
                                                 validationSchema={actividadSchema({
-                                                    fechainiObra: obra.fechaini,
-                                                    fechafinObra: obra.fechafin,
+                                                    fechainiObra: new Date(obra.fechaini),
+                                                    fechafinObra: new Date(obra.fechafin),
                                                     ...values
                                                 })}
                                                 onSubmit={async (values, { setSubmitting }) => {
@@ -436,7 +435,7 @@ const ObraDetalle = () => {
                                                         antiguo: selectedActivity.actividad,
                                                     };
                                                     for (const actividad of actividades) {
-                                                        if (actividad.actividad === values.actividad && selectedActivity.actividad) {
+                                                        if (actividad.actividad === values.actividad && !selectedActivity) {
                                                             $.confirm({
                                                                 title: `Error`,
                                                                 content: `La actividad ${actividad.actividad} ya exite para esta obra`,
@@ -455,10 +454,10 @@ const ObraDetalle = () => {
                                                             })
                                                             setSubmitting(false)
                                                             return
-                                                        } else if (selectedActivity.actividad != values.actividad && actividad.actividad === values.actividad) {
+                                                        } else if (actividad.actividad == values.actividad && selectedActivity.actividad != values.actividad) {
                                                             $.confirm({
                                                                 title: `Error`,
-                                                                content: `La actividad ${actividad.actividad} ya exite para esta obra`,
+                                                                content: `La actividad ${values.actividad} ya exite para esta obra other`,
                                                                 icon: 'fa fa-circle-xmark',
                                                                 theme: 'modern',
                                                                 closeIcon: true,
@@ -474,14 +473,14 @@ const ObraDetalle = () => {
                                                             })
                                                             setSubmitting(false)
                                                             return
-                                                        }
-                                                        else {
+                                                        }else{
                                                             setSubmitting(true)
                                                         }
                                                     }
+
+                                                    setSubmitting(true);
                                                     await createActividad(id, formattedShare);
                                                     alertConfirmAct();
-                                                    setSubmitting(false);
                                                     setModalVisible(false);
                                                     console.clear()
                                                 }}
@@ -557,7 +556,6 @@ const ObraDetalle = () => {
                                                                 isMulti
                                                                 value={values.actividades.empleados}
                                                                 onChange={(selectedEmpleados) => setFieldValue(`actividades.empleados`, selectedEmpleados)}
-                                                                // defaultValue={empDefault}
                                                                 onBlur={() => setFieldTouched(`values.actividades.empleados`, true)}
 
                                                             />
@@ -675,10 +673,18 @@ const ObraDetalle = () => {
                                 <div className="mt-3">
                                     <hr className="mt-3" />
                                     <div className="col-md-3 mt-3 mx-auto">
-                                        <Button className="btn btn-success"
-                                            onClick={handleAgregarActividad}>
-                                            Agregar Actividad
-                                        </Button>
+                                        {
+                                            values.fechafin ? (
+                                                <Button className="btn btn-success"
+                                                    onClick={handleAgregarActividad}>
+                                                    Agregar Actividad
+                                                </Button>
+                                            ) :
+                                                <Button className="btn btn-success" disabled
+                                                    onClick={handleAgregarActividad}>
+                                                    Agregar Actividad
+                                                </Button>
+                                        }
                                     </div>
                                 </div>
 

@@ -1,38 +1,56 @@
 import * as Yup from "yup"
-
-
 export const obraSchemaAgg = Yup.object().shape({
-    idCliente: Yup.string().required("Seleccione el cliente"),
-    idEmp: Yup.string().required("El empleado es requerido"),
-    fechaini: Yup.string().required("La fecha de incio de la obra es requerida")
-        .min(new Date().toISOString(), 'La fecha de inicio debe ser posterior o igual a la fecha actual')
-        // .max(addMonths(new Date(), 1), 'La fecha de inicio no puede ser posterior a un mes a partir de la fecha actual')
-        ,
-    descripcion: Yup.string().required("La descripción de obra de requerida").min(10, "La descripción de la obra debe tener minimo 10 caracteres"),
-})
-export const obraSchemaEdit = Yup.object().shape({
-    idCliente: Yup.string().required("Seleccione el cliente"),
-    idEmp: Yup.string().required("El empleado es requerido"),
-    area: Yup.string().required("El area es requerida"),
-    fechaini: Yup.string()
-        .required("La fecha de inicio de la obra es requerida"),
-    fechafin: Yup.string()
-        // .min(Yup.ref('fechaini'), 'La fecha de fin debe ser posterior a la fecha de inicio')
-        .required("La fecha de fin de la obra es requerida"),
-    precio: Yup.string().required("El precio de la obra es requerido"),
-    descripcion: Yup.string().required("La descripción de obra de requerida").min(10, "La descripción de la obra debe tener minimo 10 caracteres"),
-    estado: Yup.string().required("El estado es requerido"),
+  idCliente: Yup.string().required("Seleccione un cliente"),
+  idEmp: Yup.string().required("Seleccione un asesor"),
+  fechaini: Yup.date()
+    .test(
+      "fecha-inicio",
+      "La fecha de inicio no puede ser anterior a la fecha actual",
+      function (value) {
+        const fechaActual = new Date();
+        fechaActual.setDate(fechaActual.getDate() - 1); // Resta un día a la fecha actual
+        return value > fechaActual;
+      }
+    )
+    .max(
+      new Date(new Date().setMonth(new Date().getMonth() + 1)),
+      "La fecha de inicio no puede exceder un mes desde la fecha actual"
+    )
+    .required("Seleccione la fecha de inicio de la obra"),
+  descripcion: Yup.string().required("Ingrese la descripción de la obra").min(10,"La descripción de la obra debe contener al menos 10 caracteres.").max(100,"la descripción de la obra no debe contener más de 100 caracteres"),
 });
 
-export const actividadSchema = (obra) => Yup.object().shape({
+const obraSchemaEdit = Yup.object().shape({
+    idCliente: Yup.number()
+      .required('El id del cliente es requerido'),
+    idEmp: Yup.number()
+      .required('El id del encargado es requerido'),
+    area: Yup.string()
+        .required("El area de la obra es requerida"),
+    fechaini: Yup.date()
+    .required('La fecha de inicio es requerida'),
+  fechafin: Yup.date()
+    .when('fechaini', (fechaini, schema) =>
+      fechaini ? schema.min(fechaini, 'La fecha de fin no puede ser anterior a la fecha de inicio') : schema
+    )
+    .required('La fecha de fin es requerida'),
+    precio: Yup.number()
+      .required('El precio es requerido'),
+    estado: Yup.string()
+      .required('El estado es requerido'),
+    descripcion: Yup.string()
+      .required('La descripcion es requerida'),
+  });
+  
+  export const actividadSchema = (obra) => Yup.object().shape({
     actividad: Yup.string().required('La actividad es obligatoria'),
     fechaini: Yup.date()
         .min(obra.fechainiObra, 'La fecha de inicio de la actividad no puede ser anterior a la fecha de inicio del proyecto')
-        // .max(obra.fechafinObra, 'La fecha de inicio de la actividad no puede ser posterior a la fecha de finalización del proyecto')
+        .max(obra.fechafinObra, 'La fecha de inicio de la actividad no puede ser posterior a la fecha de finalización del proyecto')
         .required('La fecha de inicio de la actividad es obligatoria'),
     fechafin: Yup.date()
         .min(Yup.ref('fechaini'), 'La fecha de finalización de la actividad no puede ser anterior a la fecha de inicio de la actividad')
-        // .max(obra.fechafinObra, 'La fecha de finalización de la actividad no puede ser posterior a la fecha de finalización del proyecto')
+        .max(obra.fechafinObra, 'La fecha de finalización de la actividad no puede ser posterior a la fecha de finalización del proyecto')
         .required('La fecha de finalización de la actividad es obligatoria'),
     actividades: Yup.object().shape({
         materiales: Yup.array().min(1, 'Seleccione al menos un material'),
@@ -42,3 +60,7 @@ export const actividadSchema = (obra) => Yup.object().shape({
 },
 // console.log(obra)
 );
+  
+  export {
+    obraSchemaEdit,
+  };

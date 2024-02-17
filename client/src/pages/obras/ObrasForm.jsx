@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import Select from "react-select";
-import { Formik, Field, Form, FieldArray, ErrorMessage } from "formik";
+import { Formik, Field, Form } from "formik";
 import axios from "axios";
-import { Route, useNavigate, useParams } from "react-router-dom";
+import {  useNavigate, useParams } from "react-router-dom";
 import { useObras } from "../../context/obras/ObrasProvider";
-import { obraSchemaAgg, obraSchemaEdit } from "../../components/obras/ValidateObra"
+import { obraSchemaAgg } from "../../components/obras/ValidateObra"
 const fetchData = async (url) => {
   try {
     const response = await axios.get(url);
@@ -14,40 +13,12 @@ const fetchData = async (url) => {
     return [];
   }
 }
-
-const fetchMaterial = async (url) => {
-  try {
-    const responseMat = await axios.get(url);
-    return responseMat.data.map((item) => ({
-      value: item.idMat,
-      label: item.nombre
-    }))
-  } catch (error) {
-    console.error("Error fetching materiales:", error);
-  }
-}
-
-const fetchEmpleados = async (url) => {
-  try {
-    const response = await axios.get(url);
-    return response.data.map((item) => ({
-      value: item.idEmp,
-      label: item.nombre,
-    }));
-  } catch (error) {
-    console.error("Error fetching empleados:", error);
-    return [];
-  }
-};
-
 const ObrasForm = () => {
   const params = useParams();
-  const { createObra, updateObra, getObra,  } = useObras();
+  const { createObra} = useObras();
   const navigate = useNavigate();
 
   const [clientes, setCliente] = useState([]);
-  const [materiales, setMateriales] = useState([]);
-  const [empleados, setEmpleados] = useState([]);
   const [asesores, setAsesores] = useState([]);
   const [obra, setObra] = useState({
     idCliente: '',
@@ -61,15 +32,8 @@ const ObrasForm = () => {
   });
 
   const alertConfirm = () => {
-    var message = ""
-    if (params.id) {
-      message = "actualizado"
-    } else {
-      message = "agregado"
-    }
-    // eslint-disable-next-line no-undef
     $.confirm({
-      title: `Material ${message} con éxito!`,
+      title: `Obra agregada con éxito!`,
       content: "Redireccionando a listado de materiales...",
       icon: 'fa fa-check',
       theme: 'modern',
@@ -85,82 +49,16 @@ const ObrasForm = () => {
       }
     })
   }
-  const alertConfirmAct = () => {
-    var message = ""
-    if (params.id) {
-      message = "actualizada"
-    } else {
-      message = "agregada"
-    }
-    // eslint-disable-next-line no-undef
-    $.confirm({
-      title: `Actividad ${message} con éxito!`,
-      content: "Redireccionando a listado de materiales...",
-      icon: 'fa fa-check',
-      theme: 'modern',
-      closeIcon: true,
-      animation: 'news',
-      closeAnimation: 'news',
-      type: 'green',
-      columnClass: 'col-md-6 col-md-offset-3',
-      autoClose: 'okay|4000',
-      buttons: {
-        okay: function () {
-        },
-      }
-    })
-  }
+
 
   useEffect(() => {
-    
-
     fetchData("http://localhost:4000/clientes").then((data) => {
       setCliente(data);
     });
-
     fetchData("http://localhost:4000/empleadosAct").then((data) => {
       setAsesores(data)
-    });
-
-    const loadObra = async () => {
-      if (params.id) {
-        try {
-          const obra = await getObra(params.id);
-          setObra({
-            idCliente: obra.idCliente,
-            idEmp: obra.idEmp,
-            area: obra.area,
-            fechaini: obra.fechaini,
-            fechafin: obra.fechafin,
-            precio: obra.precio,
-            descripcion: obra.descripcion,
-            estado: obra.estado,
-          })
-
-          const defaultMateriales = obra.actividades.flatMap((actividad) =>
-            actividad.materiales.map((material) => ({
-              value: material.idMat,
-              label: material.nombre,
-            }))
-          );
-
-          const defaultEmpleados = obra.actividades.flatMap((actividad) =>
-            actividad.empleados.map((empleado) => ({
-              value: empleado.idEmp,
-              label: empleado.nombre,
-            }))
-          );
-          setDefaultMateriales(defaultMateriales);
-          setDefaultEmpleados(defaultEmpleados);
-        } catch (error) {
-          console.error("Error fetching obra data:", error);
-        }
-      }
-    };
-
-    
-    loadObra();
-  }, [params.id, getObra]);
+    });  
+  }, []);
 
   const initialValues = {
     idCliente: obra.idCliente,
@@ -180,24 +78,11 @@ const ObrasForm = () => {
         enableReinitialize={true}
         validationSchema={obraSchemaAgg}
         onSubmit={(values) => {
-          const formattedValues = {
-            ...values,
-            actividades: values.actividades.map((actividad) => ({
-              ...actividad,
-              materiales: actividad.materiales.map((material) => material.value),
-              empleados: actividad.empleados.map((empleado) => empleado.value),
-            })),
-          };
           console.log(values)
-          if (params.id) {
-            updateObra(params.id, formattedValues)
-            alertConfirm("update")
-            navigate("/obras")
-          } else {
-            createObra(formattedValues)
+            createObra(values)
             alertConfirm()
             navigate("/obras")
-          }
+          
         }}
       >
         {({ values, isSubmitting, handleSubmit, errors, touched, handleChange }) => (
@@ -241,22 +126,6 @@ const ObrasForm = () => {
                       ) : null
                     }
                   </div>
-                  {
-                    params.id ? (
-                      <div className='col-md-3 mt-3 mx-auto'>
-                        <label htmlFor="area">Ingrese el area de la obra</label>
-                        <Field type="text" name="area" label="Area" className="form-control form-control-user" placeholder="Area" />
-                        {
-                          errors.area && touched.area ? (
-                            <div className="alert alert-danger">{errors.area}</div>
-                          ) : null
-                        }
-                      </div>
-                    ) : null
-                  }
-
-
-
                   <div className='col-md-3 mt-3 mx-auto'>
                     <label htmlFor="fechaini">Seleccione la fecha de inicio de la obra</label>
                     <input type="date" name="fechaini" label="Fecha Inicio" className="form-control form-control-user" value={values.fechaini} onChange={handleChange} />
@@ -268,15 +137,7 @@ const ObrasForm = () => {
                   </div>
                   <div className='col-md-3 mt-3 mx-auto'>
                   <label htmlFor="estado">Seleccione el estado de la obra</label>
-                    {params.id ? (
-                      <select name="estado"  id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado}>
-                        <option value="">Seleccione una opción</option>
-                        <option value="En asesoria">En asesoria</option>
-                        <option  value="Pendiente">Pendiente</option>
-                        <option value="En construcción">En construcción</option>
-                        <option value="Terminado">Terminado</option>
-                      </select>
-                    ) : (
+                    
                       <select name="estado" disabled id="estado" className="form-select form-control-user" onChange={handleChange}>
                         <option value="">Seleccione una opción</option>
                         <option value="En asesoria">En asesoria</option>
@@ -284,7 +145,6 @@ const ObrasForm = () => {
                         <option value="En construcción">En construcción</option>
                         <option value="Terminado">Terminado</option>
                       </select>
-                    )}
                     
                     {
                       errors.estado && touched.estado ? (
@@ -314,7 +174,7 @@ const ObrasForm = () => {
                       <span className="text-white-50">
                         <i className="fas fa-plus"></i>
                       </span>
-                      <span className="text">{params.id ? "Editar" : "Agregar"}</span>
+                      <span className="text">Agregar</span>
                     </button>
                   </div>
                   <div className="col-md-6">
