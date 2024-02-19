@@ -32,7 +32,6 @@ export default function ClientsForm() {
     }
     $.confirm({
         title: `Cliente ${message} con éxito!`,
-        content: "Redireccionando a listado de materiales...",
         icon: 'fa fa-check',
         theme: 'modern',
         closeIcon: true,
@@ -258,11 +257,7 @@ export default function ClientsForm() {
                             <option value="1">Activo</option>
                             <option value="0">Inactivo</option>
                           </select>                          
-                        ): (
-                          <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} disabled>
-                            <option value="1">Activo</option>
-                          </select>
-                        )
+                        ): null
                         }
                         {/* <select
                           placeholder={<div>Selecciona estado</div>}
@@ -285,7 +280,7 @@ export default function ClientsForm() {
                           <span className="text-white-50">
                             <i className="fas fa-plus"></i>
                           </span>
-                          <span className="text">{params.id ? "Editar" : "Agregar"}</span>
+                          <span className="text">Guardar</span>
                         </button>
                       </div>
                       <div className="col-md-6">

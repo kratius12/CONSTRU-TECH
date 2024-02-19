@@ -14,14 +14,14 @@ const CompraDetalle = () => {
     const navigate = useNavigate();
     const [showModal, setShowModal] = useState(false);
     // Inside your component
-const [fullscreen, setFullscreen] = useState(false);
+    const [fullscreen, setFullscreen] = useState(false);
 
 
     const handleOpenModal = () => {
         setShowModal(true);
         setFullscreen(false); // Reset fullscreen state when opening the modal
     };
-    
+
     const handleCloseModal = () => setShowModal(false);
     useEffect(() => {
         const fetchCompraDetalle = async () => {
@@ -137,9 +137,12 @@ const [fullscreen, setFullscreen] = useState(false);
                 </div>
                 <div className="card-footer text-center mt-3">
                     <div className="row">
-                        <a type="button" href="" className="btn btn-danger btn-icon-split mx-auto w-50" onClick={() => navigate(`/compras`)}>
-                            <span className="text">Regresar</span>
-                        </a>
+                        <div className="col-md-4 mt-3 mx-auto">
+                            <a type="button" href="" className="btn btn-danger btn-icon-split mx-auto" onClick={() => navigate(`/compras`)}>
+                                <span className="text">Regresar</span>
+                            </a>
+                        </div>
+
                     </div>
                 </div>
             </div>

@@ -30,7 +30,6 @@ const ComprasForm = () => {
     }
     $.confirm({
       title: `Compra  agregada con exito!`,
-      content: "Redirecionando a listado de compras...",
       icon: 'fa fa-check',
       theme: 'modern',
       closeIcon: true,
@@ -309,7 +308,7 @@ const ComprasForm = () => {
                                 className="btn btn-danger"
                                 onClick={() => arrayHelpers.remove(index)}
                               >
-                                Eliminar material
+                                <i class="fa-solid fa-x"></i>
                               </button>
                               <hr className="mt-md-3 mx-auto" />
                             </div>
@@ -361,7 +360,7 @@ const ComprasForm = () => {
                       <span className="text-white-50">
                         <i className="fas fa-plus"></i>
                       </span>
-                      <span className="text">Agregar</span>
+                      <span className="text">Guardar</span>
                     </button>
                   </div>
                   <div className="col-md-6">
