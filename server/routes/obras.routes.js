@@ -2,7 +2,7 @@ import { Router, json } from "express";
 
 
 import { PrismaClient } from "@prisma/client";
-import { ucfirst } from "../plugins";
+import { ucfirst } from "../plugins.js";
 
 const prisma = new PrismaClient()
 const router = Router()
