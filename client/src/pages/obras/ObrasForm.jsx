@@ -34,7 +34,6 @@ const ObrasForm = () => {
   const alertConfirm = () => {
     $.confirm({
       title: `Obra agregada con éxito!`,
-      content: "Redireccionando a listado de materiales...",
       icon: 'fa fa-check',
       theme: 'modern',
       closeIcon: true,
@@ -174,7 +173,7 @@ const ObrasForm = () => {
                       <span className="text-white-50">
                         <i className="fas fa-plus"></i>
                       </span>
-                      <span className="text">Agregar</span>
+                      <span className="text">Guardar</span>
                     </button>
                   </div>
                   <div className="col-md-6">

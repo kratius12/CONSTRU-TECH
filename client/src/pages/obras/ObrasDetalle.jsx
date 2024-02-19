@@ -145,7 +145,6 @@ const ObraDetalle = () => {
             setActividades(updatedActividades);
             $.confirm({
                 title: `Actividad guardada con éxito!`,
-                content: "Redireccionando a listado de materiales...",
                 icon: 'fa fa-check',
                 theme: 'modern',
                 closeIcon: true,
@@ -180,7 +179,6 @@ const ObraDetalle = () => {
         }
         $.confirm({
             title: `Obra ${message} con éxito!`,
-            content: "Redireccionando a listado de materiales...",
             icon: 'fa fa-check',
             theme: 'modern',
             closeIcon: true,

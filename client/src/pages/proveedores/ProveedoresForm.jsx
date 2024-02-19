@@ -98,7 +98,6 @@ export default function ProveedoresForm() {
     // eslint-disable-next-line no-undef
     $.confirm({
       title: `Proveedor ` + message + ` con exito!`,
-      content: "Redirecionando a listado de materiales...",
       icon: 'fa fa-check',
       theme: 'modern',
       closeIcon: true,
@@ -294,17 +293,8 @@ export default function ProveedoresForm() {
                             <option value="1">Activo</option>
                             <option value="0">Inactivo</option>
                           </select>
-                        ) : (
-                          <select
-                            id="estado"
-                            className="form-select form-control-user"
-                            onChange={handleChange}
-                            value={values.estado}
-                            disabled
-                          >
-                            <option value="1">Activo</option>
-                          </select>
-                        )}
+                        ) : 
+                         null}
                         
                       </div>
 
@@ -380,7 +370,7 @@ export default function ProveedoresForm() {
                           <span className="text-white-50">
                             <i className="fas fa-plus"></i>
                           </span>
-                          <span className="text">{params.id ? "Editar" : "Agregar"}</span>
+                          <span className="text">Guardar</span>
                         </button>
                       </div>
                       <div className="col-md-6">

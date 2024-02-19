@@ -28,7 +28,6 @@ export default function CategoriasForm() {
     }
     $.confirm({
         title: `Categoria ${message} con éxito!`,
-        content: "Redireccionando a listado de materiales...",
         icon: 'fa fa-check',
         theme: 'modern',
         closeIcon: true,
@@ -117,11 +116,7 @@ export default function CategoriasForm() {
                               <option value="1">Activo</option>
                               <option value="0">Inactivo</option>
                             </select>
-                          ) : (
-                            <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} disabled>
-                              <option value="1">Activo</option>
-                            </select>
-                          )
+                          ) : null
                         }
                         {/* {errors.estado && touched.estado ? (
                           <div className="alert alert-danger" role="alert">{errors.estado}</div>
@@ -136,7 +131,7 @@ export default function CategoriasForm() {
                           <span className="text-white-50">
                             <i className="fas fa-plus"></i>
                           </span>
-                          <span className="text">{params.id ? "Editar" : "Agregar"}</span>
+                          <span className="text">Guardar</span>
                         </button>
                       </div>
                       <div className="col-md-6">
