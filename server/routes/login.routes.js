@@ -120,44 +120,50 @@ router.post('/sendCode', async (req, res) => {
   }
 });
 
-router.post('/checkCode', async (req, res) =>{
+router.post('/checkCode', async (req, res) => {
   try {
-    const {code, date} = req.body
-    console.log(code, date)
-    const validCode = await prisma.codigos.findUnique({
-      where:{
-        codigo:code,
-      }
-    })
-    console.log(validCode)
-    if (validCode) {
-      const dateStored = validCode.fecha
-      const validDate = Math.abs((new Date(date) - new Date(dateStored))/ (1000 * 60))
-      if (validDate <= 15) {
-        const checkedCode = await prisma.codigos.update({
-          where:{
-            Id:parseInt(validCode.Id)
-          },
-          data:{
-            estado:0
-          }
-        })
-  
-        if (!checkedCode) {
-          return res.status(404).json({error: "Codigo invalido."})
-          
-        }
-        return res.status(200).json({success:true, code: validCode.email})        
-      }else{
-        return res.status(203).json({error: `El codigo ingresado ha excedido el tiempo maximo (15 minutos) para ser ingresado`})
-      }
-      
-    }else{
-      res.status(404).json({error: "Codigo invalido"})
-    }
+    const { code, date } = req.body;
+    console.log(code, date);
 
+    const validCode = await prisma.codigos.findUnique({
+      where: {
+        codigo: code,
+      },
+    });
+
+    console.log(validCode);
+
+    if (validCode) {
+      const dateStored = new Date(validCode.fecha);
+      const currentDate = new Date();
+      const timeDifference = Math.abs(currentDate - dateStored) / (1000 * 60);
+
+      if (timeDifference <= 15) {
+        const checkedCode = await prisma.codigos.update({
+          where: {
+            Id: parseInt(validCode.Id),
+          },
+          data: {
+            estado: 0,
+          },
+        });
+
+        if (!checkedCode) {
+          return res.status(404).json({ error: "Código inválido." });
+        }
+
+        return res.status(200).json({ success: true, code: validCode.email });
+      } else {
+        return res.status(203).json({
+          error: "El código ingresado ha excedido el tiempo máximo (15 minutos) para ser ingresado",
+        });
+      }
+    } else {
+      return res.status(404).json({ error: "Código inválido" });
+    }
   } catch (error) {
-    console.log(error)
+    console.error(error);
+    return res.status(500).json({ error: "Error interno del servidor" });
   }
 });
 

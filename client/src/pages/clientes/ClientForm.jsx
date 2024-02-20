@@ -178,6 +178,26 @@ export default function ClientsForm() {
                   <h1>{params.id ? "Editar" : "Agregar"} cliente</h1>
                   <div className="card-body">
                     <div className="row">
+                    <div className="col-md-6 mt-3 mx-auto">
+                        <select id="tipoDoc" className="form-select  form-control-user" onChange={handleChange} value={values.tipoDoc} >
+                          <option value="">Seleccione tipo documento*</option>
+                          <option value="CC">Cedula de ciudadania</option>
+                          <option value="CE">Cedula de extranjeria</option>
+                          <option value="PS">Pasaporte</option>
+                        </select>
+                        {errors.tipoDoc && touched.tipoDoc ? (
+                          <div className="alert alert-danger" role="alert">{errors.tipoDoc}</div>
+                        ) : null}
+                      </div>
+                      <div className="col-md-6 mt-3 mx-auto">
+                        <input type="text" className="form-control  form-control-user" id="cedula" onChange={(e) => {
+                          handleChange(e)
+                          checkDoc(values.tipoDoc, e.target.value)
+                        }} value={values.cedula} placeholder="Número de documento de identidad*" />
+                        {errors.cedula && touched.cedula ? (
+                          <div className="alert alert-danger" role="alert">{errors.cedula}</div>
+                        ) : null}
+                      </div>
                       <div className="col-md-6 mt-3 mx-auto">
                         <input type="text" className="form-control  form-control-user" id="nombre" onChange={handleChange} value={values.nombre} placeholder="Nombre*" />
                         {errors.nombre && touched.nombre ? (
@@ -217,26 +237,6 @@ export default function ClientsForm() {
                         ) : null}
                       </div>
                       <div className="col-md-6 mt-3 mx-auto">
-                        <select id="tipoDoc" className="form-select  form-control-user" onChange={handleChange} value={values.tipoDoc} >
-                          <option value="">Seleccione tipo documento*</option>
-                          <option value="CC">Cedula de ciudadania</option>
-                          <option value="CE">Cedula de extranjeria</option>
-                          <option value="PS">Pasaporte</option>
-                        </select>
-                        {errors.tipoDoc && touched.tipoDoc ? (
-                          <div className="alert alert-danger" role="alert">{errors.tipoDoc}</div>
-                        ) : null}
-                      </div>
-                      <div className="col-md-6 mt-3 mx-auto">
-                        <input type="text" className="form-control  form-control-user" id="cedula" onChange={(e) => {
-                          handleChange(e)
-                          checkDoc(values.tipoDoc, e.target.value)
-                        }} value={values.cedula} placeholder="Número de documento de identidad*" />
-                        {errors.cedula && touched.cedula ? (
-                          <div className="alert alert-danger" role="alert">{errors.cedula}</div>
-                        ) : null}
-                      </div>
-                      <div className="col-md-6 mt-3 mx-auto">
                         <label htmlFor="">Fecha de nacimiento</label>
                         <input type="date" className="form-control  form-control-user" id="fecha_nac" onChange={handleChange} value={values.fecha_nac} />
                         {errors.fecha_nac && touched.fecha_nac ? (
@@ -250,6 +250,12 @@ export default function ClientsForm() {
                         ) : null}
                       </div>
                       <div className="col-md-6 mt-3">
+                        <input type="password" className="form-control form-control-user" id="confirmar" name="confirmar" onChange={handleChange} value={values.confirmar} placeholder="Confirme la contraseña*" />
+                        {errors.confirmar && touched.confirmar ? (
+                          <div className="alert alert-danger" role="alert">{errors.confirmar}</div>
+                        ) : null}
+                      </div>
+                      <div className="col-md-6 mt-3">
                         {params.id ? 
                         (
                           <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
@@ -259,14 +265,6 @@ export default function ClientsForm() {
                           </select>                          
                         ): null
                         }
-                        {/* <select
-                          placeholder={<div>Selecciona estado</div>}
-                          value={values.estado}
-                          name="estado"
-                          options={estadoOptions}
-                          className="basic-multi-select"
-                          classNamePrefix="select"
-                        /> */}
                         {errors.estado && touched.estado ? (
                           <div className="alert alert-danger" role="alert">{errors.estado}</div>
                         ) : null}

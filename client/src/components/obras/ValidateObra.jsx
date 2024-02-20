@@ -42,24 +42,30 @@ const obraSchemaEdit = Yup.object().shape({
       .required('La descripcion es requerida'),
   });
   
-  export const actividadSchema = (obra) => Yup.object().shape({
-    actividad: Yup.string().required('La actividad es obligatoria'),
-    fechaini: Yup.date()
-        .min(obra.fechainiObra, 'La fecha de inicio de la actividad no puede ser anterior a la fecha de inicio del proyecto')
-        .max(obra.fechafinObra, 'La fecha de inicio de la actividad no puede ser posterior a la fecha de finalización del proyecto')
+  
+  export const actividadSchema = (obra) => {
+    // Restar un día a la fecha de inicio y sumar un día a la fecha de fin
+    const fechainiObraAjustada = new Date(obra.fechainiObra);
+    fechainiObraAjustada.setDate(fechainiObraAjustada.getDate() - 1);
+  
+    const fechafinObraAjustada = new Date(obra.fechafinObra);
+    fechafinObraAjustada.setDate(fechafinObraAjustada.getDate() + 1);
+  
+    return Yup.object().shape({
+      actividad: Yup.string().required('La actividad es obligatoria'),
+      fechaini: Yup.date()
+        .min(fechainiObraAjustada, 'La fecha de inicio de la actividad no puede ser anterior a la fecha de inicio del proyecto')
+        .max(fechafinObraAjustada, 'La fecha de inicio de la actividad no puede ser posterior a la fecha de finalización del proyecto')
         .required('La fecha de inicio de la actividad es obligatoria'),
-    fechafin: Yup.date()
+  
+      fechafin: Yup.date()
         .min(Yup.ref('fechaini'), 'La fecha de finalización de la actividad no puede ser anterior a la fecha de inicio de la actividad')
-        .max(obra.fechafinObra, 'La fecha de finalización de la actividad no puede ser posterior a la fecha de finalización del proyecto')
+        .max(fechafinObraAjustada, 'La fecha de finalización de la actividad no puede ser posterior a la fecha de finalización del proyecto')
         .required('La fecha de finalización de la actividad es obligatoria'),
-    actividades: Yup.object().shape({
-        materiales: Yup.array().min(1, 'Seleccione al menos un material'),
         empleados: Yup.array().min(1, 'Seleccione al menos un empleado'),
-    }),
-    estado: Yup.string().required('El estado es obligatorio'),
-},
-// console.log(obra)
-);
+      estado: Yup.string().required('El estado es obligatorio'),
+    });
+  };
   
   export {
     obraSchemaEdit,

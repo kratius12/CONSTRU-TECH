@@ -12,6 +12,7 @@ router.get("/materiales", async (req, res) => {
                 idMat: true,
                 estado: true,
                 nombre: true,
+                cantidad:true,
                 categoria: {
                     select: {
                         nombre: true
@@ -83,6 +84,15 @@ router.put("/material/:id", async (req, res) => {
                 idCategoria: idCategoria
             }
         })
+        if(cantidad===0){
+            await prisma.materiales.update({
+                where: {
+                    idMat: parseInt(idMat)
+                }, data: {
+                    estado: 0
+                }
+            })
+        }
     } catch (error) {
         console.error(error)
     }
@@ -113,7 +123,7 @@ router.put("/materialEstado/:id", async (req, res) => {
         },
       });
       if (estado === 1) {
-        if (material.categoria.estado == 1) {
+        if (material.categoria.estado == 1 && material.cantidad != 0) {
           await prisma.materiales.update({
             where: {
               idMat: Number(id),
@@ -128,11 +138,16 @@ router.put("/materialEstado/:id", async (req, res) => {
             type: "green",
           });
         } else if(material.categoria.estado==0){
-          return res.status(204).json({
+          return res.status(205).json({
             message: "No se puede editar el estado del material si el estado de la categoría es 0",
             type: "red",
           });
-        }
+        }else if (material.cantidad === 0 ){
+            return res.status(204).json({
+                message:"El material no se puede editar si la cantidad es igual a 0",
+                type:"red"
+            })
+          }
       }else if(estado===0){
         const newEstado = await prisma.materiales.update({
             where:{
