@@ -100,6 +100,7 @@ function DashboardPage() {
         }
 
     }, []);
+    console.clear()
     useEffect(() => {
         const loadchartClientes = () => {
             if (clienteRef && clienteRef.current) {

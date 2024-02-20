@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Form, Formik } from "formik";
 import { useParams, useNavigate } from "react-router-dom";
 import { useClients } from "../../context/clientes/ClientesProvider";
-import ClientSchema from "../../components/clientes/ValidatorCliente";
+import {ClientSchema, ClientSchemaEdit} from "../../components/clientes/ValidatorCliente";
 
 export default function ClientsForm() {
   const { createClient, getClient, updateClient } = useClients()
@@ -48,6 +48,12 @@ export default function ClientsForm() {
 
         }
     })
+}
+var validate;
+if(params.id){
+  validate = ClientSchemaEdit
+}else{
+  validate = ClientSchema
 }
 
   useEffect(() => {
@@ -149,7 +155,7 @@ export default function ClientsForm() {
         <div className="col-md-12">
           <Formik initialValues={cliente}
             enableReinitialize={true}
-            validationSchema={ClientSchema}
+            validationSchema={validate}
             onSubmit={async (values) => {
               checkEmail(values.email)
               checkDoc(values.tipoDoc, values.cedula)

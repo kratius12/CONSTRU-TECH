@@ -35,6 +35,7 @@ function RolesPage() {
   useEffect(() => {
     Roles();
   }, []);
+  console.clear()
 
   function renderMain() {
     if (roles.length === 0) {
@@ -52,6 +53,7 @@ function RolesPage() {
           getApi={getRol}
           
         />
+        
       );
     }
   }
