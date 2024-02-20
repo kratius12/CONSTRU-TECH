@@ -61,7 +61,7 @@ function Navbar({ handleLogout, userData }) {
                         </a> */}                       
                         <a className="dropdown-item" href="#" onClick={handleLogoutClick}>
                             <i className="fas fa-power-off fa-sm fa-fw mr-2 text-gray-400"></i>
-                            Cerrar sesion
+                            Cerrar sesión
                         </a>
                     </div>
                 </li>
