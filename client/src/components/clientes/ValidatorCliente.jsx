@@ -42,5 +42,8 @@ const ClientSchema = Yup.object().shape({
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
         "La contraseña debe contener al menos una letra mayúscula, una letra minúscula y un número"
     ),
+    confirmar: Yup.string()
+    .oneOf([Yup.ref('contrasena'), null], 'Las contraseñas deben coincidir')
+    .required('Confirma tu contraseña'),
 });
 export default ClientSchema

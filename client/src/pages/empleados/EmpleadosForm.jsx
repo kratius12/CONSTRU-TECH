@@ -230,6 +230,21 @@ export default function EmpleadosForm() {
                     <div className="row">
                       <div id="focusHelper"></div>
                       <div className="col-md-6 mt-3">
+                        <select id="tipoDoc" className="form-select form-control-user" onChange={(e) => {
+                          handleChange(e)
+
+                        }} value={values.tipoDoc}>
+                          <option value="">Seleccione tipo documento*</option>
+                          <option value="Cedula de ciudadanía">Cedula de ciudadanía</option>
+                          <option value="Cedula de extranjería">Cedula de extranjería</option>
+                          <option value="Pasaporte">Pasaporte</option>
+                        </select>
+                        {errors.tipoDoc && touched.tipoDoc ? (
+                          <div className="alert alert-danger" role="alert">{errors.tipoDoc}</div>
+                        ) : null}
+                      </div>
+                      <div className="col-md-6 mt-3">
+                        
                         <Field type="text" className="form-control form-control-user" id="nombre" name="nombre" placeholder="Nombres*" />
                         {errors.nombre && touched.nombre ? (
                           <div className="alert alert-danger" role="alert">{errors.nombre}</div>
@@ -257,17 +272,9 @@ export default function EmpleadosForm() {
                         ) : null}
                       </div>
                       <div className="col-md-6 mt-3">
-                        <select id="tipoDoc" className="form-select form-control-user" onChange={(e) => {
-                          handleChange(e)
-
-                        }} value={values.tipoDoc}>
-                          <option value="">Seleccione tipo documento*</option>
-                          <option value="Cedula de ciudadanía">Cedula de ciudadanía</option>
-                          <option value="Cedula de extranjería">Cedula de extranjería</option>
-                          <option value="Pasaporte">Pasaporte</option>
-                        </select>
-                        {errors.tipoDoc && touched.tipoDoc ? (
-                          <div className="alert alert-danger" role="alert">{errors.tipoDoc}</div>
+                        <input type="password" className="form-control form-control-user" id="confirmar" name="confirmar" onChange={handleChange} value={values.confirmar} placeholder="Confirme la contraseña*" />
+                        {errors.confirmar && touched.confirmar ? (
+                          <div className="alert alert-danger" role="alert">{errors.confirmar}</div>
                         ) : null}
                       </div>
                       <div className="col-md-6 mt-3">
@@ -292,18 +299,7 @@ export default function EmpleadosForm() {
                           <div className="alert alert-danger" role="alert">{errors.direccion}</div>
                         ) : null}
                       </div>
-                      <div className="col-md-6 mt-3">
-                        {params.id ? (
-                          <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
-                            <option value="">Seleccione estado</option>
-                            <option value="1">Activo</option>
-                            <option value="0">Inactivo</option>
-                          </select>
-                        ) :null}
-                        {errors.estado && touched.estado ? (
-                          <div className="alert alert-danger" role="alert">{errors.estado}</div>
-                        ) : null}
-                      </div>
+                      
                       <div className="col-md-6 mt-3">
                         <label>Selecciona especialidades:</label>
                         <Select
@@ -341,6 +337,18 @@ export default function EmpleadosForm() {
                         </select>
                         {errors.rol && touched.rol ? (
                           <div className="alert alert-danger" role="alert">{errors.rol}</div>
+                        ) : null}
+                      </div>
+                      <div className="col-md-6 mt-3">
+                        {params.id ? (
+                          <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
+                            <option value="">Seleccione estado</option>
+                            <option value="1">Activo</option>
+                            <option value="0">Inactivo</option>
+                          </select>
+                        ) :null}
+                        {errors.estado && touched.estado ? (
+                          <div className="alert alert-danger" role="alert">{errors.estado}</div>
                         ) : null}
                       </div>
                     </div>
