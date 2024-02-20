@@ -276,7 +276,7 @@ router.put("/empleadoStatus/:id", async (req, res) => {
                 })
                 return res.status(200).json({ message: "Cambio de estado exitoso!!" })
             } else if (validarRol.estado == 0) {
-                return res.status(404).json({ message: "No se puede cambiar el estado del empleado puesto que el rol asociado está inactivo" })
+                return res.status(204).json({ message: "No se puede cambiar el estado del empleado puesto que el rol asociado está inactivo" })
             }
         } else if (status === 0) {
             const actualizarEstado = await prisma.empleado.update({
