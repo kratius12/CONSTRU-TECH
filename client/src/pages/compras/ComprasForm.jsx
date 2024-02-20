@@ -30,6 +30,7 @@ const ComprasForm = () => {
     }
     $.confirm({
       title: `Compra  agregada con exito!`,
+      content: "",
       icon: 'fa fa-check',
       theme: 'modern',
       closeIcon: true,

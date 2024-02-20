@@ -98,6 +98,7 @@ export default function ProveedoresForm() {
     // eslint-disable-next-line no-undef
     $.confirm({
       title: `Proveedor ` + message + ` con exito!`,
+      content: "",
       icon: 'fa fa-check',
       theme: 'modern',
       closeIcon: true,

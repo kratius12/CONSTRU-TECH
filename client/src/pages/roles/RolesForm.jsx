@@ -76,6 +76,7 @@ const RolesForm = () => {
   const alertConfirm = (type) => {
     window.$.confirm({
       title: `Rol ${type} con éxito!`,
+      content: "",
       icon: "fa fa-check",
       theme: "modern",
       closeIcon: true,

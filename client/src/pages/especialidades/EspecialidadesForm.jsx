@@ -43,6 +43,7 @@ export default function EspecialidadesForm() {
     }
     $.confirm({
       title: `Especialidad ` + message + ` con exito!`,
+      content: "",
       icon: 'fa fa-check',
       theme: 'modern',
       closeIcon: true,
