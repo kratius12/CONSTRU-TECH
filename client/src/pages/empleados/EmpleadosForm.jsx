@@ -275,6 +275,17 @@ export default function EmpleadosForm() {
                         <input type="password" className="form-control form-control-user" id="confirmar" name="confirmar" onChange={handleChange} value={values.confirmar} placeholder="Confirme la contraseña*" />
                         {errors.confirmar && touched.confirmar ? (
                           <div className="alert alert-danger" role="alert">{errors.confirmar}</div>
+                        <select id="tipoDoc" className="form-select form-control-user" onChange={(e) => {
+                          handleChange(e)
+
+                        }} value={values.tipoDoc}>
+                          <option value="">Seleccione tipo documento*</option>
+                          <option value="CC">Cedula de ciudadanía</option>
+                          <option value="CE">Cedula de extranjería</option>
+                          <option value="PS">Pasaporte</option>
+                        </select>
+                        {errors.tipoDoc && touched.tipoDoc ? (
+                          <div className="alert alert-danger" role="alert">{errors.tipoDoc}</div>
                         ) : null}
                       </div>
                       <div className="col-md-6 mt-3">

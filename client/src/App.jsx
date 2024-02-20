@@ -157,7 +157,7 @@ function App() {
   const handleLogout = () => {
 
     $.confirm({
-      title:`Desea salir de la aplicaciòn ?`,
+      title:`Desea salir de la aplicación ?`,
       content:"",
       icon: 'fa fa-question-circle',
       theme: 'modern',
@@ -180,7 +180,7 @@ function App() {
           cancelar: {
               btnClass: 'btn-default',
               action: function(){
-                  $.alert('Accion cancelada!');
+                  $.alert('Acción cancelada!');
               }
           }
       }            
@@ -255,7 +255,7 @@ function App() {
           console.log("Error al decodificar el token:", error)
         }
       }else{
-        console.log("Error al iniciar sesion")
+        console.log("Error al iniciar sesión")
       }
 
     } catch (error) {
@@ -834,7 +834,7 @@ function App() {
                                 <div className="col-lg-6">
                                     <div className="p-5">
                                         <div className="text-center">
-                                            <h1 className="h4 text-gray-900 mb-4">Iniciar Sesion</h1>
+                                            <h1 className="h4 text-gray-900 mb-4">Iniciar sesión</h1>
                                         </div>
                                           <form className="user" onSubmit={handleSubmit}>
                                               <div className="form-group">
