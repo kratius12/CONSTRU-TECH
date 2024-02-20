@@ -35,7 +35,7 @@ export default function EmpleadosForm() {
     especialidad: [],
     email: "",
     contrasena: "",
-    rol:""
+    rol: ""
   };
 
   const [empleado, setEmpleado] = useState(initialState);
@@ -206,12 +206,12 @@ export default function EmpleadosForm() {
               checkDoc(values.tipoDoc, values.cedula)
               if (email === false && doc === false) {
                 if (params.id) {
-                  
+
                   await updateEmpleado(params.id, empleadoObject);
                   alertConfirm('update');
                   setTimeout(() => navigate("/empleados"));
                 } else {
-                  
+
                   await createEmpleado(empleadoObject);
                   alertConfirm();
                   setTimeout(() => navigate("/empleados"));
@@ -244,7 +244,7 @@ export default function EmpleadosForm() {
                         ) : null}
                       </div>
                       <div className="col-md-6 mt-3">
-                        
+
                         <Field type="text" className="form-control form-control-user" id="nombre" name="nombre" placeholder="Nombres*" />
                         {errors.nombre && touched.nombre ? (
                           <div className="alert alert-danger" role="alert">{errors.nombre}</div>
@@ -275,6 +275,8 @@ export default function EmpleadosForm() {
                         <input type="password" className="form-control form-control-user" id="confirmar" name="confirmar" onChange={handleChange} value={values.confirmar} placeholder="Confirme la contraseña*" />
                         {errors.confirmar && touched.confirmar ? (
                           <div className="alert alert-danger" role="alert">{errors.confirmar}</div>
+                        ) : null
+                        }
                         <select id="tipoDoc" className="form-select form-control-user" onChange={(e) => {
                           handleChange(e)
 
@@ -310,7 +312,7 @@ export default function EmpleadosForm() {
                           <div className="alert alert-danger" role="alert">{errors.direccion}</div>
                         ) : null}
                       </div>
-                      
+
                       <div className="col-md-6 mt-3">
                         <label>Selecciona especialidades:</label>
                         <Select
@@ -357,7 +359,7 @@ export default function EmpleadosForm() {
                             <option value="1">Activo</option>
                             <option value="0">Inactivo</option>
                           </select>
-                        ) :null}
+                        ) : null}
                         {errors.estado && touched.estado ? (
                           <div className="alert alert-danger" role="alert">{errors.estado}</div>
                         ) : null}
