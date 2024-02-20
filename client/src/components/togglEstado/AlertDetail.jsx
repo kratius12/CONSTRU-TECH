@@ -28,7 +28,7 @@ const AlertDetail = ({ id, entity, getApi }) => {
     fetchData();
   }, [getApi, id]);
 
-  const excludedFields = ['createdAt', 'updatedAt', 'idObra', 'Id', 'idEmp', 'idCli', 'idMat', 'idcat', 'idCliente', 'actividades', 'empleado_especialidad', 'contrasena', 'idRol', 'idPer'];
+  const excludedFields = ['createdAt', 'updatedAt', 'idObra', 'Id', 'idEmp', 'idCli', 'idMat', 'idcat', 'idCliente', 'actividades', 'empleado_especialidad', 'contrasena', 'idRol', 'idPer', 'idProv'];
   const [textStatus, setTextStatus] = useState(1);
   const text = textStatus === 1 ? 'Activo' : 'Inactivo';
 
@@ -48,10 +48,10 @@ const AlertDetail = ({ id, entity, getApi }) => {
       .map(([key, value]) => (
         <div className="col-md-6" key={key}>
           <div className="form-group">
-            <label htmlFor="">{key}</label>
+            <label htmlFor="">{key === 'rolpermisoempleado' ? 'Permisos del rol':key}</label>
             {Array.isArray(value) ? (
               <div key={value} className="card text-left" style={{ width: '18rem' }}>
-                <div className="card-header text-center">{key}</div>
+                
                 {value.map((item) => (
                   <ul className="list-group list-group-flush">
                     {Object.entries(item).map(([subKey, subValue]) => (

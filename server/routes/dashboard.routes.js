@@ -46,6 +46,14 @@ router.get("/dashboard/especialidades", async (req, res) =>{
         const result = await prisma.obras.findMany({
             include:{
                 detalle_obra:{
+                    where:{
+                        idEmp:{
+                            gt:0
+                        },
+                        idMat:{
+                            gt:0
+                        }
+                    },
                     include:{
                         empleado:{
                             include:{

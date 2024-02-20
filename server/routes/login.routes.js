@@ -63,6 +63,8 @@ router.post('/login', async (req, res) => {
 
 router.post('/sendCode', async (req, res) => {
   try {
+    const now = new Date()
+    const formattedDate = now.toISOString().slice(0, 19).replace('T', ' ')
     const {email} = req.body
 
     const user = await prisma.empleado.findUnique({
@@ -76,7 +78,8 @@ router.post('/sendCode', async (req, res) => {
         data:{
           codigo: String(code),
           email:email,
-          estado: 1
+          estado: 1,
+          fecha: formattedDate
         }
       })
 

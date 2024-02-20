@@ -219,9 +219,9 @@ export default function ClientsForm() {
                       <div className="col-md-6 mt-3 mx-auto">
                         <select id="tipoDoc" className="form-select  form-control-user" onChange={handleChange} value={values.tipoDoc} >
                           <option value="">Seleccione tipo documento*</option>
-                          <option value="Cedula de ciudadania">Cedula de ciudadania</option>
-                          <option value="Cedula de extranjeria">Cedula de extranjeria</option>
-                          <option value="Pasaporte">Pasaporte</option>
+                          <option value="CC">Cedula de ciudadania</option>
+                          <option value="CE">Cedula de extranjeria</option>
+                          <option value="PS">Pasaporte</option>
                         </select>
                         {errors.tipoDoc && touched.tipoDoc ? (
                           <div className="alert alert-danger" role="alert">{errors.tipoDoc}</div>

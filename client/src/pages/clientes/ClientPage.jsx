@@ -28,6 +28,10 @@ function ClientPage() {
             accessorKey: 'telefono'
         },
         {
+            header:"Tipo documento",
+            accessorKey: 'tipoDoc'
+        },
+        {
             header: "Cédula",
             accessorKey: 'cedula'
         },

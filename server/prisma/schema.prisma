@@ -192,5 +192,5 @@ model codigos {
   codigo String?   @unique @db.VarChar(50)
   email  String?   @db.VarChar(255)
   estado Int?
-  fecha  DateTime? @default(now()) @db.Timestamp(0)
+  fecha  String?   @db.VarChar(100)
 }
