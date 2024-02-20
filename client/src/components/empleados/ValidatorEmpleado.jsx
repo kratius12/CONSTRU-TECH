@@ -20,6 +20,9 @@ const EmpleadoSchema = Yup.object().shape({
   estado: Yup.string().required('Seleccione estado').trim(),
   especialidad: Yup.array().min(1, "Debe seleccionar al menos una especialidad"),
   rol: Yup.string().required("El rol es requerido"),
+  confirmar: Yup.string()
+    .oneOf([Yup.ref('contrasena'), null], 'Las contraseñas deben coincidir')
+    .required('Confirma tu contraseña'),
 });
 
 export default EmpleadoSchema;
