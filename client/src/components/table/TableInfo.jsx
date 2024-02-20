@@ -11,6 +11,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Table as BTable, Card } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import StatusToggle from '../togglEstado/StatusToggle';
+import StatusToggleEmpleados from '../togglEstado/StatusToggleEmpleados';
 import AlertDetail from '../togglEstado/AlertDetail';
 import "./Tableinfo.css"
 
@@ -128,7 +129,7 @@ function TableInfo({ dataHeader, dataBody, routeEdit, viewDetail, entity, toggle
                         Editar <i className="fa-solid fa-pencil" />
                       </Link> */}
                       {entity === 'Rol' && cell.row.original[cell.column.columnDef.idProperty] === 1 || entity === 'Empleado' && cell.row.original[cell.column.columnDef.idProperty] === 1 ? (
-                        <button className='btn btn-default'><i class="fa-solid fa-lock fs-1"></i></button>
+                        <button className='btn btn-default'><i className="fa-solid fa-lock fs-1"></i></button>
                       ): <Link
                       className={`btn bg-secondary text-white ${cell.row.original.estado === 0 ? 'disabled' : ''}`}
                       to={`/${routeEdit}/${cell.row.original[cell.column.columnDef.idProperty]}`}
@@ -138,8 +139,21 @@ function TableInfo({ dataHeader, dataBody, routeEdit, viewDetail, entity, toggle
                     </>
                   ) : cell.column.id === 'estado' ? (
                     entity === 'Rol' && cell.row.original[cell.column.columnDef.idProperty] === 1 || entity === 'Empleado' && cell.row.original[cell.column.columnDef.idProperty] === 1 ? (
-                      <button className='btn btn-default'><i class="fa-solid fa-lock fs-1"></i></button>
-                    ):<StatusToggle
+                      <button className='btn btn-default'><i className="fa-solid fa-lock fs-1"></i></button>
+                    ): entity === 'Empleado' ? (
+                      <StatusToggleEmpleados
+                    onCambioEstado={handleCambioEstado}
+                    id={cell.row.original[cell.column.columnDef.idProperty]}
+                    initialStatus={cell.row.original.estado}
+                    toggleApi={toggleApi}
+                    entity={entity}
+                  >
+                    <Link
+                      to={`/${routeEdit}/${cell.row.original[cell.column.columnDef.idProperty]}`}
+                    ></Link>
+                  </StatusToggleEmpleados>
+                    ):
+                    <StatusToggle
                     onCambioEstado={handleCambioEstado}
                     id={cell.row.original[cell.column.columnDef.idProperty]}
                     initialStatus={cell.row.original.estado}

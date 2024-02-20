@@ -262,9 +262,9 @@ export default function EmpleadosForm() {
 
                         }} value={values.tipoDoc}>
                           <option value="">Seleccione tipo documento*</option>
-                          <option value="Cedula de ciudadanía">Cedula de ciudadanía</option>
-                          <option value="Cedula de extranjería">Cedula de extranjería</option>
-                          <option value="Pasaporte">Pasaporte</option>
+                          <option value="CC">Cedula de ciudadanía</option>
+                          <option value="CE">Cedula de extranjería</option>
+                          <option value="PS">Pasaporte</option>
                         </select>
                         {errors.tipoDoc && touched.tipoDoc ? (
                           <div className="alert alert-danger" role="alert">{errors.tipoDoc}</div>

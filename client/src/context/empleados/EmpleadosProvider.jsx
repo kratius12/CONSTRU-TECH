@@ -93,10 +93,7 @@ export const EmpleadoContextProvider = ({children}) => {
             }else{
                 status = 1
             }
-            await ToggleEmpleadoStatusRequest(idEmp, {status})
-            // setObras(
-            //     obras.map(obra => obra.idObra === idObra ? obra.estado = obra.estado === 0 ? 1 : 0 : obra.estado)
-            // )
+            return await ToggleEmpleadoStatusRequest(idEmp, {status})
         } catch (error) {
             console.error(error)
         }
