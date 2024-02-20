@@ -28,6 +28,7 @@ export default function CategoriasForm() {
     }
     $.confirm({
         title: `Categoria ${message} con éxito!`,
+        content: "",
         icon: 'fa fa-check',
         theme: 'modern',
         closeIcon: true,

@@ -32,6 +32,7 @@ export default function ClientsForm() {
     }
     $.confirm({
         title: `Cliente ${message} con éxito!`,
+        content: "",
         icon: 'fa fa-check',
         theme: 'modern',
         closeIcon: true,

@@ -24,6 +24,7 @@ export default function MaterialesForm() {
     // eslint-disable-next-line no-undef
     $.confirm({
       title: `Material ` + message + ` con exito!`,
+      content: "",
       icon: 'fa fa-check',
       theme: 'modern',
       closeIcon: true,
