@@ -453,8 +453,12 @@ const ObraDetalle = () => {
                                                             <i className="fa fa-search"></i>
                                                         </button>
                                                     </div>
-
                                                 </div>
+                                                <div className="ml-3 mr-2">
+                                                        <a type="button" className="btn btn-primary" >
+                                                            Ver diagrama 
+                                                        </a>
+                                                    </div>
                                             </>
 
 

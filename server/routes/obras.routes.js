@@ -220,8 +220,7 @@ router.post("/guardarActividad/:id", async (req, res) => {
     //     })
     //   }
     // }
-    console.log(antiguo)
-
+    // console.log(antiguo)
     if (antiguo) {
       // Delete the old activity
       await prisma.detalle_obra.deleteMany({
