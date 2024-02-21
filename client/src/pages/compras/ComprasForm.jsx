@@ -77,7 +77,7 @@ const ComprasForm = () => {
   };
 
   useEffect(() => {
-    fetchData("http://localhost:4000/materialesAc").then((data) => {
+    fetchData("http://localhost:4000/materiales").then((data) => {
       setMateriales(data);
     });
     fetchData("http://localhost:4000/provsAc").then((data) => {

@@ -110,7 +110,7 @@ const RolesForm = () => {
       }
     })
   }
-  console.clear()
+  
 
   return (
     <div className="container">
@@ -147,15 +147,16 @@ const RolesForm = () => {
               setSubmitting(false))
             }else{
               setSubmitting(true)
-              console.clear()
+              
               await updateRol(params.id, rolObject);
               alertConfirm("actualizado");
               setTimeout(() => navigate("/roles"));
             }
           }else{
             const validateRol = await axios.put(`http://localhost:4000/rolSA`,{nombre:rolObject.nombre},{timeout:500})
-            if (validateRol.d == true) {
-              console.log(validateRol)
+            console.log(validateRol.data)
+            if (validateRol.data == false) {
+              
               $.confirm({
                 title: `Error`,
                 content: `El rol ${rolObject.nombre} ya exite, por favor ingrese otro`,

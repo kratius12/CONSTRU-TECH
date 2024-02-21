@@ -3,6 +3,7 @@ import { Form, Formik } from "formik";
 import { useParams, useNavigate } from "react-router-dom";
 import { useProveedores } from "../../context/proveedores/ProveedorProvider";
 import validateForm from "../../components/proveedores/ProveedorValidator";
+import axios from "axios";
 
 export default function ProveedoresForm() {
   const { createProveedor, getProveedor, updateProveedor, Proveedores, searchNit } = useProveedores();
@@ -11,7 +12,7 @@ export default function ProveedoresForm() {
     Proveedores();
   }, []);
 
- 
+
 
   const [placeholders, setPlaceholders] = useState({
     nit: "Número de identificación*",
@@ -123,25 +124,73 @@ export default function ProveedoresForm() {
             enableReinitialize={true}
             validate={validateForm}
             validateOnChange={true}
-            onSubmit={async (values, {setSubmitting}) => {
+            onSubmit={async (values, { setSubmitting }) => {
               try {
                 if (params.id) {
-                  await updateProveedor(params.id, { ...values, tipo: tipo });
-                  navigate("/proveedores");
-                  alertConfirm();
-                  
-                } else {
-                  const validateFact = await searchNit(values);
-
-                  if (validateFact === true) {
-                    alert(`Error: El ${placeholders.nit} ${values.nit} ya existe, por favor ingrese uno diferente`);
+                  const validateFact = await axios.put(`http://localhost:4000/documentoProvE/${params.id}`, { nit: values.nit, tipo: values.tipo })
+                  console.log(validateFact.data)
+                  if (validateFact.data == true) {
+                    var type;
+                    if (values.tipo == "Juridico") {
+                      type = "NIT"
+                    } else {
+                      type = "Número de documento"
+                    }
+                    $.confirm({
+                      title: `Error`,
+                      content: `El ${type} ${values.nit} ya está asociado a otro proveedor`,
+                      icon: 'fa fa-circle-xmark',
+                      theme: 'modern',
+                      closeIcon: true,
+                      animation: 'zoom',
+                      closeAnimation: 'scale',
+                      animationSpeed: 500,
+                      type: 'red',
+                      columnClass: 'col-md-6 col-md-offset-3',
+                      buttons: {
+                        Cerrar: function () {
+                        },
+                      }
+                    }, setSubmitting(false))
                   } else {
-                    
-                      await createProveedor({ ...values, tipo: tipo });
-                      navigate("/proveedores");
-                      alertConfirm();
-                    
+                    setSubmitting(true)
+                    await updateProveedor(params.id, { ...values, tipo: tipo });
+                    navigate("/proveedores");
+                    alertConfirm();
                   }
+                } else {
+
+                  const validateFact = await axios.put(`http://localhost:4000/documentoProvA`, { nit: values.nit, tipo: tipo })
+                  if (validateFact.data == true) {
+                    var type;
+                    if (values.tipo == "Juridico") {
+                      type = "NIT"
+                    } else {
+                      type = "Número de documento"
+                    }
+                    $.confirm({
+                      title: `Error`,
+                      content: `El ${type} ${values.nit} ya está asociado a otro proveedor`,
+                      icon: 'fa fa-circle-xmark',
+                      theme: 'modern',
+                      closeIcon: true,
+                      animation: 'zoom',
+                      closeAnimation: 'scale',
+                      animationSpeed: 500,
+                      type: 'red',
+                      columnClass: 'col-md-6 col-md-offset-3',
+                      buttons: {
+                        Cerrar: function () {
+                        },
+                      }
+                    }, setSubmitting(false))
+                  } else {
+                    setSubmitting(true)
+                    await createProveedor({ ...values, tipo: tipo });
+                    navigate("/proveedores");
+                    alertConfirm();
+                  }
+
                 }
 
                 setProveedor({
@@ -160,10 +209,10 @@ export default function ProveedoresForm() {
                 console.error(error);
               }
             }
-            
 
-          }
-            
+
+            }
+
           >
 
             {({ handleChange, handleSubmit, values, isSubmitting, touched, setFieldValue, errors }) => (
@@ -189,7 +238,7 @@ export default function ProveedoresForm() {
                         {
                           errors.tipo && touched.tipo ? (
                             <div className="alert alert-danger" role="alert">{errors.tipo}</div>
-                          ):null
+                          ) : null
                         }
 
                       </div>
@@ -202,14 +251,14 @@ export default function ProveedoresForm() {
                           value={values.nit}
                           placeholder={placeholders.nit}
                           onBlur={() => setFieldValue('nit', values.nit.trim())}
-                          // validate={validateWhitespace}
+                        // validate={validateWhitespace}
                         />
                         {
-                          errors.nit && touched.nit? (
+                          errors.nit && touched.nit ? (
                             <div className="alert alert-danger" role="alert">{errors.nit}</div>
-                          ):null
+                          ) : null
                         }
-                        
+
                       </div>
                       <div className="col-md-6 mt-3">
                         <input
@@ -220,14 +269,14 @@ export default function ProveedoresForm() {
                           value={values.nombre}
                           placeholder={placeholders.nombre}
                           onBlur={() => setFieldValue('nombre', values.nombre.trim())}
-                          // validate={validateWhitespace}
+                        // validate={validateWhitespace}
                         />
                         {
-                          errors.nombre && touched.nombre? (
+                          errors.nombre && touched.nombre ? (
                             <div className="alert alert-danger" role="alert">{errors.nombre}</div>
-                          ):null
+                          ) : null
                         }
-                        
+
                       </div>
                       <div className="col-md-6 mt-3">
                         <input
@@ -238,14 +287,14 @@ export default function ProveedoresForm() {
                           value={values.email}
                           placeholder="Correo electrónico*"
                           onBlur={() => setFieldValue('email', values.email.trim())}
-                          // validate={validateWhitespace}
+                        // validate={validateWhitespace}
                         />
                         {
-                          errors.email && touched.email? (
+                          errors.email && touched.email ? (
                             <div className="alert alert-danger" role="alert">{errors.email}</div>
-                          ):null
+                          ) : null
                         }
-                        
+
                       </div>
                       <div className="col-md-6 mt-3">
                         <input
@@ -256,13 +305,13 @@ export default function ProveedoresForm() {
                           value={values.direccion}
                           placeholder="Dirección*"
                           onBlur={() => setFieldValue('direccion', values.direccion.trim())}
-                          // validate={validateWhitespace}
+                        // validate={validateWhitespace}
                         />
                         {
-                          errors.direccion && touched.direccion? (
+                          errors.direccion && touched.direccion ? (
                             <div className="alert alert-danger" role="alert">{errors.direccion}</div>
-                          ):null
-                        }                        
+                          ) : null
+                        }
                       </div>
                       <div className="col-md-6 mt-3">
                         <input
@@ -273,14 +322,14 @@ export default function ProveedoresForm() {
                           value={values.telefono}
                           placeholder="Teléfono*"
                           onBlur={() => setFieldValue('telefono', values.telefono.trim())}
-                          // validate={validateWhitespace}
+                        // validate={validateWhitespace}
                         />
                         {
-                          errors.telefono && touched.telefono? (
+                          errors.telefono && touched.telefono ? (
                             <div className="alert alert-danger" role="alert">{errors.telefono}</div>
-                          ):null
+                          ) : null
                         }
-                        
+
                       </div>
                       <div className="col-md-6 mt-3">
                         {params.id ? (
@@ -294,9 +343,9 @@ export default function ProveedoresForm() {
                             <option value="1">Activo</option>
                             <option value="0">Inactivo</option>
                           </select>
-                        ) : 
-                         null}
-                        
+                        ) :
+                          null}
+
                       </div>
 
                     </div>
@@ -316,13 +365,13 @@ export default function ProveedoresForm() {
                             onBlur={() => setFieldValue('nombreContacto', values.nombreContacto.trim())}
                           />
                           {
-                            errors.nombreContacto && touched.nombreContacto? (
+                            errors.nombreContacto && touched.nombreContacto ? (
                               <div className="alert alert-danger" role="alert">
                                 {errors.nombreContacto}
                               </div>
-                            ): null
+                            ) : null
                           }
-                          
+
                         </div>
                         <div className="col-md-6 mt-3">
                           <input
@@ -335,13 +384,13 @@ export default function ProveedoresForm() {
                             onBlur={() => setFieldValue('telefonoContacto', values.telefonoContacto.trim())}
                           />
                           {
-                            errors.telefonoContacto && touched.telefonoContacto? (
+                            errors.telefonoContacto && touched.telefonoContacto ? (
                               <div className="alert alert-danger" role="alert">
                                 {errors.telefonoContacto}
                               </div>
-                            ): null
+                            ) : null
                           }
-                          
+
                         </div>
                         <div className="col-md-6 mt-3">
                           <input
@@ -353,13 +402,13 @@ export default function ProveedoresForm() {
                             placeholder="Email del contacto*"
                           />
                           {
-                            errors.emailContacto && touched.emailContacto? (
+                            errors.emailContacto && touched.emailContacto ? (
                               <div className="alert alert-danger" role="alert">
                                 {errors.emailContacto}
                               </div>
-                            ): null
+                            ) : null
                           }
-                          
+
                         </div>
                       </div>
                     </div>

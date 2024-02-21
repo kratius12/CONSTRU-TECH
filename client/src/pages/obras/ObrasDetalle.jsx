@@ -61,7 +61,10 @@ const ObraDetalle = () => {
     const [matDefault, setMatDefault] = useState([])
     const [empDefault, setEmpDefault] = useState([])
     const [selectedActivity, setSelectedActivity] = useState(null);
-    const [disabled, setDisabled] = useState("disabled")
+    const [materialesList, setMaterialesList] = useState([{ material: "", cantidad: 0 }]);
+    const [numFormularios, setNumFormularios] = useState(1);
+
+
     const handleAgregarActividad = (activity = null) => {
         setSelectedActivity(activity);
         setMatDefault([]);
@@ -70,22 +73,26 @@ const ObraDetalle = () => {
         if (activity) {
             const initialMaterials = activity.materiales.map((material) => ({
                 value: material.idMat,
-                label: material.nombre,
+                // label: material.nombre,
             }));
 
             const initialEmployees = activity.empleados.map((employee) => ({
-                value: employee.idEmp,
-                label: employee.nombre,
+                value: employee.empleado.idEmp,
+                label: employee.empleado.nombre,
             }));
 
-            setMatDefault(initialMaterials);
+            setSelectedMaterials(initialMaterials); // preselect the materials associated with the activity
             setEmpDefault(initialEmployees);
         } else if (!activity.actividad) {
             setMatDefault([]);
             setEmpDefault([]);
         }
-
     };
+    const handleAgregarMaterial = () => {
+        setNumFormularios(numFormularios + 1);
+        setMaterialesList([...materialesList, { idMat: '', cantidad: 0 }]);
+    };
+
     const [currentPage, setCurrentPage] = useState(1);
     const activitiesPerPage = 4;
 
@@ -137,7 +144,7 @@ const ObraDetalle = () => {
     const indexOfFirstActivity = indexOfLastActivity - activitiesPerPage;
     const currentActivities = filteredActivities.slice(indexOfFirstActivity, indexOfLastActivity);
     const totalPages = Math.ceil(filteredActivities.length / activitiesPerPage);
-
+    const [selectedMaterial, setSelectedMaterial] = useState(null);
     const [values, setValues] = useState([])
     const alertConfirmAct = async () => {
         try {
@@ -165,6 +172,18 @@ const ObraDetalle = () => {
         }
     }
     const [existingActivities, setExistingActivities] = useState([]);
+    const handleMaterialChange = (index, selectedMaterial) => {
+        const updatedList = [...materialesList];
+        updatedList[index].material = selectedMaterial;
+        setMaterialesList(updatedList);
+        console.log(updatedList);
+    };
+
+    const handleCantidadChange = (index, cantidad) => {
+        const updatedList = [...materialesList];
+        updatedList[index].cantidad = cantidad;
+        setMaterialesList(updatedList);
+    };
 
     const handleCerrarForm = () => {
         setModalVisible(false);
@@ -200,7 +219,26 @@ const ObraDetalle = () => {
     const handleSearch = () => {
         setCurrentPage(1);
     };
-    console.clear()
+    const [modalMaterialesVisible, setModalMaterialesVisible] = useState(false);
+    const handleAbrirModalMateriales = (materialesIniciales) => {
+        if (materialesIniciales) {
+            setMaterialesList(materialesIniciales.map((material) => ({ material, cantidad: material.cantidad })));
+            console.log(materialesIniciales)
+        } else {
+            setMaterialesList([])
+        }
+        setModalMaterialesVisible(true);
+        c
+    };
+
+
+    const handleCerrarModalMateriales = () => {
+        setMaterialesList([]);
+        setModalMaterialesVisible(false);
+    };
+
+    // console.clear()
+
 
     useEffect(() => {
         const fetchObraDetalle = async () => {
@@ -242,6 +280,23 @@ const ObraDetalle = () => {
         fetchObraDetalle()
     }, [id]);
 
+
+    const handleEliminarMaterial = (index) => {
+        setNumFormularios(numFormularios - 1);
+        const updatedList = [...materialesList];
+        updatedList.splice(index, 1);
+        setMaterialesList(updatedList);
+        console.log(updatedList)
+    };
+
+
+
+    const handleGuardarMateriales = () => {
+        handleCerrarModalMateriales();
+    };
+    const [selectedMaterials, setSelectedMaterials] = useState([]);
+
+
     if (!obra) {
         return <div>Error al cargar la información de la obra</div>
     }
@@ -255,6 +310,7 @@ const ObraDetalle = () => {
         };
         setValues(initialValues);
     };
+    console.log(obra)
     return (
         <div>
             <Formik
@@ -414,10 +470,9 @@ const ObraDetalle = () => {
                                                     actividad: selectedActivity ? selectedActivity.actividad : '',
                                                     fechaini: selectedActivity ? selectedActivity.fechaini : '',
                                                     fechafin: selectedActivity ? selectedActivity.fechafin : '',
-                                                    actividades: {
-                                                        materiales: selectedActivity ? matDefault : [],
-                                                        empleados: selectedActivity ? empDefault : [],
-                                                    },
+
+                                                    empleados: selectedActivity ? empDefault : [],
+                                                    materiales: selectedActivity ? matDefault : [],
                                                     estado: selectedActivity ? selectedActivity.estado : '',
                                                     obra: {
                                                         fechainiObra: obra.fechaini,
@@ -433,6 +488,7 @@ const ObraDetalle = () => {
                                                     const formattedShare = {
                                                         ...values,
                                                         antiguo: selectedActivity.actividad,
+                                                        materiales: materialesList
                                                     };
                                                     for (const actividad of actividades) {
                                                         if (actividad.actividad === values.actividad && !selectedActivity) {
@@ -473,16 +529,15 @@ const ObraDetalle = () => {
                                                             })
                                                             setSubmitting(false)
                                                             return
-                                                        }else{
+                                                        } else {
                                                             setSubmitting(true)
                                                         }
                                                     }
-
                                                     setSubmitting(true);
                                                     await createActividad(id, formattedShare);
                                                     alertConfirmAct();
                                                     setModalVisible(false);
-                                                    console.clear()
+                                                    // console.clear()
                                                 }}
                                             >
                                                 {({ values, setFieldValue, handleSubmit, setFieldTouched, errors, touched, handleChange, resetForm }) => (
@@ -529,38 +584,21 @@ const ObraDetalle = () => {
                                                                 ) : null
                                                             }
                                                         </div>
-                                                        <div className="mt-3">
-                                                            <label htmlFor="materiales">Seleccione los materiales necesarios para la actividad</label>
-                                                            <Select
-                                                                id={`materiales`}
-                                                                options={
-                                                                    materiales
-                                                                }
-                                                                isMulti
 
-                                                                // defaultValue={matDefault}
-                                                                value={values.actividades.materiales}
-                                                                onChange={(selectedMateriales) => setFieldValue(`actividades.materiales`, selectedMateriales)}
-                                                                onBlur={() => setFieldTouched(`values.actividades.materiales`, true)}
-
-                                                            />
-                                                            {errors.actividades?.materiales && touched.actividades?.materiales && (
-                                                                <div className="alert alert-danger">{errors.actividades.materiales}</div>
-                                                            )}
-                                                        </div>
                                                         <div className="mt-3">
                                                             <label htmlFor="empleados">Seleccione los empleados encargados de la actividad</label>
                                                             <Select
-                                                                id={`actividades.empleados`}
+                                                                key={`select${values.empleados}`}
+                                                                id={`empleados`}
                                                                 options={empleados}
                                                                 isMulti
-                                                                value={values.actividades.empleados}
-                                                                onChange={(selectedEmpleados) => setFieldValue(`actividades.empleados`, selectedEmpleados)}
-                                                                onBlur={() => setFieldTouched(`values.actividades.empleados`, true)}
+                                                                value={values.empleados}
+                                                                onChange={(selectedEmpleados) => setFieldValue(`empleados`, selectedEmpleados)}
+                                                                onBlur={() => setFieldTouched(`values.empleados`, true)}
 
                                                             />
-                                                            {errors.actividades?.empleados && touched.actividades?.empleados && (
-                                                                <div className="alert alert-danger">{errors.actividades.empleados}</div>
+                                                            {errors.empleados && touched.empleados && (
+                                                                <div className="alert alert-danger">{errors.empleados}</div>
                                                             )}
 
                                                         </div>
@@ -580,6 +618,13 @@ const ObraDetalle = () => {
                                                                     </div>
                                                                 ) : null
                                                             }
+                                                        </div>
+                                                        <div>
+                                                            <Button color="primary" className="mt-3" onClick={() => handleAbrirModalMateriales(selectedActivity ? selectedActivity.materiales : [])}>
+                                                                Gestionar Materiales
+                                                            </Button>
+
+
                                                         </div>
                                                         <div className="card-footer">
                                                             <ModalFooter>
@@ -603,6 +648,54 @@ const ObraDetalle = () => {
 
                                         </ModalBody>
                                     </Modal>
+                                    <Modal isOpen={modalMaterialesVisible} toggle={handleCerrarModalMateriales}>
+                                        <ModalHeader toggle={handleCerrarModalMateriales}>Gestionar Materiales</ModalHeader>
+                                        <ModalBody>
+                                            
+                                            {materialesList.map((material, index) => (
+                                                <Form key={index}>
+                                                    <div className="container" key={index}>
+                                                    <Select
+                                                        id={`materiales.${index}`}
+                                                        options={materiales}
+                                                        value={selectedMaterials[index] || ''} // set an empty string as the default value
+                                                        onChange={(selectedOption) => handleMaterialChange("materiales", selectedOption)}
+                                                    />
+                                                    <input
+                                                        type="number"
+                                                        className="form-control mt-3"
+                                                        name={`cantidad-${index}`}
+                                                        value={material.cantidad}
+                                                        onChange={(e) => handleCantidadChange(index, e.target.value)}
+                                                    />
+                                                    <div className="text-center mt-2">
+                                                        <Button color="danger" onClick={() => handleEliminarMaterial(index)}>
+                                                            X
+                                                        </Button>
+                                                    </div>
+
+                                                    </div>
+                                                    <hr className="mt-3" />
+                                                </Form>
+                                            ))}
+                                            <Button color="success" onClick={handleAgregarMaterial}>
+                                                Agregar Material
+                                            </Button>
+
+
+                                        </ModalBody>
+                                        <ModalFooter>
+                                            <Button color="secondary" onClick={handleCerrarModalMateriales}>
+                                                Cancelar
+                                            </Button>
+                                            <Button color="primary"
+                                                onClick={handleGuardarMateriales}
+                                            >
+                                                Guardar Materiales
+                                            </Button>
+                                        </ModalFooter>
+                                    </Modal>
+
                                     <div className="container">
                                         <div className="row">
                                             {filteredActivities.length > 0 ? (
@@ -613,8 +706,8 @@ const ObraDetalle = () => {
                                                                 <h5 className="card-title">Actividad: {detalle.actividad}</h5>
                                                                 <p className="card-text">Fecha de inicio: {detalle.fechaini}</p>
                                                                 <p className="card-text">Fecha de fin: {detalle.fechafin}</p>
-                                                                <p className="card-text">Materiales: {detalle.materiales.map((material) => material.nombre).join(', ')}</p>
-                                                                <p className="card-text">Empleados: {detalle.empleados.map((empleado) => empleado.nombre).join(', ')}</p>
+                                                                <p className="card-text">Materiales: {detalle.materiales.map((material) => material.materiales.nombre).join(', ')}</p>
+                                                                <p className="card-text">Empleados: {detalle.empleados.map((empleado) => empleado.empleado.nombre).join(', ')}</p>
                                                                 <p className="card-text">Estado: {detalle.estado}</p>
                                                                 <div className="mt-3">
                                                                     <Button

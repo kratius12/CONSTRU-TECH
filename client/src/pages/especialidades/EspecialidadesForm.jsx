@@ -3,6 +3,7 @@ import { Form, Formik } from "formik";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEspecialidades } from "../../context/especialidades/EspecialidadesProvider";
 import EspecialidadSchema from '../../components/especialidades/ValidatorEspecialidad'
+import axios from "axios";
 
 export default function EspecialidadesForm() {
   //   const [agreed, setAgreed] = useState(false)
@@ -18,7 +19,7 @@ export default function EspecialidadesForm() {
   const [especialidad, setEspecialidad] = useState(initialState)
   const validateWhitespace = (value) => {
     return hasWhitespace(value) ? 'No se permiten espacios en blanco' : undefined;
-};
+  };
   useEffect(() => {
     const loadEspecialidades = async () => {
       if (params.id) {
@@ -67,7 +68,7 @@ export default function EspecialidadesForm() {
           <Formik initialValues={especialidad}
             enableReinitialize={true}
             validationSchema={EspecialidadSchema}
-            onSubmit={async (values) => {
+            onSubmit={async (values, { setSubmitting }) => {
               const cleannedName = values.especialidad.replace(/\s{2,}/g, ' ').trim()
               const especialidadObject = {
                 ...values,
@@ -82,12 +83,33 @@ export default function EspecialidadesForm() {
                   5000
                 )
               } else {
-                await createEspecialidad(especialidadObject)
-                alertConfirm()
-                setTimeout(
-                  navigate("/especialidades"),
-                  5000
-                )
+                const validarEsp = axios.put(`http://localhost:4000//validarEspA`, { especialidad: values.especialidad })
+                if (validarEsp.data === true) {
+                  $.confirm({
+                    title: `Error`,
+                    content: `La especialidad ${values.especialidad} ya existe`,
+                    icon: 'fa fa-circle-xmark',
+                    theme: 'modern',
+                    closeIcon: true,
+                    animation: 'zoom',
+                    closeAnimation: 'scale',
+                    animationSpeed: 500,
+                    type: 'red',
+                    columnClass: 'col-md-6 col-md-offset-3',
+                    buttons: {
+                      Cerrar: function () {
+                      },
+                    }
+                  }, setSubmitting(false))
+                } else {
+                  setSubmitting(true)
+                  await createEspecialidad(especialidadObject)
+                  alertConfirm()
+                  setTimeout(
+                    navigate("/especialidades"),
+                    5000
+                  )
+                }
               }
               setEspecialidad({
                 especialidad: "",
@@ -95,14 +117,14 @@ export default function EspecialidadesForm() {
               })
             }}
           >
-            {({ handleChange, handleSubmit, values, isSubmitting, errors, touched,setFieldValue }) => (
+            {({ handleChange, handleSubmit, values, isSubmitting, errors, touched, setFieldValue }) => (
               <Form onSubmit={handleSubmit} className="user">
                 <div className="card text-center w-100">
                   <h2>{params.id ? "Editar" : "Agregar"} especialidad</h2>
                   <div className="card-body">
                     <div className="row">
                       <div className="col-6 mt-3">
-                        <input type="text" className="form-control form-control-user" id="especialidad" onChange={handleChange} value={values.especialidad} placeholder="Nombre*"  />
+                        <input type="text" className="form-control form-control-user" id="especialidad" onChange={handleChange} value={values.especialidad} placeholder="Nombre*" />
                         {errors.especialidad && touched.especialidad ? (
                           <div className="alert alert-danger" role="alert">{errors.especialidad}</div>
                         ) : null}

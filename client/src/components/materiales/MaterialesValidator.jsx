@@ -7,6 +7,7 @@ const materialSchema = Yup.object().shape({
     .required('El nombre es requerido'),
   idCategoria: Yup.string()
     .required('La categoria es requerida'),
+  cantidad: Yup.number().positive("La cantidad debe ser un número positivo.")
   // estado: Yup.string()
   //   .required('El estado es requerido')
 });

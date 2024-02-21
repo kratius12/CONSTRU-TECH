@@ -34,8 +34,7 @@ function RolesPage() {
   const navigate = useNavigate();
   useEffect(() => {
     Roles();
-  }, []);
-  console.clear()
+  }, [])
 
   function renderMain() {
     if (roles.length === 0) {
@@ -57,7 +56,7 @@ function RolesPage() {
       );
     }
   }
-  // console.clear()
+  
   return (
     <>
       <h1 className="h3 mb-2 text-gray-800">Gestión de roles</h1>
