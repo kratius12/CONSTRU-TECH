@@ -119,135 +119,108 @@ router.put("/obra/:id", async (req, res) => {
 });
 
 router.get("/actividades/:id", async (req, res) => {
+  const idObra = parseInt(req.params.id);
+
   try {
-    const actividades = await prisma.detalle_obra.groupBy({
-      by: ["actividad"],
+    const detallesObra = await prisma.detalle_obra.findMany({
       where: {
-        idObra: parseInt(req.params.id),
-      },
-      _count: {
-        actividad: true,
+        idObra: idObra,
       },
     });
 
-    const actividadesAgrupadas = await Promise.all(
-      actividades.map(async (actividad) => {
-        const detalleObras = await prisma.detalle_obra.findMany({
-          where: {
-            idObra: parseInt(req.params.id),
-            actividad: actividad.actividad,
-          },
-          select: {
-            actividad: true,
-            estado: true,
-            fechafin: true,
-            fechaini: true,
-            idObra: true,
-          },
-        });
-        const empleados = await prisma.actividades_empleados.findMany({
-          where:{
-            idObra: parseInt(req.params.id)
-          }, include:{
-            empleado:{
-              select:{
-                nombre:true,
-                idEmp:true
-              }
-            }
+    const actividadesEmpleados = await prisma.actividades_empleados.findMany({
+      where: {
+        idObra: idObra,
+      },select:{
+        actividad:true,
+        empleado:{
+          select:{
+            nombre:true,
+            idEmp:true
           }
-        })
-        const materiales = await prisma.actividades_materiales.findMany({
-          where:{
-            idObra: parseInt(req.params.id)
-          }, select:{
-            actividad:true,
-            cantidad:true,
+        }
+      }
+    });
+
+    const actividadesMateriales = await prisma.actividades_materiales.findMany({
+      where: {
+        idObra: idObra,
+      },select:{
+        actividad:true,
+        materiales:{
+          select:{
+            nombre:true,
             idMat:true,
-            idObra:true,
-            materiales:{
-              select:{
-                idMat:true,
-                nombre:true
-              }
-            }
+            cantidad:true
           }
-        })
+        }
+      }
+    });
 
-        const empleadosSet = new Set();
-        const materialesSet = new Set();
+    // Combinar los resultados antes de enviar la respuesta
+    const detallesAgrupados = detallesObra.map((detalle) => {
+      const matchingActividadesEmpleados = actividadesEmpleados.filter(
+        (actEmpleado) => actEmpleado.actividad === detalle.actividad
+      );
 
-        empleados.forEach((detalleObra) => {
-          if (detalleObra.empleado) {
-            empleadosSet.add(JSON.stringify(detalleObra.empleado));
-          }
+      const matchingActividadesMateriales = actividadesMateriales.filter(
+        (actMaterial) => actMaterial.actividad === detalle.actividad
+      );
 
-          if (detalleObra.materiales) {
-            materialesSet.add(JSON.stringify(detalleObra.materiales));
-          }
-        });
+      return {
+        detalleObra: detalle,
+        empleados: matchingActividadesEmpleados,
+        materiales: matchingActividadesMateriales,
+      };
+    });
 
-        const empleadosAsociados = Array.from(empleadosSet).map((str) => JSON.parse(str));
-        const materialesAsociados = Array.from(materialesSet).map((str) => JSON.parse(str));
-
-        const actividadConAsociados = {
-          actividad: detalleObras[0]?.actividad,
-          fechafin: detalleObras[0]?.fechafin,
-          fechaini: detalleObras[0]?.fechaini,
-          estado: detalleObras[0]?.estado,
-          fechafin: detalleObras[0]?.fechafin,
-          empleados: empleados,
-          materiales: materiales,
-        };
-
-        return actividadConAsociados;
-      })
-    );
-    return res.json(actividadesAgrupadas);
+    res.json(detallesAgrupados);
   } catch (error) {
-
-    return res.status(500).json({ error: "Error interno del servidor" });
+    console.error('Error al obtener detalles agrupados de obra:', error);
+    res.status(500).send('Error interno del servidor');
   }
 });
+
+
 
 router.post("/guardarActividad/:id", async (req, res) => {
   try {
     const { actividad, fechaini, fechafin, estado,  antiguo, empleados, materiales } = req.body;
-    for (const material of materiales) {
-      const idMaterial = parseInt(material.material.value);
-      const cantidadUtilizada = parseInt(material.cantidad);
+    // for (const material of materiales) {
+    //   const idMaterial = parseInt(material.material.value);
+    //   const cantidadUtilizada = parseInt(material.cantidad);
 
-      // Obtener información del material desde la base de datos
-      const materialDB = await prisma.materiales.findUnique({
-        where: {
-          idMat: idMaterial,
-        },
-      });
+    //   // Obtener información del material desde la base de datos
+    //   const materialDB = await prisma.materiales.findFirst({
+    //     where: {
+    //       idMat: idMaterial,
+    //     },
+    //   });
 
-      // Restar la cantidad utilizada al material
-      const nuevaCantidad = materialDB.cantidad - cantidadUtilizada;
+    //   // Restar la cantidad utilizada al material
+    //   const nuevaCantidad = materialDB.cantidad - cantidadUtilizada;
 
-      // Actualizar la cantidad en la base de datos
-      await prisma.materiales.update({
-        where: {
-          idMat: idMaterial,
-        },
-        data: {
-          cantidad: nuevaCantidad,
-        },
-      });
-      if(nuevaCantidad==0){
-        await prisma.materiales.update({
-          where:{
-            idMat:idMaterial
-          },
-          data:{
-            estado:0
-          }
-        })
-      }
-    }
-
+    //   // Actualizar la cantidad en la base de datos
+    //   await prisma.materiales.update({
+    //     where: {
+    //       idMat: idMaterial,
+    //     },
+    //     data: {
+    //       cantidad: nuevaCantidad,
+    //     },
+    //   });
+    //   if(nuevaCantidad==0){
+    //     await prisma.materiales.update({
+    //       where:{
+    //         idMat:idMaterial
+    //       },
+    //       data:{
+    //         estado:0
+    //       }
+    //     })
+    //   }
+    // }
+    console.log(antiguo)
 
     if (antiguo) {
       // Delete the old activity
@@ -255,7 +228,9 @@ router.post("/guardarActividad/:id", async (req, res) => {
         where: {
           AND: [
             {
-              actividad: req.body.antiguo
+              actividad:{
+                equals:antiguo
+              }
             }, {
               idObra: parseInt(req.params.id)
             }
@@ -266,7 +241,9 @@ router.post("/guardarActividad/:id", async (req, res) => {
         where:{
           AND:[
             {
-              actividad: req.body.antiguo
+              actividad:{
+                equals:antiguo
+              }
             }, {
               idObra:parseInt(req.params.id)
             }
@@ -277,7 +254,9 @@ router.post("/guardarActividad/:id", async (req, res) => {
         where:{
           AND:[
             {
-              actividad: req.body.antiguo
+              actividad:{
+                equals:antiguo
+              }
             }, {
               idObra:parseInt(req.params.id)
             }
@@ -307,7 +286,6 @@ router.post("/guardarActividad/:id", async (req, res) => {
         }
       })
     }
-    console.log(empleados)
     for (const empleado of empleados){
       const meps = await prisma.actividades_empleados.createMany({
         data:{
@@ -316,7 +294,6 @@ router.post("/guardarActividad/:id", async (req, res) => {
           idObra: parseInt(req.params.id)
         }
       })
-      console.log(meps)
     }
 
     res.status(200).json(result);

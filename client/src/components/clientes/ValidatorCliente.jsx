@@ -45,7 +45,7 @@ export const ClientSchema = Yup.object().shape({
     ).required("La contraseña es requerida"),
     confirmar: Yup.string()
     .oneOf([Yup.ref('contrasena'), null], 'Las contraseñas deben coincidir')
-    .required('Confirma tu contraseña'),
+    ,
 });
 export const ClientSchemaEdit = Yup.object().shape({
     nombre: Yup.string()

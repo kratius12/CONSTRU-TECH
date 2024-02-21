@@ -65,21 +65,27 @@ const ObraDetalle = () => {
     const [numFormularios, setNumFormularios] = useState(1);
 
 
-    const handleAgregarActividad = (activity = null) => {
-        setSelectedActivity(activity);
+    const handleAgregarActividad = (activity) => {
+        console.log(activity.detalleObra)
+        if (activity.detalleObra) {
+            setSelectedActivity(activity);
+        } else {
+            setSelectedActivity(null)
+        }
+
         setMatDefault([]);
         setEmpDefault([]);
         setModalVisible(true);
-        if (activity) {
+        if (activity.detalleObra) {
             const initialMaterials = activity.materiales.map((material) => ({
-                value: material.idMat,
-                // label: material.nombre,
+                value: material.materiales.idMat,
+                label: material.materiales.nombre,
             }));
-
             const initialEmployees = activity.empleados.map((employee) => ({
                 value: employee.empleado.idEmp,
                 label: employee.empleado.nombre,
             }));
+            console.log(initialEmployees)
 
             setSelectedMaterials(initialMaterials); // preselect the materials associated with the activity
             setEmpDefault(initialEmployees);
@@ -120,13 +126,13 @@ const ObraDetalle = () => {
         }, []);
 
         return [...detalleValues, ...materialesYEmpleados].some((value) =>
-            value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+            value.toString().includes(searchTerm)
         );
     })
         .sort((a, b) => {
             // Ordena por el estado "En curso" primero
-            const estadoA = a.estado.toLowerCase();
-            const estadoB = b.estado.toLowerCase();
+            const estadoA = a.estado;
+            const estadoB = b.estado;
 
             if (estadoA === "en curso" && estadoB !== "en curso") {
                 return -1;
@@ -144,7 +150,6 @@ const ObraDetalle = () => {
     const indexOfFirstActivity = indexOfLastActivity - activitiesPerPage;
     const currentActivities = filteredActivities.slice(indexOfFirstActivity, indexOfLastActivity);
     const totalPages = Math.ceil(filteredActivities.length / activitiesPerPage);
-    const [selectedMaterial, setSelectedMaterial] = useState(null);
     const [values, setValues] = useState([])
     const alertConfirmAct = async () => {
         try {
@@ -152,7 +157,7 @@ const ObraDetalle = () => {
             setActividades(updatedActividades);
             $.confirm({
                 title: `Actividad guardada con éxito!`,
-                content:"",
+                content: "",
                 icon: 'fa fa-check',
                 theme: 'modern',
                 closeIcon: true,
@@ -176,14 +181,14 @@ const ObraDetalle = () => {
         const updatedList = [...materialesList];
         updatedList[index].material = selectedMaterial;
         setMaterialesList(updatedList);
-        console.log(updatedList);
     };
 
     const handleCantidadChange = (index, cantidad) => {
         const updatedList = [...materialesList];
-        updatedList[index].cantidad = cantidad;
+        updatedList[index].cantidad = parseInt(cantidad, 10); // Convertir a entero
         setMaterialesList(updatedList);
     };
+
 
     const handleCerrarForm = () => {
         setModalVisible(false);
@@ -199,7 +204,7 @@ const ObraDetalle = () => {
         }
         $.confirm({
             title: `Obra ${message} con éxito!`,
-            content:"",
+            content: "",
             icon: 'fa fa-check',
             theme: 'modern',
             closeIcon: true,
@@ -223,17 +228,14 @@ const ObraDetalle = () => {
     const handleAbrirModalMateriales = (materialesIniciales) => {
         if (materialesIniciales) {
             setMaterialesList(materialesIniciales.map((material) => ({ material, cantidad: material.cantidad })));
-            console.log(materialesIniciales)
         } else {
             setMaterialesList([])
         }
         setModalMaterialesVisible(true);
-        c
     };
 
 
     const handleCerrarModalMateriales = () => {
-        setMaterialesList([]);
         setModalMaterialesVisible(false);
     };
 
@@ -286,7 +288,6 @@ const ObraDetalle = () => {
         const updatedList = [...materialesList];
         updatedList.splice(index, 1);
         setMaterialesList(updatedList);
-        console.log(updatedList)
     };
 
 
@@ -310,7 +311,6 @@ const ObraDetalle = () => {
         };
         setValues(initialValues);
     };
-    console.log(obra)
     return (
         <div>
             <Formik
@@ -405,8 +405,8 @@ const ObraDetalle = () => {
                                         <label htmlFor="estado">Seleccione el estado de la obra</label>
                                         <select name="estado" id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado}>
                                             <option value="">Seleccione una opción</option>
-                                            <option value="En asesoria">En asesoria</option>
                                             <option value="Pendiente">Pendiente</option>
+                                            <option value="En asesoria">En asesoria</option>
                                             <option value="En construcción">En construcción</option>
                                             <option value="Terminado">Terminado</option>
                                         </select>
@@ -467,13 +467,24 @@ const ObraDetalle = () => {
                                         <ModalBody>
                                             <Formik
                                                 initialValues={{
-                                                    actividad: selectedActivity ? selectedActivity.actividad : '',
-                                                    fechaini: selectedActivity ? selectedActivity.fechaini : '',
-                                                    fechafin: selectedActivity ? selectedActivity.fechafin : '',
-
-                                                    empleados: selectedActivity ? empDefault : [],
-                                                    materiales: selectedActivity ? matDefault : [],
-                                                    estado: selectedActivity ? selectedActivity.estado : '',
+                                                    actividad:
+                                                        selectedActivity ? selectedActivity.detalleObra.actividad :
+                                                            '',
+                                                    fechaini:
+                                                        selectedActivity ? selectedActivity.detalleObra.fechaini :
+                                                            '',
+                                                    fechafin:
+                                                        selectedActivity ? selectedActivity.detalleObra.fechafin :
+                                                            '',
+                                                    empleados:
+                                                        selectedActivity ? empDefault :
+                                                            [],
+                                                    materiales:
+                                                        selectedActivity ? matDefault :
+                                                            [],
+                                                    estado:
+                                                        selectedActivity ? selectedActivity.detalleObra.estado :
+                                                            '',
                                                     obra: {
                                                         fechainiObra: obra.fechaini,
                                                         fechafinObra: obra.fechafin
@@ -485,9 +496,10 @@ const ObraDetalle = () => {
                                                     ...values
                                                 })}
                                                 onSubmit={async (values, { setSubmitting }) => {
+
                                                     const formattedShare = {
                                                         ...values,
-                                                        antiguo: selectedActivity.actividad,
+                                                        antiguo: selectedActivity ? selectedActivity.detalleObra.actividad : null,
                                                         materiales: materialesList
                                                     };
                                                     for (const actividad of actividades) {
@@ -510,7 +522,7 @@ const ObraDetalle = () => {
                                                             })
                                                             setSubmitting(false)
                                                             return
-                                                        } else if (actividad.actividad == values.actividad && selectedActivity.actividad != values.actividad) {
+                                                        } else if (actividad.actividad == values.actividad && selectedActivity.detalleObra.actividad != values.actividad) {
                                                             $.confirm({
                                                                 title: `Error`,
                                                                 content: `La actividad ${values.actividad} ya exite para esta obra other`,
@@ -540,7 +552,7 @@ const ObraDetalle = () => {
                                                     // console.clear()
                                                 }}
                                             >
-                                                {({ values, setFieldValue, handleSubmit, setFieldTouched, errors, touched, handleChange, resetForm }) => (
+                                                {({ values, setFieldValue, handleSubmit, setFieldTouched, errors, touched, handleChange }) => (
                                                     <Form
                                                         className="user"
                                                         onSubmit={handleSubmit}
@@ -620,13 +632,15 @@ const ObraDetalle = () => {
                                                             }
                                                         </div>
                                                         <div>
-                                                            <Button color="primary" className="mt-3" onClick={() => handleAbrirModalMateriales(selectedActivity ? selectedActivity.materiales : [])}>
-                                                                Gestionar Materiales
-                                                            </Button>
-
-
+                                                            <div className="container">
+                                                                <div className="text-center">
+                                                                    <Button color="primary" className="mt-3" onClick={() => handleAbrirModalMateriales(selectedActivity ? selectedActivity.materiales : [])}>
+                                                                        Gestionar Materiales
+                                                                    </Button>
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                        <div className="card-footer">
+                                                        <div className="card-footer mt-3">
                                                             <ModalFooter>
                                                                 <Button color="secondary" onClick={handleCerrarForm}>
                                                                     Cancelar
@@ -651,28 +665,31 @@ const ObraDetalle = () => {
                                     <Modal isOpen={modalMaterialesVisible} toggle={handleCerrarModalMateriales}>
                                         <ModalHeader toggle={handleCerrarModalMateriales}>Gestionar Materiales</ModalHeader>
                                         <ModalBody>
-                                            
+
                                             {materialesList.map((material, index) => (
                                                 <Form key={index}>
                                                     <div className="container" key={index}>
-                                                    <Select
-                                                        id={`materiales.${index}`}
-                                                        options={materiales}
-                                                        value={selectedMaterials[index] || ''} // set an empty string as the default value
-                                                        onChange={(selectedOption) => handleMaterialChange("materiales", selectedOption)}
-                                                    />
-                                                    <input
-                                                        type="number"
-                                                        className="form-control mt-3"
-                                                        name={`cantidad-${index}`}
-                                                        value={material.cantidad}
-                                                        onChange={(e) => handleCantidadChange(index, e.target.value)}
-                                                    />
-                                                    <div className="text-center mt-2">
-                                                        <Button color="danger" onClick={() => handleEliminarMaterial(index)}>
-                                                            X
-                                                        </Button>
-                                                    </div>
+                                                        <Select
+                                                            id={`materiales.${index}`}
+                                                            name={`materiales.${index}`}
+                                                            options={materiales}
+                                                            value={materialesList[index].material}
+                                                            onChange={(selectedMaterial) => handleMaterialChange(index, selectedMaterial)}
+                                                        />
+
+
+                                                        <input
+                                                            type="number"
+                                                            className="form-control mt-3"
+                                                            name={`cantidad-${index}`}
+                                                            value={material.cantidad}
+                                                            onChange={(e) => handleCantidadChange(index, e.target.value)}
+                                                        />
+                                                        <div className="text-center mt-2">
+                                                            <Button color="danger" onClick={() => handleEliminarMaterial(index)}>
+                                                                X
+                                                            </Button>
+                                                        </div>
 
                                                     </div>
                                                     <hr className="mt-3" />
@@ -703,12 +720,17 @@ const ObraDetalle = () => {
                                                     <div key={detalle.id} className="col-md-3 mt-3">
                                                         <div className="card">
                                                             <div className="card-body">
-                                                                <h5 className="card-title">Actividad: {detalle.actividad}</h5>
-                                                                <p className="card-text">Fecha de inicio: {detalle.fechaini}</p>
-                                                                <p className="card-text">Fecha de fin: {detalle.fechafin}</p>
-                                                                <p className="card-text">Materiales: {detalle.materiales.map((material) => material.materiales.nombre).join(', ')}</p>
-                                                                <p className="card-text">Empleados: {detalle.empleados.map((empleado) => empleado.empleado.nombre).join(', ')}</p>
-                                                                <p className="card-text">Estado: {detalle.estado}</p>
+                                                                <h5 className="card-title">Actividad: {detalle.detalleObra.actividad}</h5>
+                                                                <p className="card-text">Fecha de inicio: {detalle.detalleObra.fechaini}</p>
+                                                                <p className="card-text">Fecha de fin: {detalle.detalleObra.fechafin}</p>
+                                                                {detalle.materiales.length > 0 && (
+                                                                    <p className="card-text">Materiales: {detalle.materiales.map((material) => material.materiales.nombre).join(', ')}</p>
+                                                                )}
+                                                                {detalle.empleados.length > 0 && (
+                                                                    <p className="card-text">Empleados: {detalle.empleados.map((empleado) => empleado.empleado.nombre).join(', ')}</p>
+                                                                )}
+
+                                                                <p className="card-text">Estado: {detalle.detalleObra.estado}</p>
                                                                 <div className="mt-3">
                                                                     <Button
                                                                         className="btn btn-secondary"
@@ -722,7 +744,10 @@ const ObraDetalle = () => {
                                                         </div>
                                                     </div>
                                                 ))
-                                            ) : <h3>No se encontraron actividades con los parametros de búsqueda ingresados</h3>}
+                                            ) : (
+                                                <h3>No se encontraron actividades con los parametros de búsqueda ingresados</h3>
+                                            )}
+
                                             <div className="container">
                                                 <div className="row">
                                                     <div className="pagination col-md-1 mt-3 mx-auto">
@@ -766,18 +791,14 @@ const ObraDetalle = () => {
                                 <div className="mt-3">
                                     <hr className="mt-3" />
                                     <div className="col-md-3 mt-3 mx-auto">
-                                        {
-                                            values.fechafin ? (
-                                                <Button className="btn btn-success"
-                                                    onClick={handleAgregarActividad}>
-                                                    Agregar Actividad
-                                                </Button>
-                                            ) :
-                                                <Button className="btn btn-success" disabled
-                                                    onClick={handleAgregarActividad}>
-                                                    Agregar Actividad
-                                                </Button>
-                                        }
+                                        <Button
+                                            className="btn btn-success"
+                                            onClick={handleAgregarActividad}
+                                            disabled={!values.fechafin}
+                                        >
+                                            Agregar Actividad
+                                        </Button>
+
                                     </div>
                                 </div>
 

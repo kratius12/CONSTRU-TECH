@@ -27,6 +27,18 @@ router.get('/cliente/:id', async (req, res) =>{
                 const result = await prisma.cliente.findFirst({
                         where:{
                                 idCli:parseInt(req.params.id)
+                        }, select:{
+                            constrasena:false,
+                            salt:false,
+                            nombre:true,
+                            apellidos:true,
+                            tipoDoc:true,
+                            cedula:true,
+                            direccion:true,
+                            email:true,
+                            estado:true,
+                            fecha_nac:true,
+                            telefono:true
                         }
                 })
                 res.status(200).json(result);

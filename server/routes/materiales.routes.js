@@ -12,7 +12,7 @@ router.get("/materiales", async (req, res) => {
                 idMat: true,
                 estado: true,
                 nombre: true,
-                // cantidad:true,
+                cantidad:true,
                 categoria: {
                     select: {
                         nombre: true
@@ -55,11 +55,12 @@ router.get("/material/:id", async (req, res) => {
 
 router.post("/materiales", async (req, res) => {
     try {
-        const { nombre, idCategoria } = req.body
+        const { nombre, idCategoria, cantidad } = req.body
         const result = await prisma.materiales.create({
             data: {
                 nombre: ucfirst(nombre),
                 estado: 1,
+                cantidad:parseInt(cantidad),
                 idCategoria:parseInt(idCategoria),
             },
             
@@ -73,26 +74,27 @@ router.put("/material/:id", async (req, res) => {
     try {
         const idMat = req.params.id
         const { nombre, cantidad,  idCategoria, estado } = req.body
+        console.log(cantidad)
         const response = await prisma.materiales.update({
             where: {
                 idMat: parseInt(idMat)
             },
             data: {
                 nombre: ucfirst(nombre),
-                // cantidad: cantidad,
+                cantidad: cantidad,
                 estado: estado,
                 idCategoria: idCategoria
             }
         })
-        // if(cantidad===0){
-        //     await prisma.materiales.update({
-        //         where: {
-        //             idMat: parseInt(idMat)
-        //         }, data: {
-        //             estado: 0
-        //         }
-        //     })
-        // }
+        if(cantidad===0){
+            await prisma.materiales.update({
+                where: {
+                    idMat: parseInt(idMat)
+                }, data: {
+                    estado: 0
+                }
+            })
+        }
     } catch (error) {
         console.error(error)
     }
@@ -143,12 +145,12 @@ router.put("/materialEstado/:id", async (req, res) => {
             type: "red",
           });
         }
-        // else if (material.cantidad === 0 ){
-        //     return res.status(204).json({
-        //         message:"El material no se puede editar si la cantidad es igual a 0",
-        //         type:"red"
-        //     })
-        //   }
+        else if (material.cantidad === 0 ){
+            return res.status(204).json({
+                message:"El material no se puede editar si la cantidad es igual a 0",
+                type:"red"
+            })
+          }
       }else if(estado===0){
         const newEstado = await prisma.materiales.update({
             where:{

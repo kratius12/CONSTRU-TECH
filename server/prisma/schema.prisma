@@ -98,9 +98,9 @@ model especialidad {
 model materiales {
   idMat                  Int                      @id @default(autoincrement())
   nombre                 String?                  @db.VarChar(50)
-  cantidad               Float
   estado                 Int?
   idCategoria            Int?
+  cantidad               Float
   actividades_materiales actividades_materiales[]
   compras_detalle        compras_detalle[]
   categoria              categoria?               @relation(fields: [idCategoria], references: [idcat], onDelete: Restrict, onUpdate: Restrict, map: "materiales_ibfk_2")
@@ -117,8 +117,8 @@ model obras {
   idCliente              Int?
   estado                 String?                  @db.VarChar(50)
   precio                 Int?
-  idEmp                  Int
   createdAt              DateTime                 @default(dbgenerated("(curdate())")) @db.Date
+  idEmp                  Int
   actividades_empleados  actividades_empleados[]
   actividades_materiales actividades_materiales[]
   detalle_obra           detalle_obra[]
@@ -185,11 +185,11 @@ model rolpermisoempleado {
 }
 
 model codigos {
-  Id     Int       @id @default(autoincrement())
-  codigo String?   @unique @db.VarChar(50)
-  email  String?   @db.VarChar(255)
+  Id     Int     @id @default(autoincrement())
+  codigo String? @unique @db.VarChar(50)
+  email  String? @db.VarChar(255)
   estado Int?
-  fecha  String?   @db.VarChar(100)
+  fecha  String? @db.VarChar(100)
 }
 
 model actividades_empleados {
