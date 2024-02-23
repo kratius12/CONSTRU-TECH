@@ -268,7 +268,7 @@ router.post("/guardarActividad/:id", async (req, res) => {
       data: {
         actividad: ucfirst(actividad),
         fechaini: fechaini,
-        fechafin: fechafin,
+        fechafin: (fechafin).toString(),
         estado: estado,
         idObra: parseInt(req.params.id)
       }

@@ -64,10 +64,6 @@ const CompraDetalle = () => {
                 <h2>Detalle de Compra</h2>
                 <div className="card-body">
                     <div className="row">
-                        <div className="col-md-2 mt-3 mx-auto">
-                            <label htmlFor="fecha">ID compra:</label>
-                            <input className="form-control form-control-user" type="text" id="fecha" name="fecha" value={compra.idCom} disabled />
-                        </div>
                         <div className="col-md-3 mt-3 mx-auto">
                             <label htmlFor="fecha">Fecha de compra:</label>
                             <input className="form-control form-control-user" type="text" id="fecha" name="fecha" value={compra.fecha} disabled />

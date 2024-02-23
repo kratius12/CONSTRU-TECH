@@ -8,8 +8,8 @@ import { useObras } from "../../context/obras/ObrasProvider";
 import { obraSchemaEdit, actividadSchema } from "../../components/obras/ValidateObra"
 import _ from "lodash"
 import "../../components/obras/obras.css"
+import { format, addDays, max } from 'date-fns';
 
-import GanttComponent from "../../components/obras/Componentgant";
 const fetchData = async (url) => {
     try {
         const response = await axios.get(url);
@@ -48,6 +48,8 @@ const fetchEmpleados = async (url) => {
 
 
 const ObraDetalle = () => {
+    const [fechaMaximaActividades, setFechaMaximaActividades] = useState(null);
+
     const { createActividad, updateObra, searchAct } = useObras()
     const { id } = useParams()
     const [searchTerm, setSearchTerm] = useState('');
@@ -66,10 +68,15 @@ const ObraDetalle = () => {
     const [materialesList, setMaterialesList] = useState([{ material: "", cantidad: 0 }]);
     const [numFormularios, setNumFormularios] = useState(1);
     const [showGantt, setShowGantt] = useState(false)
-
+    const [actividadesLocales, setActividadesLocales] = useState([]);
+    const [fechaMaxima, setFechaMaxima] = useState(null);
+    const encontrarFechaFinMasFutura = (fechas) => {
+        const fechasEnTimestamps = fechas.map(fecha => fecha.getTime());
+        const fechaMaxima = new Date(Math.max(...fechasEnTimestamps));
+        return fechaMaxima;
+    }
 
     const handleAgregarActividad = (activity) => {
-        console.log(activity.detalleObra)
         if (activity.detalleObra) {
             setSelectedActivity(activity);
         } else {
@@ -79,6 +86,7 @@ const ObraDetalle = () => {
         setMatDefault([]);
         setEmpDefault([]);
         setModalVisible(true);
+
         if (activity.detalleObra) {
             const initialMaterials = activity.materiales.map((material) => ({
                 value: material.materiales.idMat,
@@ -88,7 +96,6 @@ const ObraDetalle = () => {
                 value: employee.empleado.idEmp,
                 label: employee.empleado.nombre,
             }));
-            console.log(initialEmployees)
 
             setSelectedMaterials(initialMaterials); // preselect the materials associated with the activity
             setEmpDefault(initialEmployees);
@@ -96,6 +103,14 @@ const ObraDetalle = () => {
             setMatDefault([]);
             setEmpDefault([]);
         }
+        const fechainiActividad = activity.detalleObra.fechaini;
+        const fechafinActividad = new Date(fechainiActividad);
+        const fecha = fechafinActividad.setDate(fechafinActividad.getDate() + parseInt(activity.detalleObra.fechafin, 10) + 1);
+        encontrarFechaFinMasFutura(fecha)
+        console.log(encontrarFechaFinMasFutura(fecha))
+
+        setActividadesLocales([...actividadesLocales, { ...activity, fechafinActividad: fecha }]);
+        
     };
     const handleAgregarMaterial = () => {
         setNumFormularios(numFormularios + 1);
@@ -103,30 +118,14 @@ const ObraDetalle = () => {
     };
     const handleShowGantt = () => {
         setShowGantt(true);
-        // Filtra las actividades por el rango de fechas de la obra
-        const actividadesEnRango = actividades.filter((actividad) => {
-            const fechaInicioObra = new Date(obra.fechaini);
-            const fechaFinObra = new Date(obra.fechafin);
-            const fechaInicioActividad = new Date(actividad.detalleObra.fechaini);
-            const fechaFinActividad = new Date(actividad.detalleObra.fechafin);
-
-            return (
-                (fechaInicioActividad >= fechaInicioObra && fechaInicioActividad <= fechaFinObra) ||
-                (fechaFinActividad >= fechaInicioObra && fechaFinActividad <= fechaFinObra)
-            );
-        });
-
-        // Actualiza el estado para mostrar el Gantt con las actividades en el rango
-        setActivitiesForGantt(actividadesEnRango);
-
     };
+
     const handleCerrarGantt = () => {
         setShowGantt(false)
     }
 
     const [currentPage, setCurrentPage] = useState(1);
     const activitiesPerPage = 4;
-    const [activitiesForGantt, setActivitiesForGantt] = useState([]);
     const paginate = (pageNumber) => {
         if (pageNumber < 1 || pageNumber > totalPages) {
             return;
@@ -167,10 +166,6 @@ const ObraDetalle = () => {
                 return 0;
             }
         });
-
-    // console.clear()
-
-    // Lógica de paginación
     const indexOfLastActivity = currentPage * activitiesPerPage;
     const indexOfFirstActivity = indexOfLastActivity - activitiesPerPage;
     const currentActivities = filteredActivities.slice(indexOfFirstActivity, indexOfLastActivity);
@@ -207,7 +202,7 @@ const ObraDetalle = () => {
         updatedList[index].material = selectedMaterial;
         setMaterialesList(updatedList);
     };
-
+   
     const handleCantidadChange = (index, cantidad) => {
         const updatedList = [...materialesList];
         updatedList[index].cantidad = parseInt(cantidad, 10); // Convertir a entero
@@ -258,6 +253,17 @@ const ObraDetalle = () => {
         }
         setModalMaterialesVisible(true);
     };
+    const calcularFechaFinEstimada = (fechaInicio, dias) => {
+        const fechaInicioActividad = new Date(fechaInicio);
+        const fechaFinEstimada = new Date(fechaInicioActividad.getTime() + (dias * 24 * 60 * 60 * 1000));
+        return fechaFinEstimada.toLocaleDateString(); // Puedes ajustar el formato según lo que necesites
+    };
+
+    const formatoFechaIni = (fechaInicio) => {
+        const fechaInicioActividad = new Date(fechaInicio)
+        return fechaInicioActividad.toLocaleDateString()
+    }
+
 
 
     const handleCerrarModalMateriales = () => {
@@ -410,7 +416,20 @@ const ObraDetalle = () => {
                                     </div>
                                     <div className='col-md-3 mt-3 mx-auto'>
                                         <label htmlFor="fechafin">Seleccione la fecha de fin de la obra</label>
-                                        <input type="date" name="fechafin" label="Fecha Fin" className="form-control form-control-user" value={values.fechafin} onChange={handleChange} />
+                                        <input
+                                            type="date"
+                                            name="fechafin"
+                                            label="Fecha Fin"
+                                            className="form-control form-control-user"
+                                            value={values.fechafin }
+                                            onChange={handleChange}
+
+                                        />
+                                        {
+                                            errors.fechafin && touched.fechafin ? (
+                                                <div className="alert alert-danger">{errors.fechafin}</div>
+                                            ) : null
+                                        }
                                         {
                                             errors.fechafin && touched.fechafin ? (
                                                 <div className="alert alert-danger">{errors.fechafin}</div>
@@ -622,8 +641,8 @@ const ObraDetalle = () => {
                                                             }
                                                         </div>
                                                         <div className="mt-3">
-                                                            <label htmlFor="fechafin">Seleccione la fecha de fin de la actividad</label>
-                                                            <input type="date" name="fechafin" id="fechafin" className="form-control form-control" value={values.fechafin} onChange={handleChange} />
+                                                            <label htmlFor="fechafin">Ingrese la cantidad de dias que le tomará esta activdad</label>
+                                                            <input type="number" name="fechafin" id="fechafin" className="form-control form-control" value={values.fechafin} onChange={handleChange} />
                                                             {
                                                                 errors.fechafin && touched.fechafin ? (
                                                                     <div className="alert alert-danger" role="alert">
@@ -652,6 +671,7 @@ const ObraDetalle = () => {
                                                             )}
 
                                                         </div>
+
                                                         <div className="mt-3">
                                                             <label htmlFor="estado">Seleccione el estado de la actividad</label>
                                                             <select name="estado" id="estado" className="form-select form-control" value={values.estado} onChange={handleChange}>
@@ -715,11 +735,6 @@ const ObraDetalle = () => {
                                                             value={materialesList[index].material}
                                                             onChange={(selectedMaterial) => handleMaterialChange(index, selectedMaterial)}
                                                         />
-                                                        {
-                                                            console.log(selectedMaterials)
-                                                        }
-
-
                                                         <input
                                                             type="number"
                                                             className="form-control mt-3"
@@ -758,41 +773,41 @@ const ObraDetalle = () => {
                                     <div className="container">
                                         <div className="row">
                                             {filteredActivities.length > 0 ? (
-                                                    currentActivities.map((detalle) => (
-                                                        <div key={detalle.id} className="col-md-3 mt-3">
-                                                            <div className="card">
-                                                                <div className="card-body">
-                                                                    <h5 className="card-title">Actividad: {detalle.detalleObra.actividad}</h5>
-                                                                    <p className="card-text">Fecha de inicio: {detalle.detalleObra.fechaini}</p>
-                                                                    <p className="card-text">Fecha de fin: {detalle.detalleObra.fechafin}</p>
-                                                                    {detalle.materiales.length > 0 && (
-                                                                        <p className="card-text">Materiales: {detalle.materiales.map((material) => material.materiales.nombre).join(', ')}</p>
-                                                                    )}
-                                                                    {detalle.empleados.length > 0 && (
-                                                                        <p className="card-text">Empleados: {detalle.empleados.map((empleado) => empleado.empleado.nombre).join(', ')}</p>
-                                                                    )}
+                                                currentActivities.map((detalle) => (
+                                                    <div key={detalle.id} className="col-md-3 mt-3">
+                                                        <div className="card">
+                                                            <div className="card-body">
+                                                                <h5 className="card-title">Actividad: {detalle.detalleObra.actividad}</h5>
+                                                                <p className="card-text">Fecha de inicio: {formatoFechaIni(detalle.detalleObra.fechaini)}</p>
+                                                                <p className="card-text">Fecha de fin estimada: {calcularFechaFinEstimada(detalle.detalleObra.fechaini, detalle.detalleObra.fechafin)}</p>
+                                                                {detalle.materiales.length > 0 && (
+                                                                    <p className="card-text">Materiales: {detalle.materiales.map((material) => material.materiales.nombre).join(', ')}</p>
+                                                                )}
+                                                                {detalle.empleados.length > 0 && (
+                                                                    <p className="card-text">Empleados: {detalle.empleados.map((empleado) => empleado.empleado.nombre).join(', ')}</p>
+                                                                )}
 
-                                                                    <p className="card-text">Estado: {detalle.detalleObra.estado}</p>
-                                                                    <div className="mt-3">
-                                                                        <Button
-                                                                            className="btn btn-secondary"
-                                                                            onClick={() => handleAgregarActividad(detalle)}
-                                                                        >
-                                                                            <i className="fa-solid fa-pen-to-square"></i>
-                                                                            &nbsp;Editar
-                                                                        </Button>
-                                                                    </div>
+                                                                <p className="card-text">Estado: {detalle.detalleObra.estado}</p>
+                                                                <div className="mt-3">
+                                                                    <Button
+                                                                        className="btn btn-secondary"
+                                                                        onClick={() => handleAgregarActividad(detalle)}
+                                                                    >
+                                                                        <i className="fa-solid fa-pen-to-square"></i>
+                                                                        &nbsp;Editar
+                                                                    </Button>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    ))
-                                                ) : (
-                                                    <h3>No se encontraron actividades con los parametros de búsqueda ingresados</h3>
-                                                )
-                                            
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <h3>No se encontraron actividades con los parametros de búsqueda ingresados</h3>
+                                            )
+
                                             }
 
-                                    
+
 
 
                                             <div className="container">

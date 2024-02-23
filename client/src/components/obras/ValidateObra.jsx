@@ -58,11 +58,11 @@ const obraSchemaEdit = Yup.object().shape({
         .max(fechafinObraAjustada, 'La fecha de inicio de la actividad no puede ser posterior a la fecha de finalización del proyecto')
         .required('La fecha de inicio de la actividad es obligatoria'),
   
-      fechafin: Yup.date()
-        .min(Yup.ref('fechaini'), 'La fecha de finalización de la actividad no puede ser anterior a la fecha de inicio de la actividad')
-        .max(fechafinObraAjustada, 'La fecha de finalización de la actividad no puede ser posterior a la fecha de finalización del proyecto')
-        .required('La fecha de finalización de la actividad es obligatoria'),
-        empleados: Yup.array().min(1, 'Seleccione al menos un empleado'),
+      // fechafin: Yup.date()
+      //   .min(Yup.ref('fechaini'), 'La fecha de finalización de la actividad no puede ser anterior a la fecha de inicio de la actividad')
+      //   .max(fechafinObraAjustada, 'La fecha de finalización de la actividad no puede ser posterior a la fecha de finalización del proyecto')
+      //   .required('La fecha de finalización de la actividad es obligatoria'),
+      //   empleados: Yup.array().min(1, 'Seleccione al menos un empleado'),
       estado: Yup.string().required('El estado es obligatorio'),
     });
   };
