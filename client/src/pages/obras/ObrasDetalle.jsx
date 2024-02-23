@@ -8,6 +8,8 @@ import { useObras } from "../../context/obras/ObrasProvider";
 import { obraSchemaEdit, actividadSchema } from "../../components/obras/ValidateObra"
 import _ from "lodash"
 import "../../components/obras/obras.css"
+
+import GanttComponent from "../../components/obras/Componentgant";
 const fetchData = async (url) => {
     try {
         const response = await axios.get(url);
@@ -63,6 +65,7 @@ const ObraDetalle = () => {
     const [selectedActivity, setSelectedActivity] = useState(null);
     const [materialesList, setMaterialesList] = useState([{ material: "", cantidad: 0 }]);
     const [numFormularios, setNumFormularios] = useState(1);
+    const [showGantt, setShowGantt] = useState(false)
 
 
     const handleAgregarActividad = (activity) => {
@@ -98,10 +101,32 @@ const ObraDetalle = () => {
         setNumFormularios(numFormularios + 1);
         setMaterialesList([...materialesList, { idMat: '', cantidad: 0 }]);
     };
+    const handleShowGantt = () => {
+        setShowGantt(true);
+        // Filtra las actividades por el rango de fechas de la obra
+        const actividadesEnRango = actividades.filter((actividad) => {
+            const fechaInicioObra = new Date(obra.fechaini);
+            const fechaFinObra = new Date(obra.fechafin);
+            const fechaInicioActividad = new Date(actividad.detalleObra.fechaini);
+            const fechaFinActividad = new Date(actividad.detalleObra.fechafin);
+
+            return (
+                (fechaInicioActividad >= fechaInicioObra && fechaInicioActividad <= fechaFinObra) ||
+                (fechaFinActividad >= fechaInicioObra && fechaFinActividad <= fechaFinObra)
+            );
+        });
+
+        // Actualiza el estado para mostrar el Gantt con las actividades en el rango
+        setActivitiesForGantt(actividadesEnRango);
+
+    };
+    const handleCerrarGantt = () => {
+        setShowGantt(false)
+    }
 
     const [currentPage, setCurrentPage] = useState(1);
     const activitiesPerPage = 4;
-
+    const [activitiesForGantt, setActivitiesForGantt] = useState([]);
     const paginate = (pageNumber) => {
         if (pageNumber < 1 || pageNumber > totalPages) {
             return;
@@ -455,10 +480,19 @@ const ObraDetalle = () => {
                                                     </div>
                                                 </div>
                                                 <div className="ml-3 mr-2">
-                                                        <a type="button" className="btn btn-primary" >
-                                                            Ver diagrama 
-                                                        </a>
-                                                    </div>
+                                                    {
+                                                        showGantt == true ? (
+                                                            <Button type="button" className="btn btn-primary" onClick={handleCerrarGantt}>
+                                                                Ver actividades
+                                                            </Button>
+                                                        ) : (
+                                                            <Button type="button" className="btn btn-primary" onClick={handleShowGantt}>
+                                                                Ver diagrama
+                                                            </Button>
+                                                        )
+                                                    }
+
+                                                </div>
                                             </>
 
 
@@ -677,9 +711,13 @@ const ObraDetalle = () => {
                                                             id={`materiales.${index}`}
                                                             name={`materiales.${index}`}
                                                             options={materiales}
+                                                            defaultValue={selectedMaterials[index]}
                                                             value={materialesList[index].material}
                                                             onChange={(selectedMaterial) => handleMaterialChange(index, selectedMaterial)}
                                                         />
+                                                        {
+                                                            console.log(selectedMaterials)
+                                                        }
 
 
                                                         <input
@@ -720,37 +758,42 @@ const ObraDetalle = () => {
                                     <div className="container">
                                         <div className="row">
                                             {filteredActivities.length > 0 ? (
-                                                currentActivities.map((detalle) => (
-                                                    <div key={detalle.id} className="col-md-3 mt-3">
-                                                        <div className="card">
-                                                            <div className="card-body">
-                                                                <h5 className="card-title">Actividad: {detalle.detalleObra.actividad}</h5>
-                                                                <p className="card-text">Fecha de inicio: {detalle.detalleObra.fechaini}</p>
-                                                                <p className="card-text">Fecha de fin: {detalle.detalleObra.fechafin}</p>
-                                                                {detalle.materiales.length > 0 && (
-                                                                    <p className="card-text">Materiales: {detalle.materiales.map((material) => material.materiales.nombre).join(', ')}</p>
-                                                                )}
-                                                                {detalle.empleados.length > 0 && (
-                                                                    <p className="card-text">Empleados: {detalle.empleados.map((empleado) => empleado.empleado.nombre).join(', ')}</p>
-                                                                )}
+                                                    currentActivities.map((detalle) => (
+                                                        <div key={detalle.id} className="col-md-3 mt-3">
+                                                            <div className="card">
+                                                                <div className="card-body">
+                                                                    <h5 className="card-title">Actividad: {detalle.detalleObra.actividad}</h5>
+                                                                    <p className="card-text">Fecha de inicio: {detalle.detalleObra.fechaini}</p>
+                                                                    <p className="card-text">Fecha de fin: {detalle.detalleObra.fechafin}</p>
+                                                                    {detalle.materiales.length > 0 && (
+                                                                        <p className="card-text">Materiales: {detalle.materiales.map((material) => material.materiales.nombre).join(', ')}</p>
+                                                                    )}
+                                                                    {detalle.empleados.length > 0 && (
+                                                                        <p className="card-text">Empleados: {detalle.empleados.map((empleado) => empleado.empleado.nombre).join(', ')}</p>
+                                                                    )}
 
-                                                                <p className="card-text">Estado: {detalle.detalleObra.estado}</p>
-                                                                <div className="mt-3">
-                                                                    <Button
-                                                                        className="btn btn-secondary"
-                                                                        onClick={() => handleAgregarActividad(detalle)}
-                                                                    >
-                                                                        <i className="fa-solid fa-pen-to-square"></i>
-                                                                        &nbsp;Editar
-                                                                    </Button>
+                                                                    <p className="card-text">Estado: {detalle.detalleObra.estado}</p>
+                                                                    <div className="mt-3">
+                                                                        <Button
+                                                                            className="btn btn-secondary"
+                                                                            onClick={() => handleAgregarActividad(detalle)}
+                                                                        >
+                                                                            <i className="fa-solid fa-pen-to-square"></i>
+                                                                            &nbsp;Editar
+                                                                        </Button>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                ))
-                                            ) : (
-                                                <h3>No se encontraron actividades con los parametros de búsqueda ingresados</h3>
-                                            )}
+                                                    ))
+                                                ) : (
+                                                    <h3>No se encontraron actividades con los parametros de búsqueda ingresados</h3>
+                                                )
+                                            
+                                            }
+
+                                    
+
 
                                             <div className="container">
                                                 <div className="row">

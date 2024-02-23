@@ -186,41 +186,40 @@ router.get("/actividades/:id", async (req, res) => {
 router.post("/guardarActividad/:id", async (req, res) => {
   try {
     const { actividad, fechaini, fechafin, estado,  antiguo, empleados, materiales } = req.body;
-    // for (const material of materiales) {
-    //   const idMaterial = parseInt(material.material.value);
-    //   const cantidadUtilizada = parseInt(material.cantidad);
+    console.log(materiales)
+    for (const material of materiales) {
+      const idMaterial = parseInt(material.material.value);
+      const cantidadUtilizada = parseInt(material.cantidad);
 
-    //   // Obtener información del material desde la base de datos
-    //   const materialDB = await prisma.materiales.findFirst({
-    //     where: {
-    //       idMat: idMaterial,
-    //     },
-    //   });
+      // Obtener información del material desde la base de datos
+      const materialDB = await prisma.materiales.findFirst({
+        where: {
+          idMat: parseInt(material.material.value),
+        },
+      });
+      // Restar la cantidad utilizada al material
+      const nuevaCantidad = materialDB.cantidad - cantidadUtilizada;
 
-    //   // Restar la cantidad utilizada al material
-    //   const nuevaCantidad = materialDB.cantidad - cantidadUtilizada;
-
-    //   // Actualizar la cantidad en la base de datos
-    //   await prisma.materiales.update({
-    //     where: {
-    //       idMat: idMaterial,
-    //     },
-    //     data: {
-    //       cantidad: nuevaCantidad,
-    //     },
-    //   });
-    //   if(nuevaCantidad==0){
-    //     await prisma.materiales.update({
-    //       where:{
-    //         idMat:idMaterial
-    //       },
-    //       data:{
-    //         estado:0
-    //       }
-    //     })
-    //   }
-    // }
-    // console.log(antiguo)
+      // Actualizar la cantidad en la base de datos
+      await prisma.materiales.update({
+        where: {
+          idMat: idMaterial,
+        },
+        data: {
+          cantidad: nuevaCantidad,
+        },
+      });
+      if(nuevaCantidad==0){
+        await prisma.materiales.update({
+          where:{
+            idMat:idMaterial
+          },
+          data:{
+            estado:0
+          }
+        })
+      }
+    }
     if (antiguo) {
       // Delete the old activity
       await prisma.detalle_obra.deleteMany({
@@ -240,7 +239,7 @@ router.post("/guardarActividad/:id", async (req, res) => {
         where:{
           AND:[
             {
-              actividad:{
+              actividad:{ 
                 equals:antiguo
               }
             }, {
