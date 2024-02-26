@@ -29,11 +29,6 @@ const obraSchemaEdit = Yup.object().shape({
         .required("El area de la obra es requerida"),
     fechaini: Yup.date()
     .required('La fecha de inicio es requerida'),
-  fechafin: Yup.date()
-    .when('fechaini', (fechaini, schema) =>
-      fechaini ? schema.min(fechaini, 'La fecha de fin no puede ser anterior a la fecha de inicio') : schema
-    )
-    .required('La fecha de fin es requerida'),
     precio: Yup.number()
       .required('El precio es requerido'),
     estado: Yup.string()

@@ -1,6 +1,5 @@
 import { Router, json } from "express";
-
-
+import { format, addDays, max } from 'date-fns';
 import { PrismaClient } from "@prisma/client";
 import { ucfirst } from "../plugins.js";
 
@@ -11,19 +10,38 @@ const router = Router()
 router.get("/obras", async (req, res) => {
   try {
     const result = await prisma.obras.findMany({
-      include: {
+      select: {
         cliente: true,
         detalle_obra: true,
-        actividades_empleados:true,
-        actividades_materiales:true
-      }
-    })
-    res.status(200).json(result)
+        actividades_empleados: true,
+        actividades_materiales: true,
+        area: true,
+        descripcion: true,
+        fechaini: true,
+        empleado: true,
+        fechafin: true,
+        idCliente: true,
+        estado: true,
+        precio: true,
+        idEmp: true,
+        idObra: true
+      },
+    });
+
+    // Formatear la fecha en cada objeto del resultado
+    const obrasFormateadas = result.map((obra) => {
+      return {
+        ...obra,
+        fechaini: format(new Date(obra.fechaini), 'dd/MM/yyyy') // Ajusta el locale según tus preferencias
+      };
+    });
+
+    res.status(200).json(obrasFormateadas);
   } catch (error) {
-    console.log(json({ message: error.message }))
-    return res.status(500).json({ message: error.message })
+    console.error(json({ message: error.message }));
+    return res.status(500).json({ message: error.message });
   }
-})
+});
 
 router.get("/obra/:id", async (req, res) => {
   try {
@@ -267,7 +285,7 @@ router.post("/guardarActividad/:id", async (req, res) => {
       data: {
         actividad: ucfirst(actividad),
         fechaini: fechaini,
-        fechafin: (fechafin).toString(),
+        fechafin: parseInt(fechafin),
         estado: estado,
         idObra: parseInt(req.params.id)
       }

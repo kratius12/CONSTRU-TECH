@@ -1,15 +1,13 @@
-import { Gantt } from 'react-virtual-gantt';
+import React from 'react';
+import GanttChart from 'frappe-gantt-react';
 
+const GanttChartComponent = ({ tasks }) => {
+  return (
+    <div>
+      <h2>Diagrama de Gantt</h2>
+      <GanttChart tasks={tasks} />
+    </div>
+  );
+};
 
-const GanttComponent = ({ actividades })=>{
-    const viewMode = 'Week';
-    return (
-        <div>
-            <Gantt
-                activities ={actividades}
-                viewMode={viewMode}
-            />
-        </div>
-    )
-}
-export default GanttComponent
+export default GanttChartComponent;

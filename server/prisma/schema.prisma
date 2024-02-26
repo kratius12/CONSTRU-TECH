@@ -162,7 +162,7 @@ model detalle_obra {
   id        Int     @id @default(autoincrement())
   actividad String? @db.VarChar(60)
   fechaini  String? @db.VarChar(50)
-  fechafin  String? @db.VarChar(50)
+  fechafin  Int?
   estado    String? @db.VarChar(50)
   idObra    Int
   obras     obras   @relation(fields: [idObra], references: [idObra], onUpdate: Restrict, map: "detalle_obra_ibfk_1")

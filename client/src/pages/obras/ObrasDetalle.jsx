@@ -6,9 +6,9 @@ import { Modal, Button, ModalHeader, ModalBody, ModalFooter } from "reactstrap"
 import { useNavigate, useParams } from "react-router-dom";
 import { useObras } from "../../context/obras/ObrasProvider";
 import { obraSchemaEdit, actividadSchema } from "../../components/obras/ValidateObra"
-import _ from "lodash"
 import "../../components/obras/obras.css"
 import { format, addDays, max } from 'date-fns';
+import GanttChartComponent from "../../components/obras/Componentgant";
 
 const fetchData = async (url) => {
     try {
@@ -68,8 +68,8 @@ const ObraDetalle = () => {
     const [showGantt, setShowGantt] = useState(false)
     const [actividadesLocales, setActividadesLocales] = useState([]);
 
-    
-    
+
+
 
     const handleAgregarActividad = (activity) => {
         if (activity.detalleObra) {
@@ -105,7 +105,7 @@ const ObraDetalle = () => {
         setActividadesLocales([...actividadesLocales, { ...activity, fechafinActividad: fecha }]);
 
     };
-    
+
     const handleAgregarMaterial = () => {
         setNumFormularios(numFormularios + 1);
         setMaterialesList([...materialesList, { idMat: '', cantidad: 0 }]);
@@ -265,7 +265,7 @@ const ObraDetalle = () => {
     };
 
     // console.clear()
-
+    const [fechaMaxima, setFechaMaxima] = useState(null)
 
     useEffect(() => {
         const fetchObraDetalle = async () => {
@@ -300,13 +300,15 @@ const ObraDetalle = () => {
         fetchData("http://localhost:4000/empleadosAct").then((data) => {
             setAsesores(data)
         });
-        const calcularFechaMaxima = ()=>{
+        const calcularFechaMaxima = () => {
+
             var fechafin = null;
+
             var fechaini = null
-            actividades.forEach((detalle)=>{
+
+            actividades.forEach((detalle) => {
                 const fechainicio = detalle.detalleObra.fechaini
                 const fechaFinDetalle = detalle.detalleObra.fechafin;
-    
                 // Verifica si la fecha actual es posterior a la fecha máxima almacenada
                 if (!fechafin || fechaFinDetalle > fechafin) {
                     fechafin = fechaFinDetalle;
@@ -315,16 +317,18 @@ const ObraDetalle = () => {
             });
             const inicio = new Date(fechaini)
             const fechafinMaxima = new Date(inicio.getTime() + (fechafin * 24 * 60 * 60 * 1000))
-            const fechaMaximaFormateada = format(fechafinMaxima, 'yyyy/MM/dd');
+            const fechaMaximaFormateada = format(fechafinMaxima, 'dd/MM/yyyy');
             setFechaMaxima(fechaMaximaFormateada)
         }
+
+
         const activityDescriptions = actividades.map((activity) => activity.actividad);
         setExistingActivities(activityDescriptions);
-        calcularFechaMaxima()
         loadMaterialesEmpleados()
         fetchObraDetalle()
+        calcularFechaMaxima()
     }, [id]);
-    const [fechaMaxima, setFechaMaxima] = useState(null)
+
 
     const handleEliminarMaterial = (index) => {
         setNumFormularios(numFormularios - 1);
@@ -332,7 +336,6 @@ const ObraDetalle = () => {
         updatedList.splice(index, 1);
         setMaterialesList(updatedList);
     };
-
 
 
     const handleGuardarMateriales = () => {
@@ -431,7 +434,8 @@ const ObraDetalle = () => {
                                     <div className='col-md-3 mt-3 mx-auto'>
                                         <label htmlFor="fechafin">Seleccione la fecha de fin de la obra</label>
                                         <input
-                                            type="date"
+                                            type="text"
+                                            disabled
                                             name="fechafin"
                                             label="Fecha Fin"
                                             className="form-control form-control-user"
@@ -516,6 +520,7 @@ const ObraDetalle = () => {
                                                         ) : (
                                                             <Button type="button" className="btn btn-primary" onClick={handleShowGantt}>
                                                                 Ver diagrama
+                                                                <GanttChartComponent tasks={actividades}/>
                                                             </Button>
                                                         )
                                                     }
@@ -794,6 +799,7 @@ const ObraDetalle = () => {
                                                                 {detalle.empleados.length > 0 && (
                                                                     <p className="card-text">Empleados: {detalle.empleados.map((empleado) => empleado.empleado.nombre).join(', ')}</p>
                                                                 )}
+                                                               
 
                                                                 <p className="card-text">Estado: {detalle.detalleObra.estado}</p>
                                                                 <div className="mt-3">
@@ -807,9 +813,9 @@ const ObraDetalle = () => {
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        
+
                                                     </div>
-                                                    
+
                                                 ))
                                             ) : (
                                                 <h3>No se encontraron actividades con los parametros de búsqueda ingresados</h3>
@@ -817,7 +823,7 @@ const ObraDetalle = () => {
 
                                             }
 
-
+                                   
 
                                             <div className="container">
                                                 <div className="row">
