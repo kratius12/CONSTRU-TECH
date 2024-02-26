@@ -55,7 +55,7 @@ const obraSchemaEdit = Yup.object().shape({
       actividad: Yup.string().required('La actividad es obligatoria'),
       fechaini: Yup.date()
         .min(fechainiObraAjustada, 'La fecha de inicio de la actividad no puede ser anterior a la fecha de inicio del proyecto')
-        .max(fechafinObraAjustada, 'La fecha de inicio de la actividad no puede ser posterior a la fecha de finalización del proyecto')
+        // .max(fechafinObraAjustada, 'La fecha de inicio de la actividad no puede ser posterior a la fecha de finalización del proyecto')
         .required('La fecha de inicio de la actividad es obligatoria'),
   
       // fechafin: Yup.date()

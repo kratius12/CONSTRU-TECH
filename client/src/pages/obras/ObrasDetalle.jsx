@@ -48,8 +48,6 @@ const fetchEmpleados = async (url) => {
 
 
 const ObraDetalle = () => {
-    const [fechaMaximaActividades, setFechaMaximaActividades] = useState(null);
-
     const { createActividad, updateObra, searchAct } = useObras()
     const { id } = useParams()
     const [searchTerm, setSearchTerm] = useState('');
@@ -69,12 +67,9 @@ const ObraDetalle = () => {
     const [numFormularios, setNumFormularios] = useState(1);
     const [showGantt, setShowGantt] = useState(false)
     const [actividadesLocales, setActividadesLocales] = useState([]);
-    const [fechaMaxima, setFechaMaxima] = useState(null);
-    const encontrarFechaFinMasFutura = (fechas) => {
-        const fechasEnTimestamps = fechas.map(fecha => fecha.getTime());
-        const fechaMaxima = new Date(Math.max(...fechasEnTimestamps));
-        return fechaMaxima;
-    }
+
+    
+    
 
     const handleAgregarActividad = (activity) => {
         if (activity.detalleObra) {
@@ -106,12 +101,11 @@ const ObraDetalle = () => {
         const fechainiActividad = activity.detalleObra.fechaini;
         const fechafinActividad = new Date(fechainiActividad);
         const fecha = fechafinActividad.setDate(fechafinActividad.getDate() + parseInt(activity.detalleObra.fechafin, 10) + 1);
-        encontrarFechaFinMasFutura(fecha)
-        console.log(encontrarFechaFinMasFutura(fecha))
 
         setActividadesLocales([...actividadesLocales, { ...activity, fechafinActividad: fecha }]);
-        
+
     };
+    
     const handleAgregarMaterial = () => {
         setNumFormularios(numFormularios + 1);
         setMaterialesList([...materialesList, { idMat: '', cantidad: 0 }]);
@@ -202,7 +196,7 @@ const ObraDetalle = () => {
         updatedList[index].material = selectedMaterial;
         setMaterialesList(updatedList);
     };
-   
+
     const handleCantidadChange = (index, cantidad) => {
         const updatedList = [...materialesList];
         updatedList[index].cantidad = parseInt(cantidad, 10); // Convertir a entero
@@ -306,13 +300,31 @@ const ObraDetalle = () => {
         fetchData("http://localhost:4000/empleadosAct").then((data) => {
             setAsesores(data)
         });
+        const calcularFechaMaxima = ()=>{
+            var fechafin = null;
+            var fechaini = null
+            actividades.forEach((detalle)=>{
+                const fechainicio = detalle.detalleObra.fechaini
+                const fechaFinDetalle = detalle.detalleObra.fechafin;
+    
+                // Verifica si la fecha actual es posterior a la fecha máxima almacenada
+                if (!fechafin || fechaFinDetalle > fechafin) {
+                    fechafin = fechaFinDetalle;
+                    fechaini = fechainicio
+                }
+            });
+            const inicio = new Date(fechaini)
+            const fechafinMaxima = new Date(inicio.getTime() + (fechafin * 24 * 60 * 60 * 1000))
+            const fechaMaximaFormateada = format(fechafinMaxima, 'yyyy/MM/dd');
+            setFechaMaxima(fechaMaximaFormateada)
+        }
         const activityDescriptions = actividades.map((activity) => activity.actividad);
         setExistingActivities(activityDescriptions);
-
+        calcularFechaMaxima()
         loadMaterialesEmpleados()
         fetchObraDetalle()
     }, [id]);
-
+    const [fechaMaxima, setFechaMaxima] = useState(null)
 
     const handleEliminarMaterial = (index) => {
         setNumFormularios(numFormularios - 1);
@@ -342,6 +354,8 @@ const ObraDetalle = () => {
         };
         setValues(initialValues);
     };
+
+
     return (
         <div>
             <Formik
@@ -421,15 +435,10 @@ const ObraDetalle = () => {
                                             name="fechafin"
                                             label="Fecha Fin"
                                             className="form-control form-control-user"
-                                            value={values.fechafin }
+                                            value={fechaMaxima || values.fechafin}
                                             onChange={handleChange}
 
                                         />
-                                        {
-                                            errors.fechafin && touched.fechafin ? (
-                                                <div className="alert alert-danger">{errors.fechafin}</div>
-                                            ) : null
-                                        }
                                         {
                                             errors.fechafin && touched.fechafin ? (
                                                 <div className="alert alert-danger">{errors.fechafin}</div>
@@ -603,10 +612,10 @@ const ObraDetalle = () => {
                                                         }
                                                     }
                                                     setSubmitting(true);
+                                                    calcularFechaMaxima()
                                                     await createActividad(id, formattedShare);
                                                     alertConfirmAct();
                                                     setModalVisible(false);
-                                                    // console.clear()
                                                 }}
                                             >
                                                 {({ values, setFieldValue, handleSubmit, setFieldTouched, errors, touched, handleChange }) => (
@@ -755,8 +764,6 @@ const ObraDetalle = () => {
                                             <Button color="success" onClick={handleAgregarMaterial}>
                                                 Agregar Material
                                             </Button>
-
-
                                         </ModalBody>
                                         <ModalFooter>
                                             <Button color="secondary" onClick={handleCerrarModalMateriales}>
@@ -780,6 +787,7 @@ const ObraDetalle = () => {
                                                                 <h5 className="card-title">Actividad: {detalle.detalleObra.actividad}</h5>
                                                                 <p className="card-text">Fecha de inicio: {formatoFechaIni(detalle.detalleObra.fechaini)}</p>
                                                                 <p className="card-text">Fecha de fin estimada: {calcularFechaFinEstimada(detalle.detalleObra.fechaini, detalle.detalleObra.fechafin)}</p>
+
                                                                 {detalle.materiales.length > 0 && (
                                                                     <p className="card-text">Materiales: {detalle.materiales.map((material) => material.materiales.nombre).join(', ')}</p>
                                                                 )}
@@ -799,14 +807,15 @@ const ObraDetalle = () => {
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                        
                                                     </div>
+                                                    
                                                 ))
                                             ) : (
                                                 <h3>No se encontraron actividades con los parametros de búsqueda ingresados</h3>
                                             )
 
                                             }
-
 
 
 

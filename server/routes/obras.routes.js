@@ -186,7 +186,6 @@ router.get("/actividades/:id", async (req, res) => {
 router.post("/guardarActividad/:id", async (req, res) => {
   try {
     const { actividad, fechaini, fechafin, estado,  antiguo, empleados, materiales } = req.body;
-    console.log(materiales)
     for (const material of materiales) {
       const idMaterial = parseInt(material.material.value);
       const cantidadUtilizada = parseInt(material.cantidad);
