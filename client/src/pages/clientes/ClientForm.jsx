@@ -182,9 +182,9 @@ export default function ClientsForm() {
                     <div className="col-md-6 mt-3 mx-auto">
                         <select id="tipoDoc" className="form-select  form-control-user" onChange={handleChange} value={values.tipoDoc} >
                           <option value="">Seleccione tipo documento*</option>
-                          <option value="CC">Cedula de ciudadania</option>
-                          <option value="CE">Cedula de extranjeria</option>
-                          <option value="PS">Pasaporte</option>
+                          <option value="Cedula de ciudadania">Cedula de ciudadanía</option>
+                          <option value="Cedula de extranjeria">Cedula de extranjería</option>
+                          <option value="Pasaporte">Pasaporte</option>
                         </select>
                         {errors.tipoDoc && touched.tipoDoc ? (
                           <div className="alert alert-danger" role="alert">{errors.tipoDoc}</div>
@@ -244,18 +244,25 @@ export default function ClientsForm() {
                           <div className="alert alert-danger" role="alert">{errors.fecha_nac}</div>
                         ) : null}
                       </div>
-                      <div className="col-md-6 mt-3 mx-auto">
-                        <input type="password" className="form-control  form-control-user" id="contrasena" onChange={handleChange} value={values.contrasena} placeholder="Contraseña*" />
-                        {errors.contrasena && touched.contrasena ? (
-                          <div className="alert alert-danger" role="alert">{errors.contrasena}</div>
-                        ) : null}
-                      </div>
-                      <div className="col-md-6 mt-3">
-                        <input type="password" className="form-control form-control-user" id="confirmar" name="confirmar" onChange={handleChange} value={values.confirmar} placeholder="Confirme la contraseña*" />
-                        {errors.confirmar && touched.confirmar ? (
-                          <div className="alert alert-danger" role="alert">{errors.confirmar}</div>
-                        ) : null}
-                      </div>
+                      {
+                      params.id ? ''
+                      :(
+                        <>
+                        <div className="col-md-6 mt-3 mx-auto">
+                          <input type="password" className="form-control  form-control-user" id="contrasena" onChange={handleChange} value={values.contrasena} placeholder="Contraseña*" />
+                          {errors.contrasena && touched.contrasena ? (
+                            <div className="alert alert-danger" role="alert">{errors.contrasena}</div>
+                          ) : null}
+                        </div>
+                        <div className="col-md-6 mt-3">
+                          <input type="password" className="form-control form-control-user" id="confirmar" name="confirmar" onChange={handleChange} value={values.confirmar} placeholder="Confirme la contraseña*" />
+                          {errors.confirmar && touched.confirmar ? (
+                            <div className="alert alert-danger" role="alert">{errors.confirmar}</div>
+                          ) : null}
+                        </div>                        
+                        </>
+                      )
+                      }
                       <div className="col-md-6 mt-3">
                         {params.id ? 
                         (

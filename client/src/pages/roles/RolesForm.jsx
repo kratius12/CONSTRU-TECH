@@ -33,6 +33,7 @@ const RolesForm = () => {
   const [key, setKey] = useState(0);
   const [defaultOptions, setDefaultOptions] = useState([]);
   const [permisoSelected, setPermisoSelected] = useState(defaultOptions);
+  const [rol, setRol] = useState(true)
 
   useEffect(() => {
     const loadPermisos = async () => {
@@ -92,23 +93,39 @@ const RolesForm = () => {
     });
   };
 
-  const errorcitos = () => {
-    $.confirm({
-      title: `Error`,
-      content: `La actividad ${actividad.actividad} ya exite para esta obra`,
-      icon: 'fa fa-circle-xmark',
-      theme: 'modern',
-      closeIcon: true,
-      animation: 'zoom',
-      closeAnimation: 'scale',
-      animationSpeed: 500,
-      type: 'red',
-      columnClass: 'col-md-6 col-md-offset-3',
-      buttons: {
-        Cerrar: function () {
-        },
+  const checkRol = async (rol) => {
+    try {
+      const response = await fetch(`http://localhost:4000/checkRol/${rol}/${params.id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+      if (response.status === 203) {
+        $.confirm({
+          title: `El rol ingresado ya existe, por favor intente con uno diferente`,
+          content: "",
+          icon: 'fa fa-x-mark',
+          theme: 'modern',
+          closeIcon: true,
+          animation: 'zoom',
+          closeAnimation: 'scale',
+          animationSpeed: 500,
+          type: 'red',
+          columnClass: 'col-md-6 col-md-offset-3',
+          buttons: {
+            cerrar: function () {
+            },
+          }
+        })
+        setRol(true)
+      } else {
+        setRol(false)
       }
-    })
+
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
@@ -122,61 +139,19 @@ const RolesForm = () => {
             ...values,
             permisos: permisoSelected
           };
-          console.log(values.nombre)
-          if(params.id){
-            const validateRol = await axios.put(`http://localhost:4000/rolSE/${params.id}`,{nombre:rolObject.nombre})
-            console.log(validateRol.data)
-            if(validateRol.data == true){
-              $.confirm({
-                title: `Error`,
-                content: `El rol ${values.nombre} ya exite, por favor ingrese otro`,
-                icon: 'fa fa-circle-xmark',
-                theme: 'modern',
-                closeIcon: true,
-                animation: 'zoom',
-                closeAnimation: 'scale',
-                animationSpeed: 500,
-                type: 'red',
-                columnClass: 'col-md-6 col-md-offset-3',
-                buttons: {
-                  Cerrar: function () {
-                  },
-                }
-              },
-              setSubmitting(false))
-            }else{
+          checkRol(values.nombre)
+          if (rol === false) {
+            if(params.id){
               setSubmitting(true)
               await updateRol(params.id, rolObject);
               alertConfirm("actualizado");
               setTimeout(() => navigate("/roles"));
-            }
-          }else{
-            const validateRol = await axios.put(`http://localhost:4000/rolSA`,{nombre:rolObject.nombre},{timeout:500})
-            if (validateRol.d == true) {
-              console.log(validateRol)
-              $.confirm({
-                title: `Error`,
-                content: `El rol ${rolObject.nombre} ya exite, por favor ingrese otro`,
-                icon: 'fa fa-circle-xmark',
-                theme: 'modern',
-                closeIcon: true,
-                animation: 'zoom',
-                closeAnimation: 'scale',
-                animationSpeed: 500,
-                type: 'red',
-                columnClass: 'col-md-6 col-md-offset-3',
-                buttons: {
-                  Cerrar: function () {
-                  },
-                }
-              }, setSubmitting(false))
-             
             }else{
               await createRol(rolObject);
               alertConfirm("agregado");
               setTimeout(() => navigate("/roles"));
               setSubmitting(true)
-            }
+            } 
           }
           
         }}
@@ -193,8 +168,11 @@ const RolesForm = () => {
                       id="nombre"
                       name="nombre"
                       className="form-control form-control-user"
-                      placeholder="Nombre del permiso*"
-                      onChange={handleChange}
+                      placeholder="Nombre del rol*"
+                      onChange={(e) => {
+                        handleChange(e)
+                        checkRol(e.target.value)
+                      }}
                       value={values.nombre}
                       onBlur={() => setFieldValue('nombre', values.nombre.trim())}
                       validate={validateWhitespace}

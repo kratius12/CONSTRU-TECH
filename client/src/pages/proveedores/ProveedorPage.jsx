@@ -6,11 +6,6 @@ import TableInfo from "../../components/table/TableInfo";
 function ProveedoresPage() {
     const dataHeader = [
         {
-            header: "ID",
-            accessorKey: 'idProv'
-
-        },
-        {
             header: "Nombre",
             accessorKey: 'nombre'
         },
@@ -25,6 +20,10 @@ function ProveedoresPage() {
         {
             header: "Tipo de proveedor",
             accessorKey: 'tipo'
+        },
+        {
+            header:"Documento",
+            accessorKey:'nit'
         },
         {
             header: "Estado",

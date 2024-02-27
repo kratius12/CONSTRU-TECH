@@ -20,6 +20,7 @@ export default function ProveedoresForm() {
 
   const [tipo, setOpcionSeleccionada] = useState('');
   const [mostrarContacto, setMostrarContacto] = useState(false);
+  const [doc, setDoc] = useState(true)
 
   const handleSelectChange = (event) => {
     const seleccion = event.target.value;
@@ -114,6 +115,40 @@ export default function ProveedoresForm() {
     })
   }
 
+  const checkDoc = async (tipo, documento) => {
+    try {
+      const response = await fetch(`http://localhost:4000/checkDocProv/${documento}/${tipo}/${params.id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+      if (response.status === 203) {
+        $.confirm({
+          title: `El numero y tipo de documento ingresado ya existe`,
+          content: "",
+          icon: 'fa fa-x-mark',
+          theme: 'modern',
+          closeIcon: true,
+          animation: 'zoom',
+          closeAnimation: 'scale',
+          animationSpeed: 500,
+          type: 'red',
+          columnClass: 'col-md-6 col-md-offset-3',
+          buttons: {
+            cerrar: function () {
+            },
+          }
+        })
+        setDoc(true)
+      } else {
+        setDoc(false)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   return (
     <div className="container">
       <div className="row">
@@ -123,47 +158,24 @@ export default function ProveedoresForm() {
             enableReinitialize={true}
             validate={validateForm}
             validateOnChange={true}
-            onSubmit={async (values, {setSubmitting}) => {
-              try {
+            onSubmit={async (values) => {
+
+                checkDoc(values.tipo, values.nit)
+                
+              if (doc === false) {
                 if (params.id) {
                   await updateProveedor(params.id, { ...values, tipo: tipo });
                   navigate("/proveedores");
-                  alertConfirm();
+                  alertConfirm('update');
                   
                 } else {
-                  const validateFact = await searchNit(values);
-
-                  if (validateFact === true) {
-                    alert(`Error: El ${placeholders.nit} ${values.nit} ya existe, por favor ingrese uno diferente`);
-                  } else {
-                    
-                      await createProveedor({ ...values, tipo: tipo });
-                      navigate("/proveedores");
-                      alertConfirm();
-                    
-                  }
+                  await createProveedor({ ...values, tipo: tipo });
+                  navigate("/proveedores");
+                  alertConfirm();
                 }
-
-                setProveedor({
-                  nombre: "",
-                  direccion: "",
-                  nit: "",
-                  tipo: "",
-                  estado: "",
-                  email: "",
-                  telefono: "",
-                  nombreContacto: "",
-                  telefonoContacto: "",
-                  emailContacto: "",
-                });
-              } catch (error) {
-                console.error(error);
               }
             }
-            
-
           }
-            
           >
 
             {({ handleChange, handleSubmit, values, isSubmitting, touched, setFieldValue, errors }) => (
@@ -198,7 +210,11 @@ export default function ProveedoresForm() {
                           type="text"
                           className={`form-control form-control-user`}
                           id="nit"
-                          onChange={handleChange}
+                          onChange={(e) =>{
+                            handleChange(e)
+                            checkDoc(values.tipo, values.nit)
+                            // params.id ? '' : checkDoc(values.tipo, e.target.value)
+                          }}
                           value={values.nit}
                           placeholder={placeholders.nit}
                           onBlur={() => setFieldValue('nit', values.nit.trim())}

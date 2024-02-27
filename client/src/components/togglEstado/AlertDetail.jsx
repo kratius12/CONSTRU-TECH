@@ -8,9 +8,9 @@ function renderObjectProperties(obj, excludedFields = []) {
   return Object.entries(obj)
     .filter(([propKey]) => !excludedFields.includes(propKey))
     .map(([propKey, propValue]) => (
-      `${propValue}`
+      propKey ==='idPer' ? '':`${propValue}`
     ))
-    .join(', ');
+    .join(' ');
 }
 const AlertDetail = ({ id, entity, getApi }) => {
   const [infoDetail, setInfoDetail] = useState(null);
@@ -28,7 +28,7 @@ const AlertDetail = ({ id, entity, getApi }) => {
     fetchData();
   }, [getApi, id]);
 
-  const excludedFields = ['createdAt', 'updatedAt', 'idObra', 'Id', 'idEmp', 'idCli', 'idMat', 'idcat', 'idCliente', 'actividades', 'empleado_especialidad', 'contrasena', 'idRol', 'idPer', 'idProv'];
+  const excludedFields = ['createdAt', 'updatedAt', 'idObra', 'Id', 'idEmp', 'idCli', 'idMat', 'idcat', 'idCliente', 'actividades', 'empleado_especialidad', 'contrasena', 'constrasena', 'salt', 'idRol', 'idPer', 'idProv'];
   const [textStatus, setTextStatus] = useState(1);
   const text = textStatus === 1 ? 'Activo' : 'Inactivo';
 
@@ -50,18 +50,33 @@ const AlertDetail = ({ id, entity, getApi }) => {
           <div className="form-group">
             <label htmlFor="">{key === 'rolpermisoempleado' ? 'Permisos del rol':key}</label>
             {Array.isArray(value) ? (
-              <div key={value} className="card text-left" style={{ width: '18rem' }}>
+              // <div key={value} className="card text-left" style={{ width: '18rem' }}>
                 
-                {value.map((item) => (
-                  <ul className="list-group list-group-flush">
-                    {Object.entries(item).map(([subKey, subValue]) => (
-                      <li key={subKey} className="list-group-item">
-                        <strong>{subKey}:</strong> {renderObjectProperties(subValue)}
-                      </li>
-                    ))}
-                  </ul>
-                ))}
-              </div>
+              //   {value.map((item) => (
+              //     <ul className="list-group list-group-flush">
+              //       {Object.entries(item).map(([subKey, subValue]) => (
+              //         <li key={subKey} className="list-group-item">
+              //           <strong>{subKey}:</strong> {renderObjectProperties(subValue)}
+              //         </li>
+              //       ))}
+              //     </ul>
+              //   ))}
+              // </div>
+              value.map((item) => (
+                <>
+                  {Object.entries(item).map(([subKey, subValue]) => (
+                    <>
+                    <label htmlFor={subValue}></label>
+                    <input
+                      type="text"
+                      className="form-control form-control-user"
+                      value={renderObjectProperties(subValue)}
+                      readOnly
+                    />                    
+                    </>
+                  ))}
+                </>
+              ))
             ): typeof value === 'object'?  (
               <input 
               type="text"
