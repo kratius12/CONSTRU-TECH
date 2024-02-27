@@ -26,7 +26,7 @@ const ClientSchema = Yup.object().shape({
     cedula: Yup.string()
         .min(8, 'El documento debe contener al menos 8 caracteres')
         .max(20, 'El documento no puede contener mas de 20 caracteres')
-        .required('El número de documento es requerido').matches(/^[0-9]+$/, 'El número de documento de identidad solo puede contener numeros'),
+        .matches(/^[0-9]+$/, 'El número de documento de identidad solo puede contener numeros'),
     fecha_nac: Yup.date()
     .required('La fecha de nacimiento es requerida')
     .test('es-mayor-de-edad', 'Debes ser mayor de 18 años', function (value) {
@@ -44,6 +44,6 @@ const ClientSchema = Yup.object().shape({
     ),
     confirmar: Yup.string()
     .oneOf([Yup.ref('contrasena'), null], 'Las contraseñas deben coincidir')
-    .required('Confirma tu contraseña'),
+    ,
 });
 export default ClientSchema

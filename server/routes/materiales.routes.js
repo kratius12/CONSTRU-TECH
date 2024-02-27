@@ -98,6 +98,48 @@ router.put("/material/:id", async (req, res) => {
     }
 })
 
+router.get("/checkMat/:nombre/:id", async (req, res) =>{
+    try {
+        if (parseInt(req.params.id) > 0) {
+            const result = await prisma.materiales.findFirst({
+                where:{
+                    nombre:{
+                        equals: req.params.nombre
+                    },
+                    idMat:{
+                        not: parseInt(req.params.id)
+                     }
+                },
+                select:{
+                nombre:true
+                }
+            })       
+            if (result) {
+                return res.status(203).json({message: 'El material ingresado ya existe'})                
+            }
+            return res.status(200).json({message: result})
+        }else{
+            const result = await prisma.materiales.findFirst({
+                where:{
+                    nombre:{
+                        equals: req.params.nombre
+                    }
+                },
+                select:{
+                    nombre:true
+                }
+            })       
+            if (result) {
+                return res.status(203).json({message: 'El material ingresado ya existe'})                
+            }
+            return res.status(200).json({message: result})
+        }
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: error.message });        
+    }
+})
+
 router.delete("/material/:id", async (req, res) => {
     try {
         const response = await prisma.materiales.delete({

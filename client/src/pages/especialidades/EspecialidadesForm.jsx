@@ -16,6 +16,7 @@ export default function EspecialidadesForm() {
   };
 
   const [especialidad, setEspecialidad] = useState(initialState)
+  const [nombre, setNombre] = useState(true)
   const validateWhitespace = (value) => {
     return hasWhitespace(value) ? 'No se permiten espacios en blanco' : undefined;
 };
@@ -59,6 +60,43 @@ export default function EspecialidadesForm() {
       }
     })
   }
+
+  const checkNombre = async (nombre) => {
+    try {
+      const response = await fetch(`http://localhost:4000/checkEsp/${nombre}/${params.id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+      if (response.status === 203) {
+        $.confirm({
+          title: `La especialidad ingresada ya existe, por favor intente con uno diferente`,
+          content: "",
+          icon: 'fa fa-x-mark',
+          theme: 'modern',
+          closeIcon: true,
+          animation: 'zoom',
+          closeAnimation: 'scale',
+          animationSpeed: 500,
+          type: 'red',
+          columnClass: 'col-md-6 col-md-offset-3',
+          buttons: {
+            cerrar: function () {
+            },
+          }
+        })
+        setNombre(true)
+        
+      } else {
+        setNombre(false)
+      }
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   console.clear()
   return (
     <div className="container">
@@ -73,26 +111,24 @@ export default function EspecialidadesForm() {
                 ...values,
                 especialidad: cleannedName
               }
-              console.log(especialidadObject);
-              if (params.id) {
-                await updateEspecialidad(params.id, especialidadObject)
-                alertConfirm('update')
-                setTimeout(
-                  navigate("/especialidades"),
-                  5000
-                )
-              } else {
-                await createEspecialidad(especialidadObject)
-                alertConfirm()
-                setTimeout(
-                  navigate("/especialidades"),
-                  5000
-                )
+              checkNombre(values.especialidad)
+              if (nombre === false) {
+                if (params.id) {
+                  await updateEspecialidad(params.id, especialidadObject)
+                  alertConfirm('update')
+                  setTimeout(
+                    navigate("/especialidades"),
+                    5000
+                  )
+                } else {
+                  await createEspecialidad(especialidadObject)
+                  alertConfirm()
+                  setTimeout(
+                    navigate("/especialidades"),
+                    5000
+                  )
+                }                
               }
-              setEspecialidad({
-                especialidad: "",
-                estado: ""
-              })
             }}
           >
             {({ handleChange, handleSubmit, values, isSubmitting, errors, touched,setFieldValue }) => (
@@ -102,7 +138,10 @@ export default function EspecialidadesForm() {
                   <div className="card-body">
                     <div className="row">
                       <div className="col-6 mt-3">
-                        <input type="text" className="form-control form-control-user" id="especialidad" onChange={handleChange} value={values.especialidad} placeholder="Nombre*"  />
+                        <input type="text" className="form-control form-control-user" id="especialidad" onChange={(e) =>{
+                          handleChange(e)
+                          checkNombre(e.target.value)
+                        }} value={values.especialidad} placeholder="Nombre*"  />
                         {errors.especialidad && touched.especialidad ? (
                           <div className="alert alert-danger" role="alert">{errors.especialidad}</div>
                         ) : null}
@@ -126,7 +165,7 @@ export default function EspecialidadesForm() {
                   <div className="card-footer text-center">
                     <div className="row">
                       <div className="col-md-6">
-                        <button type="submit" disabled={isSubmitting} className="btn btn-primary btn-icon-split w-50">
+                        <button type="submit" disabled={isSubmitting} className={`btn btn-primary btn-icon-split w-50`}>
                           <span className="text-white-50">
                             <i className="fas fa-plus"></i>
                           </span>
