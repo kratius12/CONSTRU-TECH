@@ -919,7 +919,6 @@ const ObraDetalle = () => {
                                         <Button
                                             className="btn btn-success"
                                             onClick={handleAgregarActividad}
-                                            disabled={!values.fechafin}
                                         >
                                             Agregar Actividad
                                         </Button>

@@ -368,5 +368,42 @@ router.get("/searchActividad/:id", async (req, res) => {
   }
 })
 
+router.get("/obrasCli/:id", async (req, res) => {
+  try {
+      console.log(req.params.id)
+      const obras = await prisma.obras.findMany({
+          where: {
+              idCliente: parseInt(req.params.id)
+          }
+      })
+      return res.status(200).json(obras)
+  } catch (error) {
+      console.error(error)
+  }
+})
+
+router.get("/obrasEmp/:id", async (req, res) => {
+  try {
+      const obras = await prisma.obras.findMany({
+          where: {
+              actividades_empleados: {
+                  some: {
+                      idEmp: parseInt(req.params.id)
+                  }
+              }
+          },include:{
+            detalle_obra:true,
+            actividades_empleados:true,
+            actividades_materiales:true
+          }
+      })
+      return res.status(200).json(obras)
+  } catch (error) {
+      console.error(error)
+  }
+})
+
+
+
 
 export default router
