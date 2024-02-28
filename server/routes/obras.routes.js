@@ -165,11 +165,12 @@ router.get("/actividades/:id", async (req, res) => {
         idObra: idObra,
       },select:{
         actividad:true,
+        cantidad:true,
         materiales:{
           select:{
             nombre:true,
             idMat:true,
-            cantidad:true
+            // cantidad:true
           }
         }
       }

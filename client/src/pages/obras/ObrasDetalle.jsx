@@ -8,7 +8,7 @@ import { useObras } from "../../context/obras/ObrasProvider";
 import { obraSchemaEdit, actividadSchema } from "../../components/obras/ValidateObra"
 import "../../components/obras/obras.css"
 import { format, addDays, max } from 'date-fns';
-import GanttChartComponent from "../../components/obras/Componentgant";
+// import GanttChartComponent from "../../components/obras/Componentgant";
 
 const fetchData = async (url) => {
     try {
@@ -70,7 +70,6 @@ const ObraDetalle = () => {
 
 
 
-
     const handleAgregarActividad = (activity) => {
         if (activity.detalleObra) {
             setSelectedActivity(activity);
@@ -107,6 +106,7 @@ const ObraDetalle = () => {
     };
 
     const handleAgregarMaterial = () => {
+
         setNumFormularios(numFormularios + 1);
         setMaterialesList([...materialesList, { idMat: '', cantidad: 0 }]);
     };
@@ -197,13 +197,13 @@ const ObraDetalle = () => {
         setMaterialesList(updatedList);
     };
 
-    const handleCantidadChange = (index, cantidad) => {
-        const updatedList = [...materialesList];
-        updatedList[index].cantidad = parseInt(cantidad, 10); // Convertir a entero
-        setMaterialesList(updatedList);
+    const handleCantidadChange = (index, nuevaCantidad) => {
+        const nuevosMateriales = [...materialesList];
+        nuevosMateriales[index].cantidad = nuevaCantidad;
+        setMaterialesList(nuevosMateriales);
     };
 
-
+    const [actividadActual, setActividadActual] = useState(null);
     const handleCerrarForm = () => {
         setModalVisible(false);
         setMatDefault([]);
@@ -239,12 +239,9 @@ const ObraDetalle = () => {
         setCurrentPage(1);
     };
     const [modalMaterialesVisible, setModalMaterialesVisible] = useState(false);
-    const handleAbrirModalMateriales = (materialesIniciales) => {
-        if (materialesIniciales) {
-            setMaterialesList(materialesIniciales.map((material) => ({ material, cantidad: material.cantidad })));
-        } else {
-            setMaterialesList([])
-        }
+    const handleAbrirModalMateriales = (actividad) => {
+        setActividadActual(actividad);
+        setMaterialesList(actividad.materiales || []); // Asegúrate de que actividad.materiales sea un array
         setModalMaterialesVisible(true);
     };
     const calcularFechaFinEstimada = (fechaInicio, dias) => {
@@ -328,7 +325,8 @@ const ObraDetalle = () => {
         fetchObraDetalle()
         calcularFechaMaxima()
     }, [id]);
-
+    const [materialErrors, setMaterialErrors] = useState([]);
+    const [modalError, setModalError] = useState(false);
 
     const handleEliminarMaterial = (index) => {
         setNumFormularios(numFormularios - 1);
@@ -339,8 +337,33 @@ const ObraDetalle = () => {
 
 
     const handleGuardarMateriales = () => {
-        handleCerrarModalMateriales();
+        const newMaterialErrors = {};
+
+        materialesList.forEach((material, index) => {
+            if (material.cantidad < 0) {
+                newMaterialErrors[index] = { ...newMaterialErrors[index], cantidad: "La cantidad no puede ser un número negativo" };
+            } else if (material.cantidad === 0) {
+                newMaterialErrors[index] = { ...newMaterialErrors[index], cantidad: "La cantidad no puede ser 0" };
+            }
+
+            if (!material.material) {
+                newMaterialErrors[index] = { ...newMaterialErrors[index], material: "Debe seleccionar un material" };
+            }
+
+            // Agregar otras validaciones según tus requisitos
+        });
+
+        // Muestra los errores debajo de cada campo
+        setMaterialErrors(newMaterialErrors);
+
+        // Muestra el mensaje de error general de la modal si hay algún error
+        setModalError(Object.keys(newMaterialErrors).length > 0);
+        // Si no hay errores, cierra la modal
+        if (Object.keys(newMaterialErrors).length === 0) {
+            handleCerrarModalMateriales();
+        }
     };
+
     const [selectedMaterials, setSelectedMaterials] = useState([]);
 
 
@@ -520,7 +543,7 @@ const ObraDetalle = () => {
                                                         ) : (
                                                             <Button type="button" className="btn btn-primary" onClick={handleShowGantt}>
                                                                 Ver diagrama
-                                                                <GanttChartComponent tasks={actividades}/>
+                                                                {/* <GanttChartComponent tasks={actividades}/> */}
                                                             </Button>
                                                         )
                                                     }
@@ -617,7 +640,6 @@ const ObraDetalle = () => {
                                                         }
                                                     }
                                                     setSubmitting(true);
-                                                    calcularFechaMaxima()
                                                     await createActividad(id, formattedShare);
                                                     alertConfirmAct();
                                                     setModalVisible(false);
@@ -734,8 +756,8 @@ const ObraDetalle = () => {
 
                                         </ModalBody>
                                     </Modal>
-                                    <Modal isOpen={modalMaterialesVisible} toggle={handleCerrarModalMateriales}>
-                                        <ModalHeader toggle={handleCerrarModalMateriales}>Gestionar Materiales</ModalHeader>
+                                    <Modal isOpen={modalMaterialesVisible} toggle={() => setModalMaterialesVisible(!modalMaterialesVisible)}>
+                                        <ModalHeader toggle={() => setModalMaterialesVisible(!modalMaterialesVisible)}>Gestionar Materiales</ModalHeader>
                                         <ModalBody>
 
                                             {materialesList.map((material, index) => (
@@ -749,6 +771,11 @@ const ObraDetalle = () => {
                                                             value={materialesList[index].material}
                                                             onChange={(selectedMaterial) => handleMaterialChange(index, selectedMaterial)}
                                                         />
+                                                        {materialErrors[index] && materialErrors[index].material && (
+                                                            <div className="alert alert-danger mt-2" role="alert">
+                                                                {materialErrors[index].material}
+                                                            </div>
+                                                        )}
                                                         <input
                                                             type="number"
                                                             className="form-control mt-3"
@@ -756,29 +783,44 @@ const ObraDetalle = () => {
                                                             value={material.cantidad}
                                                             onChange={(e) => handleCantidadChange(index, e.target.value)}
                                                         />
+                                                        
+                                                        {materialErrors[index] && materialErrors[index].cantidad && (
+                                                            <div className="alert alert-danger mt-2" role="alert">
+                                                                {materialErrors[index].cantidad}
+                                                            </div>
+                                                        )}
                                                         <div className="text-center mt-2">
                                                             <Button color="danger" onClick={() => handleEliminarMaterial(index)}>
                                                                 X
                                                             </Button>
+                                                            <p>Cantidad actual: {material.cantidad}</p>
                                                         </div>
-
                                                     </div>
                                                     <hr className="mt-3" />
                                                 </Form>
                                             ))}
+
+                                            {modalError && (
+                                                <div className="alert alert-danger mt-2" role="alert">
+                                                    Mensaje de error general de la modal.
+                                                </div>
+                                            )}
+
                                             <Button color="success" onClick={handleAgregarMaterial}>
                                                 Agregar Material
                                             </Button>
+
                                         </ModalBody>
                                         <ModalFooter>
                                             <Button color="secondary" onClick={handleCerrarModalMateriales}>
                                                 Cancelar
                                             </Button>
-                                            <Button color="primary"
-                                                onClick={handleGuardarMateriales}
-                                            >
+
+                                            
+                                            <Button color="primary" onClick={() => handleGuardarMateriales()}>
                                                 Guardar Materiales
                                             </Button>
+
                                         </ModalFooter>
                                     </Modal>
 
@@ -794,12 +836,18 @@ const ObraDetalle = () => {
                                                                 <p className="card-text">Fecha de fin estimada: {calcularFechaFinEstimada(detalle.detalleObra.fechaini, detalle.detalleObra.fechafin)}</p>
 
                                                                 {detalle.materiales.length > 0 && (
-                                                                    <p className="card-text">Materiales: {detalle.materiales.map((material) => material.materiales.nombre).join(', ')}</p>
+                                                                    <>
+                                                                        <p className="card-text">Materiales: {detalle.materiales.map((material) => material.materiales.nombre).join(', ')}</p>
+                                                                        <p className="card-text">Materiales: {detalle.materiales.map((material) => material.cantidad).join(', ')}</p>
+                                                                    </>
                                                                 )}
+
+
+
                                                                 {detalle.empleados.length > 0 && (
                                                                     <p className="card-text">Empleados: {detalle.empleados.map((empleado) => empleado.empleado.nombre).join(', ')}</p>
                                                                 )}
-                                                               
+
 
                                                                 <p className="card-text">Estado: {detalle.detalleObra.estado}</p>
                                                                 <div className="mt-3">
@@ -823,7 +871,7 @@ const ObraDetalle = () => {
 
                                             }
 
-                                   
+
 
                                             <div className="container">
                                                 <div className="row">
