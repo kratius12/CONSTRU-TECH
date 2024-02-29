@@ -69,17 +69,16 @@ export default function ClientsForm() {
           tipoDoc: cliente.tipoDoc,
           cedula: cliente.cedula,
           fecha_nac: cliente.fecha_nac,
-          estado: cliente.estado === "0" ? "0" : "1",
           contrasena: ''
         })
-
+        checkEmail(cliente.email)
+        checkDoc(cliente.tipoDoc, cliente.cedula)
       }
     }
     loadClients()
   }, [getClient, params.id])
 
   const checkEmail = async (email) => {
-    console.log(email)
     try {
       const response = await fetch(`http://localhost:4000/checkEmail/${email}/${params.id}`, {
         method: 'GET',
@@ -148,7 +147,7 @@ export default function ClientsForm() {
     }
   }
 
-  console.clear()
+  // console.clear()
   return (
     <div className="container">
       <div className="row">
@@ -205,19 +204,19 @@ export default function ClientsForm() {
                           <div className="alert alert-danger" role="alert">{errors.cedula}</div>
                         ) : null}
                       </div>
-                      <div className="col-md-6 mt-3 mx-auto">
+                      <div className="col-md-4 mt-3 mx-auto">
                         <input type="text" className="form-control  form-control-user" id="nombre" onChange={handleChange} value={values.nombre} placeholder="Nombre*" />
                         {errors.nombre && touched.nombre ? (
                           <div className="alert alert-danger" role="alert">{errors.nombre}</div>
                         ) : null}
                       </div>
-                      <div className="col-md-6 mt-3 mx-auto">
+                      <div className="col-md-4 mt-3 mx-auto">
                         <input type="text" className="form-control  form-control-user" id="apellidos" onChange={handleChange} value={values.apellidos} placeholder="Apellido*" />
                         {errors.apellidos && touched.apellidos ? (
                           <div className="alert alert-danger" role="alert">{errors.apellidos}</div>
                         ) : null}
                       </div>
-                      <div className="col-md-6 mt-3 mx-auto">
+                      <div className="col-md-4 mt-3 mx-auto">
                         <input type="text"
                           className="form-control  form-control-user"
                           id="email"
@@ -231,19 +230,19 @@ export default function ClientsForm() {
                           <div className="alert alert-danger" role="alert">{errors.email}</div>
                         ) : null}
                       </div>
-                      <div className="col-md-6 mt-3 mx-auto">
+                      <div className="col-md-4 mt-3 mx-auto">
                         <input type="text" className="form-control  form-control-user" id="direccion" onChange={handleChange} value={values.direccion} placeholder="Dirección*" />
                         {errors.direccion && touched.direccion ? (
                           <div className="alert alert-danger" role="alert">{errors.direccion}</div>
                         ) : null}
                       </div>
-                      <div className="col-md-6 mt-3 mx-auto">
+                      <div className="col-md-4 mt-3 mx-auto">
                         <input type="text" className="form-control form-control-user" id="telefono" onChange={handleChange} value={values.telefono} placeholder="Teléfono*" />
                         {errors.telefono && touched.telefono ? (
                           <div className="alert alert-danger" role="alert">{errors.telefono}</div>
                         ) : null}
                       </div>
-                      <div className="col-md-6 mt-3 mx-auto">
+                      <div className="col-md-4 mt-3 mx-auto">
                         <label htmlFor="">Fecha de nacimiento</label>
                         <input type="date" className="form-control  form-control-user" id="fecha_nac" onChange={handleChange} value={values.fecha_nac} />
                         {errors.fecha_nac && touched.fecha_nac ? (
@@ -252,7 +251,7 @@ export default function ClientsForm() {
                       </div>
                       {
                         !params.id ? (
-                          <div className="col-md-6 mt-3 mx-auto">
+                          <div className="col-md-4 mt-3 mx-auto">
                             <input type="password" className="form-control  form-control-user" id="contrasena" onChange={handleChange} value={values.contrasena} placeholder="Contraseña*" />
                             {errors.contrasena && touched.contrasena ? (
                               <div className="alert alert-danger" role="alert">{errors.contrasena}</div>
@@ -262,7 +261,7 @@ export default function ClientsForm() {
                       }
                       {
                         !params.id ? (
-                          <div className="col-md-6 mt-3">
+                          <div className="col-md-4 mt-3">
                             <input type="password" className="form-control form-control-user" id="confirmar" name="confirmar" onChange={handleChange} value={values.confirmar} placeholder="Confirme la contraseña*" />
                             {errors.confirmar && touched.confirmar ? (
                               <div className="alert alert-danger" role="alert">{errors.confirmar}</div>
@@ -270,23 +269,6 @@ export default function ClientsForm() {
                           </div>
                         ) : null
                       }
-
-
-
-                      <div className="col-md-6 mt-3">
-                        {params.id ?
-                          (
-                            <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
-                              <option value="">Seleccione estado</option>
-                              <option value="1">Activo</option>
-                              <option value="0">Inactivo</option>
-                            </select>
-                          ) : null
-                        }
-                        {errors.estado && touched.estado ? (
-                          <div className="alert alert-danger" role="alert">{errors.estado}</div>
-                        ) : null}
-                      </div>
                     </div>
                   </div>
                   <div className="card-footer text-center">

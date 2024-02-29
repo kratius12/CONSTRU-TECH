@@ -48,14 +48,13 @@ router.post("/especialidades", async (req, res) => {
 
 router.put("/especialidad/:id", async (req, res) => {
     try {
-        const { especialidad, estado } = req.body
+        const { especialidad } = req.body
         const result = await prisma.especialidad.update({
             where: {
                 id: parseInt(req.params.id)
             },
             data: {
                 especialidad: ucfirst(especialidad),
-                estado: parseInt(estado)
             }
         })
 

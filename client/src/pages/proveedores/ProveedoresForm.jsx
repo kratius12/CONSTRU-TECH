@@ -305,23 +305,6 @@ export default function ProveedoresForm() {
                         }
 
                       </div>
-                      <div className="col-md-6 mt-3">
-                        {params.id ? (
-                          <select
-                            id="estado"
-                            className="form-select form-control-user"
-                            onChange={handleChange}
-                            value={values.estado}
-                          >
-                            <option value="">Seleccione estado</option>
-                            <option value="1">Activo</option>
-                            <option value="0">Inactivo</option>
-                          </select>
-                        ) :
-                          null}
-
-                      </div>
-
                     </div>
                   </div>
                   {mostrarContacto && (

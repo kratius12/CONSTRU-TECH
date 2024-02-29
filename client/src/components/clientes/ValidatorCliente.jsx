@@ -28,7 +28,7 @@ export const ClientSchema = Yup.object().shape({
         .min(8, 'El documento debe contener al menos 8 caracteres')
         .max(20, 'El documento no puede contener mas de 20 caracteres')
         .required('El número de documento es requerido').matches(/^[0-9]+$/, 'El número de documento de identidad solo puede contener numeros')
-        .test('no-inicia-con-cero', 'El documento no puede empezar con cero', value => !value.startsWith('0')),
+        .test('no-inicia-con-cero', 'El documento no puede empezar con cero', value => !value.startsWith('0'))
         .matches(/^[0-9]+$/, 'El número de documento de identidad solo puede contener numeros'),
 
     fecha_nac: Yup.date()
@@ -39,8 +39,6 @@ export const ClientSchema = Yup.object().shape({
       fechaMinima.setFullYear(fechaMinima.getFullYear() - 18);
       return fechaIngresada <= fechaMinima;
     }),
-    estado: Yup.string()
-        .required('El estado es requerido'),
     contrasena: Yup.string().min(8, 'La contraseña debe tener al menos 8 caracteres').trim().matches(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
         "La contraseña debe contener al menos una letra mayúscula, una letra minúscula y un número"
@@ -86,8 +84,6 @@ export const ClientSchemaEdit = Yup.object().shape({
       fechaMinima.setFullYear(fechaMinima.getFullYear() - 18);
       return fechaIngresada <= fechaMinima;
     }),
-    estado: Yup.string()
-        .required('El estado es requerido'),
     contrasena: Yup.string().min(8, 'La contraseña debe tener al menos 8 caracteres').trim().matches(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
         "La contraseña debe contener al menos una letra mayúscula, una letra minúscula y un número"

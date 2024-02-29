@@ -140,7 +140,7 @@ router.post("/empleados", async (req, res) => {
 
 router.put("/empleado/:id", async (req, res) => {
     try {
-        const { nombre, apellidos, direccion, estado, telefono, tipoDoc, cedula, especialidad, email, contrasena, rol } = req.body
+        const { nombre, apellidos, direccion, telefono, tipoDoc, cedula, especialidad, email, contrasena, rol } = req.body
         const { hash, salt } = await generarHash(contrasena);
         const result = await prisma.empleado.update({
             where: {
@@ -153,7 +153,6 @@ router.put("/empleado/:id", async (req, res) => {
                 telefono: telefono,
                 tipoDoc: tipoDoc,
                 cedula: cedula,
-                estado: parseInt(estado),
                 email: email,
                 contrasena: hash,
             }

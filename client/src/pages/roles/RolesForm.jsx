@@ -211,20 +211,6 @@ const RolesForm = () => {
                       </div>
                     ) : null}
                   </div>
-                  <div className="col-md-6 mt-3">
-                    {params.id ? (
-                      <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
-                        <option value="">Seleccione estado</option>
-                        <option value="1">Activo</option>
-                        <option value="0">Inactivo</option>
-                      </select>
-                    ) : null}
-                    {errors.estado && touched.estado ? (
-                      <div className="alert alert-danger" role="alert">
-                        {errors.estado}
-                      </div>
-                    ) : null}
-                  </div>
                 </div>
               </div>
               <div className="card-footer text-center">
