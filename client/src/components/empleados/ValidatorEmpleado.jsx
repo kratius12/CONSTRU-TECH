@@ -8,7 +8,7 @@ export const EmpleadoSchema = Yup.object().shape({
     .min(3, "El apellido debe contener al menos 3 caracteres")
     .max(15, "El apellido debe contener como maximo 15 caracteres"),
   email: Yup.string().email('Ingresa un correo electrónico válido').required('El email es obligatorio').trim(),
-  contrasena: Yup.string().min(8, 'La contraseña debe tener al menos 6 caracteres').trim().matches(
+  contrasena: Yup.string().min(6, 'La contraseña debe tener al menos 6 caracteres').trim().matches(
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
     "La contraseña debe contener al menos una letra mayúscula, una letra minúscula y un número"
   ).required("La contraseña es requerida"),
@@ -33,7 +33,7 @@ export const EmpleadosSchemaEdit = Yup.object().shape({
     .min(3, "El apellido debe contener al menos 3 caracteres")
     .max(15, "El apellido debe contener como maximo 15 caracteres"),
   email: Yup.string().email('Ingresa un correo electrónico válido').required('El email es obligatorio').trim(),
-  contrasena: Yup.string().min(8, 'La contraseña debe tener al menos 6 caracteres').trim().matches(
+  contrasena: Yup.string().min(6, 'La contraseña debe tener al menos 6 caracteres').trim().matches(
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
     "La contraseña debe contener al menos una letra mayúscula, una letra minúscula y un número"
   ),
