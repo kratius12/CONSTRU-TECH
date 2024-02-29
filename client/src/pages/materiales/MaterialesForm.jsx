@@ -4,8 +4,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useMateriales } from "../../context/materiales/MaterialesProvider";
 import materialSchema from "../../components/materiales/MaterialesValidator";
 
-
-
 export default function MaterialesForm() {
   //   const [agreed, setAgreed] = useState(false)
   const { createMaterial, getMaterial, updateMaterial, getCategorias, categorias } = useMateriales()
@@ -50,7 +48,7 @@ export default function MaterialesForm() {
     idCategoria: "",
     estado: ""
   })
-
+  const [nombre, setNombre] = useState(true)
   useEffect(() => {
     const loadMateriales = async () => {
       if (params.id) {
@@ -67,7 +65,44 @@ export default function MaterialesForm() {
     loadMateriales()
 
   }, [getMaterial, params.id])
-  console.clear()
+
+  const checkNombre = async (nombre) => {
+    try {
+      const response = await fetch(`http://localhost:4000/checkMat/${nombre}/${params.id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+      if (response.status === 203) {
+        $.confirm({
+          title: `El material ingresado ya existe, por favor intente con uno diferente`,
+          content: "",
+          icon: 'fa fa-x-mark',
+          theme: 'modern',
+          closeIcon: true,
+          animation: 'zoom',
+          closeAnimation: 'scale',
+          animationSpeed: 500,
+          type: 'red',
+          columnClass: 'col-md-6 col-md-offset-3',
+          buttons: {
+            cerrar: function () {
+            },
+          }
+        })
+        setNombre(true)
+        
+      } else {
+        setNombre(false)
+      }
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  // console.clear()
   return (
     <div className="container">
       <div className="row">
@@ -77,27 +112,25 @@ export default function MaterialesForm() {
             validationSchema={materialSchema}
             onSubmit={async (values) => {
               console.log(values);
-              if (params.id) {
-                await updateMaterial(params.id, values)
-                alertConfirm()
-                setTimeout(
-                  navigate("/materiales"),
-                  500
-                )
-              } else {
-                await createMaterial(values)
-                alertConfirm()
-                setTimeout(
-                  navigate("/materiales"),
-                  500
-                )
+              checkNombre(values.nombre)
+              if (nombre === false) {
+                if (params.id) {
+                  await updateMaterial(params.id, values)
+                  alertConfirm()
+                  setTimeout(
+                    navigate("/materiales"),
+                    500
+                  )
+                } else {
+                  await createMaterial(values)
+                  alertConfirm()
+                  setTimeout(
+                    navigate("/materiales"),
+                    500
+                  )
+                }
               }
-              setMaterial({
-                nombre: "",
-                cantidad: "",
-                idCategoria: "",
-                estado: ""
-              })
+
             }}
           >
             {({ handleChange, handleSubmit, values, isSubmitting, errors, touched, setFieldValue }) => (
@@ -107,7 +140,10 @@ export default function MaterialesForm() {
                   <div className="card-body">
                     <div className="row">
                       <div className="col-md-6 mt-3">
-                        <input type="text" className="form-control form-control-user" id="nombre" onChange={handleChange} value={values.nombre} placeholder="Nombre*" onBlur={() => setFieldValue('nombre', values.nombre.trim())} // Eliminar espacios en blanco al salir del campo
+                        <input type="text" className="form-control form-control-user" id="nombre" onChange={(e) =>{
+                          handleChange(e)
+                          checkNombre(e.target.value)
+                        }} value={values.nombre} placeholder="Nombre*" onBlur={() => setFieldValue('nombre', values.nombre.trim())} // Eliminar espacios en blanco al salir del campo
                           validate={validateWhitespace} />
                         {errors.nombre && touched.nombre ? (
                           <div className="alert alert-danger" role="alert">{errors.nombre}</div>

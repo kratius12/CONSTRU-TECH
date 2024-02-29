@@ -21,6 +21,7 @@ export default function ProveedoresForm() {
 
   const [tipo, setOpcionSeleccionada] = useState('');
   const [mostrarContacto, setMostrarContacto] = useState(false);
+  const [doc, setDoc] = useState(true)
 
   const handleSelectChange = (event) => {
     const seleccion = event.target.value;
@@ -115,6 +116,40 @@ export default function ProveedoresForm() {
     })
   }
 
+  const checkDoc = async (tipo, documento) => {
+    try {
+      const response = await fetch(`http://localhost:4000/checkDocProv/${documento}/${tipo}/${params.id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+      if (response.status === 203) {
+        $.confirm({
+          title: `El numero y tipo de documento ingresado ya existe`,
+          content: "",
+          icon: 'fa fa-x-mark',
+          theme: 'modern',
+          closeIcon: true,
+          animation: 'zoom',
+          closeAnimation: 'scale',
+          animationSpeed: 500,
+          type: 'red',
+          columnClass: 'col-md-6 col-md-offset-3',
+          buttons: {
+            cerrar: function () {
+            },
+          }
+        })
+        setDoc(true)
+      } else {
+        setDoc(false)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   return (
     <div className="container">
       <div className="row">
@@ -124,94 +159,29 @@ export default function ProveedoresForm() {
             enableReinitialize={true}
             validate={validateForm}
             validateOnChange={true}
-            onSubmit={async (values, { setSubmitting }) => {
-              try {
-                if (params.id) {
-                  const validateFact = await axios.put(`http://localhost:4000/documentoProvE/${params.id}`, { nit: values.nit, tipo: values.tipo })
-                  console.log(validateFact.data)
-                  if (validateFact.data == true) {
-                    var type;
-                    if (values.tipo == "Juridico") {
-                      type = "NIT"
-                    } else {
-                      type = "Número de documento"
-                    }
-                    $.confirm({
-                      title: `Error`,
-                      content: `El ${type} ${values.nit} ya está asociado a otro proveedor`,
-                      icon: 'fa fa-circle-xmark',
-                      theme: 'modern',
-                      closeIcon: true,
-                      animation: 'zoom',
-                      closeAnimation: 'scale',
-                      animationSpeed: 500,
-                      type: 'red',
-                      columnClass: 'col-md-6 col-md-offset-3',
-                      buttons: {
-                        Cerrar: function () {
-                        },
-                      }
-                    }, setSubmitting(false))
-                  } else {
-                    setSubmitting(true)
-                    await updateProveedor(params.id, { ...values, tipo: tipo });
-                    navigate("/proveedores");
-                    alertConfirm();
-                  }
-                } else {
+            onSubmit={async (values) => {
 
-                  const validateFact = await axios.put(`http://localhost:4000/documentoProvA`, { nit: values.nit, tipo: tipo })
-                  if (validateFact.data == true) {
-                    var type;
-                    if (values.tipo == "Juridico") {
-                      type = "NIT"
-                    } else {
-                      type = "Número de documento"
-                    }
-                    $.confirm({
-                      title: `Error`,
-                      content: `El ${type} ${values.nit} ya está asociado a otro proveedor`,
-                      icon: 'fa fa-circle-xmark',
-                      theme: 'modern',
-                      closeIcon: true,
-                      animation: 'zoom',
-                      closeAnimation: 'scale',
-                      animationSpeed: 500,
-                      type: 'red',
-                      columnClass: 'col-md-6 col-md-offset-3',
-                      buttons: {
-                        Cerrar: function () {
-                        },
-                      }
-                    }, setSubmitting(false))
-                  } else {
-                    setSubmitting(true)
-                    await createProveedor({ ...values, tipo: tipo });
-                    navigate("/proveedores");
-                    alertConfirm();
-                  }
+                checkDoc(values.tipo, values.nit)
+                
+              if (doc === false) {
+                if (params.id) {
+                  await updateProveedor(params.id, { ...values, tipo: tipo });
+                  navigate("/proveedores");
+                  alertConfirm('update');
+                  
+                } else {
+                  await createProveedor({ ...values, tipo: tipo });
+                  navigate("/proveedores");
+                  alertConfirm();
 
                 }
-
-                setProveedor({
-                  nombre: "",
-                  direccion: "",
-                  nit: "",
-                  tipo: "",
-                  estado: "",
-                  email: "",
-                  telefono: "",
-                  nombreContacto: "",
-                  telefonoContacto: "",
-                  emailContacto: "",
-                });
-              } catch (error) {
-                console.error(error);
               }
             }
 
 
+
             }
+
 
           >
 
@@ -247,7 +217,11 @@ export default function ProveedoresForm() {
                           type="text"
                           className={`form-control form-control-user`}
                           id="nit"
-                          onChange={handleChange}
+                          onChange={(e) =>{
+                            handleChange(e)
+                            checkDoc(values.tipo, values.nit)
+                            // params.id ? '' : checkDoc(values.tipo, e.target.value)
+                          }}
                           value={values.nit}
                           placeholder={placeholders.nit}
                           onBlur={() => setFieldValue('nit', values.nit.trim())}

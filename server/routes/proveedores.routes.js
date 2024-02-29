@@ -220,5 +220,51 @@ router.put("/documentoProvE/:id", async (req, res)=>{
     }
 })
 
+router.get("/checkDocProv/:documento/:tipoDoc/:id", async (req, res) => {
+    try {
+        if (parseInt(req.params.id) > 0) {
+            const result = await prisma.proveedor.findFirst({
+                where:{
+                    nit:{
+                        equals:req.params.documento
+                    },
+                    tipo:{
+                        equals: req.params.tipoDoc
+                    },
+                    idProv:{
+                        not: parseInt(req.params.id)
+                     }
+                },
+                select:{
+                 nit:true,
+                 tipo:true
+                }
+            })       
+            if (result) {
+                return res.status(203).json({message: 'El documento ingresado ya existe'})                
+            }
+            return res.status(200).json({message: result})            
+        } else {
+            const result = await prisma.proveedor.findFirst({
+                where:{
+                 AND:{
+                  nit:req.params.cedula,
+                  tipo:req.params.tipoDoc
+                 }
+                },
+                select:{
+                 nit:true,
+                 tipo:true
+                }
+            })       
+            if (result) {
+                return res.status(203).json({message: 'El documento ingresado ya existe'})                
+            }
+            return res.status(200).json({message: result})            
+        }
+    } catch (error) {
+        return res.status(500).json({message: error.message})
+    }
+})
 
 export default router
