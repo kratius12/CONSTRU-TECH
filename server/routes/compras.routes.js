@@ -29,12 +29,12 @@ router.get('/compra/:id', async (req, res) => {
                 compras_detalle: {
                     include: {
                         materiales: true,
-                        
+
                     }
                 },
-                proveedor:{
-                    select:{
-                        nombre:true
+                proveedor: {
+                    select: {
+                        nombre: true
                     }
                 }
             }
@@ -52,60 +52,85 @@ router.get('/compra/:id', async (req, res) => {
 });
 
 
-router.put("/compraFactura",async(req,res)=>{
+router.put("/compraFactura", async (req, res) => {
     try {
-        const {codigoFactura} = req.body
+        const { codigoFactura } = req.body
         const result = await prisma.compras.findMany({
-            where:{
+            where: {
                 codigoFactura: codigoFactura
             }
         })
-        if(result.length>0){
+        if (result.length > 0) {
             return res.status(200).json(true)
-        }else{
+        } else {
             return res.status(200).json(false)
         }
     } catch (error) {
-        console.log(json({message: error.message}));
-        return res.status(500).json({message: error.message})
+        console.log(json({ message: error.message }));
+        return res.status(500).json({ message: error.message })
     }
 })
 
 
 
 router.post("/compra", subirArchivoProducto, async (req, res) => {
-      if (!req.file) {
+    if (!req.file) {
         return res.json({ message: "Error al cargar la imagen" });
-      }
-  
-      const { detalles, total_compra, fecha, codigoFactura,idProv } = req.body;
-  
-      const nuevaCompra = await prisma.compras.create({
+    }
+
+    const { detalles, total_compra, fecha, codigoFactura, idProv } = req.body;
+
+    const nuevaCompra = await prisma.compras.create({
         data: {
-          total_compra: parseInt(total_compra),
-          imagen: req.file.filename,
-          idProv:parseInt(idProv),
-          fecha: fecha,
-          codigoFactura: codigoFactura,
+            total_compra: parseInt(total_compra),
+            imagen: req.file.filename,
+            idProv: parseInt(idProv),
+            fecha: fecha,
+            codigoFactura: codigoFactura,
         },
-      });
-  
-      for (const detalle of detalles) {
-        const {  idMat, cantidad, precio } = detalle;
-  
+    });
+
+    for (const detalle of detalles) {
+        const { idMat, cantidad, precio } = detalle;
+
         await prisma.compras_detalle.createMany({
-          data: {
-            cantidad: parseInt(cantidad),
-            idCompra: nuevaCompra.idCom,
-            idMat: parseInt(idMat),
-            precio: parseInt(precio),
-            subtotal: parseInt(precio * cantidad),
-          },
+            data: {
+                cantidad: parseInt(cantidad),
+                idCompra: nuevaCompra.idCom,
+                idMat: parseInt(idMat),
+                precio: parseInt(precio),
+                subtotal: parseInt(precio * cantidad),
+            },
         });
-      }
-  
-      return res.status(201).send({ message: "Compra creada exitosamente" });
-    } );
-  
+        const materi = await prisma.materiales.findFirst({
+            where: {
+                idMat: parseInt(idMat)
+            }
+        })
+       
+        if(materi.cantidad === 0){
+            await prisma.materiales.update({
+                where:{
+                    idMat: parseInt(idMat)
+                },data:{
+                    estado:1
+                }
+            })
+        }
+
+            await prisma.materiales.update({
+                where: { idMat: parseInt(idMat) },
+                data: {
+                    cantidad: {
+                        increment: parseInt(cantidad),
+                    },
+                },
+            });
+        
+    }
+
+    return res.status(201).send({ message: "Compra creada exitosamente" });
+});
+
 
 export default router;

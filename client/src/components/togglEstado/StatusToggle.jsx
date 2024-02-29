@@ -22,12 +22,13 @@ function StatusToggle({id, initialStatus, toggleApi, onCambioEstado, entity}) {
                 confirmar: {
                     btnClass: 'btn-danger',
                     action: async function () {
+                        window.location.reload()
                         setStatus(status ? 0 :1)
                         const response = await toggleApi(id,status)
                         onCambioEstado(id,!status)
                         $.alert('Se ha cambiado el estado!');
                         setTimeout(() => {
-                            window.location.reload(false);
+                            window.location.reload();
                         }, 2000)  
                     }                    
                 },

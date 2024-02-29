@@ -14,11 +14,6 @@ function PermisosPage() {
         {
             header: "Nombre",
             accessorKey: 'permiso'
-        },
-        {
-            header: "Estado",
-            accessorKey: 'estado',
-            idProperty: 'idPer'
         }
     ]
 
@@ -28,7 +23,7 @@ function PermisosPage() {
 
     }
 
-    const {permisos, Permisos, TogglePermisoStatus, getPermiso} = usePermiso()
+    const {permisos, Permisos} = usePermiso()
     const navigate = useNavigate()
     useEffect(() =>{
     Permisos()  
@@ -39,7 +34,7 @@ function PermisosPage() {
             return <h1>Sin Permisos</h1>
             
         }else{
-            return <TableInfo dataHeader={dataHeader} dataBody={permisos}   toggleApi={TogglePermisoStatus} getApi={getPermiso} entity={"Permiso"} onChangeStatus={handleChangeStatus}/>
+            return <TableInfo dataHeader={dataHeader} dataBody={permisos}   entity={"Permiso"} />
         }
         // return <RolTable permisos={permisos}/>
     }

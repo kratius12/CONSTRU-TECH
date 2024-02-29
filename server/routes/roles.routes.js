@@ -326,14 +326,15 @@ router.put("/rolSE/:id", async (req, res) => {
 router.put("/rolSA", async (req,res)=>{
     try {
         const {nombre} = req.body
+        console.log(nombre)
         console.log(req.body)
-        const rol = await prisma.rol.findFirst({
+        const rol = await prisma.rol.findMany({
             where:{
                 nombre
             }
         })
         console.log(rol)
-        if(rol != 0){
+        if(rol.length != 0){
             console.log(false)
             return res.json(false)
         }else{

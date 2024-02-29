@@ -67,7 +67,7 @@ const validateForm = (values) => {
   };
 
   if (!values.telefono || values.telefono.trim() === '') {
-    errors.telefono = 'El telefono de contacto es requerido';
+    errors.telefono = 'El telefono es requerido';
   } else if (values.telefono.trim()[0]==0) {
     errors.telefono = 'El número de telefono no puede iniciar con 0';
   } else if (values.telefono.trim().length > 10) {

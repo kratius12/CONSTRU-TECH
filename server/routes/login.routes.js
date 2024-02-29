@@ -49,7 +49,7 @@ router.post('/login', async (req, res) => {
       const passwordsMatch = await bcryptCompare(password, user.contrasena);
       
       if (passwordsMatch) {
-        const token = jwt.sign({ nombres: user.nombre+'-'+user.apellidos, email: user.email, rolesPermisos: user.rolpermisoempleado }, SECRET_KEY, { expiresIn: '2h' });
+        const token = jwt.sign({ idEmp: user.idEmp, nombres: user.nombre+'-'+user.apellidos, email: user.email, rolesPermisos: user.rolpermisoempleado }, SECRET_KEY, { expiresIn: '2h' });
         
         res.status(200).json({ token });
       } else {
@@ -60,6 +60,34 @@ router.post('/login', async (req, res) => {
       res.status(500).json({ error: 'Error interno del servidor' });
     }
   });
+
+router.post("/loginCli", async (req,res) =>{
+  try {
+    const {username, password} = req.body;
+    const user = await prisma.cliente.findFirst({
+      where:{
+          email:username,
+          estado:1,
+      }
+    })
+    if (!user) {
+      res.status(404).json({ error: 'Credenciales incorrectas.' });
+      return;
+    }
+    const passwordsMatch = await bcryptCompare(password, user.constrasena);
+    console.log(passwordsMatch)
+
+    if(passwordsMatch){
+      const token = jwt.sign({ nombre: user.nombre, apellidos: user.apellidos, email: user.email, direccion: user.direccion, telefono: user.telefono, tipoDoc: user.tipoDoc,  fecha_nac: user.fecha_nac, estado: user.estado }, SECRET_KEY, { expiresIn: '2h' })
+      res.status(200).json({ token });
+    }else{
+      res.status(200).json({message:"Error, credenciales incorrectas"})
+    }
+
+  } catch (error) {
+    console.error(error)
+  }
+})
 
 router.post('/sendCode', async (req, res) => {
   try {

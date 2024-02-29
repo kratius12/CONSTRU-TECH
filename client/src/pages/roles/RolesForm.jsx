@@ -127,6 +127,7 @@ const RolesForm = () => {
       console.log(error)
     }
   }
+  
 
   return (
     <div className="container">
@@ -143,9 +144,12 @@ const RolesForm = () => {
           if (rol === false) {
             if(params.id){
               setSubmitting(true)
+              
               await updateRol(params.id, rolObject);
               alertConfirm("actualizado");
               setTimeout(() => navigate("/roles"));
+
+
             }else{
               await createRol(rolObject);
               alertConfirm("agregado");
@@ -163,16 +167,19 @@ const RolesForm = () => {
               <div className="card-body">
                 <div className="row">
                   <div className="col-md-6 mt-3 mx-auto">
+                    <label htmlFor="">Nombre del rol</label>
                     <Field
                       type="text"
                       id="nombre"
                       name="nombre"
                       className="form-control form-control-user"
                       placeholder="Nombre del rol*"
+
                       onChange={(e) => {
                         handleChange(e)
                         checkRol(e.target.value)
                       }}
+
                       value={values.nombre}
                       onBlur={() => setFieldValue('nombre', values.nombre.trim())}
                       validate={validateWhitespace}
@@ -180,6 +187,27 @@ const RolesForm = () => {
                     {errors.nombre && touched.nombre ? (
                       <div className="alert alert-danger" role="alert">
                         {errors.nombre}
+                      </div>
+                    ) : null}
+                  </div>
+                  <div className="col-md-6 mt-3 mx-auto">
+                    <label htmlFor="permisos">Permisos:</label>
+                    <Select
+                      id="permisos"
+                      key={key}
+                      options={permisos}
+                      isMulti
+                      defaultValue={defaultOptions}
+                      className=""
+                      name="permisos"
+                      onChange={(selectedPer) => {
+                        setPermisoSelected(selectedPer)
+                        setFieldValue("permisos", selectedPer)
+                      }}
+                    />
+                    {errors.permisos && touched.permisos ? (
+                      <div className="alert alert-danger" role="alert">
+                        {errors.permisos}
                       </div>
                     ) : null}
                   </div>
@@ -194,27 +222,6 @@ const RolesForm = () => {
                     {errors.estado && touched.estado ? (
                       <div className="alert alert-danger" role="alert">
                         {errors.estado}
-                      </div>
-                    ) : null}
-                  </div>
-                  <div className="col-md-4 mt-3 mx-auto">
-                    <label htmlFor="permisos">Permisos:</label>
-                    <Select
-                      id="permisos"
-                      key={key}
-                      options={permisos}
-                      isMulti
-                      defaultValue={defaultOptions}
-                      className="basic-multi-select"
-                      name="permisos"
-                      onChange={(selectedPer) => {
-                        setPermisoSelected(selectedPer)
-                        setFieldValue("permisos", selectedPer)
-                      }}
-                    />
-                    {errors.permisos && touched.permisos ? (
-                      <div className="alert alert-danger" role="alert">
-                        {errors.permisos}
                       </div>
                     ) : null}
                   </div>

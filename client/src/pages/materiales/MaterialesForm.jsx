@@ -160,12 +160,12 @@ export default function MaterialesForm() {
                           <div className="alert alert-danger" role="alert">{errors.idCategoria}</div>
                         ) : null}
                       </div>
-                      {/* <div className="col-md-6 mt-3 mx-auto">
+                      <div className="col-md-6 mt-3 mx-auto">
                         <input type="number" className="form-control form-control-user" id="cantidad" onChange={handleChange} value={values.cantidad} placeholder="Cantidad" />
                         {errors.cantidad && touched.cantidad ? (
                           <div className="alert alert-danger" role="alert">{errors.cantidad}</div>
                         ):null}
-                      </div> */}
+                      </div>
                       <div className="col-md-6 mt-3">
                         {params.id ?
                           (

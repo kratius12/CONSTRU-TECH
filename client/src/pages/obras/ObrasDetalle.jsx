@@ -6,8 +6,10 @@ import { Modal, Button, ModalHeader, ModalBody, ModalFooter } from "reactstrap"
 import { useNavigate, useParams } from "react-router-dom";
 import { useObras } from "../../context/obras/ObrasProvider";
 import { obraSchemaEdit, actividadSchema } from "../../components/obras/ValidateObra"
-import _ from "lodash"
 import "../../components/obras/obras.css"
+import { format, addDays, max } from 'date-fns';
+// import GanttChartComponent from "../../components/obras/Componentgant";
+
 const fetchData = async (url) => {
     try {
         const response = await axios.get(url);
@@ -61,34 +63,63 @@ const ObraDetalle = () => {
     const [matDefault, setMatDefault] = useState([])
     const [empDefault, setEmpDefault] = useState([])
     const [selectedActivity, setSelectedActivity] = useState(null);
-    const [disabled, setDisabled] = useState("disabled")
-    const handleAgregarActividad = (activity = null) => {
-        setSelectedActivity(activity);
+    const [materialesList, setMaterialesList] = useState([{ material: "", cantidad: 0 }]);
+    const [numFormularios, setNumFormularios] = useState(1);
+    const [showGantt, setShowGantt] = useState(false)
+    const [actividadesLocales, setActividadesLocales] = useState([]);
+
+
+
+    const handleAgregarActividad = (activity) => {
+        if (activity.detalleObra) {
+            setSelectedActivity(activity);
+        } else {
+            setSelectedActivity(null)
+        }
+
         setMatDefault([]);
         setEmpDefault([]);
         setModalVisible(true);
-        if (activity) {
+
+        if (activity.detalleObra) {
             const initialMaterials = activity.materiales.map((material) => ({
-                value: material.idMat,
-                label: material.nombre,
+                value: material.materiales.idMat,
+                label: material.materiales.nombre,
             }));
-
             const initialEmployees = activity.empleados.map((employee) => ({
-                value: employee.idEmp,
-                label: employee.nombre,
+                value: employee.empleado.idEmp,
+                label: employee.empleado.nombre,
             }));
 
-            setMatDefault(initialMaterials);
+            setSelectedMaterials(initialMaterials); // preselect the materials associated with the activity
             setEmpDefault(initialEmployees);
         } else if (!activity.actividad) {
             setMatDefault([]);
             setEmpDefault([]);
         }
+        const fechainiActividad = activity.detalleObra.fechaini;
+        const fechafinActividad = new Date(fechainiActividad);
+        const fecha = fechafinActividad.setDate(fechafinActividad.getDate() + parseInt(activity.detalleObra.fechafin, 10) + 1);
+
+        setActividadesLocales([...actividadesLocales, { ...activity, fechafinActividad: fecha }]);
 
     };
+
+    const handleAgregarMaterial = () => {
+
+        setNumFormularios(numFormularios + 1);
+        setMaterialesList([...materialesList, { idMat: '', cantidad: 0 }]);
+    };
+    const handleShowGantt = () => {
+        setShowGantt(true);
+    };
+
+    const handleCerrarGantt = () => {
+        setShowGantt(false)
+    }
+
     const [currentPage, setCurrentPage] = useState(1);
     const activitiesPerPage = 4;
-
     const paginate = (pageNumber) => {
         if (pageNumber < 1 || pageNumber > totalPages) {
             return;
@@ -113,13 +144,13 @@ const ObraDetalle = () => {
         }, []);
 
         return [...detalleValues, ...materialesYEmpleados].some((value) =>
-            value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+            value.toString().includes(searchTerm)
         );
     })
         .sort((a, b) => {
             // Ordena por el estado "En curso" primero
-            const estadoA = a.estado.toLowerCase();
-            const estadoB = b.estado.toLowerCase();
+            const estadoA = a.estado;
+            const estadoB = b.estado;
 
             if (estadoA === "en curso" && estadoB !== "en curso") {
                 return -1;
@@ -129,15 +160,10 @@ const ObraDetalle = () => {
                 return 0;
             }
         });
-
-    // console.clear()
-
-    // Lógica de paginación
     const indexOfLastActivity = currentPage * activitiesPerPage;
     const indexOfFirstActivity = indexOfLastActivity - activitiesPerPage;
     const currentActivities = filteredActivities.slice(indexOfFirstActivity, indexOfLastActivity);
     const totalPages = Math.ceil(filteredActivities.length / activitiesPerPage);
-
     const [values, setValues] = useState([])
     const alertConfirmAct = async () => {
         try {
@@ -145,7 +171,7 @@ const ObraDetalle = () => {
             setActividades(updatedActividades);
             $.confirm({
                 title: `Actividad guardada con éxito!`,
-                content:"",
+                content: "",
                 icon: 'fa fa-check',
                 theme: 'modern',
                 closeIcon: true,
@@ -165,7 +191,19 @@ const ObraDetalle = () => {
         }
     }
     const [existingActivities, setExistingActivities] = useState([]);
+    const handleMaterialChange = (index, selectedMaterial) => {
+        const updatedList = [...materialesList];
+        updatedList[index].material = selectedMaterial;
+        setMaterialesList(updatedList);
+    };
 
+    const handleCantidadChange = (index, nuevaCantidad) => {
+        const nuevosMateriales = [...materialesList];
+        nuevosMateriales[index].cantidad = nuevaCantidad;
+        setMaterialesList(nuevosMateriales);
+    };
+
+    const [actividadActual, setActividadActual] = useState(null);
     const handleCerrarForm = () => {
         setModalVisible(false);
         setMatDefault([]);
@@ -180,7 +218,7 @@ const ObraDetalle = () => {
         }
         $.confirm({
             title: `Obra ${message} con éxito!`,
-            content:"",
+            content: "",
             icon: 'fa fa-check',
             theme: 'modern',
             closeIcon: true,
@@ -200,7 +238,31 @@ const ObraDetalle = () => {
     const handleSearch = () => {
         setCurrentPage(1);
     };
-    console.clear()
+    const [modalMaterialesVisible, setModalMaterialesVisible] = useState(false);
+    const handleAbrirModalMateriales = (actividad) => {
+        setActividadActual(actividad);
+        setMaterialesList(actividad.materiales || []); // Asegúrate de que actividad.materiales sea un array
+        setModalMaterialesVisible(true);
+    };
+    const calcularFechaFinEstimada = (fechaInicio, dias) => {
+        const fechaInicioActividad = new Date(fechaInicio);
+        const fechaFinEstimada = new Date(fechaInicioActividad.getTime() + (dias * 24 * 60 * 60 * 1000));
+        return fechaFinEstimada.toLocaleDateString(); // Puedes ajustar el formato según lo que necesites
+    };
+
+    const formatoFechaIni = (fechaInicio) => {
+        const fechaInicioActividad = new Date(fechaInicio)
+        return fechaInicioActividad.toLocaleDateString()
+    }
+
+
+
+    const handleCerrarModalMateriales = () => {
+        setModalMaterialesVisible(false);
+    };
+
+    // console.clear()
+    const [fechaMaxima, setFechaMaxima] = useState(null)
 
     useEffect(() => {
         const fetchObraDetalle = async () => {
@@ -235,12 +297,75 @@ const ObraDetalle = () => {
         fetchData("http://localhost:4000/empleadosAct").then((data) => {
             setAsesores(data)
         });
+        const calcularFechaMaxima = () => {
+
+            var fechafin = null;
+
+            var fechaini = null
+
+            actividades.forEach((detalle) => {
+                const fechainicio = detalle.detalleObra.fechaini
+                const fechaFinDetalle = detalle.detalleObra.fechafin;
+                // Verifica si la fecha actual es posterior a la fecha máxima almacenada
+                if (!fechafin || fechaFinDetalle > fechafin) {
+                    fechafin = fechaFinDetalle;
+                    fechaini = fechainicio
+                }
+            });
+            const inicio = new Date(fechaini)
+            const fechafinMaxima = new Date(inicio.getTime() + (fechafin * 24 * 60 * 60 * 1000))
+            const fechaMaximaFormateada = format(fechafinMaxima, 'dd/MM/yyyy');
+            setFechaMaxima(fechaMaximaFormateada)
+        }
+
+
         const activityDescriptions = actividades.map((activity) => activity.actividad);
         setExistingActivities(activityDescriptions);
-
         loadMaterialesEmpleados()
         fetchObraDetalle()
+        calcularFechaMaxima()
     }, [id]);
+    const [materialErrors, setMaterialErrors] = useState([]);
+    const [modalError, setModalError] = useState(false);
+
+    const handleEliminarMaterial = (index) => {
+        setNumFormularios(numFormularios - 1);
+        const updatedList = [...materialesList];
+        updatedList.splice(index, 1);
+        setMaterialesList(updatedList);
+    };
+
+
+    const handleGuardarMateriales = () => {
+        const newMaterialErrors = {};
+
+        materialesList.forEach((material, index) => {
+            if (material.cantidad < 0) {
+                newMaterialErrors[index] = { ...newMaterialErrors[index], cantidad: "La cantidad no puede ser un número negativo" };
+            } else if (material.cantidad === 0) {
+                newMaterialErrors[index] = { ...newMaterialErrors[index], cantidad: "La cantidad no puede ser 0" };
+            }
+
+            if (!material.material) {
+                newMaterialErrors[index] = { ...newMaterialErrors[index], material: "Debe seleccionar un material" };
+            }
+
+            // Agregar otras validaciones según tus requisitos
+        });
+
+        // Muestra los errores debajo de cada campo
+        setMaterialErrors(newMaterialErrors);
+
+        // Muestra el mensaje de error general de la modal si hay algún error
+        setModalError(Object.keys(newMaterialErrors).length > 0);
+        // Si no hay errores, cierra la modal
+        if (Object.keys(newMaterialErrors).length === 0) {
+            handleCerrarModalMateriales();
+        }
+    };
+
+    const [selectedMaterials, setSelectedMaterials] = useState([]);
+
 
     if (!obra) {
         return <div>Error al cargar la información de la obra</div>
@@ -255,6 +380,8 @@ const ObraDetalle = () => {
         };
         setValues(initialValues);
     };
+
+
     return (
         <div>
             <Formik
@@ -329,7 +456,16 @@ const ObraDetalle = () => {
                                     </div>
                                     <div className='col-md-3 mt-3 mx-auto'>
                                         <label htmlFor="fechafin">Seleccione la fecha de fin de la obra</label>
-                                        <input type="date" name="fechafin" label="Fecha Fin" className="form-control form-control-user" value={values.fechafin} onChange={handleChange} />
+                                        <input
+                                            type="text"
+                                            disabled
+                                            name="fechafin"
+                                            label="Fecha Fin"
+                                            className="form-control form-control-user"
+                                            value={fechaMaxima || values.fechafin}
+                                            onChange={handleChange}
+
+                                        />
                                         {
                                             errors.fechafin && touched.fechafin ? (
                                                 <div className="alert alert-danger">{errors.fechafin}</div>
@@ -349,8 +485,8 @@ const ObraDetalle = () => {
                                         <label htmlFor="estado">Seleccione el estado de la obra</label>
                                         <select name="estado" id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado}>
                                             <option value="">Seleccione una opción</option>
-                                            <option value="En asesoria">En asesoria</option>
                                             <option value="Pendiente">Pendiente</option>
+                                            <option value="En asesoria">En asesoria</option>
                                             <option value="En construcción">En construcción</option>
                                             <option value="Terminado">Terminado</option>
                                         </select>
@@ -397,6 +533,20 @@ const ObraDetalle = () => {
                                                             <i className="fa fa-search"></i>
                                                         </button>
                                                     </div>
+                                                </div>
+                                                <div className="ml-3 mr-2">
+                                                    {
+                                                        showGantt == true ? (
+                                                            <Button type="button" className="btn btn-primary" onClick={handleCerrarGantt}>
+                                                                Ver actividades
+                                                            </Button>
+                                                        ) : (
+                                                            <Button type="button" className="btn btn-primary" onClick={handleShowGantt}>
+                                                                Ver diagrama
+                                                                {/* <GanttChartComponent tasks={actividades}/> */}
+                                                            </Button>
+                                                        )
+                                                    }
 
                                                 </div>
                                             </>
@@ -411,14 +561,24 @@ const ObraDetalle = () => {
                                         <ModalBody>
                                             <Formik
                                                 initialValues={{
-                                                    actividad: selectedActivity ? selectedActivity.actividad : '',
-                                                    fechaini: selectedActivity ? selectedActivity.fechaini : '',
-                                                    fechafin: selectedActivity ? selectedActivity.fechafin : '',
-                                                    actividades: {
-                                                        materiales: selectedActivity ? matDefault : [],
-                                                        empleados: selectedActivity ? empDefault : [],
-                                                    },
-                                                    estado: selectedActivity ? selectedActivity.estado : '',
+                                                    actividad:
+                                                        selectedActivity ? selectedActivity.detalleObra.actividad :
+                                                            '',
+                                                    fechaini:
+                                                        selectedActivity ? selectedActivity.detalleObra.fechaini :
+                                                            '',
+                                                    fechafin:
+                                                        selectedActivity ? selectedActivity.detalleObra.fechafin :
+                                                            '',
+                                                    empleados:
+                                                        selectedActivity ? empDefault :
+                                                            [],
+                                                    materiales:
+                                                        selectedActivity ? matDefault :
+                                                            [],
+                                                    estado:
+                                                        selectedActivity ? selectedActivity.detalleObra.estado :
+                                                            '',
                                                     obra: {
                                                         fechainiObra: obra.fechaini,
                                                         fechafinObra: obra.fechafin
@@ -430,9 +590,11 @@ const ObraDetalle = () => {
                                                     ...values
                                                 })}
                                                 onSubmit={async (values, { setSubmitting }) => {
+
                                                     const formattedShare = {
                                                         ...values,
-                                                        antiguo: selectedActivity.actividad,
+                                                        antiguo: selectedActivity ? selectedActivity.detalleObra.actividad : null,
+                                                        materiales: materialesList
                                                     };
                                                     for (const actividad of actividades) {
                                                         if (actividad.actividad === values.actividad && !selectedActivity) {
@@ -454,7 +616,7 @@ const ObraDetalle = () => {
                                                             })
                                                             setSubmitting(false)
                                                             return
-                                                        } else if (actividad.actividad == values.actividad && selectedActivity.actividad != values.actividad) {
+                                                        } else if (actividad.actividad == values.actividad && selectedActivity.detalleObra.actividad != values.actividad) {
                                                             $.confirm({
                                                                 title: `Error`,
                                                                 content: `La actividad ${values.actividad} ya exite para esta obra other`,
@@ -473,19 +635,17 @@ const ObraDetalle = () => {
                                                             })
                                                             setSubmitting(false)
                                                             return
-                                                        }else{
+                                                        } else {
                                                             setSubmitting(true)
                                                         }
                                                     }
-
                                                     setSubmitting(true);
                                                     await createActividad(id, formattedShare);
                                                     alertConfirmAct();
                                                     setModalVisible(false);
-                                                    console.clear()
                                                 }}
                                             >
-                                                {({ values, setFieldValue, handleSubmit, setFieldTouched, errors, touched, handleChange, resetForm }) => (
+                                                {({ values, setFieldValue, handleSubmit, setFieldTouched, errors, touched, handleChange }) => (
                                                     <Form
                                                         className="user"
                                                         onSubmit={handleSubmit}
@@ -517,8 +677,8 @@ const ObraDetalle = () => {
                                                             }
                                                         </div>
                                                         <div className="mt-3">
-                                                            <label htmlFor="fechafin">Seleccione la fecha de fin de la actividad</label>
-                                                            <input type="date" name="fechafin" id="fechafin" className="form-control form-control" value={values.fechafin} onChange={handleChange} />
+                                                            <label htmlFor="fechafin">Ingrese la cantidad de dias que le tomará esta activdad</label>
+                                                            <input type="number" name="fechafin" id="fechafin" className="form-control form-control" value={values.fechafin} onChange={handleChange} />
                                                             {
                                                                 errors.fechafin && touched.fechafin ? (
                                                                     <div className="alert alert-danger" role="alert">
@@ -529,41 +689,25 @@ const ObraDetalle = () => {
                                                                 ) : null
                                                             }
                                                         </div>
-                                                        <div className="mt-3">
-                                                            <label htmlFor="materiales">Seleccione los materiales necesarios para la actividad</label>
-                                                            <Select
-                                                                id={`materiales`}
-                                                                options={
-                                                                    materiales
-                                                                }
-                                                                isMulti
 
-                                                                // defaultValue={matDefault}
-                                                                value={values.actividades.materiales}
-                                                                onChange={(selectedMateriales) => setFieldValue(`actividades.materiales`, selectedMateriales)}
-                                                                onBlur={() => setFieldTouched(`values.actividades.materiales`, true)}
-
-                                                            />
-                                                            {errors.actividades?.materiales && touched.actividades?.materiales && (
-                                                                <div className="alert alert-danger">{errors.actividades.materiales}</div>
-                                                            )}
-                                                        </div>
                                                         <div className="mt-3">
                                                             <label htmlFor="empleados">Seleccione los empleados encargados de la actividad</label>
                                                             <Select
-                                                                id={`actividades.empleados`}
+                                                                key={`select${values.empleados}`}
+                                                                id={`empleados`}
                                                                 options={empleados}
                                                                 isMulti
-                                                                value={values.actividades.empleados}
-                                                                onChange={(selectedEmpleados) => setFieldValue(`actividades.empleados`, selectedEmpleados)}
-                                                                onBlur={() => setFieldTouched(`values.actividades.empleados`, true)}
+                                                                value={values.empleados}
+                                                                onChange={(selectedEmpleados) => setFieldValue(`empleados`, selectedEmpleados)}
+                                                                onBlur={() => setFieldTouched(`values.empleados`, true)}
 
                                                             />
-                                                            {errors.actividades?.empleados && touched.actividades?.empleados && (
-                                                                <div className="alert alert-danger">{errors.actividades.empleados}</div>
+                                                            {errors.empleados && touched.empleados && (
+                                                                <div className="alert alert-danger">{errors.empleados}</div>
                                                             )}
 
                                                         </div>
+
                                                         <div className="mt-3">
                                                             <label htmlFor="estado">Seleccione el estado de la actividad</label>
                                                             <select name="estado" id="estado" className="form-select form-control" value={values.estado} onChange={handleChange}>
@@ -581,7 +725,16 @@ const ObraDetalle = () => {
                                                                 ) : null
                                                             }
                                                         </div>
-                                                        <div className="card-footer">
+                                                        <div>
+                                                            <div className="container">
+                                                                <div className="text-center">
+                                                                    <Button color="primary" className="mt-3" onClick={() => handleAbrirModalMateriales(selectedActivity ? selectedActivity.materiales : [])}>
+                                                                        Gestionar Materiales
+                                                                    </Button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="card-footer mt-3">
                                                             <ModalFooter>
                                                                 <Button color="secondary" onClick={handleCerrarForm}>
                                                                     Cancelar
@@ -603,6 +756,74 @@ const ObraDetalle = () => {
 
                                         </ModalBody>
                                     </Modal>
+                                    <Modal isOpen={modalMaterialesVisible} toggle={() => setModalMaterialesVisible(!modalMaterialesVisible)}>
+                                        <ModalHeader toggle={() => setModalMaterialesVisible(!modalMaterialesVisible)}>Gestionar Materiales</ModalHeader>
+                                        <ModalBody>
+
+                                            {materialesList.map((material, index) => (
+                                                <Form key={index}>
+                                                    <div className="container" key={index}>
+                                                        <Select
+                                                            id={`materiales.${index}`}
+                                                            name={`materiales.${index}`}
+                                                            options={materiales}
+                                                            defaultValue={selectedMaterials[index]}
+                                                            value={materialesList[index].material}
+                                                            onChange={(selectedMaterial) => handleMaterialChange(index, selectedMaterial)}
+                                                        />
+                                                        {materialErrors[index] && materialErrors[index].material && (
+                                                            <div className="alert alert-danger mt-2" role="alert">
+                                                                {materialErrors[index].material}
+                                                            </div>
+                                                        )}
+                                                        <input
+                                                            type="number"
+                                                            className="form-control mt-3"
+                                                            name={`cantidad-${index}`}
+                                                            value={material.cantidad}
+                                                            onChange={(e) => handleCantidadChange(index, e.target.value)}
+                                                        />
+                                                        
+                                                        {materialErrors[index] && materialErrors[index].cantidad && (
+                                                            <div className="alert alert-danger mt-2" role="alert">
+                                                                {materialErrors[index].cantidad}
+                                                            </div>
+                                                        )}
+                                                        <div className="text-center mt-2">
+                                                            <Button color="danger" onClick={() => handleEliminarMaterial(index)}>
+                                                                X
+                                                            </Button>
+                                                            <p>Cantidad actual: {material.cantidad}</p>
+                                                        </div>
+                                                    </div>
+                                                    <hr className="mt-3" />
+                                                </Form>
+                                            ))}
+
+                                            {modalError && (
+                                                <div className="alert alert-danger mt-2" role="alert">
+                                                    Mensaje de error general de la modal.
+                                                </div>
+                                            )}
+
+                                            <Button color="success" onClick={handleAgregarMaterial}>
+                                                Agregar Material
+                                            </Button>
+
+                                        </ModalBody>
+                                        <ModalFooter>
+                                            <Button color="secondary" onClick={handleCerrarModalMateriales}>
+                                                Cancelar
+                                            </Button>
+
+                                            
+                                            <Button color="primary" onClick={() => handleGuardarMateriales()}>
+                                                Guardar Materiales
+                                            </Button>
+
+                                        </ModalFooter>
+                                    </Modal>
+
                                     <div className="container">
                                         <div className="row">
                                             {filteredActivities.length > 0 ? (
@@ -610,12 +831,25 @@ const ObraDetalle = () => {
                                                     <div key={detalle.id} className="col-md-3 mt-3">
                                                         <div className="card">
                                                             <div className="card-body">
-                                                                <h5 className="card-title">Actividad: {detalle.actividad}</h5>
-                                                                <p className="card-text">Fecha de inicio: {detalle.fechaini}</p>
-                                                                <p className="card-text">Fecha de fin: {detalle.fechafin}</p>
-                                                                <p className="card-text">Materiales: {detalle.materiales.map((material) => material.nombre).join(', ')}</p>
-                                                                <p className="card-text">Empleados: {detalle.empleados.map((empleado) => empleado.nombre).join(', ')}</p>
-                                                                <p className="card-text">Estado: {detalle.estado}</p>
+                                                                <h5 className="card-title">Actividad: {detalle.detalleObra.actividad}</h5>
+                                                                <p className="card-text">Fecha de inicio: {formatoFechaIni(detalle.detalleObra.fechaini)}</p>
+                                                                <p className="card-text">Fecha de fin estimada: {calcularFechaFinEstimada(detalle.detalleObra.fechaini, detalle.detalleObra.fechafin)}</p>
+
+                                                                {detalle.materiales.length > 0 && (
+                                                                    <>
+                                                                        <p className="card-text">Materiales: {detalle.materiales.map((material) => material.materiales.nombre).join(', ')}</p>
+                                                                        <p className="card-text">Materiales: {detalle.materiales.map((material) => material.cantidad).join(', ')}</p>
+                                                                    </>
+                                                                )}
+
+
+
+                                                                {detalle.empleados.length > 0 && (
+                                                                    <p className="card-text">Empleados: {detalle.empleados.map((empleado) => empleado.empleado.nombre).join(', ')}</p>
+                                                                )}
+
+
+                                                                <p className="card-text">Estado: {detalle.detalleObra.estado}</p>
                                                                 <div className="mt-3">
                                                                     <Button
                                                                         className="btn btn-secondary"
@@ -627,9 +861,18 @@ const ObraDetalle = () => {
                                                                 </div>
                                                             </div>
                                                         </div>
+
                                                     </div>
+
                                                 ))
-                                            ) : <h3>No se encontraron actividades con los parametros de búsqueda ingresados</h3>}
+                                            ) : (
+                                                <h3>No se encontraron actividades con los parametros de búsqueda ingresados</h3>
+                                            )
+
+                                            }
+
+
+
                                             <div className="container">
                                                 <div className="row">
                                                     <div className="pagination col-md-1 mt-3 mx-auto">
@@ -673,18 +916,13 @@ const ObraDetalle = () => {
                                 <div className="mt-3">
                                     <hr className="mt-3" />
                                     <div className="col-md-3 mt-3 mx-auto">
-                                        {
-                                            values.fechafin ? (
-                                                <Button className="btn btn-success"
-                                                    onClick={handleAgregarActividad}>
-                                                    Agregar Actividad
-                                                </Button>
-                                            ) :
-                                                <Button className="btn btn-success" disabled
-                                                    onClick={handleAgregarActividad}>
-                                                    Agregar Actividad
-                                                </Button>
-                                        }
+                                        <Button
+                                            className="btn btn-success"
+                                            onClick={handleAgregarActividad}
+                                        >
+                                            Agregar Actividad
+                                        </Button>
+
                                     </div>
                                 </div>
 

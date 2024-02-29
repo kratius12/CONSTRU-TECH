@@ -48,7 +48,7 @@ function EmpleadosPage() {
     useEffect(() =>{
     Empleados()  
     }, [])
-
+    console.clear()
     function renderMain() {
 
         if (empleados.length === 0) {

@@ -3,6 +3,7 @@ import { Form, Formik } from "formik";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEspecialidades } from "../../context/especialidades/EspecialidadesProvider";
 import EspecialidadSchema from '../../components/especialidades/ValidatorEspecialidad'
+import axios from "axios";
 
 export default function EspecialidadesForm() {
   //   const [agreed, setAgreed] = useState(false)
@@ -19,7 +20,7 @@ export default function EspecialidadesForm() {
   const [nombre, setNombre] = useState(true)
   const validateWhitespace = (value) => {
     return hasWhitespace(value) ? 'No se permiten espacios en blanco' : undefined;
-};
+  };
   useEffect(() => {
     const loadEspecialidades = async () => {
       if (params.id) {
@@ -105,7 +106,7 @@ export default function EspecialidadesForm() {
           <Formik initialValues={especialidad}
             enableReinitialize={true}
             validationSchema={EspecialidadSchema}
-            onSubmit={async (values) => {
+            onSubmit={async (values, { setSubmitting }) => {
               const cleannedName = values.especialidad.replace(/\s{2,}/g, ' ').trim()
               const especialidadObject = {
                 ...values,
@@ -121,6 +122,7 @@ export default function EspecialidadesForm() {
                     5000
                   )
                 } else {
+
                   await createEspecialidad(especialidadObject)
                   alertConfirm()
                   setTimeout(
@@ -128,16 +130,18 @@ export default function EspecialidadesForm() {
                     5000
                   )
                 }                
+
               }
             }}
           >
-            {({ handleChange, handleSubmit, values, isSubmitting, errors, touched,setFieldValue }) => (
+            {({ handleChange, handleSubmit, values, isSubmitting, errors, touched, setFieldValue }) => (
               <Form onSubmit={handleSubmit} className="user">
                 <div className="card text-center w-100">
                   <h2>{params.id ? "Editar" : "Agregar"} especialidad</h2>
                   <div className="card-body">
                     <div className="row">
                       <div className="col-6 mt-3">
+
                         <input type="text" className="form-control form-control-user" id="especialidad" onChange={(e) =>{
                           handleChange(e)
                           checkNombre(e.target.value)

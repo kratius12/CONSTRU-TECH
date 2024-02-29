@@ -4,7 +4,7 @@ import { Form, Formik, Field } from "formik";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEmpleados } from "../../context/empleados/EmpleadosProvider";
-import EmpleadoSchema from "../../components/empleados/ValidatorEmpleado"
+import {EmpleadoSchema, EmpleadosSchemaEdit} from "../../components/empleados/ValidatorEmpleado"
 
 const fetchData1 = async (url) => {
   try {
@@ -16,11 +16,10 @@ const fetchData1 = async (url) => {
   }
 };
 export default function EmpleadosForm() {
-  const { createEmpleado, getEmpleado, updateEmpleado, especialidades, Especialidades, searchDoc, searchEmail } = useEmpleados();
+  const { createEmpleado, getEmpleado, updateEmpleado,  Especialidades } = useEmpleados();
   const params = useParams();
   const navigate = useNavigate();
   const [key, setKey] = useState(0);
-  const [keyRol, setKeyRol] = useState(0)
   const [options, setOptions] = useState([]);
   const [defaultOptions, setDefaultOptions] = useState([]);
   const [selectedEsp, setSelectedEsp] = useState(defaultOptions);
@@ -42,7 +41,6 @@ export default function EmpleadosForm() {
   const [email, setEmail] = useState(true)
   const [doc, setDoc] = useState(true)
   const [rol, setRol] = useState([])
-
 
   useEffect(() => {
     const rol = async () => {
@@ -91,6 +89,12 @@ export default function EmpleadosForm() {
     loadEmpleados();
     rol()
   }, []);
+  var validate;
+  if(params.id){
+    validate = EmpleadosSchemaEdit
+  }else{
+    validate = EmpleadoSchema
+  }
 
 
   const alertConfirm = (type) => {
@@ -102,6 +106,7 @@ export default function EmpleadosForm() {
     }
     window.$.confirm({
       title: `Empleado ` + message + ` con éxito!`,
+      content:"",
       icon: "fa fa-check",
       theme: "modern",
       closeIcon: true,
@@ -151,7 +156,7 @@ export default function EmpleadosForm() {
       console.log(error)
     }
   }
-
+  console.clear()
   const checkDoc = async (tipoDoc, cedula) => {
     try {
       const response = await fetch(`http://localhost:4000/checkDocEmp/${cedula}/${tipoDoc}/${params.id}`, {
@@ -193,7 +198,7 @@ export default function EmpleadosForm() {
           <Formik
             initialValues={empleado}
             enableReinitialize={true}
-            validationSchema={EmpleadoSchema}
+            validationSchema={validate}
             validateOnChange={true}
             onSubmit={async (values) => {
               const empleadoObject = {
@@ -201,17 +206,17 @@ export default function EmpleadosForm() {
                 especialidad: selectedEsp,
 
               };
-
+              console.clear()
               checkEmail(values.email)
               checkDoc(values.tipoDoc, values.cedula)
               if (email === false && doc === false) {
                 if (params.id) {
-
+                  console.clear()
                   await updateEmpleado(params.id, empleadoObject);
                   alertConfirm('update');
                   setTimeout(() => navigate("/empleados"));
                 } else {
-
+                  console.clear()
                   await createEmpleado(empleadoObject);
                   alertConfirm();
                   setTimeout(() => navigate("/empleados"));
@@ -235,8 +240,8 @@ export default function EmpleadosForm() {
 
                         }} value={values.tipoDoc}>
                           <option value="">Seleccione tipo documento*</option>
-                          <option value="Cedula de ciudadanía">Cedula de ciudadanía</option>
-                          <option value="Cedula de extranjería">Cedula de extranjería</option>
+                          <option value="CC">Cedula de ciudadanía</option>
+                          <option value="CE">Cedula de extranjería</option>
                           <option value="Pasaporte">Pasaporte</option>
                         </select>
                         {errors.tipoDoc && touched.tipoDoc ? (
@@ -277,18 +282,6 @@ export default function EmpleadosForm() {
                           <div className="alert alert-danger" role="alert">{errors.confirmar}</div>
                         ) : null
                         }
-                        <select id="tipoDoc" className="form-select form-control-user" onChange={(e) => {
-                          handleChange(e)
-
-                        }} value={values.tipoDoc}>
-                          <option value="">Seleccione tipo documento*</option>
-                          <option value="CC">Cedula de ciudadanía</option>
-                          <option value="CE">Cedula de extranjería</option>
-                          <option value="PS">Pasaporte</option>
-                        </select>
-                        {errors.tipoDoc && touched.tipoDoc ? (
-                          <div className="alert alert-danger" role="alert">{errors.tipoDoc}</div>
-                        ) : null}
                       </div>
                       <div className="col-md-6 mt-3">
                         <input type="text" className="form-control form-control-user" id="cedula" onChange={(e) => {

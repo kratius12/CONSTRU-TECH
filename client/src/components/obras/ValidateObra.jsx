@@ -29,11 +29,6 @@ const obraSchemaEdit = Yup.object().shape({
         .required("El area de la obra es requerida"),
     fechaini: Yup.date()
     .required('La fecha de inicio es requerida'),
-  fechafin: Yup.date()
-    .when('fechaini', (fechaini, schema) =>
-      fechaini ? schema.min(fechaini, 'La fecha de fin no puede ser anterior a la fecha de inicio') : schema
-    )
-    .required('La fecha de fin es requerida'),
     precio: Yup.number()
       .required('El precio es requerido'),
     estado: Yup.string()
@@ -55,14 +50,14 @@ const obraSchemaEdit = Yup.object().shape({
       actividad: Yup.string().required('La actividad es obligatoria'),
       fechaini: Yup.date()
         .min(fechainiObraAjustada, 'La fecha de inicio de la actividad no puede ser anterior a la fecha de inicio del proyecto')
-        .max(fechafinObraAjustada, 'La fecha de inicio de la actividad no puede ser posterior a la fecha de finalización del proyecto')
+        // .max(fechafinObraAjustada, 'La fecha de inicio de la actividad no puede ser posterior a la fecha de finalización del proyecto')
         .required('La fecha de inicio de la actividad es obligatoria'),
   
-      fechafin: Yup.date()
-        .min(Yup.ref('fechaini'), 'La fecha de finalización de la actividad no puede ser anterior a la fecha de inicio de la actividad')
-        .max(fechafinObraAjustada, 'La fecha de finalización de la actividad no puede ser posterior a la fecha de finalización del proyecto')
-        .required('La fecha de finalización de la actividad es obligatoria'),
-        empleados: Yup.array().min(1, 'Seleccione al menos un empleado'),
+      // fechafin: Yup.date()
+      //   .min(Yup.ref('fechaini'), 'La fecha de finalización de la actividad no puede ser anterior a la fecha de inicio de la actividad')
+      //   .max(fechafinObraAjustada, 'La fecha de finalización de la actividad no puede ser posterior a la fecha de finalización del proyecto')
+      //   .required('La fecha de finalización de la actividad es obligatoria'),
+      //   empleados: Yup.array().min(1, 'Seleccione al menos un empleado'),
       estado: Yup.string().required('El estado es obligatorio'),
     });
   };

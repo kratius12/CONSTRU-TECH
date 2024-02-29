@@ -164,36 +164,59 @@ router.put("/proveedorEstado/:id", async (req, res) => {
         console.error(error)
     }
 })
-router.get('/api/checkNit/:nit', async (req, res) => {
+router.put("/documentoProvA", async (req, res) => {
     try {
-        const existingProveedor = await prisma.proveedor.findFirst({
-            where: {
-                nit: req.params.nit,
-            },
-        });
-
-        return res.json({ exists: !!existingProveedor });
-    } catch (error) {
-        return res.status(500).json({ message: error.message });
-    }
-});
-
-
-router.put("/documentoProv", async (req, res) => {
-    try {
-        const { nit } = req.body
+        const { nit, tipo } = req.body
+        console.log(nit)
+        console.log(tipo)
         const prov = await prisma.proveedor.findMany({
             where: {
-                nit: nit
+                AND:[
+                    {nit: nit},
+                    {tipo: tipo}
+                ]
+                
             }
         })
-        if (prov.length > 0) {
-            return res.status(200).json(true)
+        var trin;
+        console.log(prov.length)
+        if (prov.length != 0) {
+            trin= true
         } else {
+           trin = false
+        }
+        console.log(trin)
+        return res.json(trin)
+    } catch (error) {
+        console.error(error)
+    }
+})
+
+router.put("/documentoProvE/:id", async (req, res)=>{
+    try {
+        const {nit, tipo} = req.body
+        const proveedorExistente = await prisma.proveedor.findMany({
+            where:{
+                AND:[
+                    {
+                        nit: nit
+                    },{
+                        tipo: tipo
+                    },{
+                        NOT:{
+                            idProv: parseInt(req.params.id)
+                        }
+                    }
+                ]
+            }
+        })
+        if(proveedorExistente.length > 0){
+            return res.status(200).json(true)
+        }else{
             return res.status(200).json(false)
         }
     } catch (error) {
-        console.error(error)
+        
     }
 })
 

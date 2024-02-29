@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Form, Formik } from "formik";
 import { useParams, useNavigate } from "react-router-dom";
 import { useClients } from "../../context/clientes/ClientesProvider";
-import ClientSchema from "../../components/clientes/ValidatorCliente";
+import { ClientSchema, ClientSchemaEdit } from "../../components/clientes/ValidatorCliente";
 
 export default function ClientsForm() {
   const { createClient, getClient, updateClient } = useClients()
@@ -26,29 +26,35 @@ export default function ClientsForm() {
   const alertConfirm = () => {
     var message = ""
     if (params.id) {
-        message = "actualizado"
+      message = "actualizado"
     } else {
-        message = "agregado"
+      message = "agregado"
     }
     $.confirm({
-        title: `Cliente ${message} con éxito!`,
-        content: "",
-        icon: 'fa fa-check',
-        theme: 'modern',
-        closeIcon: true,
-        animation: 'news',
-        closeAnimation: 'news',
-        type: 'green',
-        columnClass: 'col-md-6 col-md-offset-3',
-        autoClose: 'okay|4000',
-        buttons: {
-            okay: function () {
-                navigate("/clientes")
-            },
+      title: `Cliente ${message} con éxito!`,
+      content: "",
+      icon: 'fa fa-check',
+      theme: 'modern',
+      closeIcon: true,
+      animation: 'news',
+      closeAnimation: 'news',
+      type: 'green',
+      columnClass: 'col-md-6 col-md-offset-3',
+      autoClose: 'okay|4000',
+      buttons: {
+        okay: function () {
+          navigate("/clientes")
+        },
 
-        }
+      }
     })
-}
+  }
+  var validate;
+  if (params.id) {
+    validate = ClientSchemaEdit
+  } else {
+    validate = ClientSchema
+  }
 
   useEffect(() => {
     const loadClients = async () => {
@@ -83,7 +89,7 @@ export default function ClientsForm() {
       })
       if (response.status === 203) {
         $.confirm({
-          title:`El correo ingresado ya existe, por favor intente con uno diferente`,
+          title: `El correo ingresado ya existe, por favor intente con uno diferente`,
           content: "",
           icon: 'fa fa-x-mark',
           theme: 'modern',
@@ -99,10 +105,10 @@ export default function ClientsForm() {
           }
         })
         setEmail(true)
-      }else{
+      } else {
         setEmail(false)
       }
-       
+
     } catch (error) {
       console.log(error)
     }
@@ -112,13 +118,13 @@ export default function ClientsForm() {
     try {
       const response = await fetch(`http://localhost:4000/checkDoc/${cedula}/${tipoDoc}/${params.id}`, {
         method: 'GET',
-        headers:{
+        headers: {
           'Content-Type': 'application/json',
         }
       })
       if (response.status === 203) {
         $.confirm({
-          title:`El numero y tipo de documento ingresado ya existe`,
+          title: `El numero y tipo de documento ingresado ya existe`,
           content: "",
           icon: 'fa fa-x-mark',
           theme: 'modern',
@@ -132,16 +138,16 @@ export default function ClientsForm() {
             cerrar: function () {
             },
           }
-        })  
+        })
         setDoc(true)
-      }else{
+      } else {
         setDoc(false)
-      }   
+      }
     } catch (error) {
       console.log(error)
     }
   }
-  
+
   console.clear()
   return (
     <div className="container">
@@ -149,7 +155,7 @@ export default function ClientsForm() {
         <div className="col-md-12">
           <Formik initialValues={cliente}
             enableReinitialize={true}
-            validationSchema={ClientSchema}
+            validationSchema={validate}
             onSubmit={async (values) => {
               checkEmail(values.email)
               checkDoc(values.tipoDoc, values.cedula)
@@ -160,15 +166,15 @@ export default function ClientsForm() {
                   alertConfirm("update")
                 } else {
                   checkEmail(values.email)
-                  checkDoc(values.tipoDoc, values.cedula)              
+                  checkDoc(values.tipoDoc, values.cedula)
                   if (email === false && doc === false) {
-                    console.log(email,doc)
+                    console.log(email, doc)
                     await createClient(values)
                     navigate("/clientes")
                     alertConfirm()
                   }
 
-                }                
+                }
               }
             }}
           >
@@ -179,7 +185,7 @@ export default function ClientsForm() {
                   <h1>{params.id ? "Editar" : "Agregar"} cliente</h1>
                   <div className="card-body">
                     <div className="row">
-                    <div className="col-md-6 mt-3 mx-auto">
+                      <div className="col-md-6 mt-3 mx-auto">
                         <select id="tipoDoc" className="form-select  form-control-user" onChange={handleChange} value={values.tipoDoc} >
                           <option value="">Seleccione tipo documento*</option>
                           <option value="Cedula de ciudadania">Cedula de ciudadanía</option>
@@ -212,15 +218,15 @@ export default function ClientsForm() {
                         ) : null}
                       </div>
                       <div className="col-md-6 mt-3 mx-auto">
-                        <input type="text" 
-                        className="form-control  form-control-user" 
-                        id="email" 
-                        onChange={(e) => {
-                          handleChange(e)
-                          params.id ? '': checkEmail(e.target.value)
-                        }} 
-                        value={values.email} 
-                        placeholder="Correo electronico*" />
+                        <input type="text"
+                          className="form-control  form-control-user"
+                          id="email"
+                          onChange={(e) => {
+                            handleChange(e)
+                            params.id ? '' : checkEmail(e.target.value)
+                          }}
+                          value={values.email}
+                          placeholder="Correo electronico*" />
                         {errors.email && touched.email ? (
                           <div className="alert alert-danger" role="alert">{errors.email}</div>
                         ) : null}
@@ -245,33 +251,37 @@ export default function ClientsForm() {
                         ) : null}
                       </div>
                       {
-                      params.id ? ''
-                      :(
-                        <>
-                        <div className="col-md-6 mt-3 mx-auto">
-                          <input type="password" className="form-control  form-control-user" id="contrasena" onChange={handleChange} value={values.contrasena} placeholder="Contraseña*" />
-                          {errors.contrasena && touched.contrasena ? (
-                            <div className="alert alert-danger" role="alert">{errors.contrasena}</div>
-                          ) : null}
-                        </div>
-                        <div className="col-md-6 mt-3">
-                          <input type="password" className="form-control form-control-user" id="confirmar" name="confirmar" onChange={handleChange} value={values.confirmar} placeholder="Confirme la contraseña*" />
-                          {errors.confirmar && touched.confirmar ? (
-                            <div className="alert alert-danger" role="alert">{errors.confirmar}</div>
-                          ) : null}
-                        </div>                        
-                        </>
-                      )
+                        !params.id ? (
+                          <div className="col-md-6 mt-3 mx-auto">
+                            <input type="password" className="form-control  form-control-user" id="contrasena" onChange={handleChange} value={values.contrasena} placeholder="Contraseña*" />
+                            {errors.contrasena && touched.contrasena ? (
+                              <div className="alert alert-danger" role="alert">{errors.contrasena}</div>
+                            ) : null}
+                          </div>
+                        ) : null
                       }
+                      {
+                        !params.id ? (
+                          <div className="col-md-6 mt-3">
+                            <input type="password" className="form-control form-control-user" id="confirmar" name="confirmar" onChange={handleChange} value={values.confirmar} placeholder="Confirme la contraseña*" />
+                            {errors.confirmar && touched.confirmar ? (
+                              <div className="alert alert-danger" role="alert">{errors.confirmar}</div>
+                            ) : null}
+                          </div>
+                        ) : null
+                      }
+
+
+
                       <div className="col-md-6 mt-3">
-                        {params.id ? 
-                        (
-                          <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
-                            <option value="">Seleccione estado</option>
-                            <option value="1">Activo</option>
-                            <option value="0">Inactivo</option>
-                          </select>                          
-                        ): null
+                        {params.id ?
+                          (
+                            <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
+                              <option value="">Seleccione estado</option>
+                              <option value="1">Activo</option>
+                              <option value="0">Inactivo</option>
+                            </select>
+                          ) : null
                         }
                         {errors.estado && touched.estado ? (
                           <div className="alert alert-danger" role="alert">{errors.estado}</div>
