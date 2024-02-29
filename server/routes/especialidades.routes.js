@@ -81,6 +81,48 @@ router.delete("/especialidad/:id", async (req, res) => {
     }
 })
 
+router.get("/checkEsp/:nombre/:id", async (req, res) =>{
+    try {
+        if (parseInt(req.params.id) > 0) {
+            const result = await prisma.especialidad.findFirst({
+                where:{
+                    especialidad:{
+                        equals: req.params.nombre
+                    },
+                    id:{
+                        not: parseInt(req.params.id)
+                    }
+                },
+                select:{
+                especialidad:true
+                }
+            })       
+            if (result) {
+                return res.status(203).json({message: 'La especialidad ingresada ya existe'})                
+            }
+            return res.status(200).json({message: result})
+        }else{
+            const result = await prisma.especialidad.findFirst({
+                where:{
+                    especialidad:{
+                        equals: req.params.nombre
+                    }
+                },
+                select:{
+                    especialidad:true
+                }
+            })       
+            if (result) {
+                return res.status(203).json({message: 'La especialidad ingresada ya existe'})                
+            }
+            return res.status(200).json({message: result})
+        }
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: error.message });        
+    }
+})
+
 router.put("/especialidadStatus/:id", async (req, res) => {
     try {
         const { estado } = req.body

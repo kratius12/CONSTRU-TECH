@@ -29,6 +29,8 @@ export const ClientSchema = Yup.object().shape({
         .max(20, 'El documento no puede contener mas de 20 caracteres')
         .required('El número de documento es requerido').matches(/^[0-9]+$/, 'El número de documento de identidad solo puede contener numeros')
         .test('no-inicia-con-cero', 'El documento no puede empezar con cero', value => !value.startsWith('0')),
+        .matches(/^[0-9]+$/, 'El número de documento de identidad solo puede contener numeros'),
+
     fecha_nac: Yup.date()
     .required('La fecha de nacimiento es requerida')
     .test('es-mayor-de-edad', 'Debes ser mayor de 18 años', function (value) {

@@ -97,7 +97,47 @@ router.post("/rol", async (req, res) => {
 
 
 
-
+router.get("/checkRol/:rol/:id", async (req, res) =>{
+    try {
+        if (parseInt(req.params.id) > 0) {
+            const result = await prisma.rol.findFirst({
+                where:{
+                    nombre:{
+                        equals: req.params.rol
+                    },
+                    idRol:{
+                        not: parseInt(req.params.id)
+                     }
+                },
+                select:{
+                nombre:true
+                }
+            })       
+            if (result) {
+                return res.status(203).json({message: 'El rol ingresado ya existe'})                
+            }
+            return res.status(200).json({message: result})
+        }else{
+            const result = await prisma.rol.findFirst({
+                where:{
+                    nombre:{
+                        equals: req.params.rol
+                    }
+                },
+                select:{
+                nombre:true
+                }
+            })       
+            if (result) {
+                return res.status(203).json({message: 'El rol ingresado ya existe'})                
+            }
+            return res.status(200).json({message: result})
+        }
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: error.message });        
+    }
+})
 
 
 
