@@ -1,4 +1,4 @@
-import { Route, Routes, Link, Navigate } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import ReactDOMServer from 'react-dom/server';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ObrasPage from "./pages/obras/ObrasPage";
@@ -10,7 +10,6 @@ import MaterialesForm from "./pages/materiales/MaterialesForm";
 import EmpleadosForm from "./pages/empleados/EmpleadosForm";
 import ClientForm from "./pages/clientes/ClientForm";
 import DashboardPage from "./pages/dashboard/DashboardPage";
-
 import { CategoriaContextProvider } from "./context/categorias/CategoriasProvider";
 import { EspecialidadContextProvider } from "./context/especialidades/EspecialidadesProvider";
 import { MaterialContextProvider } from "./context/materiales/MaterialesProvider";
@@ -20,21 +19,13 @@ import { ProveedorContextProvider } from './context/proveedores/ProveedorProvide
 import { ClientContextProvider } from "./context/clientes/ClientesProvider";
 import { CompraContextProvider } from './context/compras/ComprasProvider'
 import { RolContextProvider } from "./context/roles/RolesProvider";
-import { UsuariosContextProvider } from "./context/usuarios/UsuariosProvider";
 import { PermisoContextProvider } from "./context/permisos/PermisosProvider";
 import { DashboardContextProvider } from "./context/dashboard/DashboardProvider";
-import { LoginContextProvider } from "./context/login/LoginProvider";
-
 import ProveedoresPage from './pages/proveedores/ProveedorPage'
 import ProveedoresForm from "./pages/proveedores/ProveedoresForm";
 import RolesForm from "./pages/roles/RolesForm";
 import RolesPage from "./pages/roles/RolesPage";
 import PermisosPage from "./pages/permisos/PermisosPage";
-// import PermisosForm from "./pages/permisos/PermisosForm";
-
-import ForgotPage from "./pages/login/ForgotPage";
-
-
 import ComprasPage from "./pages/compras/Compraspage";
 import ComprasForm from "./pages/compras/ComprasForm";
 import Sidebar from "./components/navegacion/Sidebar";
@@ -47,7 +38,7 @@ import DetalleCompra from "./pages/compras/DetalleCompra";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import ObraDetalle from "./pages/obras/ObrasDetalle";
-
+import GanttTask from "./components/togglEstado/GanttTask"
 const EmailForm = ({ onSubmit }) => {
   const [email, setEmail] = useState('');
 
@@ -151,7 +142,7 @@ function App() {
   const handleLogin = () =>{
 
     setLoggedIn(true)
-    navigate('/dashboard')
+    navigate('/')
   }
 
   const handleLogout = () => {
@@ -240,7 +231,7 @@ function App() {
                 autoClose: 'okay|4000',
                 buttons: {
                   okay: function () {
-                      navigate("/dashboard")
+                      navigate("/")
                   },
                 }
               })        
@@ -527,7 +518,7 @@ function App() {
   const redirectToDashboard = (route) =>{
     const state = {redirected:true, from:route}
 
-    return <Navigate to="/dashboard" replace state={state} />
+    return <Navigate to="/" replace state={state} />
   }
   return (
     <>
@@ -542,8 +533,13 @@ function App() {
                 <DashboardContextProvider>
                   <Routes>
                     <Route path="/dashboard" element={<DashboardPage />} />
+                    <Route path="/" element={<GanttTask/>} />
+                  </Routes>
+                  <Routes>
+                    {/* <Route path="/" element={<div className="container text-center"><h1>Bienvenido {userData.nombres}</h1></div>} /> */}
                   </Routes>
                 </DashboardContextProvider>
+                
                 <ObraContextProvider>
                   <Routes>
                     {/* <Route path="/obras" element={<ObrasPage />} />
