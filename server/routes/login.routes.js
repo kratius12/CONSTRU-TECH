@@ -215,12 +215,12 @@ router.post('/checkCode', async (req, res) => {
     if (validCode) {
       const dateStored = new Date(validCode.fecha);
       const minDateStores = dateStored.getMinutes()
-      console.log(minDateStores)
+      
       const currentDate = new Date();
       const currentDateMin = currentDate.getMinutes()
-      console.log(currentDateMin)
+      
       const timeDifference = (minDateStores-currentDateMin)
-      console.log(timeDifference)
+  
       if (timeDifference < 15) {
         
         const checkedCode = await prisma.codigos.update({
