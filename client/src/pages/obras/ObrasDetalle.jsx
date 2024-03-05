@@ -76,22 +76,15 @@ const ObraDetalle = () => {
         } else {
             setSelectedActivity(null)
         }
-
         setMatDefault([]);
         setEmpDefault([]);
         setModalVisible(true);
 
         if (activity.detalleObra) {
-            const initialMaterials = activity.materiales.map((material) => ({
-                value: material.materiales.idMat,
-                label: material.materiales.nombre,
-            }));
             const initialEmployees = activity.empleados.map((employee) => ({
                 value: employee.empleado.idEmp,
                 label: employee.empleado.nombre,
             }));
-
-            setSelectedMaterials(initialMaterials); // preselect the materials associated with the activity
             setEmpDefault(initialEmployees);
         } else if (!activity.actividad) {
             setMatDefault([]);

@@ -63,14 +63,14 @@ router.get("/obra/:id", async (req, res) => {
       by: ["actividad", "fechafin", "fechafin", "estado", "idObra"],
     });
     const emps = await prisma.actividades_empleados.findMany({
-      where:{
+      where: {
         idObra: parseInt(req.params.id)
       }
     })
 
     const mats = await prisma.actividades_materiales.findMany({
-      where:{
-        idObra:parseInt(req.params.id)
+      where: {
+        idObra: parseInt(req.params.id)
       }
     })
     const empleadosUnicos = [...new Set(emps.map((emp) => emp.idEmp))];
@@ -149,12 +149,12 @@ router.get("/actividades/:id", async (req, res) => {
     const actividadesEmpleados = await prisma.actividades_empleados.findMany({
       where: {
         idObra: idObra,
-      },select:{
-        actividad:true,
-        empleado:{
-          select:{
-            nombre:true,
-            idEmp:true
+      }, select: {
+        actividad: true,
+        empleado: {
+          select: {
+            nombre: true,
+            idEmp: true
           }
         }
       }
@@ -163,13 +163,13 @@ router.get("/actividades/:id", async (req, res) => {
     const actividadesMateriales = await prisma.actividades_materiales.findMany({
       where: {
         idObra: idObra,
-      },select:{
-        actividad:true,
-        cantidad:true,
-        materiales:{
-          select:{
-            nombre:true,
-            idMat:true,
+      }, select: {
+        actividad: true,
+        cantidad: true,
+        materiales: {
+          select: {
+            nombre: true,
+            idMat: true,
             // cantidad:true
           }
         }
@@ -204,38 +204,33 @@ router.get("/actividades/:id", async (req, res) => {
 
 router.post("/guardarActividad/:id", async (req, res) => {
   try {
-    const { actividad, fechaini, fechafin, estado,  antiguo, empleados, materiales } = req.body;
-    for (const material of materiales) {
-      const idMaterial = parseInt(material.material.value);
-      const cantidadUtilizada = parseInt(material.cantidad);
+    const { actividad, fechaini, fechafin, estado, antiguo, empleados, materiales } = req.body;
+    if (materiales.lengt == 0) {
+      for (const material of materiales) {
+        
+          const idMaterial = parseInt(material.material.value);
+          const cantidadUtilizada = parseInt(material.cantidad);
 
-      // Obtener información del material desde la base de datos
-      const materialDB = await prisma.materiales.findFirst({
-        where: {
-          idMat: parseInt(material.material.value),
-        },
-      });
-      // Restar la cantidad utilizada al material
-      const nuevaCantidad = materialDB.cantidad - cantidadUtilizada;
+          // Obtener información del material desde la base de datos
+          const materialDB = await prisma.materiales.findFirst({
+            where: {
+              idMat: parseInt(material.material.value),
+            },
+          });
+          // Restar la cantidad utilizada al material
+          const nuevaCantidad = materialDB.cantidad - cantidadUtilizada;
 
-      // Actualizar la cantidad en la base de datos
-      await prisma.materiales.update({
-        where: {
-          idMat: idMaterial,
-        },
-        data: {
-          cantidad: nuevaCantidad,
-        },
-      });
-      if(nuevaCantidad==0){
-        await prisma.materiales.update({
-          where:{
-            idMat:idMaterial
-          },
-          data:{
-            estado:0
+          if (nuevaCantidad == 0) {
+            await prisma.materiales.update({
+              where: {
+                idMat: idMaterial
+              },
+              data: {
+                estado: 0
+              }
+            })
           }
-        })
+        
       }
     }
     if (antiguo) {
@@ -244,8 +239,8 @@ router.post("/guardarActividad/:id", async (req, res) => {
         where: {
           AND: [
             {
-              actividad:{
-                equals:antiguo
+              actividad: {
+                equals: antiguo
               }
             }, {
               idObra: parseInt(req.params.id)
@@ -253,28 +248,15 @@ router.post("/guardarActividad/:id", async (req, res) => {
           ]
         }
       });
-      await prisma.actividades_materiales.deleteMany({
-        where:{
-          AND:[
-            {
-              actividad:{ 
-                equals:antiguo
-              }
-            }, {
-              idObra:parseInt(req.params.id)
-            }
-          ]
-        }
-      })
       await prisma.actividades_empleados.deleteMany({
-        where:{
-          AND:[
+        where: {
+          AND: [
             {
-              actividad:{
-                equals:antiguo
+              actividad: {
+                equals: antiguo
               }
             }, {
-              idObra:parseInt(req.params.id)
+              idObra: parseInt(req.params.id)
             }
           ]
         }
@@ -291,20 +273,21 @@ router.post("/guardarActividad/:id", async (req, res) => {
         idObra: parseInt(req.params.id)
       }
     });
-
-    for (const material of materiales){
+    if (materiales.lengt >0){
+    for (const material of materiales) {
       await prisma.actividades_materiales.createMany({
-        data:{
+        data: {
           actividad: ucfirst(actividad),
           cantidad: parseInt(material.cantidad),
           idMat: parseInt(material.material.value),
           idObra: parseInt(req.params.id)
         }
       })
-    }
-    for (const empleado of empleados){
+    }}
+    
+    for (const empleado of empleados) {
       const meps = await prisma.actividades_empleados.createMany({
-        data:{
+        data: {
           actividad: ucfirst(actividad),
           idEmp: parseInt(empleado.value),
           idObra: parseInt(req.params.id)
@@ -345,16 +328,16 @@ router.get("/searchActividad/:id", async (req, res) => {
     const { actividad } = req.body
     const buscar = await prisma.detalle_obra.findMany({
       where: {
-        AND:[{
-        actividad:{
-          contains: actividad
-        },
-      }, {
-        idObra:parseInt(req.params.id)
-      }
-      
-      ]
-      }, 
+        AND: [{
+          actividad: {
+            contains: actividad
+          },
+        }, {
+          idObra: parseInt(req.params.id)
+        }
+
+        ]
+      },
     })
     if (buscar.length > 0) {
       return res.status(200).json(true)
@@ -370,36 +353,36 @@ router.get("/searchActividad/:id", async (req, res) => {
 
 router.get("/obrasCli/:id", async (req, res) => {
   try {
-      console.log(req.params.id)
-      const obras = await prisma.obras.findMany({
-          where: {
-              idCliente: parseInt(req.params.id)
-          }
-      })
-      return res.status(200).json(obras)
+    console.log(req.params.id)
+    const obras = await prisma.obras.findMany({
+      where: {
+        idCliente: parseInt(req.params.id)
+      }
+    })
+    return res.status(200).json(obras)
   } catch (error) {
-      console.error(error)
+    console.error(error)
   }
 })
 
 router.get("/obrasEmp/:id", async (req, res) => {
   try {
-      const obras = await prisma.obras.findMany({
-          where: {
-              actividades_empleados: {
-                  some: {
-                      idEmp: parseInt(req.params.id)
-                  }
-              }
-          },include:{
-            detalle_obra:true,
-            actividades_empleados:true,
-            actividades_materiales:true
+    const obras = await prisma.obras.findMany({
+      where: {
+        actividades_empleados: {
+          some: {
+            idEmp: parseInt(req.params.id)
           }
-      })
-      return res.status(200).json(obras)
+        }
+      }, include: {
+        detalle_obra: true,
+        actividades_empleados: true,
+        actividades_materiales: true
+      }
+    })
+    return res.status(200).json(obras)
   } catch (error) {
-      console.error(error)
+    console.error(error)
   }
 })
 
