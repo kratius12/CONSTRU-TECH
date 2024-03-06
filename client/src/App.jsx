@@ -532,19 +532,19 @@ function App() {
               <div className="container-fluid">
                 <DashboardContextProvider>
                   <Routes>
-                    <Route path="/dashboard" element={<DashboardPage />} />
-                    <Route path="/" element={<GanttTask/>} />
-                  </Routes>
-                  <Routes>
-                    {/* <Route path="/" element={<div className="container text-center"><h1>Bienvenido {userData.nombres}</h1></div>} /> */}
+                    <Route path="/dashboard" element={
+                      tienePermisos(['dashboard'])? (
+                        <DashboardPage />
+                      ):(
+                        redirectToDashboard('dashboard')
+                      )
+                    } />
+                    <Route path="/" element={<div className="container text-center"><h1>Bienvenido {userData.nombres}</h1></div>} />
                   </Routes>
                 </DashboardContextProvider>
-                
                 <ObraContextProvider>
                   <Routes>
-                    {/* <Route path="/obras" element={<ObrasPage />} />
-                    <Route path="/agregarObra" element={<ObrasForm />} />
-                    <Route path="/editarObra/:id" element={<ObrasForm />} /> */}
+
                     <Route path="/obras" element={
                       tienePermisos(['obras'])? (
                         <ObrasPage />
