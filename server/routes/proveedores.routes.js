@@ -41,14 +41,13 @@ router.get('/prov/:idProv', async (req, res) => {
 )
 router.put('/prov/:idProv', async (req, res) => {
     try {
-        const { nombre, direccion, nit, tipo, estado, email, telefono, nombreContacto, telefonoContacto, emailContacto } = req.body
+        const { nombre, direccion, nit, tipo, email, telefono, nombreContacto, telefonoContacto, emailContacto } = req.body
 
         let updateData = {
             nombre: ucfirst(nombre),
             direccion: ucfirst(direccion),
             nit: nit,
             tipo: tipo,
-            estado: parseInt(estado),
             email: email,
             telefono: telefono,
         };

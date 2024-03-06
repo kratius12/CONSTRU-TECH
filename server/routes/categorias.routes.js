@@ -61,15 +61,13 @@ router.post("/categorias", async (req, res) => {
 
 router.put("/categoria/:id", async (req, res) => {
     try {
-        const {nombre, estado, medida} = req.body
+        const {nombre,  medida} = req.body
         const result = await prisma.categoria.update({
             where:{
                 idcat:parseInt(req.params.id)
             },
             data:{
                 nombre: ucfirst(nombre),
-                estado:parseInt(estado),
-                medida:medida
             }
         })
 

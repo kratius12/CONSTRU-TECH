@@ -73,28 +73,17 @@ router.post("/materiales", async (req, res) => {
 router.put("/material/:id", async (req, res) => {
     try {
         const idMat = req.params.id
-        const { nombre, cantidad,  idCategoria, estado } = req.body
-        console.log(cantidad)
+        const { nombre, cantidad,  idCategoria } = req.body
         const response = await prisma.materiales.update({
             where: {
                 idMat: parseInt(idMat)
             },
             data: {
                 nombre: ucfirst(nombre),
-                cantidad: cantidad,
-                estado: estado,
                 idCategoria: idCategoria
             }
         })
-        if(cantidad===0){
-            await prisma.materiales.update({
-                where: {
-                    idMat: parseInt(idMat)
-                }, data: {
-                    estado: 0
-                }
-            })
-        }
+        return res.status(200).json({message: response})
     } catch (error) {
         console.error(error)
     }

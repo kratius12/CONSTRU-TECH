@@ -77,7 +77,7 @@ router.post('/cliente', async (req, res) => {
 
 router.put('/cliente/:id', async (req, res) => {
         try {
-                const {nombre,apellidos, email, direccion, telefono, tipoDoc, cedula, fecha_nac, estado,contrasena} = req.body
+                const {nombre,apellidos, email, direccion, telefono, tipoDoc, cedula, fecha_nac, contrasena} = req.body
                 const { hash, salt } = await generarHash(contrasena);
                 const result = await prisma.cliente.update({
                         where:{
@@ -91,7 +91,6 @@ router.put('/cliente/:id', async (req, res) => {
                                 tipoDoc: tipoDoc,
                                 cedula: cedula,
                                 fecha_nac: fecha_nac,
-                                estado: parseInt(estado),
                                 constrasena:hash,
                                 salt:salt
                         }
