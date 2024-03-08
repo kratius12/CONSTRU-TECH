@@ -26,7 +26,7 @@ import ProveedoresForm from "./pages/proveedores/ProveedoresForm";
 import RolesForm from "./pages/roles/RolesForm";
 import RolesPage from "./pages/roles/RolesPage";
 import PermisosPage from "./pages/permisos/PermisosPage";
-import ComprasPage from "./pages/compras/Compraspage";
+import ComprasPage from "./pages/compras/ComprasPage";
 import ComprasForm from "./pages/compras/ComprasForm";
 import Sidebar from "./components/navegacion/Sidebar";
 import EspecialidadesPage from "./pages/especialidades/EspecialidadesPage";
