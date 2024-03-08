@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { getClientsRequest, deleteClientRequest, createClientRequest, getClientRequest, updateClientRequest,ToggleClientStatusRequest } from "../../api/clientes.api";
+import { getClientsRequest, deleteClientRequest, createClientRequest, getClientRequest, updateClientRequest,ToggleClientStatusRequest } from "../../api/Clientes.api";
 import { ClientsContext } from "./ClientesContext"
 
 export const useClients =() => {
