@@ -13,7 +13,7 @@ const router = Router();
 router.post('/login', async (req, res) => {
     try {
       const { username, password } = req.body;
-  
+
       const user = await prisma.empleado.findUnique({
         where: {
           email: username,
@@ -25,32 +25,32 @@ router.post('/login', async (req, res) => {
                }
             }
           }
-        }, 
+        },
         include:{
             rolpermisoempleado:{
                 select:{
                     id:true,
                     idEmp:true,
                     idPer:true,
-                    idRol:true, 
-                    
+                    idRol:true,
+
                     permiso:true,
                     rol:true
                 }
             }
         }
       });
-  
+
       if (!user) {
         res.status(404).json({ error: 'Credenciales incorrectas.' });
         return;
       }
 
       const passwordsMatch = await bcryptCompare(password, user.contrasena);
-      
+
       if (passwordsMatch) {
         const token = jwt.sign({ idEmp: user.idEmp, nombres: user.nombre+'-'+user.apellidos, email: user.email, rolesPermisos: user.rolpermisoempleado }, SECRET_KEY, { expiresIn: '2h' });
-        
+
         res.status(200).json({ token });
       } else {
         res.status(404).json({ error: 'Credenciales incorrectas' });
@@ -136,9 +136,63 @@ router.post('/sendCode', async (req, res) => {
 
       // if (error) {
       //   return res.status(400).json({error})
-        
+
       // }
-      
+
+    }else{
+      res.status(404).json({error: `No se encontro el email enviado: ${email}`})
+    }
+
+  } catch (error) {
+    console.log(error)
+  }
+});
+router.post('/sendCodeCli', async (req, res) => {
+  try {
+    const now = new Date()
+    const formattedDate = now.toISOString().slice(0, 19).replace('T', ' ')
+    const {email} = req.body
+
+    const user = await prisma.cliente.findFirst({
+      where:{
+        email:email
+      }
+    })
+    if (user) {
+      const code = Math.floor(1000 + Math.random() * 9000);
+      await prisma.codigos.create({
+        data:{
+          codigo: String(code),
+          email:email,
+          estado: 1,
+          fecha: formattedDate
+        }
+      })
+
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth:{
+          user:"construtech.soporte@gmail.com",
+          pass:"tabqtlxuhpqvzajl"
+        }
+      })
+
+      const mail_config = {
+        from:"construtech.soporte@gmail.com",
+        to: email,
+        subject:'Codigo de confirmacion',
+        text: `Codigo de confirmacion: ${code}`
+      }
+
+      transporter.sendMail(mail_config, function (error, info){
+        if (error) {
+          console.log(error)
+          return res.status(204).json({message: 'Ha ocurrido un error'})
+        }
+        return res.status(200).json({message: 'Email enviado con exito'})
+      })
+
+
     }else{
       res.status(404).json({error: `No se encontro el email enviado: ${email}`})
     }
@@ -151,7 +205,6 @@ router.post('/sendCode', async (req, res) => {
 router.post('/checkCode', async (req, res) => {
   try {
     const { code, date } = req.body;
-    console.log(code, date);
 
     const validCode = await prisma.codigos.findUnique({
       where: {
@@ -159,14 +212,17 @@ router.post('/checkCode', async (req, res) => {
       },
     });
 
-    console.log(validCode);
-
     if (validCode) {
       const dateStored = new Date(validCode.fecha);
+      const minDateStores = dateStored.getMinutes()
+      
       const currentDate = new Date();
-      const timeDifference = Math.abs(currentDate - dateStored) / (1000 * 60);
-
-      if (timeDifference <= 15) {
+      const currentDateMin = currentDate.getMinutes()
+      
+      const timeDifference = (minDateStores-currentDateMin)
+  
+      if (timeDifference < 15) {
+        
         const checkedCode = await prisma.codigos.update({
           where: {
             Id: parseInt(validCode.Id),
@@ -194,6 +250,7 @@ router.post('/checkCode', async (req, res) => {
     return res.status(500).json({ error: "Error interno del servidor" });
   }
 });
+
 
 const generarHash = async (password, saltRounds = 10) => {
   const salt = await bcryptGenSalt(saltRounds);
