@@ -391,7 +391,7 @@ router.get("/obrasEmp/:id", async (req, res) => {
       include: {
         detalle_obra: true,
         actividades_empleados: true,
-        actividades_materiales: true,
+        // actividades_materiales: true,
       },
     });
 
