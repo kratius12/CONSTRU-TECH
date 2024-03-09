@@ -44,7 +44,6 @@ export default function MaterialesForm() {
   const navigate = useNavigate()
   const [material, setMaterial] = useState({
     nombre: "",
-    cantidad: "",
     idCategoria: "",
     estado: ""
   })
@@ -55,9 +54,7 @@ export default function MaterialesForm() {
         const material = await getMaterial(params.id)
         setMaterial({
           nombre: material.nombre,
-          cantidad: material.cantidad,
           idCategoria: material.idCategoria,
-          estado: material.estado
         })
       }
     }
@@ -159,23 +156,6 @@ export default function MaterialesForm() {
                         {errors.idCategoria && touched.idCategoria ? (
                           <div className="alert alert-danger" role="alert">{errors.idCategoria}</div>
                         ) : null}
-                      </div>
-                      <div className="col-md-6 mt-3 mx-auto">
-                        <input type="number" className="form-control form-control-user" id="cantidad" onChange={handleChange} value={values.cantidad} placeholder="Cantidad" />
-                        {errors.cantidad && touched.cantidad ? (
-                          <div className="alert alert-danger" role="alert">{errors.cantidad}</div>
-                        ):null}
-                      </div>
-                      <div className="col-md-6 mt-3">
-                        {params.id ?
-                          (
-                            <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
-                              <option value="">Seleccione estado</option>
-                              <option value="1">Activo</option>
-                              <option value="0">Inactivo</option>
-                            </select>
-                          ) : null
-                        }
                       </div>
                     </div>
                   </div>

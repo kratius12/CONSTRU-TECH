@@ -8,6 +8,7 @@ import { useObras } from "../../context/obras/ObrasProvider";
 import { obraSchemaEdit, actividadSchema } from "../../components/obras/ValidateObra"
 import "../../components/obras/obras.css"
 import { format, addDays, max } from 'date-fns';
+import GanttTask from "../../components/togglEstado/GanttTask";
 // import GanttChartComponent from "../../components/obras/Componentgant";
 
 const fetchData = async (url) => {
@@ -76,22 +77,15 @@ const ObraDetalle = () => {
         } else {
             setSelectedActivity(null)
         }
-
         setMatDefault([]);
         setEmpDefault([]);
         setModalVisible(true);
 
         if (activity.detalleObra) {
-            const initialMaterials = activity.materiales.map((material) => ({
-                value: material.materiales.idMat,
-                label: material.materiales.nombre,
-            }));
             const initialEmployees = activity.empleados.map((employee) => ({
                 value: employee.empleado.idEmp,
                 label: employee.empleado.nombre,
             }));
-
-            setSelectedMaterials(initialMaterials); // preselect the materials associated with the activity
             setEmpDefault(initialEmployees);
         } else if (!activity.actividad) {
             setMatDefault([]);
@@ -513,45 +507,9 @@ const ObraDetalle = () => {
 
                                         actividades.length > 0 ? (
                                             <>
-                                                <h3 className="ml-3 w-50">Actividades</h3>
-                                                <div className="col-md-4 input-group">
-                                                    <input
-                                                        type="text"
-                                                        id="search"
-                                                        name="search"
-                                                        className="form-control search-input"
-                                                        placeholder="Buscar actividad"
-                                                        value={searchTerm}
-                                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                                    />
-                                                    <div className="input-group-append">
-                                                        <button
-                                                            className="btn btn-secondary"
-                                                            type="button"
-                                                            onClick={handleSearch}
-                                                        >
-                                                            <i className="fa fa-search"></i>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                                <div className="ml-3 mr-2">
-                                                    {
-                                                        showGantt == true ? (
-                                                            <Button type="button" className="btn btn-primary" onClick={handleCerrarGantt}>
-                                                                Ver actividades
-                                                            </Button>
-                                                        ) : (
-                                                            <Button type="button" className="btn btn-primary" onClick={handleShowGantt}>
-                                                                Ver diagrama
-                                                                {/* <GanttChartComponent tasks={actividades}/> */}
-                                                            </Button>
-                                                        )
-                                                    }
-
-                                                </div>
+                                            <h3 className="text-center w-100">Actividades</h3>
+                                            <GanttTask actividades={actividades} handleActividad={handleAgregarActividad} />
                                             </>
-
-
                                         ) : (
                                             <h3 className="text-center w-100">La obra no tiene actividades asociadas</h3>
                                         )
@@ -715,7 +673,6 @@ const ObraDetalle = () => {
                                                                 <option value="En curso">En curso</option>
                                                                 <option value="En revisión">En revisión</option>
                                                                 <option value="Terminada">Terminada</option>
-                                                                <option value="Cancelada">Cancelada</option>
                                                             </select>
                                                             {
                                                                 errors.estado && touched.estado ? (
@@ -828,41 +785,8 @@ const ObraDetalle = () => {
                                         <div className="row">
                                             {filteredActivities.length > 0 ? (
                                                 currentActivities.map((detalle) => (
-                                                    <div key={detalle.id} className="col-md-3 mt-3">
-                                                        <div className="card">
-                                                            <div className="card-body">
-                                                                <h5 className="card-title">Actividad: {detalle.detalleObra.actividad}</h5>
-                                                                <p className="card-text">Fecha de inicio: {formatoFechaIni(detalle.detalleObra.fechaini)}</p>
-                                                                <p className="card-text">Fecha de fin estimada: {calcularFechaFinEstimada(detalle.detalleObra.fechaini, detalle.detalleObra.fechafin)}</p>
-
-                                                                {detalle.materiales.length > 0 && (
-                                                                    <>
-                                                                        <p className="card-text">Materiales: {detalle.materiales.map((material) => material.materiales.nombre).join(', ')}</p>
-                                                                        <p className="card-text">Materiales: {detalle.materiales.map((material) => material.cantidad).join(', ')}</p>
-                                                                    </>
-                                                                )}
-
-
-
-                                                                {detalle.empleados.length > 0 && (
-                                                                    <p className="card-text">Empleados: {detalle.empleados.map((empleado) => empleado.empleado.nombre).join(', ')}</p>
-                                                                )}
-
-
-                                                                <p className="card-text">Estado: {detalle.detalleObra.estado}</p>
-                                                                <div className="mt-3">
-                                                                    <Button
-                                                                        className="btn btn-secondary"
-                                                                        onClick={() => handleAgregarActividad(detalle)}
-                                                                    >
-                                                                        <i className="fa-solid fa-pen-to-square"></i>
-                                                                        &nbsp;Editar
-                                                                    </Button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                    </div>
+                                                    <>
+                                                    </>
 
                                                 ))
                                             ) : (

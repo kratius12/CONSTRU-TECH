@@ -74,32 +74,33 @@ router.post('/cliente', async (req, res) => {
 });
 
 router.put('/cliente/:id', async (req, res) => {
-    try {
-        const { nombre, apellidos, email, direccion, telefono, tipoDoc, cedula, fecha_nac, estado, contrasena } = req.body
-        const { hash, salt } = await generarHash(contrasena);
-        const result = await prisma.cliente.update({
-            where: {
-                idCli: parseInt(req.params.id)
-            }, data: {
-                nombre: ucfirst(nombre),
-                apellidos: ucfirst(apellidos),
-                email: email,
-                direccion: ucfirst(direccion),
-                telefono: telefono,
-                tipoDoc: tipoDoc,
-                cedula: cedula,
-                fecha_nac: fecha_nac,
-                estado: parseInt(estado),
-                constrasena: hash,
-                salt: salt
-            }
-        })
 
-        res.status(200).json(result)
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json(error)
-    }
+        try {
+                const {nombre,apellidos, email, direccion, telefono, tipoDoc, cedula, fecha_nac, contrasena} = req.body
+                const { hash, salt } = await generarHash(contrasena);
+                const result = await prisma.cliente.update({
+                        where:{
+                                idCli: parseInt(req.params.id)
+                        },data:{
+                                nombre: ucfirst(nombre),
+                                apellidos:ucfirst(apellidos),
+                                email: email,
+                                direccion: ucfirst(direccion),
+                                telefono: telefono,
+                                tipoDoc: tipoDoc,
+                                cedula: cedula,
+                                fecha_nac: fecha_nac,
+                                constrasena:hash,
+                                salt:salt
+                        }
+                })
+                
+                res.status(200).json(result)
+        } catch (error) {
+                console.log(error);
+                return res.status(500).json(error)
+        }
+
 });
 
 router.delete('/cliente/:id', async (req, res) => {

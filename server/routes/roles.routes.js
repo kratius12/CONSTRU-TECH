@@ -143,13 +143,12 @@ router.get("/checkRol/:rol/:id", async (req, res) =>{
 
 router.put("/rol/:id", async (req, res) => {
     try {
-        const { nombre, estado, permisos } = req.body;
+        const { nombre, permisos } = req.body;
 
 
         const rol = await prisma.rol.update({
             data: {
                 nombre: ucfirst(nombre),
-                estado: parseInt(estado),
             },
             where: {
                 idRol: parseInt(req.params.id),

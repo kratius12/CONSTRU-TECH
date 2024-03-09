@@ -249,41 +249,6 @@ export default function EmpleadosForm() {
                         ) : null}
                       </div>
                       <div className="col-md-6 mt-3">
-
-                        <Field type="text" className="form-control form-control-user" id="nombre" name="nombre" placeholder="Nombres*" />
-                        {errors.nombre && touched.nombre ? (
-                          <div className="alert alert-danger" role="alert">{errors.nombre}</div>
-                        ) : null}
-                      </div>
-                      <div className="col-md-6 mt-3">
-                        <input type="text" className="form-control form-control-user" id="apellidos" onChange={handleChange} value={values.apellidos} placeholder="Apellidos*" />
-                        {errors.apellidos && touched.apellidos ? (
-                          <div className="alert alert-danger" role="alert">{errors.apellidos}</div>
-                        ) : null}
-                      </div>
-                      <div className="col-md-6 mt-3">
-                        <input type="text" className="form-control form-control-user" id="email" onChange={(e) => {
-                          handleChange(e)
-                          checkEmail(e.target.value)
-                        }} value={values.email} placeholder="Email*" />
-                        {errors.email && touched.email ? (
-                          <div className="alert alert-danger" role="alert">{errors.email}</div>
-                        ) : null}
-                      </div>
-                      <div className="col-md-6 mt-3">
-                        <input type="password" className="form-control form-control-user" id="contrasena" onChange={handleChange} value={values.contrasena} placeholder="Contraseña*" />
-                        {errors.contrasena && touched.contrasena ? (
-                          <div className="alert alert-danger" role="alert">{errors.contrasena}</div>
-                        ) : null}
-                      </div>
-                      <div className="col-md-6 mt-3">
-                        <input type="password" className="form-control form-control-user" id="confirmar" name="confirmar" onChange={handleChange} value={values.confirmar} placeholder="Confirme la contraseña*" />
-                        {errors.confirmar && touched.confirmar ? (
-                          <div className="alert alert-danger" role="alert">{errors.confirmar}</div>
-                        ) : null
-                        }
-                      </div>
-                      <div className="col-md-6 mt-3">
                         <input type="text" className="form-control form-control-user" id="cedula" onChange={(e) => {
                           handleChange(e)
                           checkDoc(values.tipoDoc, values.cedula)
@@ -293,20 +258,54 @@ export default function EmpleadosForm() {
                           <div className="alert alert-danger" role="alert">{errors.cedula}</div>
                         ) : null}
                       </div>
-                      <div className="col-md-6 mt-3">
+                      <div className="col-md-4 mt-3">
+                        <Field type="text" className="form-control form-control-user" id="nombre" name="nombre" placeholder="Nombres*" />
+                        {errors.nombre && touched.nombre ? (
+                          <div className="alert alert-danger" role="alert">{errors.nombre}</div>
+                        ) : null}
+                      </div>
+                      <div className="col-md-4 mt-3">
+                        <input type="text" className="form-control form-control-user" id="apellidos" onChange={handleChange} value={values.apellidos} placeholder="Apellidos*" />
+                        {errors.apellidos && touched.apellidos ? (
+                          <div className="alert alert-danger" role="alert">{errors.apellidos}</div>
+                        ) : null}
+                      </div>
+                      <div className="col-md-4 mt-3">
+                        <input type="text" className="form-control form-control-user" id="email" onChange={(e) => {
+                          handleChange(e)
+                          checkEmail(e.target.value)
+                        }} value={values.email} placeholder="Email*" />
+                        {errors.email && touched.email ? (
+                          <div className="alert alert-danger" role="alert">{errors.email}</div>
+                        ) : null}
+                      </div>
+                      <div className="col-md-4 mt-3">
+                        <input type="password" className="form-control form-control-user" id="contrasena" onChange={handleChange} value={values.contrasena} placeholder="Contraseña*" />
+                        {errors.contrasena && touched.contrasena ? (
+                          <div className="alert alert-danger" role="alert">{errors.contrasena}</div>
+                        ) : null}
+                      </div>
+                      <div className="col-md-4 mt-3">
+                        <input type="password" className="form-control form-control-user" id="confirmar" name="confirmar" onChange={handleChange} value={values.confirmar} placeholder="Confirme la contraseña*" />
+                        {errors.confirmar && touched.confirmar ? (
+                          <div className="alert alert-danger" role="alert">{errors.confirmar}</div>
+                        ) : null
+                        }
+                      </div>
+                      <div className="col-md-4 mt-3">
                         <input type="text" className="form-control form-control-user" id="telefono" onChange={handleChange} value={values.telefono} placeholder="Número telefónico*" />
                         {errors.telefono && touched.telefono ? (
                           <div className="alert alert-danger" role="alert">{errors.telefono}</div>
                         ) : null}
                       </div>
-                      <div className="col-md-6 mt-3">
+                      <div className="col-md-4 mt-3">
                         <input type="text" className="form-control form-control-user" id="direccion" onChange={handleChange} value={values.direccion} placeholder="Dirección*" />
                         {errors.direccion && touched.direccion ? (
                           <div className="alert alert-danger" role="alert">{errors.direccion}</div>
                         ) : null}
                       </div>
 
-                      <div className="col-md-6 mt-3">
+                      <div className="col-md-4 mt-3">
                         <label>Selecciona especialidades:</label>
                         <Select
                           id="especialidad"
@@ -326,7 +325,7 @@ export default function EmpleadosForm() {
                           <div className="alert alert-danger" role="alert">{errors.especialidad}</div>
                         ) : null}
                       </div>
-                      <div className="col-md-6 mt-3">
+                      <div className="col-md-4 mt-3">
                         <select
                           id="rol"
                           name="rol"
@@ -343,18 +342,6 @@ export default function EmpleadosForm() {
                         </select>
                         {errors.rol && touched.rol ? (
                           <div className="alert alert-danger" role="alert">{errors.rol}</div>
-                        ) : null}
-                      </div>
-                      <div className="col-md-6 mt-3">
-                        {params.id ? (
-                          <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
-                            <option value="">Seleccione estado</option>
-                            <option value="1">Activo</option>
-                            <option value="0">Inactivo</option>
-                          </select>
-                        ) : null}
-                        {errors.estado && touched.estado ? (
-                          <div className="alert alert-danger" role="alert">{errors.estado}</div>
                         ) : null}
                       </div>
                     </div>

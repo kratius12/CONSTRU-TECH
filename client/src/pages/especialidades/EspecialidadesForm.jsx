@@ -13,7 +13,7 @@ export default function EspecialidadesForm() {
   const navigate = useNavigate()
   const initialState = {
     especialidad: "",
-    estado: "1", // Valor predeterminado
+    estado: 1, // Valor predeterminado
   };
 
   const [especialidad, setEspecialidad] = useState(initialState)
@@ -26,9 +26,9 @@ export default function EspecialidadesForm() {
       if (params.id) {
         const especialidad = await getEspecialidad(params.id)
         setEspecialidad({
-          especialidad: especialidad.especialidad,
-          estado: especialidad.estado === "0" ? "0" : "1"
+          especialidad: especialidad.especialidad
         })
+        checkNombre(especialidad)
       } else {
         setEspecialidad(initialState)
       }
@@ -98,7 +98,7 @@ export default function EspecialidadesForm() {
     }
   }
 
-  console.clear()
+  // console.clear()
   return (
     <div className="container">
       <div className="row">
@@ -140,7 +140,7 @@ export default function EspecialidadesForm() {
                   <h2>{params.id ? "Editar" : "Agregar"} especialidad</h2>
                   <div className="card-body">
                     <div className="row">
-                      <div className="col-6 mt-3">
+                      <div className="col-6 offset-3 mt-3">
 
                         <input type="text" className="form-control form-control-user" id="especialidad" onChange={(e) =>{
                           handleChange(e)
@@ -148,20 +148,6 @@ export default function EspecialidadesForm() {
                         }} value={values.especialidad} placeholder="Nombre*"  />
                         {errors.especialidad && touched.especialidad ? (
                           <div className="alert alert-danger" role="alert">{errors.especialidad}</div>
-                        ) : null}
-                      </div>
-                      <div className="col-6 mt-3">
-                        {params.id ?
-                          (
-                            <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
-                              <option value="">Seleccione estado*</option>
-                              <option value="1">Activo</option>
-                              <option value="0">Inactivo</option>
-                            </select>
-                          ) : null
-                        }
-                        {errors.estado && touched.estado ? (
-                          <div className="alert alert-danger" role="alert">{errors.estado}</div>
                         ) : null}
                       </div>
                     </div>

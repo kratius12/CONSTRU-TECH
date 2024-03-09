@@ -318,6 +318,7 @@ router.post("/guardarActividad/:id", async (req, res) => {
   }
 });
 
+
 router.get("/actividadA/:id", async (req, res) => {
   try {
     const { actividad } = req.body

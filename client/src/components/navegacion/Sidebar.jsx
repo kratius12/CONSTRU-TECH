@@ -23,9 +23,16 @@ export default function Sidebar({userData}) {
       </Link>
       <hr className="sidebar-divider my-0" />
       <li className="nav-item">
+        <Link className="nav-link" to="/">
+          <i className="fa-solid fa-home" />&nbsp;
+          Inicio
+        </Link>
+      </li>      
+      <hr className="sidebar-divider my-0" />
+      <li className="nav-item">
         <Link className="nav-link" to="/dashboard">
           <i className="fa-solid fa-gauge-high" />&nbsp;
-          Inicio
+          Dashboard
         </Link>
       </li>
       <hr className="sidebar-divider my-0" />
