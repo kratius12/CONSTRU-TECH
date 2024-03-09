@@ -371,15 +371,42 @@ router.get("/searchActividad/:id", async (req, res) => {
 
 router.get("/obrasCli/:id", async (req, res) => {
   try {
-    console.log(req.params.id)
     const obras = await prisma.obras.findMany({
       where: {
-        idCliente: parseInt(req.params.id)
-      }
-    })
-    return res.status(200).json(obras)
+        idCliente: parseInt(req.params.id),
+      },
+      include: {
+        empleado: true,
+      },
+    });
+
+    const obrasAct = await prisma.actividades_empleados.findMany({
+      where: {
+        idEmp: parseInt(req.params.id),
+      },
+      include: {
+        obras: true,
+      },
+    });
+    console.log(obras);
+    // Utilizamos un Set para almacenar las obras únicas
+    const obrasUnicas = new Set();
+
+    obras.forEach((obra) => {
+      obrasUnicas.add(JSON.stringify(obra));
+    });
+    const obrasUnicasArray = Array.from(obrasUnicas).map((obraString) =>
+      JSON.parse(obraString)
+    );
+
+    const info = {
+      obras: obrasUnicasArray,
+    };
+
+    return res.status(200).json(info);
   } catch (error) {
-    console.error(error)
+    console.error(error);
+    return res.status(500).json({ error: "Error interno del servidor" });
   }
 })
 
@@ -392,7 +419,8 @@ router.get("/obrasEmp/:id", async (req, res) => {
       include: {
         detalle_obra: true,
         actividades_empleados: true,
-        // actividades_materiales: true,
+        empleado: true,
+        cliente: true
       },
     });
 
@@ -404,7 +432,7 @@ router.get("/obrasEmp/:id", async (req, res) => {
         obras: true,
       },
     });
-
+    console.log(obras);
     // Utilizamos un Set para almacenar las obras únicas
     const obrasUnicas = new Set();
 
@@ -434,6 +462,23 @@ router.get("/obrasEmp/:id", async (req, res) => {
   }
 });
 
+
+router.put("/estadoAct", async (req, res) => {
+  try {
+    const { estado } = req.body
+    const actividad = await prisma.detalle_obra.update({
+      where: {
+        actividad: parseInt(req.params.id)
+      }, data: {
+        estado: estado
+      }
+    }
+    )
+    return res.status(200).json({ message: actividad })
+  } catch (error) {
+    console.log(error)
+  }
+})
 
 
 
