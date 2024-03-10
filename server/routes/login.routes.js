@@ -1,11 +1,12 @@
 import {Router, json} from 'express';
 import { PrismaClient } from '@prisma/client';
 import jwt from 'jsonwebtoken';
-import { SECRET_KEY } from '../config.js';
+// import { SECRET_KEY } from '../config.js';
 import { genSalt as bcryptGenSalt, hash as bcryptHash, compare as bcryptCompare } from 'bcrypt';
 import nodemailer from 'nodemailer';
 import { Resend } from 'resend';
 
+const SECRET_KEY = process.env.SECRET_KEY
 const resend = new Resend('re_cg4HtbhW_3BQtnVsVsKBhaKidq7A1GoAU');
 const prisma = new PrismaClient();
 const router = Router();

@@ -4,7 +4,7 @@ import {dirname, join} from "path";
 import { fileURLToPath } from "url";
 import path from "path";
 import bodyParser from "body-parser";
-import { PORT } from "./config.js";
+// import { PORT } from "./config.js";
 import indexRoutes from "./routes/index.routes.js"
 import obrasRoutes from "./routes/obras.routes.js"
 import materialesRoutes from "./routes/materiales.routes.js"
@@ -20,6 +20,7 @@ import comprasRoutes from './routes/compras.routes.js'
 import dashboardRoutes from './routes/dashboard.routes.js'
 import loginRoutes from './routes/login.routes.js'
 import exphbs from "express-handlebars";
+const PORT = process.env.PORT
 const app = express()
 const _dirname = dirname(fileURLToPath(import.meta.url))
 app.use(cors());
