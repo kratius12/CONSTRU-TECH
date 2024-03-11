@@ -29,7 +29,6 @@ router.get('/cliente/:id', async (req, res) => {
                 idCli: parseInt(req.params.id)
             }, select: {
                 constrasena: false,
-                salt: false,
                 nombre: true,
                 apellidos: true,
                 tipoDoc: true,
@@ -65,7 +64,6 @@ router.post('/cliente', async (req, res) => {
                 fecha_nac: fecha_nac,
                 estado: parseInt(estado),
                 constrasena: hash,
-                salt: salt
             }
         })
 
@@ -91,11 +89,37 @@ router.put('/cliente/:id', async (req, res) => {
                                 cedula: cedula,
                                 fecha_nac: fecha_nac,
                                 constrasena:hash,
-                                salt:salt
                         }
                 })
                 
                 res.status(200).json(result)
+        } catch (error) {
+                console.log(error);
+                return res.status(500).json(error)
+        }
+
+});
+router.put('/clienteMo/:id', async (req, res) => {
+
+        try {
+                const {nombre,apellidos, email, direccion, telefono, tipoDoc, cedula, fecha_nac, } = req.body
+                const result = await prisma.cliente.update({
+                        where:{
+                                idCli: parseInt(req.params.id)
+                        },data:{
+                                nombre: ucfirst(nombre),
+                                apellidos:ucfirst(apellidos),
+                                email: email,
+                                direccion: ucfirst(direccion),
+                                telefono: telefono,
+                                tipoDoc: tipoDoc,
+                                cedula: cedula,
+                                fecha_nac: fecha_nac,
+                                
+                        }
+                })
+                
+                res.status(200)
         } catch (error) {
                 console.log(error);
                 return res.status(500).json(error)

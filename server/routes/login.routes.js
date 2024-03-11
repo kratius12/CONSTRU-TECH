@@ -75,10 +75,9 @@ router.post("/loginCli", async (req,res) =>{
       return;
     }
     const passwordsMatch = await bcryptCompare(password, user.constrasena);
-    console.log(passwordsMatch)
 
     if(passwordsMatch){
-      const token = jwt.sign({ nombre: user.nombre, apellidos: user.apellidos, email: user.email, direccion: user.direccion, telefono: user.telefono, tipoDoc: user.tipoDoc,  fecha_nac: user.fecha_nac, estado: user.estado }, SECRET_KEY, { expiresIn: '2h' })
+      const token = jwt.sign({ idCli:user.idCli, nombre: user.nombre, apellidos: user.apellidos, email: user.email, direccion: user.direccion, telefono: user.telefono, tipoDoc: user.tipoDoc,  fecha_nac: user.fecha_nac, estado: user.estado }, SECRET_KEY, { expiresIn: '2h' })
       res.status(200).json({ token });
     }else{
       res.status(200).json({message:"Error, credenciales incorrectas"})
@@ -276,6 +275,115 @@ router.post('/password', async (req, res) => {
         },
         data:{
           contrasena: hashedPass
+        }
+      })
+
+      if (changePass) {
+        return res.status(200).json({success:true})
+      }
+
+      return res.status(400).json({error:"No se pudo cambiar la contraseña"})
+
+    } else {
+      return res.status(404).json({error:"Usuario no encontrado"})
+    }
+
+  } catch (error) {
+    console.log(error)
+  }
+
+});
+router.post('/passwordCli', async (req, res) => {
+  try {
+    const {email, password} = req.body
+
+    const user = await prisma.cliente.findFirst({
+      where:{
+        email:email
+      }
+    })
+
+    if (user) {
+      const hashedPass = await generarHash(password)
+      const changePass = await prisma.cliente.updateMany({
+        where:{
+          email:email
+        },
+        data:{
+
+          constrasena: hashedPass
+        }
+      })
+
+      if (changePass) {
+        return res.status(200).json({success:true})
+      }
+
+      return res.status(400).json({error:"No se pudo cambiar la contraseña"})
+
+    } else {
+      return res.status(404).json({error:"Usuario no encontrado"})
+    }
+
+  } catch (error) {
+    console.log(error)
+  }
+
+});
+router.post('/passwordCli', async (req, res) => {
+  try {
+    const {email, password} = req.body
+     const user = await prisma.cliente.findFirst({
+      where:{
+        email:email
+      }
+    })
+
+    if (user) {
+      const hashedPass = await generarHash(password)
+      const changePass = await prisma.cliente.updateMany({
+        where:{
+          email:email
+        },
+        data:{
+
+          constrasena: hashedPass
+        }
+      })
+
+      if (changePass) {
+        return res.status(200).json({success:true})
+      }
+
+      return res.status(400).json({error:"No se pudo cambiar la contraseña"})
+
+    } else {
+      return res.status(404).json({error:"Usuario no encontrado"})
+    }
+
+  } catch (error) {
+    console.log(error)
+  }
+
+});
+router.post('/passwordCliEn', async (req, res) => {
+  try {
+    const {email, password} = req.body
+     const user = await prisma.cliente.findFirst({
+      where:{
+        email:email
+      }
+    })
+
+    if (user) {
+      const hashedPass = await generarHash(password)
+      const changePass = await prisma.cliente.updateMany({
+        where:{
+          email:email
+        },
+        data:{
+
+          constrasena: hashedPass
         }
       })
 

@@ -95,6 +95,7 @@ router.get("/obra/:id", async (req, res) => {
 router.post("/obras", async (req, res) => {
   try {
     const { descripcion, fechaini, idCliente, idEmp } = req.body;
+    console.log(req.body)
     const obra = await prisma.obras.create({
       data: {
         descripcion: ucfirst(descripcion),
@@ -104,6 +105,7 @@ router.post("/obras", async (req, res) => {
         idEmp: parseInt(idEmp)
       },
     });
+    console.log(obra)
     res.status(200).json(obra);
   } catch (error) {
     console.log("message:" + error.message);
@@ -388,7 +390,6 @@ router.get("/obrasCli/:id", async (req, res) => {
         obras: true,
       },
     });
-    console.log(obras);
     // Utilizamos un Set para almacenar las obras únicas
     const obrasUnicas = new Set();
 
@@ -432,7 +433,6 @@ router.get("/obrasEmp/:id", async (req, res) => {
         obras: true,
       },
     });
-    console.log(obras);
     // Utilizamos un Set para almacenar las obras únicas
     const obrasUnicas = new Set();
 
@@ -463,12 +463,12 @@ router.get("/obrasEmp/:id", async (req, res) => {
 });
 
 
-router.put("/estadoAct", async (req, res) => {
+router.put("/estadoAct/:id", async (req, res) => {
   try {
     const { estado } = req.body
     const actividad = await prisma.detalle_obra.update({
       where: {
-        actividad: parseInt(req.params.id)
+        id: parseInt(req.params.id)
       }, data: {
         estado: estado
       }

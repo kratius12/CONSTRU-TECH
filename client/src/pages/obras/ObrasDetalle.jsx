@@ -456,7 +456,7 @@ const ObraDetalle = () => {
                                             name="fechafin"
                                             label="Fecha Fin"
                                             className="form-control form-control-user"
-                                            value={fechaMaxima || values.fechafin}
+                                            value={ values.fechafin = fechaMaxima }
                                             onChange={handleChange}
 
                                         />
