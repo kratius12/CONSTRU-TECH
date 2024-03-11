@@ -27,6 +27,7 @@ model cliente {
   fecha_nac   String?  @db.VarChar(50)
   estado      Int?
   constrasena String?  @db.VarChar(200)
+  salt        String?  @db.VarChar(200)
   createdAt   DateTime @default(dbgenerated("(curdate())")) @db.Date
   obras       obras[]
 }

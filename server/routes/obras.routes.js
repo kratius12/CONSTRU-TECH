@@ -339,7 +339,7 @@ router.get("/actividadA/:id", async (req, res) => {
   } catch (error) {
     console.log(error)
   }
-})
+})  
 
 router.get("/searchActividad/:id", async (req, res) => {
   try {
