@@ -2,12 +2,13 @@ import React from 'react';
 import { Gantt } from 'gantt-task-react'; 
 import "../../assets/css/gantt.css";
 import {format} from 'date-fns'
+import { validate } from 'superstruct';
 function GanttTask({actividades, handleActividad}) {
 
     const formatFecha = (fecha)=> {
         //  const formatted = format(new Date(fecha), 'yyyy-M-d')
         // return formatted
-        console.log(typeof(fecha)+fecha);
+        console.log(fecha);
     }
     const handleTest = (actividad) =>{
         console.log(actividad)
@@ -27,7 +28,7 @@ function GanttTask({actividades, handleActividad}) {
     let tasks = [];
     actividades.map((actividad, index) => {
         let validDate = actividad.detalleObra.fechaini.split('-')
-        
+        formatFecha(validDate)
         let objTask = {
             start: new Date(2024, 1, 1),
             end: new Date(2024, 1, 3),
@@ -36,8 +37,9 @@ function GanttTask({actividades, handleActividad}) {
             type: 'task',
             progress: assignProgress(actividad.detalleObra.estado),
             isDisabled: false,
-            styles: { progressColor: '#ffbb54', progressSelectedColor: '#ff9e0d' },
-            detalleObra: actividad
+            styles: { progressColor: '#056608', progressSelectedColor: '#056608' },
+            detalleObra: actividad,
+
         }
         tasks.push(objTask)
     })
@@ -45,6 +47,7 @@ function GanttTask({actividades, handleActividad}) {
         <div className="container">
             <div className="row">
                 <div className="col-md-12">
+
                 <Gantt
                 tasks={tasks}
                 onClick={
