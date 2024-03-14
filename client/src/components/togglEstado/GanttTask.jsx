@@ -33,7 +33,6 @@ function GanttTask({actividades, handleActividad}) {
     let tasks = [];
     actividades.map((actividad, index) => {
         let fechafinalAct = getFechaFin(actividad.detalleObra.fechaini, actividad.detalleObra.fechafin)
-        console.log(fechafinalAct);
         let objTask = {
             start: new Date(actividad.detalleObra.fechaini),
             end: new Date(fechafinalAct),
