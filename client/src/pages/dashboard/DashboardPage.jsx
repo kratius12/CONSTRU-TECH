@@ -9,13 +9,14 @@ function DashboardPage() {
     const clientesObras = useRef(null)
     const especialidadesObras = useRef(null)
 
-    const { getDashboardClientes, getDashboardObras, getDashboardClienteObras, getDashboardEspecialidades, getDashboardEmpleadosCount} = useDashboard()
+    const { getDashboardClientes, getDashboardObras, getDashboardClienteObras, getObrasEstados, getDashboardEmpleadosCount, getTotalCompras} = useDashboard()
     const [clientesData, setClientesData] = useState([])
     const [obrasData, setObrasData] = useState([])
 
     const [countObras, setCountObras] = useState([])
     const [countClientes, setCountClientes] = useState([])
     const [countEmpleados, setCountEmpleados] = useState([])
+    const [totalCompras, setTotalCompras] = useState([])
 
     useEffect(() => {
         const dataClientes = async () => {
@@ -75,7 +76,7 @@ function DashboardPage() {
         dataObras()
 
     }, []);
-    console.clear()
+    // console.clear()
     useEffect(() => {
         const loadchartClientes = () => {
             if (clienteRef && clienteRef.current) {
@@ -212,17 +213,14 @@ function DashboardPage() {
         const loadchartEspecialidades = async () => {
             if (especialidadesObras && especialidadesObras.current) {
                 const ctx = especialidadesObras.current.getContext("2d");
-                const especialidadesData = await getDashboardEspecialidades();
-
+                const especialidadesData = await getObrasEstados();
+                console.log(especialidadesData);
                 const especialidadesCount = {};
 
                 especialidadesData.forEach((obra) => {
-                    obra.detalle_obra.forEach((empleado) => {
-                        empleado.empleado.empleado_especialidad.forEach((especialidad) => {
-                            const nombreEspecialidad = especialidad.especialidad.especialidad;
-                            especialidadesCount[nombreEspecialidad] = (especialidadesCount[nombreEspecialidad] || 0) + 1;
-                        });
-                    });
+                    const estado = obra.estado;
+                    console.log(estado)
+                    // especialidadesCount[estado] = (especialidadesCount[estado] || 0) + 1;
                 });
 
                 const especialidadesLabels = Object.keys(especialidadesCount);
@@ -261,6 +259,8 @@ function DashboardPage() {
             setCountObras(obrasData.length)
             setCountClientes(clientesData.length)
             const empleadosCount = await getDashboardEmpleadosCount()
+            const totalCompras = await getTotalCompras()
+            setTotalCompras(totalCompras.total_compra.toLocaleString())
             setCountEmpleados(empleadosCount)
         }
 
@@ -279,7 +279,7 @@ function DashboardPage() {
                     <div className="row">
 
 
-                        <div className="col-xl-3 col-md-6 mb-4 offset-md-1">
+                        <div className="col-xl-3 col-md-6 mb-4">
                             <div className="card border-left-primary shadow h-100 py-2">
                                 <div className="card-body">
                                     <div className="row no-gutters align-items-center text-center">
@@ -331,6 +331,23 @@ function DashboardPage() {
                                 </div>
                             </div>
                         </div>
+
+                        <div className="col-xl-3 col-md-6 mb-4">
+                            <div className="card border-left-danger shadow h-100 py-2">
+                                <div className="card-body">
+                                    <div className="row no-gutters align-items-center text-center">
+                                        <div className="col mr-2">
+                                            <div className="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                                Total comprado</div>
+                                            <div className="h5 mb-0 font-weight-bold text-gray-800">$ {totalCompras}</div>
+                                        </div>
+                                        <div className="col-auto">
+                                            <i className="fas fa-user-group fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                        
                     </div>
 
             <div className="row">

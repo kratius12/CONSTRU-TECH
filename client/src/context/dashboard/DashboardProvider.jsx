@@ -3,7 +3,9 @@ import { GetDashboardClienteObrasRequest,
          GetDashboardClientesRequest,
          GetDashboardEspecialidadesRequest,
          GetDashboardObrasRequest,
-         GetDashboardEmpleadosCountRequest
+         GetDashboardEmpleadosCountRequest,
+         GetTotalComprasRequest,
+         GetObrasEstadosRequest
 } from "../../api/Dashboard.api";
 import { DashboardContext } from "./DashboardContext";
 
@@ -73,8 +75,26 @@ export const DashboardContextProvider = ({children}) => {
         }
     }
 
+    const getTotalCompras = async () =>{
+        try {
+            const result = await GetTotalComprasRequest()
+            return result.data
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    const getObrasEstados = async () =>{
+        try {
+            const result = await GetObrasEstadosRequest()
+            return result.data
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     return (
-        <DashboardContext.Provider value={{dashboard, Dashboard, getDashboardClientes, getDashboardObras, getDashboardClienteObras, getDashboardEspecialidades, getDashboardEmpleadosCount}}>
+        <DashboardContext.Provider value={{dashboard, Dashboard, getDashboardClientes, getDashboardObras, getDashboardClienteObras, getDashboardEspecialidades, getDashboardEmpleadosCount, getTotalCompras, getObrasEstados}}>
             {children}
         </DashboardContext.Provider>
     )

@@ -106,4 +106,34 @@ router.get("/dashboard/empleadosCount", async (req, res) =>{
     }
 })
 
+router.get("/dashboard/totalCompras", async (req, res) =>{
+    try {
+        const result = await prisma.compras.aggregate({
+            _sum:{
+                total_compra:true
+            }
+        })
+        const totalCompra = result._sum
+        res.status(200).json(totalCompra)
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({message: error.message})
+    }
+})
+
+router.get("/dashboard/obrasEstados", async (req, res) =>{
+    try {
+        const result = await prisma.obras.groupBy({
+            by: ['estado'],
+            _count:{
+                _all:true
+            }
+        })
+        res.status(200).json({result})
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({message: error.message})
+    }
+})
+
 export default router
