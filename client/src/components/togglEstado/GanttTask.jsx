@@ -1,18 +1,24 @@
 import React from 'react';
 import { Gantt } from 'gantt-task-react'; 
 import "../../assets/css/gantt.css";
-import {format} from 'date-fns'
-import { validate } from 'superstruct';
 function GanttTask({actividades, handleActividad}) {
 
-    const formatFecha = (fecha)=> {
-        //  const formatted = format(new Date(fecha), 'yyyy-M-d')
-        // return formatted
-        console.log(fecha);
+    const getFechaFin = (fechaini, fechafin) => {
+        const fechainicio = new Date(fechaini)
+        let addDays = new Date(fechainicio.setDate(fechainicio.getDate() + fechafin))
+        let year = addDays.getFullYear();
+        let month = addDays.getMonth()+1;
+        let dt = addDays.getDate();
+        
+        if (dt < 10) {
+          dt = '0' + dt;
+        }
+        if (month < 10) {
+          month = '0' + month;
+        }
+        return year+'-' + month + '-'+dt;
     }
-    const handleTest = (actividad) =>{
-        console.log(actividad)
-    }
+
     const assignProgress = (estado) => {
         let progress = 0
         if (estado === 'En curso') {
@@ -24,14 +30,13 @@ function GanttTask({actividades, handleActividad}) {
         }
         return progress
     }
-    console.log(actividades)
     let tasks = [];
     actividades.map((actividad, index) => {
-        let validDate = actividad.detalleObra.fechaini.split('-')
-        formatFecha(validDate)
+        let fechafinalAct = getFechaFin(actividad.detalleObra.fechaini, actividad.detalleObra.fechafin)
+        console.log(fechafinalAct);
         let objTask = {
-            start: new Date(2024, 1, 1),
-            end: new Date(2024, 1, 3),
+            start: new Date(actividad.detalleObra.fechaini),
+            end: new Date(fechafinalAct),
             name: actividad.detalleObra.actividad,
             id: actividad.detalleObra.actividad+''+actividad.detalleObra.id,
             type: 'task',
