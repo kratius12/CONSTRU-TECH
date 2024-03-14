@@ -13,7 +13,7 @@ export default function Sidebar({userData}) {
   return (
     <>    
     <ul className="navbar-nav bg-gradient-dark sidebar sidebar-dark accordion" id="accordionSidebar">
-      <Link className="sidebar-brand d-flex align-items-center justify-content-center" to="/dashboard">
+      <Link className="sidebar-brand d-flex align-items-center justify-content-center" to="/">
         <div className="sidebar-brand-text mx-3">
           <img
             src={Logo}
