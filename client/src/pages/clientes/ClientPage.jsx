@@ -7,15 +7,6 @@ function ClientPage() {
 
     const dataHeader = [
         {
-            header: "ID",
-            accessorKey: 'idCli'
-
-        },
-        {
-            header: "Nombre",
-            accessorKey: 'nombre'
-        },
-        {
             header: "Apellidos",
             accessorKey: 'apellidos'
         },

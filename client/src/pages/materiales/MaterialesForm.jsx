@@ -56,6 +56,7 @@ export default function MaterialesForm() {
           nombre: material.nombre,
           idCategoria: material.idCategoria,
         })
+        checkNombre(material.nombre)
       }
     }
 
@@ -108,7 +109,6 @@ export default function MaterialesForm() {
             enableReinitialize={true}
             validationSchema={materialSchema}
             onSubmit={async (values) => {
-              console.log(values);
               checkNombre(values.nombre)
               if (nombre === false) {
                 if (params.id) {

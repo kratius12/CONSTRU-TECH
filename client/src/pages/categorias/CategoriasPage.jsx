@@ -7,17 +7,8 @@ import TableInfo from "../../components/table/TableInfo";
 function CategoriasPage() {
     const dataHeader = [
         {
-           header: "ID",
-           accessorKey: 'idcat'
-
-        },
-        {
             header: "Nombre",
             accessorKey: 'nombre'
-        },
-        {
-            header: "Medida",
-            accessorKey: 'medida'
         },
         {
             header: "Estado",

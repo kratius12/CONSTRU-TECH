@@ -6,10 +6,6 @@ import TableInfo from "../../components/table/TableInfo";
 function RolesPage() {
   const dataHeader = [
     {
-      header: "ID",
-      accessorKey: "idRol",
-    },
-    {
       header: "Nombre",
       accessorKey: "nombre",
     },

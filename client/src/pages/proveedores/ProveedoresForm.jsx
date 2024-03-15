@@ -79,7 +79,7 @@ export default function ProveedoresForm() {
           telefonoContacto: proveedor.telefonoContacto,
           emailContacto: proveedor.emailContacto,
         });
-
+        checkDoc(proveedor.tipo, proveedor.nit)
         if (proveedor.tipo === "Juridico") {
           setMostrarContacto(proveedor.tipo === 'Juridico');
           setOpcionSeleccionada(proveedor.tipo);

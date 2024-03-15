@@ -12,9 +12,7 @@ export default function CategoriasForm() {
   const params = useParams()
   const navigate = useNavigate()
   const [categoria, setCategoria] = useState({
-    nombre: "",
-    medida: "",
-    estado: ""
+    nombre: ""
   })
   const validateWhitespace = (value) => {
     return hasWhitespace(value) ? 'No se permiten espacios en blanco' : undefined;
@@ -51,13 +49,48 @@ export default function CategoriasForm() {
         const categoria = await getCategoria(params.id)
         setCategoria({
           nombre: categoria.nombre,
-          medida: categoria.medida,
-          estado: categoria.estado
         })
+        checkNombre(categoria.nombre)
       }
     }
     loadEspecialidades()
   }, [getCategoria, params.id])
+  const [nombre, setNombre] = useState(true)
+  const checkNombre = async (nombre) => {
+    try {
+      const response = await fetch(`http://localhost:4000/checkCat/${nombre}/${params.id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+      if (response.status === 203) {
+        $.confirm({
+          title: `El material ingresado ya existe, por favor intente con uno diferente`,
+          content: "",
+          icon: 'fa fa-x-mark',
+          theme: 'modern',
+          closeIcon: true,
+          animation: 'zoom',
+          closeAnimation: 'scale',
+          animationSpeed: 500,
+          type: 'red',
+          columnClass: 'col-md-6 col-md-offset-3',
+          buttons: {
+            cerrar: function () {
+            },
+          }
+        })
+        setNombre(true)
+        
+      } else {
+        setNombre(false)
+      }
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   return (
     <div className="container">
@@ -67,20 +100,18 @@ export default function CategoriasForm() {
             enableReinitialize={true}
             validationSchema={CategoriaSchema}
             onSubmit={async (values) => {
-              if (params.id) {
-                await updateCategoria(params.id, values)
-                navigate("/categorias")
-                alertConfirm()
-              } else {
-                await createCategoria(values)
-                navigate("/categorias")
-                alertConfirm("update")
+              checkNombre(values.nombre)
+              if (nombre === false) {
+                if (params.id) {
+                  await updateCategoria(params.id, values)
+                  navigate("/categorias")
+                  alertConfirm()
+                } else {
+                  await createCategoria(values)
+                  navigate("/categorias")
+                  alertConfirm("update")
+                }                
               }
-              setCategoria({
-                nombre: "",
-                medida: "",
-                estado: ""
-              })
             }}
           >
             {({ handleChange, handleSubmit, values, isSubmitting, errors, touched, setFieldValue }) => (
@@ -89,39 +120,15 @@ export default function CategoriasForm() {
                   <h2>{params.id ? "Editar" : "Agregar"} categoria</h2>
                   <div className="card-body">
                     <div className="row">
-                      <div className="col-6 mt-3">
-                        <input type="text" className="form-control form-control-user" id="nombre" onChange={handleChange} value={values.nombre} placeholder="Nombre*" onBlur={() => setFieldValue('nombre', values.nombre.trim())} // Eliminar espacios en blanco al salir del campo
+                      <div className="col-6 offset-md-3 mt-3">
+                        <input type="text" className="form-control form-control-user" id="nombre" onChange={(e) =>{
+                          handleChange(e)
+                          checkNombre(e.target.value)
+                        }} value={values.nombre} placeholder="Nombre*" onBlur={() => setFieldValue('nombre', values.nombre.trim())} // Eliminar espacios en blanco al salir del campo
                           validate={validateWhitespace} />
                         {errors.nombre && touched.nombre ? (
                           <div className="alert alert-danger" role="alert">{errors.nombre}</div>
                         ) : null}
-                      </div>
-                      <div className="col-6 mt-3">
-                        <select id="medida" className="form-select form-control-user" onChange={handleChange} value={values.medida} >
-                          <option value="">Seleccione la unidad de medida*</option>
-                          <option value="m">Metro</option>
-                          <option value="m2">Metro cuadrado</option>
-                          <option value="kg">Kilogramo</option>
-                          <option value="und">Unidad</option>
-                          <option value="lt">Litros</option>
-                        </select>
-                        {errors.medida && touched.medida ? (
-                          <div className="alert alert-danger" role="alert">{errors.medida}</div>
-                        ) : null}
-                      </div>
-                      <div className="col-6 mt-3">
-                      {params.id ?
-                          (
-                            <select id="estado" className="form-select form-control-user" onChange={handleChange} value={values.estado} >
-                              <option value="">Seleccione estado</option>
-                              <option value="1">Activo</option>
-                              <option value="0">Inactivo</option>
-                            </select>
-                          ) : null
-                        }
-                        {/* {errors.estado && touched.estado ? (
-                          <div className="alert alert-danger" role="alert">{errors.estado}</div>
-                        ) : null} */}
                       </div>
                     </div>
                   </div>

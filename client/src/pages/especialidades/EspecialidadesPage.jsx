@@ -7,11 +7,6 @@ function EspecialidadesPage() {
 
     const dataHeader = [
         {
-           header: "ID",
-           accessorKey: 'id'
-
-        },
-        {
             header: "Especialidad",
             accessorKey: 'especialidad'
         },

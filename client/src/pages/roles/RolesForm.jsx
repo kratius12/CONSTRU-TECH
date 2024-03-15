@@ -58,6 +58,7 @@ const RolesForm = () => {
           setDefaultOptions(defaul);
           setPermisoSelected(defaul);
           setKey((prevKey) => prevKey + 1);
+          checkRol(rol.nombre)
         } catch (error) {
           console.error("Error fetching role data:", error);
         }
