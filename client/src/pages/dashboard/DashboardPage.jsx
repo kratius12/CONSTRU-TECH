@@ -3,9 +3,6 @@ import { useLocation } from "react-router-dom";
 import { useDashboard } from "../../context/dashboard/DashboardProvider";
 import { Bar } from "react-chartjs-2";
 function DashboardPage() {
-    const location = useLocation();
-    const { state } = location;
-    const { redirected, from } = state || {};
 
     const clienteRef = useRef(null);
     const obraRef = useRef(null);
@@ -76,28 +73,6 @@ function DashboardPage() {
         }
         dataClientes()
         dataObras()
-
-        const alertRoutes = (route) => {
-            $.confirm({
-              title: `Su usuario no tiene permiso para ingresar a ${route}`,
-              content: "Redirecionando a dashboard...",
-              icon: "fa fa-x-mark",
-              theme: "modern",
-              closeIcon: true,
-              animation: "zoom",
-              closeAnimation: "scale",
-              animationSpeed: 500,
-              type: "red",
-              columnClass: "col-md-6 col-md-offset-3",
-              autoClose: "okay|3000",
-              buttons: {
-                okay: function () {},
-              },
-            });
-          }
-        if (redirected && from) {
-            alertRoutes(from)
-        }
 
     }, []);
     console.clear()

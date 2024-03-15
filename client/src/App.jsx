@@ -39,6 +39,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import ObraDetalle from "./pages/obras/ObrasDetalle";
 import GanttTask from "./components/togglEstado/GanttTask"
+import Welcome from "./pages/Welcome";
 const EmailForm = ({ onSubmit }) => {
   const [email, setEmail] = useState('');
 
@@ -539,7 +540,7 @@ function App() {
                         redirectToDashboard('dashboard')
                       )
                     } />
-                    <Route path="/" element={<div className="container text-center"><h1>Bienvenido {userData.nombres}</h1></div>} />
+                    <Route path="/" element={<Welcome userData={userData.nombres} />} />
                   </Routes>
                 </DashboardContextProvider>
                 <ObraContextProvider>
