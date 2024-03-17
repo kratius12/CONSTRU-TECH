@@ -9,6 +9,7 @@ import { obraSchemaEdit, actividadSchema } from "../../components/obras/Validate
 import "../../components/obras/obras.css"
 import { format, addDays, max } from 'date-fns';
 import GanttTask from "../../components/togglEstado/GanttTask";
+import ObraActividadesCard from "../../components/togglEstado/ObraActividadesCard";
 // import GanttChartComponent from "../../components/obras/Componentgant";
 
 const fetchData = async (url) => {
@@ -66,7 +67,7 @@ const ObraDetalle = () => {
     const [selectedActivity, setSelectedActivity] = useState(null);
     const [materialesList, setMaterialesList] = useState([{ material: "", cantidad: 0 }]);
     const [numFormularios, setNumFormularios] = useState(1);
-    const [showGantt, setShowGantt] = useState(false)
+    const [showGantt, setShowGantt] = useState(true)
     const [actividadesLocales, setActividadesLocales] = useState([]);
 
 
@@ -105,7 +106,8 @@ const ObraDetalle = () => {
         setMaterialesList([...materialesList, { idMat: '', cantidad: 0 }]);
     };
     const handleShowGantt = () => {
-        setShowGantt(true);
+        showGantt ? setShowGantt(false) : setShowGantt(true)
+
     };
 
     const handleCerrarGantt = () => {
@@ -456,7 +458,7 @@ const ObraDetalle = () => {
                                             name="fechafin"
                                             label="Fecha Fin"
                                             className="form-control form-control-user"
-                                            value={fechaMaxima || values.fechafin}
+                                            value={ values.fechafin = fechaMaxima }
                                             onChange={handleChange}
 
                                         />
@@ -503,17 +505,6 @@ const ObraDetalle = () => {
                                 <hr />
 
                                 <div className="detalle-container mt-4">
-                                    {
-
-                                        actividades.length > 0 ? (
-                                            <>
-                                            <h3 className="text-center w-100">Actividades</h3>
-                                            <GanttTask actividades={actividades} handleActividad={handleAgregarActividad} />
-                                            </>
-                                        ) : (
-                                            <h3 className="text-center w-100">La obra no tiene actividades asociadas</h3>
-                                        )
-                                    }
                                     <Modal isOpen={modalVisible} toggle={handleCerrarForm} onClosed={() => resetForm()}>
                                         <ModalHeader toggle={handleCerrarForm}>Guardar actividad</ModalHeader>
                                         <ModalBody>
@@ -740,7 +731,7 @@ const ObraDetalle = () => {
                                                             value={material.cantidad}
                                                             onChange={(e) => handleCantidadChange(index, e.target.value)}
                                                         />
-                                                        
+
                                                         {materialErrors[index] && materialErrors[index].cantidad && (
                                                             <div className="alert alert-danger mt-2" role="alert">
                                                                 {materialErrors[index].cantidad}
@@ -773,7 +764,7 @@ const ObraDetalle = () => {
                                                 Cancelar
                                             </Button>
 
-                                            
+
                                             <Button color="primary" onClick={() => handleGuardarMateriales()}>
                                                 Guardar Materiales
                                             </Button>
@@ -783,24 +774,72 @@ const ObraDetalle = () => {
 
                                     <div className="container">
                                         <div className="row">
-                                            {filteredActivities.length > 0 ? (
-                                                currentActivities.map((detalle) => (
-                                                    <>
-                                                    </>
-
-                                                ))
+                                            <div className="col-md-6 mb-3">
+                                                <h3 className="text-center w-100">Actividades</h3>
+                                            </div>
+                                            <div className="col-md-3 mb-3">
+                                                <a className="btn btn-secondary " onClick={handleShowGantt}>
+                                                    Cambiar vista <i className="fa-solid fa-retweet  "></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div className="row">
+                                            {showGantt ? (
+                                                <>
+                                                    {actividades.length > 0 ? (
+                                                        <>
+                                                            <GanttTask actividades={actividades} handleActividad={handleAgregarActividad} />
+                                                        </>
+                                                    ) : (
+                                                        <h3 className="text-center w-100">La obra no tiene actividades asociadas</h3>
+                                                    )}
+                                                </>
                                             ) : (
-                                                <h3>No se encontraron actividades con los parametros de búsqueda ingresados</h3>
-                                            )
+                                                <>
+                                                    {filteredActivities.length > 0 ? (
+                                                        currentActivities.map((detalle) => (
+                                                            <>
+                                                                <div key={detalle.id} className="col-md-3 mt-3">
+                                                                    <div className="card">
+                                                                        <div className="card-body">
+                                                                            <h5 className="card-title">Actividad: {detalle.detalleObra.actividad}</h5>
+                                                                            <p className="card-text">Fecha de inicio: {formatoFechaIni(detalle.detalleObra.fechaini)}</p>
+                                                                            <p className="card-text">Fecha de fin estimada: {calcularFechaFinEstimada(detalle.detalleObra.fechaini, detalle.detalleObra.fechafin)}</p>
 
-                                            }
-
-
+                                                                            {detalle.materiales.length > 0 && (
+                                                                                <>
+                                                                                    <p className="card-text">Materiales: {detalle.materiales.map((material) => material.materiales.nombre).join(', ')}</p>
+                                                                                    <p className="card-text">Materiales: {detalle.materiales.map((material) => material.cantidad).join(', ')}</p>
+                                                                                </>
+                                                                            )}
+                                                                            {detalle.empleados.length > 0 && (
+                                                                                <p className="card-text">Empleados: {detalle.empleados.map((empleado) => empleado.empleado.nombre).join(', ')}</p>
+                                                                            )}
+                                                                            <p className="card-text">Estado: {detalle.detalleObra.estado}</p>
+                                                                            <div className="mt-3">
+                                                                                <Button
+                                                                                    className="btn btn-secondary"
+                                                                                    onClick={() => handleAgregarActividad(detalle)}
+                                                                                >
+                                                                                    <i className="fa-solid fa-pen-to-square"></i>
+                                                                                    &nbsp;Editar
+                                                                                </Button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </>
+                                                        ))
+                                                    ) : (
+                                                        <h3>No se encontraron actividades con los parametros de búsqueda ingresados</h3>
+                                                    )}
+                                                </>
+                                            )}
 
                                             <div className="container">
                                                 <div className="row">
                                                     <div className="pagination col-md-1 mt-3 mx-auto">
-                                                        {totalPages > 1 && (
+                                                        {totalPages > 1 &&  showGantt == false ?(
                                                             <>
                                                                 <button
                                                                     type="button"
@@ -829,7 +868,7 @@ const ObraDetalle = () => {
                                                                     Siguiente
                                                                 </button>
                                                             </>
-                                                        )}
+                                                        ):null}
                                                     </div>
 
                                                 </div>
