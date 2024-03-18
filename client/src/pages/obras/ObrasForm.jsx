@@ -25,7 +25,7 @@ const ObrasForm = () => {
     idEmp: '',
     area: '',
     fechaini: '',
-    fechafin: '',
+    fechafin: '16/04/2024',
     precio: '',
     descripcion: '',
     estado:"",
