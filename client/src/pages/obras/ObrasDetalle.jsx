@@ -175,7 +175,6 @@ const ObraDetalle = () => {
     const handleMaterialChange = (index, selectedMaterial) => {
         const updatedList = [...materialesList];
         updatedList[index].material = selectedMaterial;
-        console.log(selectedMaterials)
         setMaterialesList(updatedList);
     };
 
@@ -246,6 +245,7 @@ const ObraDetalle = () => {
 
     const handleCerrarModalMateriales = () => {
         setModalMaterialesVisible(false);
+
     };
 
     // console.clear()
@@ -282,7 +282,7 @@ const ObraDetalle = () => {
         fetchData("http://localhost:4000/empleadosAct").then((data) => {
             setAsesores(data)
         });
-        
+
 
 
         const activityDescriptions = actividades.map((activity) => activity.actividad);
@@ -323,38 +323,36 @@ const ObraDetalle = () => {
 
 
     const handleGuardarMateriales = async () => {
-        const newMaterialErrors = {};
+        const newMaterialErrors = [];
         const materialesData = await fetchMaterial("http://localhost:4000/materialesAc");
         setMateriales(materialesData);
         setCantidadDisponible(materialesData.cantidad);
-        materialesList.forEach((material, index) => {
-            if (material.cantidad < 0) {
-                newMaterialErrors[index] = { ...newMaterialErrors[index], cantidad: "La cantidad no puede ser un número negativo" };
-            } else if (material.cantidad === 0) {
-                newMaterialErrors[index] = { ...newMaterialErrors[index], cantidad: "La cantidad no puede ser 0" };
-            }
-
-            if (!material.material) {
-                newMaterialErrors[index] = { ...newMaterialErrors[index], material: "Debe seleccionar un material" };
-            }
-            if(material.material.cantidad < material.cantidad){
-                newMaterialErrors[index] = { ...newMaterialErrors[index], cantidad: `El material seleccionado tiene solo ${material.material.cantidad} unidades y usted está ingresando ${material.cantidad}` };
-            }
-            console.log(material.material.cantidad)
-
-            // Agregar otras validaciones según tus requisitos
+        materialesList.forEach((material, index) => {       
+                if (material.material) {
+                    if (material.cantidad < 0) {
+                        newMaterialErrors[index] = { ...newMaterialErrors[index], cantidad: "La cantidad no puede ser un número negativo" };
+                    } 
+                  
+                    if (material.material.cantidad < material.cantidad) {
+                        newMaterialErrors[index] = { ...newMaterialErrors[index], cantidad: `El material seleccionado tiene solo ${material.material.cantidad} unidades y usted está ingresando ${material.cantidad}` };
+                    } if(material.cantidad == 0){
+                        newMaterialErrors[index] = {...newMaterialErrors[index], cantidad: "La cantidad ingresada no puede ser 0"}
+                    }
+                }else if(!material.material){
+                    newMaterialErrors[index] = {...newMaterialErrors[index], material:"Debe seleccionar un material"}
+                }else{
+                    handleCerrarModalMateriales()
+                }
+            
         });
-
-        // Muestra los errores debajo de cada campo
-        setMaterialErrors(newMaterialErrors);
-
+        if(newMaterialErrors.length==0){
+            handleCerrarModalMateriales()
+            setMaterialErrors([])
+        }else{setMaterialErrors(newMaterialErrors);}
     };
 
-    const [selectedMaterials, setSelectedMaterials] = useState([]);
-
-
     if (!obra) {
-        return <div>Error al cargar la información de la obra</div>
+        return <div><h3>Cargando la información de la obra...</h3></div>
     }
     const resetForm = () => {
         const initialValues = {
@@ -736,7 +734,9 @@ const ObraDetalle = () => {
 
                                         </ModalBody>
                                     </Modal>
-                                    <Modal isOpen={modalMaterialesVisible} toggle={() => setModalMaterialesVisible(!modalMaterialesVisible)}>
+                                    
+                                    <Modal isOpen={modalMaterialesVisible} toggle={() => setModalMaterialesVisible(!modalMaterialesVisible)}                                   
+                                    >
                                         <ModalHeader toggle={() => setModalMaterialesVisible(!modalMaterialesVisible)}>Gestionar Materiales</ModalHeader>
                                         <ModalBody>
 
@@ -748,7 +748,6 @@ const ObraDetalle = () => {
                                                             id={`materiales.${index}`}
                                                             name={`materiales.${index}`}
                                                             options={materiales}
-                                                            defaultValue={selectedMaterials[index]}
                                                             value={materialesList[index].material}
                                                             onChange={(selectedMaterial) => handleMaterialChange(index, selectedMaterial)}
                                                         />
@@ -794,7 +793,7 @@ const ObraDetalle = () => {
                                             </Button>
 
 
-                                            <Button color="primary" onClick={() => handleGuardarMateriales()}>
+                                            <Button color="primary" onClick={() => {handleGuardarMateriales()}}>
                                                 Guardar Materiales
                                             </Button>
 

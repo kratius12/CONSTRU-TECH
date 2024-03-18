@@ -322,6 +322,22 @@ router.post("/guardarActividad/:id", async (req, res) => {
   }
 });
 
+router.put("/updateDate/:id", async (req,res)=>{
+  try {
+    const {fechafin} = req.body 
+    const fecha = await prisma.obras.update({
+      where:{
+        idObra: parseInt(req.params.id) 
+      }, data:{
+        fechafin:fechafin
+      }
+    })
+    res.status(200).json(fecha)
+  } catch (error) {
+    
+  }
+})
+
 
 router.get("/actividadA/:id", async (req, res) => {
   try {
