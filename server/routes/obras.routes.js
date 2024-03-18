@@ -95,7 +95,6 @@ router.get("/obra/:id", async (req, res) => {
 router.post("/obras", async (req, res) => {
   try {
     const { descripcion, fechaini, idCliente, idEmp } = req.body;
-    console.log(req.body)
     const obra = await prisma.obras.create({
       data: {
         descripcion: ucfirst(descripcion),
@@ -105,7 +104,6 @@ router.post("/obras", async (req, res) => {
         idEmp: parseInt(idEmp)
       },
     });
-    console.log(obra)
     res.status(200).json(obra);
   } catch (error) {
     console.log("message:" + error.message);
@@ -207,6 +205,7 @@ router.get("/actividades/:id", async (req, res) => {
 router.post("/guardarActividad/:id", async (req, res) => {
   try {
     const { actividad, fechaini, fechafin, estado, antiguo, empleados, materiales } = req.body;
+    if(materiales.length != 0){
     for (const material of materiales) {
       const idMaterial = parseInt(material.material.value);
       const cantidadUtilizada = parseInt(material.cantidad);
@@ -239,7 +238,7 @@ router.post("/guardarActividad/:id", async (req, res) => {
           }
         })
       }
-    }
+    }}
     if (antiguo) {
       // Delete the old activity
       await prisma.detalle_obra.deleteMany({
@@ -255,7 +254,7 @@ router.post("/guardarActividad/:id", async (req, res) => {
           ]
         }
       });
-      await prisma.actividades_materiales.deleteMany({
+      await prisma.actividades_materiales.updateMany({
         where: {
           AND: [
             {
@@ -266,6 +265,8 @@ router.post("/guardarActividad/:id", async (req, res) => {
               idObra: parseInt(req.params.id)
             }
           ]
+        },data:{
+          actividad:actividad
         }
       })
       await prisma.actividades_empleados.deleteMany({
@@ -294,6 +295,7 @@ router.post("/guardarActividad/:id", async (req, res) => {
       }
     });
 
+    if(materiales.length!=0){
     for (const material of materiales) {
       await prisma.actividades_materiales.createMany({
         data: {
@@ -303,7 +305,7 @@ router.post("/guardarActividad/:id", async (req, res) => {
           idObra: parseInt(req.params.id)
         }
       })
-    }
+    }}
     for (const empleado of empleados) {
       const meps = await prisma.actividades_empleados.createMany({
         data: {
