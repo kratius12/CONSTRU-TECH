@@ -108,6 +108,8 @@ const ObraDetalle = () => {
     const handleShowGantt = () => {
         showGantt ? setShowGantt(false) : setShowGantt(true)
 
+
+
     };
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -792,7 +794,6 @@ const ObraDetalle = () => {
                                                 Cancelar
                                             </Button>
 
-
                                             <Button color="primary" onClick={() => {handleGuardarMateriales()}}>
                                                 Guardar Materiales
                                             </Button>
@@ -812,6 +813,7 @@ const ObraDetalle = () => {
                                                     Cambiar vista <i className="fa-solid fa-retweet  "></i>
                                                 </a>
                                             </div>
+
                                             {!showGantt ? (
                                                 <div className="col-md-3 mb-3">
 
@@ -825,6 +827,7 @@ const ObraDetalle = () => {
                                                 </div>
                                             ) : null
                                             }
+
 
                                         </div>
                                         <div className="row">
@@ -913,6 +916,7 @@ const ObraDetalle = () => {
                                                                 </button>
                                                             </>
                                                         ) : null}
+
                                                     </div>
 
                                                 </div>
