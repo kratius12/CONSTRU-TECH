@@ -47,18 +47,17 @@ const obraSchemaEdit = Yup.object().shape({
     fechafinObraAjustada.setDate(fechafinObraAjustada.getDate() + 1);
   
     return Yup.object().shape({
-      actividad: Yup.string().required('La actividad es obligatoria'),
+      actividad: Yup.string().required('La actividad es obligatoria').min(3, "La actividad debe contener al menos 3 caracteres").max(60, "La actividad debe contener maximo 60 caracteres"),
       fechaini: Yup.date()
         .min(fechainiObraAjustada, 'La fecha de inicio de la actividad no puede ser anterior a la fecha de inicio del proyecto')
         // .max(fechafinObraAjustada, 'La fecha de inicio de la actividad no puede ser posterior a la fecha de finalización del proyecto')
         .required('La fecha de inicio de la actividad es obligatoria'),
   
-      // fechafin: Yup.date()
-      //   .min(Yup.ref('fechaini'), 'La fecha de finalización de la actividad no puede ser anterior a la fecha de inicio de la actividad')
-      //   .max(fechafinObraAjustada, 'La fecha de finalización de la actividad no puede ser posterior a la fecha de finalización del proyecto')
-      //   .required('La fecha de finalización de la actividad es obligatoria'),
-      //   empleados: Yup.array().min(1, 'Seleccione al menos un empleado'),
-      estado: Yup.string().required('El estado es obligatorio'),
+      fechafin: Yup.number()
+        .min(1, "Los dias estimados no pueden ser ingeriores ni iguales a 0")
+        .required('Los dias estimados de finalización de la actividad son requeridos'),
+        empleados: Yup.array().min(1, 'Seleccione al menos un empleado'),
+      // estado: Yup.string().required('El estado es obligatorio'),
     });
   };
   

@@ -25,7 +25,7 @@ const ObrasForm = () => {
     idEmp: '',
     area: '',
     fechaini: '',
-    fechafin: '',
+    fechafin: '16/04/2024',
     precio: '',
     descripcion: '',
     estado:"",
@@ -51,10 +51,10 @@ const ObrasForm = () => {
 
 
   useEffect(() => {
-    fetchData("http://localhost:4000/clientes").then((data) => {
+    fetchData("https://apismovilconstru.onrender.com/clientes").then((data) => {
       setCliente(data);
     });
-    fetchData("http://localhost:4000/empleadosAct").then((data) => {
+    fetchData("https://apismovilconstru.onrender.com/empleadosAct").then((data) => {
       setAsesores(data)
     });  
   }, []);

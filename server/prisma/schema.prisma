@@ -193,7 +193,7 @@ model codigos {
 
 model actividades_empleados {
   id        Int      @id @default(autoincrement())
-  actividad String   @db.VarChar(22)
+  actividad String   @db.VarChar(60)
   idEmp     Int
   idObra    Int
   empleado  empleado @relation(fields: [idEmp], references: [idEmp], onUpdate: Restrict, map: "actividades_empleados_ibfk_1")
@@ -205,7 +205,7 @@ model actividades_empleados {
 
 model actividades_materiales {
   id         Int        @id @default(autoincrement())
-  actividad  String     @db.VarChar(22)
+  actividad  String     @db.VarChar(60)
   idMat      Int
   cantidad   Int
   idObra     Int

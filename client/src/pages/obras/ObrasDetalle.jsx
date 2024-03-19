@@ -28,12 +28,12 @@ const fetchMaterial = async (url) => {
         return responseMat.data.map((item) => ({
             value: item.idMat,
             label: item.nombre,
+            cantidad: item.cantidad
         }))
     } catch (error) {
         console.error("Error fetching materiales:", error);
     }
 }
-
 
 const fetchEmpleados = async (url) => {
     try {
@@ -48,9 +48,8 @@ const fetchEmpleados = async (url) => {
     }
 };
 
-
 const ObraDetalle = () => {
-    const { createActividad, updateObra, searchAct } = useObras()
+    const { createActividad, updateObra } = useObras()
     const { id } = useParams()
     const [searchTerm, setSearchTerm] = useState('');
     const params = useParams()
@@ -70,31 +69,32 @@ const ObraDetalle = () => {
     const [showGantt, setShowGantt] = useState(true)
     const [actividadesLocales, setActividadesLocales] = useState([]);
 
-
-
     const handleAgregarActividad = (activity) => {
         if (activity.detalleObra) {
             setSelectedActivity(activity);
         } else {
             setSelectedActivity(null)
+
         }
         setMatDefault([]);
         setEmpDefault([]);
         setModalVisible(true);
-
+        var fecha
         if (activity.detalleObra) {
             const initialEmployees = activity.empleados.map((employee) => ({
                 value: employee.empleado.idEmp,
                 label: employee.empleado.nombre,
             }));
             setEmpDefault(initialEmployees);
+            const fechainiActividad = activity.detalleObra.fechaini;
+            const fechafinActividad = new Date(fechainiActividad);
+            fecha = fechafinActividad.setDate(fechafinActividad.getDate() + parseInt(activity.detalleObra.fechafin, 10) + 1);
         } else if (!activity.actividad) {
             setMatDefault([]);
             setEmpDefault([]);
         }
-        const fechainiActividad = activity.detalleObra.fechaini;
-        const fechafinActividad = new Date(fechainiActividad);
-        const fecha = fechafinActividad.setDate(fechafinActividad.getDate() + parseInt(activity.detalleObra.fechafin, 10) + 1);
+        setMaterialesList([])
+        calcularFechaMaxima()
 
         setActividadesLocales([...actividadesLocales, { ...activity, fechafinActividad: fecha }]);
 
@@ -108,11 +108,9 @@ const ObraDetalle = () => {
     const handleShowGantt = () => {
         showGantt ? setShowGantt(false) : setShowGantt(true)
 
-    };
 
-    const handleCerrarGantt = () => {
-        setShowGantt(false)
-    }
+
+    };
 
     const [currentPage, setCurrentPage] = useState(1);
     const activitiesPerPage = 4;
@@ -122,40 +120,29 @@ const ObraDetalle = () => {
         }
         setCurrentPage(pageNumber);
     };
-    const filteredActivities = actividades.filter((detalle) => {
-        // Filtra por el término de búsqueda en todas las propiedades del detalle
-        const detalleValues = Object.values(detalle);
+    const filteredActivities = actividades.filter((actividad) =>
+        actividad.detalleObra.actividad.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        actividad.empleados.some((empleado) =>
+            empleado.empleado.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+        ) ||
+        actividad.materiales.some((material) =>
+            material.materiales.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+        ) ||
+        actividad.detalleObra.estado.toLowerCase().includes(searchTerm.toLowerCase())
+    ).sort((a, b) => {
+        // Ordena por el estado "En curso" primero
+        const estadoA = a.estado;
+        const estadoB = b.estado;
 
-        // Filtra por el nombre de los materiales y empleados
-        const materialesYEmpleados = detalleValues.reduce((acc, value) => {
-            if (Array.isArray(value)) {
-                // Si el valor es un array, asume que son materiales o empleados y extrae los nombres
-                const nombres = value.map(item => item.nombre); // Ajusta según la estructura de tus materiales y empleados
-                acc = [...acc, ...nombres];
-            } else if (typeof value === 'object' && value !== null) {
-                // Si el valor es un objeto, asume que es un material o un empleado y extrae el nombre
-                acc.push(value.nombre); // Ajusta según la estructura de tus materiales y empleados
-            }
-            return acc;
-        }, []);
-
-        return [...detalleValues, ...materialesYEmpleados].some((value) =>
-            value.toString().includes(searchTerm)
-        );
-    })
-        .sort((a, b) => {
-            // Ordena por el estado "En curso" primero
-            const estadoA = a.estado;
-            const estadoB = b.estado;
-
-            if (estadoA === "en curso" && estadoB !== "en curso") {
-                return -1;
-            } else if (estadoA !== "en curso" && estadoB === "en curso") {
-                return 1;
-            } else {
-                return 0;
-            }
-        });
+        if (estadoA === "En curso" && estadoB !== "En curso") {
+            return -1;
+        } else if (estadoA !== "En curso" && estadoB === "En curso") {
+            return 1;
+        } else {
+            return 0;
+        }
+    });
+    const [cantidadDisponible, setCantidadDisponible] = useState(0);
     const indexOfLastActivity = currentPage * activitiesPerPage;
     const indexOfFirstActivity = indexOfLastActivity - activitiesPerPage;
     const currentActivities = filteredActivities.slice(indexOfFirstActivity, indexOfLastActivity);
@@ -163,7 +150,7 @@ const ObraDetalle = () => {
     const [values, setValues] = useState([])
     const alertConfirmAct = async () => {
         try {
-            const updatedActividades = await fetchData(`http://localhost:4000/actividades/${params.id}`);
+            const updatedActividades = await fetchData(`https://apismovilconstru.onrender.com/actividades/${params.id}`);
             setActividades(updatedActividades);
             $.confirm({
                 title: `Actividad guardada con éxito!`,
@@ -197,6 +184,7 @@ const ObraDetalle = () => {
         const nuevosMateriales = [...materialesList];
         nuevosMateriales[index].cantidad = nuevaCantidad;
         setMaterialesList(nuevosMateriales);
+
     };
 
     const [actividadActual, setActividadActual] = useState(null);
@@ -204,6 +192,7 @@ const ObraDetalle = () => {
         setModalVisible(false);
         setMatDefault([]);
         setEmpDefault([]);
+        setMaterialesList([])
     };
     const alertConfirm = () => {
         var message = ""
@@ -235,9 +224,12 @@ const ObraDetalle = () => {
         setCurrentPage(1);
     };
     const [modalMaterialesVisible, setModalMaterialesVisible] = useState(false);
-    const handleAbrirModalMateriales = (actividad) => {
+    const handleAbrirModalMateriales = async (actividad) => {
+        const materialesData = await fetchMaterial("https://apismovilconstru.onrender.com/materialesAc");
+        setMateriales(materialesData);
+
         setActividadActual(actividad);
-        setMaterialesList(actividad.materiales || []); // Asegúrate de que actividad.materiales sea un array
+        setMaterialesList([]);
         setModalMaterialesVisible(true);
     };
     const calcularFechaFinEstimada = (fechaInicio, dias) => {
@@ -255,6 +247,7 @@ const ObraDetalle = () => {
 
     const handleCerrarModalMateriales = () => {
         setModalMaterialesVisible(false);
+
     };
 
     // console.clear()
@@ -263,56 +256,35 @@ const ObraDetalle = () => {
     useEffect(() => {
         const fetchObraDetalle = async () => {
             try {
-                const response = await axios.get(`http://localhost:4000/obra/${id}`);
+                const response = await axios.get(`https://apismovilconstru.onrender.com/obra/${id}`);
                 setObra(response.data)
             } catch (error) {
                 console.error("Ocurrio un error al obtener la información de la obra")
             }
         }
         const loadMaterialesEmpleados = async () => {
-            const materialesData = await fetchMaterial("http://localhost:4000/materialesAc");
-            const empleadosData = await fetchEmpleados("http://localhost:4000/empleadosAct");
-            setMateriales(materialesData);
+            const empleadosData = await fetchEmpleados("https://apismovilconstru.onrender.com/empleadosAct");
             setEmpleados(empleadosData);
         };
-        fetchEmpleados(`http://localhost:4000/actividades/${params.id}`).then((data) => {
+        fetchEmpleados(`https://apismovilconstru.onrender.com/actividades/${params.id}`).then((data) => {
             setEmpDefault(data);
         });
 
-        fetchMaterial(`http://localhost:4000/actividades/${params.id}`).then((data) => {
+        fetchMaterial(`https://apismovilconstru.onrender.com/actividades/${params.id}`).then((data) => {
             setMatDefault(data);
         });
 
-        fetchData("http://localhost:4000/clientes").then((data) => {
+        fetchData("https://apismovilconstru.onrender.com/clientes").then((data) => {
             setCliente(data);
         });
-        fetchData(`http://localhost:4000/actividades/${params.id}`).then((data) => {
+        fetchData(`https://apismovilconstru.onrender.com/actividades/${params.id}`).then((data) => {
             setActividades(data)
         })
 
-        fetchData("http://localhost:4000/empleadosAct").then((data) => {
+        fetchData("https://apismovilconstru.onrender.com/empleadosAct").then((data) => {
             setAsesores(data)
         });
-        const calcularFechaMaxima = () => {
 
-            var fechafin = null;
-
-            var fechaini = null
-
-            actividades.forEach((detalle) => {
-                const fechainicio = detalle.detalleObra.fechaini
-                const fechaFinDetalle = detalle.detalleObra.fechafin;
-                // Verifica si la fecha actual es posterior a la fecha máxima almacenada
-                if (!fechafin || fechaFinDetalle > fechafin) {
-                    fechafin = fechaFinDetalle;
-                    fechaini = fechainicio
-                }
-            });
-            const inicio = new Date(fechaini)
-            const fechafinMaxima = new Date(inicio.getTime() + (fechafin * 24 * 60 * 60 * 1000))
-            const fechaMaximaFormateada = format(fechafinMaxima, 'dd/MM/yyyy');
-            setFechaMaxima(fechaMaximaFormateada)
-        }
 
 
         const activityDescriptions = actividades.map((activity) => activity.actividad);
@@ -330,41 +302,59 @@ const ObraDetalle = () => {
         updatedList.splice(index, 1);
         setMaterialesList(updatedList);
     };
+    const calcularFechaMaxima = () => {
 
+        var fechafin = null;
 
-    const handleGuardarMateriales = () => {
-        const newMaterialErrors = {};
+        var fechaini = null
 
-        materialesList.forEach((material, index) => {
-            if (material.cantidad < 0) {
-                newMaterialErrors[index] = { ...newMaterialErrors[index], cantidad: "La cantidad no puede ser un número negativo" };
-            } else if (material.cantidad === 0) {
-                newMaterialErrors[index] = { ...newMaterialErrors[index], cantidad: "La cantidad no puede ser 0" };
+        actividades.forEach((detalle) => {
+            const fechainicio = detalle.detalleObra.fechaini
+            const fechaFinDetalle = detalle.detalleObra.fechafin;
+            // Verifica si la fecha actual es posterior a la fecha máxima almacenada
+            if (!fechafin || fechaFinDetalle > fechafin) {
+                fechafin = fechaFinDetalle;
+                fechaini = fechainicio
             }
-
-            if (!material.material) {
-                newMaterialErrors[index] = { ...newMaterialErrors[index], material: "Debe seleccionar un material" };
-            }
-
-            // Agregar otras validaciones según tus requisitos
         });
+        const inicio = new Date(fechaini)
+        const fechafinMaxima = new Date(inicio.getTime() + (fechafin * 24 * 60 * 60 * 1000))
+        const fechaMaximaFormateada = format(fechafinMaxima, 'dd/MM/yyyy');
+        setFechaMaxima(fechaMaximaFormateada)
+    }
 
-        // Muestra los errores debajo de cada campo
-        setMaterialErrors(newMaterialErrors);
 
-        // Muestra el mensaje de error general de la modal si hay algún error
-        setModalError(Object.keys(newMaterialErrors).length > 0);
-        // Si no hay errores, cierra la modal
-        if (Object.keys(newMaterialErrors).length === 0) {
-            handleCerrarModalMateriales();
-        }
+    const handleGuardarMateriales = async () => {
+        const newMaterialErrors = [];
+        const materialesData = await fetchMaterial("https://apismovilconstru.onrender.com/materialesAc");
+        setMateriales(materialesData);
+        setCantidadDisponible(materialesData.cantidad);
+        materialesList.forEach((material, index) => {       
+                if (material.material) {
+                    if (material.cantidad < 0) {
+                        newMaterialErrors[index] = { ...newMaterialErrors[index], cantidad: "La cantidad no puede ser un número negativo" };
+                    } 
+                  
+                    if (material.material.cantidad < material.cantidad) {
+                        newMaterialErrors[index] = { ...newMaterialErrors[index], cantidad: `El material seleccionado tiene solo ${material.material.cantidad} unidades y usted está ingresando ${material.cantidad}` };
+                    } if(material.cantidad == 0){
+                        newMaterialErrors[index] = {...newMaterialErrors[index], cantidad: "La cantidad ingresada no puede ser 0"}
+                    }
+                }else if(!material.material){
+                    newMaterialErrors[index] = {...newMaterialErrors[index], material:"Debe seleccionar un material"}
+                }else{
+                    handleCerrarModalMateriales()
+                }
+            
+        });
+        if(newMaterialErrors.length==0){
+            handleCerrarModalMateriales()
+            setMaterialErrors([])
+        }else{setMaterialErrors(newMaterialErrors);}
     };
 
-    const [selectedMaterials, setSelectedMaterials] = useState([]);
-
-
     if (!obra) {
-        return <div>Error al cargar la información de la obra</div>
+        return <div><h3>Cargando la información de la obra...</h3></div>
     }
     const resetForm = () => {
         const initialValues = {
@@ -384,6 +374,8 @@ const ObraDetalle = () => {
                 initialValues={obra}
                 enableReinitialize={true}
                 validationSchema={obraSchemaEdit}
+                validateOnChange={true}
+                validateOnBlur={false}
                 onSubmit={(values) => {
                     updateObra(id, values)
                     alertConfirm("update")
@@ -458,7 +450,7 @@ const ObraDetalle = () => {
                                             name="fechafin"
                                             label="Fecha Fin"
                                             className="form-control form-control-user"
-                                            value={ values.fechafin = fechaMaxima }
+                                            value={values.fechafin = fechaMaxima}
                                             onChange={handleChange}
 
                                         />
@@ -535,64 +527,96 @@ const ObraDetalle = () => {
                                                 }}
                                                 validationSchema={actividadSchema({
                                                     fechainiObra: new Date(obra.fechaini),
-                                                    fechafinObra: new Date(obra.fechafin),
                                                     ...values
                                                 })}
                                                 onSubmit={async (values, { setSubmitting }) => {
+                                                    // Verificar si ya existe una actividad con la misma descripción
+                                                    const existingActivity = actividades.find(activity => activity.detalleObra.actividad.toLowerCase() === values.actividad.toLowerCase());
+                                                    const activityChanged = selectedActivity && selectedActivity.detalleObra.actividad.toLowerCase() !== values.actividad.toLowerCase();
 
-                                                    const formattedShare = {
-                                                        ...values,
-                                                        antiguo: selectedActivity ? selectedActivity.detalleObra.actividad : null,
-                                                        materiales: materialesList
-                                                    };
-                                                    for (const actividad of actividades) {
-                                                        if (actividad.actividad === values.actividad && !selectedActivity) {
-                                                            $.confirm({
-                                                                title: `Error`,
-                                                                content: `La actividad ${actividad.actividad} ya exite para esta obra`,
-                                                                icon: 'fa fa-circle-xmark',
-                                                                theme: 'modern',
-                                                                closeIcon: true,
-                                                                animation: 'zoom',
-                                                                closeAnimation: 'scale',
-                                                                animationSpeed: 500,
-                                                                type: 'red',
-                                                                columnClass: 'col-md-6 col-md-offset-3',
-                                                                buttons: {
-                                                                    Cerrar: function () {
-                                                                    },
-                                                                }
-                                                            })
-                                                            setSubmitting(false)
-                                                            return
-                                                        } else if (actividad.actividad == values.actividad && selectedActivity.detalleObra.actividad != values.actividad) {
-                                                            $.confirm({
-                                                                title: `Error`,
-                                                                content: `La actividad ${values.actividad} ya exite para esta obra other`,
-                                                                icon: 'fa fa-circle-xmark',
-                                                                theme: 'modern',
-                                                                closeIcon: true,
-                                                                animation: 'zoom',
-                                                                closeAnimation: 'scale',
-                                                                animationSpeed: 500,
-                                                                type: 'red',
-                                                                columnClass: 'col-md-6 col-md-offset-3',
-                                                                buttons: {
-                                                                    Cerrar: function () {
-                                                                    },
-                                                                }
-                                                            })
-                                                            setSubmitting(false)
-                                                            return
-                                                        } else {
-                                                            setSubmitting(true)
-                                                        }
+                                                    if (existingActivity && activityChanged) {
+                                                        $.confirm({
+                                                            title: `Error`,
+                                                            content: `La actividad ya existe para esta obra`,
+                                                            icon: 'fa fa-circle-xmark',
+                                                            theme: 'modern',
+                                                            closeIcon: true,
+                                                            animation: 'zoom',
+                                                            closeAnimation: 'scale',
+                                                            animationSpeed: 500,
+                                                            type: 'red',
+                                                            columnClass: 'col-md-6 col-md-offset-3',
+                                                            buttons: {
+                                                                Cerrar: function () {
+                                                                },
+                                                            }
+                                                        });
+                                                        setSubmitting(false);
+                                                        return;
                                                     }
-                                                    setSubmitting(true);
-                                                    await createActividad(id, formattedShare);
-                                                    alertConfirmAct();
-                                                    setModalVisible(false);
+                                                    else if (existingActivity && !selectedActivity) {
+                                                        // Mostrar alerta si la actividad ya existe
+                                                        $.confirm({
+                                                            title: `Error`,
+                                                            content: `La actividad ya existe para esta obra`,
+                                                            icon: 'fa fa-circle-xmark',
+                                                            theme: 'modern',
+                                                            closeIcon: true,
+                                                            animation: 'zoom',
+                                                            closeAnimation: 'scale',
+                                                            animationSpeed: 500,
+                                                            type: 'red',
+                                                            columnClass: 'col-md-6 col-md-offset-3',
+                                                            buttons: {
+                                                                Cerrar: function () {
+                                                                },
+                                                            }
+                                                        });
+                                                        setSubmitting(false);
+                                                        return;
+                                                    } else if (materialesList.length === 0 && !selectedActivity) {
+                                                        $.confirm({
+                                                            title: `Error`,
+                                                            content: `Si está agregando una actividad es requerido seleccionar al menos un material`,
+                                                            icon: 'fa fa-circle-xmark',
+                                                            theme: 'modern',
+                                                            closeIcon: true,
+                                                            animation: 'zoom',
+                                                            closeAnimation: 'scale',
+                                                            animationSpeed: 500,
+                                                            type: 'red',
+                                                            columnClass: 'col-md-6 col-md-offset-3',
+                                                            buttons: {
+                                                                Cerrar: function () {
+                                                                },
+                                                            }
+                                                        }), setSubmitting(false);
+                                                        return;
+                                                    }
+                                                    else {
+                                                        var estado;
+                                                        if (selectedActivity) {
+                                                            estado = values.estado
+                                                        } else {
+                                                            estado = "En curso"
+                                                        }
+
+                                                        setSubmitting(true);
+                                                        const formattedShare = {
+                                                            ...values,
+                                                            estado: estado,
+                                                            antiguo: selectedActivity ? selectedActivity.detalleObra.actividad : null,
+                                                            materiales: materialesList
+                                                        };
+
+                                                        setSubmitting(true)
+                                                        await createActividad(id, formattedShare);
+                                                        alertConfirmAct();
+                                                        setModalVisible(false);
+                                                        setMaterialErrors([])
+                                                    }
                                                 }}
+
                                             >
                                                 {({ values, setFieldValue, handleSubmit, setFieldTouched, errors, touched, handleChange }) => (
                                                     <Form
@@ -659,12 +683,20 @@ const ObraDetalle = () => {
 
                                                         <div className="mt-3">
                                                             <label htmlFor="estado">Seleccione el estado de la actividad</label>
-                                                            <select name="estado" id="estado" className="form-select form-control" value={values.estado} onChange={handleChange}>
-                                                                <option value="">Seleccione el estado de la actividad</option>
-                                                                <option value="En curso">En curso</option>
-                                                                <option value="En revisión">En revisión</option>
-                                                                <option value="Terminada">Terminada</option>
-                                                            </select>
+                                                            {
+                                                                !selectedActivity ? (
+                                                                    <select name="estado" id="estado" className="form-select form-control" value={values.estado} onChange={handleChange} disabled defaultValue={"En curso"}>
+                                                                        <option value="En curso">En curso</option>
+                                                                        <option value="En revisión">En revisión</option>
+                                                                        <option value="Terminada">Terminada</option>
+                                                                    </select>
+                                                                ) : <select name="estado" id="estado" className="form-select form-control" value={values.estado} onChange={handleChange}>
+                                                                    <option value="">Seleccione el estado de la actividad</option>
+                                                                    <option value="En curso">En curso</option>
+                                                                    <option value="En revisión">En revisión</option>
+                                                                    <option value="Terminada">Terminada</option>
+                                                                </select>
+                                                            }
                                                             {
                                                                 errors.estado && touched.estado ? (
                                                                     <div className="alert alert-danger" role="alert">
@@ -704,29 +736,33 @@ const ObraDetalle = () => {
 
                                         </ModalBody>
                                     </Modal>
-                                    <Modal isOpen={modalMaterialesVisible} toggle={() => setModalMaterialesVisible(!modalMaterialesVisible)}>
+                                    
+                                    <Modal isOpen={modalMaterialesVisible} toggle={() => setModalMaterialesVisible(!modalMaterialesVisible)}                                   
+                                    >
                                         <ModalHeader toggle={() => setModalMaterialesVisible(!modalMaterialesVisible)}>Gestionar Materiales</ModalHeader>
                                         <ModalBody>
 
                                             {materialesList.map((material, index) => (
                                                 <Form key={index}>
                                                     <div className="container" key={index}>
+                                                        <label htmlFor="">Seleccione un material:</label>
                                                         <Select
                                                             id={`materiales.${index}`}
                                                             name={`materiales.${index}`}
                                                             options={materiales}
-                                                            defaultValue={selectedMaterials[index]}
                                                             value={materialesList[index].material}
                                                             onChange={(selectedMaterial) => handleMaterialChange(index, selectedMaterial)}
                                                         />
+
                                                         {materialErrors[index] && materialErrors[index].material && (
                                                             <div className="alert alert-danger mt-2" role="alert">
                                                                 {materialErrors[index].material}
                                                             </div>
                                                         )}
+                                                        <label className="mt-3">Ingrese la cantidad necesaria</label>
                                                         <input
                                                             type="number"
-                                                            className="form-control mt-3"
+                                                            className="form-control"
                                                             name={`cantidad-${index}`}
                                                             value={material.cantidad}
                                                             onChange={(e) => handleCantidadChange(index, e.target.value)}
@@ -741,18 +777,12 @@ const ObraDetalle = () => {
                                                             <Button color="danger" onClick={() => handleEliminarMaterial(index)}>
                                                                 X
                                                             </Button>
-                                                            <p>Cantidad actual: {material.cantidad}</p>
                                                         </div>
                                                     </div>
                                                     <hr className="mt-3" />
                                                 </Form>
                                             ))}
 
-                                            {modalError && (
-                                                <div className="alert alert-danger mt-2" role="alert">
-                                                    Mensaje de error general de la modal.
-                                                </div>
-                                            )}
 
                                             <Button color="success" onClick={handleAgregarMaterial}>
                                                 Agregar Material
@@ -764,8 +794,7 @@ const ObraDetalle = () => {
                                                 Cancelar
                                             </Button>
 
-
-                                            <Button color="primary" onClick={() => handleGuardarMateriales()}>
+                                            <Button color="primary" onClick={() => {handleGuardarMateriales()}}>
                                                 Guardar Materiales
                                             </Button>
 
@@ -776,12 +805,30 @@ const ObraDetalle = () => {
                                         <div className="row">
                                             <div className="col-md-6 mb-3">
                                                 <h3 className="text-center w-100">Actividades</h3>
+
+
                                             </div>
                                             <div className="col-md-3 mb-3">
                                                 <a className="btn btn-secondary " onClick={handleShowGantt}>
                                                     Cambiar vista <i className="fa-solid fa-retweet  "></i>
                                                 </a>
                                             </div>
+
+                                            {!showGantt ? (
+                                                <div className="col-md-3 mb-3">
+
+                                                    <input
+                                                        type="text"
+                                                        className="form-control"
+                                                        placeholder="Buscar actividad"
+                                                        value={searchTerm}
+                                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                                    />
+                                                </div>
+                                            ) : null
+                                            }
+
+
                                         </div>
                                         <div className="row">
                                             {showGantt ? (
@@ -839,7 +886,7 @@ const ObraDetalle = () => {
                                             <div className="container">
                                                 <div className="row">
                                                     <div className="pagination col-md-1 mt-3 mx-auto">
-                                                        {totalPages > 1 &&  showGantt == false ?(
+                                                        {totalPages > 1 && showGantt == false ? (
                                                             <>
                                                                 <button
                                                                     type="button"
@@ -868,7 +915,8 @@ const ObraDetalle = () => {
                                                                     Siguiente
                                                                 </button>
                                                             </>
-                                                        ):null}
+                                                        ) : null}
+
                                                     </div>
 
                                                 </div>

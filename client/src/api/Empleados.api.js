@@ -1,35 +1,35 @@
 import axios from "axios";
 
 export const GetEmpleadosRequest = async () =>{
-    return await axios.get('http://localhost:4000/empleados')
+    return await axios.get('https://apismovilconstru.onrender.com/empleados')
 }
 
 export const GetEmpleadosEspecialidadesRequest = async () =>{
-    return await axios.get('http://localhost:4000/empleadosEsp')
+    return await axios.get('https://apismovilconstru.onrender.com/empleadosEsp')
 }
 
 export const GetEspecialidadesRequest = async () =>{
-    return await axios.get('http://localhost:4000/especialidades')
+    return await axios.get('https://apismovilconstru.onrender.com/especialidades')
 }
 
 export const CreateEspecialidadesRequest = async (especialidad) =>{
-    return await axios.post('http://localhost:4000/especialidades', especialidad)
+    return await axios.post('https://apismovilconstru.onrender.com/especialidades', especialidad)
 }
 
 export const CreateEmpleadoRequest = async (empleado) => {
-    return await axios.post('http://localhost:4000/empleados', empleado)
+    return await axios.post('https://apismovilconstru.onrender.com/empleados', empleado)
 }
 
 export const DeleteEmpleadoRequest = async (idEmp) =>{
-    return await axios.delete(`http://localhost:4000/empleado/${idEmp}`)
+    return await axios.delete(`https://apismovilconstru.onrender.com/empleado/${idEmp}`)
 }
 
 export const GetEmpleadoRequest = async (idEmp) => {
-    return await axios.get(`http://localhost:4000/empleado/${idEmp}`)
+    return await axios.get(`https://apismovilconstru.onrender.com/empleado/${idEmp}`)
 }
 
 export const UpdateEmpleadoRequest = async (idEmp, newFields) =>{
-    return await axios.put(`http://localhost:4000/empleado/${idEmp}`, newFields)
+    return await axios.put(`https://apismovilconstru.onrender.com/empleado/${idEmp}`, newFields)
 }
 
 export const ToggleEmpleadoStatusRequest = async (idEmp, status) =>{
