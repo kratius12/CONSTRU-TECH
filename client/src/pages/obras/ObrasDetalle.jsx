@@ -148,7 +148,7 @@ const ObraDetalle = () => {
     const [values, setValues] = useState([])
     const alertConfirmAct = async () => {
         try {
-            const updatedActividades = await fetchData(`http://localhost:4000/actividades/${params.id}`);
+            const updatedActividades = await fetchData(`https://apismovilconstru.onrender.com/actividades/${params.id}`);
             setActividades(updatedActividades);
             $.confirm({
                 title: `Actividad guardada con éxito!`,
@@ -223,7 +223,7 @@ const ObraDetalle = () => {
     };
     const [modalMaterialesVisible, setModalMaterialesVisible] = useState(false);
     const handleAbrirModalMateriales = async (actividad) => {
-        const materialesData = await fetchMaterial("http://localhost:4000/materialesAc");
+        const materialesData = await fetchMaterial("https://apismovilconstru.onrender.com/materialesAc");
         setMateriales(materialesData);
 
         setActividadActual(actividad);
@@ -254,32 +254,32 @@ const ObraDetalle = () => {
     useEffect(() => {
         const fetchObraDetalle = async () => {
             try {
-                const response = await axios.get(`http://localhost:4000/obra/${id}`);
+                const response = await axios.get(`https://apismovilconstru.onrender.com/obra/${id}`);
                 setObra(response.data)
             } catch (error) {
                 console.error("Ocurrio un error al obtener la información de la obra")
             }
         }
         const loadMaterialesEmpleados = async () => {
-            const empleadosData = await fetchEmpleados("http://localhost:4000/empleadosAct");
+            const empleadosData = await fetchEmpleados("https://apismovilconstru.onrender.com/empleadosAct");
             setEmpleados(empleadosData);
         };
-        fetchEmpleados(`http://localhost:4000/actividades/${params.id}`).then((data) => {
+        fetchEmpleados(`https://apismovilconstru.onrender.com/actividades/${params.id}`).then((data) => {
             setEmpDefault(data);
         });
 
-        fetchMaterial(`http://localhost:4000/actividades/${params.id}`).then((data) => {
+        fetchMaterial(`https://apismovilconstru.onrender.com/actividades/${params.id}`).then((data) => {
             setMatDefault(data);
         });
 
-        fetchData("http://localhost:4000/clientes").then((data) => {
+        fetchData("https://apismovilconstru.onrender.com/clientes").then((data) => {
             setCliente(data);
         });
-        fetchData(`http://localhost:4000/actividades/${params.id}`).then((data) => {
+        fetchData(`https://apismovilconstru.onrender.com/actividades/${params.id}`).then((data) => {
             setActividades(data)
         })
 
-        fetchData("http://localhost:4000/empleadosAct").then((data) => {
+        fetchData("https://apismovilconstru.onrender.com/empleadosAct").then((data) => {
             setAsesores(data)
         });
 
@@ -324,7 +324,7 @@ const ObraDetalle = () => {
 
     const handleGuardarMateriales = async () => {
         const newMaterialErrors = [];
-        const materialesData = await fetchMaterial("http://localhost:4000/materialesAc");
+        const materialesData = await fetchMaterial("https://apismovilconstru.onrender.com/materialesAc");
         setMateriales(materialesData);
         setCantidadDisponible(materialesData.cantidad);
         materialesList.forEach((material, index) => {       
