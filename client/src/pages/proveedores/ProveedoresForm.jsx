@@ -219,7 +219,7 @@ export default function ProveedoresForm() {
                           id="nit"
                           onChange={(e) =>{
                             handleChange(e)
-                            checkDoc(values.tipo, values.nit)
+                            checkDoc(values.tipo, e.target.value)
                             // params.id ? '' : checkDoc(values.tipo, e.target.value)
                           }}
                           value={values.nit}
