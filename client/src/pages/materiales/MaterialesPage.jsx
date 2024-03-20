@@ -23,6 +23,9 @@ function MaterialesPage() {
         {
             header: "Categoría",
             accessorKey: 'categoria.nombre',
+        },{
+            header: "Cantidad",
+            accessorKey: "cantidad"
         },
         {
             header:"Estado",
