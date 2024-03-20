@@ -89,13 +89,14 @@ const ObraDetalle = () => {
             const fechainiActividad = activity.detalleObra.fechaini;
             const fechafinActividad = new Date(fechainiActividad);
             fecha = fechafinActividad.setDate(fechafinActividad.getDate() + parseInt(activity.detalleObra.fechafin, 10) + 1);
+            calcularFechaMaxima()
         } else if (!activity.actividad) {
             setMatDefault([]);
             setEmpDefault([]);
+            calcularFechaMaxima()
         }
         setMaterialesList([])
         calcularFechaMaxima()
-
         setActividadesLocales([...actividadesLocales, { ...activity, fechafinActividad: fecha }]);
 
     };
@@ -108,8 +109,6 @@ const ObraDetalle = () => {
     const handleShowGantt = () => {
         showGantt ? setShowGantt(false) : setShowGantt(true)
 
-
-
     };
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -119,6 +118,7 @@ const ObraDetalle = () => {
             return;
         }
         setCurrentPage(pageNumber);
+        calcularFechaMaxima()
     };
     const filteredActivities = actividades.filter((actividad) =>
         actividad.detalleObra.actividad.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -231,23 +231,26 @@ const ObraDetalle = () => {
         setActividadActual(actividad);
         setMaterialesList([]);
         setModalMaterialesVisible(true);
+        calcularFechaMaxima()
     };
     const calcularFechaFinEstimada = (fechaInicio, dias) => {
         const fechaInicioActividad = new Date(fechaInicio);
         const fechaFinEstimada = new Date(fechaInicioActividad.getTime() + (dias * 24 * 60 * 60 * 1000));
         return fechaFinEstimada.toLocaleDateString(); // Puedes ajustar el formato según lo que necesites
+        calcularFechaMaxima()
     };
 
     const formatoFechaIni = (fechaInicio) => {
         const fechaInicioActividad = new Date(fechaInicio)
         return fechaInicioActividad.toLocaleDateString()
+        calcularFechaMaxima()
     }
 
 
 
     const handleCerrarModalMateriales = () => {
         setModalMaterialesVisible(false);
-
+        calcularFechaMaxima()
     };
 
     // console.clear()
@@ -291,7 +294,7 @@ const ObraDetalle = () => {
         setExistingActivities(activityDescriptions);
         loadMaterialesEmpleados()
         fetchObraDetalle()
-        calcularFechaMaxima()
+
     }, [id]);
     const [materialErrors, setMaterialErrors] = useState([]);
     const [modalError, setModalError] = useState(false);
@@ -301,8 +304,9 @@ const ObraDetalle = () => {
         const updatedList = [...materialesList];
         updatedList.splice(index, 1);
         setMaterialesList(updatedList);
+        calcularFechaMaxima()
     };
-    const calcularFechaMaxima = () => {
+    const calcularFechaMaxima = async () => {
 
         var fechafin = null;
 
@@ -321,6 +325,7 @@ const ObraDetalle = () => {
         const fechafinMaxima = new Date(inicio.getTime() + (fechafin * 24 * 60 * 60 * 1000))
         const fechaMaximaFormateada = format(fechafinMaxima, 'dd/MM/yyyy');
         setFechaMaxima(fechaMaximaFormateada)
+        await axios.put(`https://apismovilconstru.onrender.com/updateDate/${id}`, fechaMaxima)
     }
 
 
@@ -329,28 +334,29 @@ const ObraDetalle = () => {
         const materialesData = await fetchMaterial("https://apismovilconstru.onrender.com/materialesAc");
         setMateriales(materialesData);
         setCantidadDisponible(materialesData.cantidad);
-        materialesList.forEach((material, index) => {       
-                if (material.material) {
-                    if (material.cantidad < 0) {
-                        newMaterialErrors[index] = { ...newMaterialErrors[index], cantidad: "La cantidad no puede ser un número negativo" };
-                    } 
-                  
-                    if (material.material.cantidad < material.cantidad) {
-                        newMaterialErrors[index] = { ...newMaterialErrors[index], cantidad: `El material seleccionado tiene solo ${material.material.cantidad} unidades y usted está ingresando ${material.cantidad}` };
-                    } if(material.cantidad == 0){
-                        newMaterialErrors[index] = {...newMaterialErrors[index], cantidad: "La cantidad ingresada no puede ser 0"}
-                    }
-                }else if(!material.material){
-                    newMaterialErrors[index] = {...newMaterialErrors[index], material:"Debe seleccionar un material"}
-                }else{
-                    handleCerrarModalMateriales()
+        materialesList.forEach((material, index) => {
+            if (material.material) {
+                if (material.cantidad < 0) {
+                    newMaterialErrors[index] = { ...newMaterialErrors[index], cantidad: "La cantidad no puede ser un número negativo" };
                 }
-            
+
+                if (material.material.cantidad < material.cantidad) {
+                    newMaterialErrors[index] = { ...newMaterialErrors[index], cantidad: `El material seleccionado tiene solo ${material.material.cantidad} unidades y usted está ingresando ${material.cantidad}` };
+                } if (material.cantidad == 0) {
+                    newMaterialErrors[index] = { ...newMaterialErrors[index], cantidad: "La cantidad ingresada no puede ser 0" }
+                }
+            } else if (!material.material) {
+                newMaterialErrors[index] = { ...newMaterialErrors[index], material: "Debe seleccionar un material" }
+            } else {
+                handleCerrarModalMateriales()
+            }
+
         });
-        if(newMaterialErrors.length==0){
+        if (newMaterialErrors.length == 0) {
             handleCerrarModalMateriales()
             setMaterialErrors([])
-        }else{setMaterialErrors(newMaterialErrors);}
+            calcularFechaMaxima()
+        } else { setMaterialErrors(newMaterialErrors); }
     };
 
     if (!obra) {
@@ -376,10 +382,39 @@ const ObraDetalle = () => {
                 validationSchema={obraSchemaEdit}
                 validateOnChange={true}
                 validateOnBlur={false}
-                onSubmit={(values) => {
-                    updateObra(id, values)
-                    alertConfirm("update")
-                    navigate("/obras")
+                onSubmit={(values, {setSubmitting}) => {
+                    var is = false
+                    actividades.forEach((actividad)=>{
+                        if(actividad.detalleObra.estado != "Terminada"){
+                            is=true
+                            console.log(actividad.detalleObra.estado)
+                        }
+                    })
+                    if (values.estado == "Terminado" && is==true) {
+                        // Mostrar la alerta indicando que hay actividades pendientes
+                        $.confirm({
+                            title: `Error`,
+                            content: `No se puede cambiar el estado de la obra a "Terminado" mientras haya actividades en estado "En curso" o "En revisión".`,
+                            icon: 'fa fa-circle-xmark',
+                            theme: 'modern',
+                            closeIcon: true,
+                            animation: 'zoom',
+                            closeAnimation: 'scale',
+                            animationSpeed: 500,
+                            type: 'red',
+                            columnClass: 'col-md-6 col-md-offset-3',
+                            buttons: {
+                                Cerrar: function () {
+                                },
+                            }
+                        });
+                        setSubmitting(false)
+                    } else {
+                        setSubmitting(true)
+                        updateObra(id, values)
+                        alertConfirm("update")
+                        navigate("/obras")
+                    }
                 }}
             >
                 {({ values, isSubmitting, errors, touched, handleSubmit, handleChange }) => (
@@ -443,14 +478,14 @@ const ObraDetalle = () => {
                                         }
                                     </div>
                                     <div className='col-md-3 mt-3 mx-auto'>
-                                        <label htmlFor="fechafin">Seleccione la fecha de fin de la obra</label>
+                                        <label htmlFor="fechafin">Fecha de fin estimado de la obra</label>
                                         <input
                                             type="text"
                                             disabled
                                             name="fechafin"
                                             label="Fecha Fin"
                                             className="form-control form-control-user"
-                                            value={values.fechafin = fechaMaxima}
+                                            value={values.fechafin = fechaMaxima || values.fechafin}
                                             onChange={handleChange}
 
                                         />
@@ -613,7 +648,9 @@ const ObraDetalle = () => {
                                                         await createActividad(id, formattedShare);
                                                         alertConfirmAct();
                                                         setModalVisible(false);
-                                                        setMaterialErrors([])
+                                                        setMaterialErrors([]);
+                                                        calcularFechaMaxima(); // Llamada a la función calcularFechaMaxima() después de guardar la actividad
+
                                                     }
                                                 }}
 
@@ -736,8 +773,8 @@ const ObraDetalle = () => {
 
                                         </ModalBody>
                                     </Modal>
-                                    
-                                    <Modal isOpen={modalMaterialesVisible} toggle={() => setModalMaterialesVisible(!modalMaterialesVisible)}                                   
+
+                                    <Modal isOpen={modalMaterialesVisible} toggle={() => setModalMaterialesVisible(!modalMaterialesVisible)}
                                     >
                                         <ModalHeader toggle={() => setModalMaterialesVisible(!modalMaterialesVisible)}>Gestionar Materiales</ModalHeader>
                                         <ModalBody>
@@ -794,7 +831,7 @@ const ObraDetalle = () => {
                                                 Cancelar
                                             </Button>
 
-                                            <Button color="primary" onClick={() => {handleGuardarMateriales()}}>
+                                            <Button color="primary" onClick={() => { handleGuardarMateriales() }}>
                                                 Guardar Materiales
                                             </Button>
 
@@ -808,13 +845,17 @@ const ObraDetalle = () => {
 
 
                                             </div>
-                                            <div className="col-md-3 mb-3">
-                                                <a className="btn btn-secondary " onClick={handleShowGantt}>
-                                                    Cambiar vista <i className="fa-solid fa-retweet  "></i>
-                                                </a>
-                                            </div>
+                                            {window.innerWidth > 768 && (
+                                                <div className="col-md-3 mb-3">
+                                                    <a className="btn btn-secondary " onClick={handleShowGantt}>
+                                                        Cambiar vista <i className="fa-solid fa-retweet  "></i>
+                                                    </a>
+                                                </div>
 
-                                            {!showGantt ? (
+                                            )}
+
+
+                                            {!showGantt || window.innerWidth < 768 ? (
                                                 <div className="col-md-3 mb-3">
 
                                                     <input
@@ -831,7 +872,7 @@ const ObraDetalle = () => {
 
                                         </div>
                                         <div className="row">
-                                            {showGantt ? (
+                                            {showGantt && window.innerWidth > 768 ? (
                                                 <>
                                                     {actividades.length > 0 ? (
                                                         <>
@@ -939,8 +980,8 @@ const ObraDetalle = () => {
 
                             </div>
                             <div className="card-footer text-center">
-                                <div className="row">
-                                    <div className="col-md-6">
+                                <div className="row justify-content-center">
+                                    <div className="col-md-6 text-center">
                                         <button
                                             type="submit"
                                             disabled={isSubmitting}
@@ -952,20 +993,9 @@ const ObraDetalle = () => {
                                             <span className="text">Guardar</span>
                                         </button>
                                     </div>
-                                    <div className="col-md-6">
-                                        <a
-                                            type="button"
-                                            className="btn btn-danger btn-icon-split w-50"
-                                            onClick={() => navigate(`/obras`)}
-                                        >
-                                            <span className="text-white-50">
-                                                <i className="fa-solid fa-x"></i>
-                                            </span>
-                                            <span className="text">Regresar</span>
-                                        </a>
-                                    </div>
                                 </div>
                             </div>
+
                         </div>
                     </Form>
                 )}
