@@ -26,7 +26,6 @@ export default function ComprasTable({ compras }) {
                 <BTable striped bordered hover responsive size="sm">
                     <thead>
                         <tr>
-                            <th scope="col">ID</th>
                             <th scope="col">Fecha de compra</th>
                             <th scope="col">Total de la compra</th>
                             <th scope="col">Codigo de factura</th>
@@ -37,7 +36,6 @@ export default function ComprasTable({ compras }) {
                         {comprasData.map(({ idCom, fecha, total_compra, codigoFactura }) => {
                             return (
                                 <tr key={idCom}>
-                                    <td>{idCom}</td>
                                     <td>{fecha}</td>
                                     <td>${total_compra.toLocaleString()}</td>
                                     <td>{codigoFactura}</td>
