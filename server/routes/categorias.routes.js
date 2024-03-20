@@ -45,12 +45,11 @@ router.get("/categoria/:id", async (req, res) =>{
 
 router.post("/categorias", async (req, res) => {
     try {
-        const {nombre, estado, medida} = req.body
+        const {nombre, estado} = req.body
         const result = await prisma.categoria.create({
             data:{
                 nombre: ucfirst(nombre),
-                estado:1,
-                medida:medida
+                estado:1
             }
         })
         res.status(200).json(result)
@@ -116,5 +115,46 @@ router.put("/estadoCategoria/:id",async(req,res)=>{
     }
 })
 
+router.get("/checkCat/:nombre/:id", async (req, res) =>{
+    try {
+        if (parseInt(req.params.id) > 0) {
+            const result = await prisma.categoria.findFirst({
+                where:{
+                    nombre:{
+                        equals: req.params.nombre
+                    },
+                    idcat:{
+                        not: parseInt(req.params.id)
+                     }
+                },
+                select:{
+                nombre:true
+                }
+            })       
+            if (result) {
+                return res.status(203).json({message: 'La categoria ingresada ya existe'})                
+            }
+            return res.status(200).json({message: result})
+        }else{
+            const result = await prisma.categoria.findFirst({
+                where:{
+                    nombre:{
+                        equals: req.params.nombre
+                    }
+                },
+                select:{
+                    nombre:true
+                }
+            })       
+            if (result) {
+                return res.status(203).json({message: 'La categoria ingresada ya existe'})                
+            }
+            return res.status(200).json({message: result})
+        }
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: error.message });        
+    }
+})
 
 export default router

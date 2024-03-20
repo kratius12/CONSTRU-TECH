@@ -17,11 +17,6 @@ function ObrasPage() {
 
     const dataHeader = [
         {
-            header: "ID",
-            accessorKey: 'idObra'
-
-        },
-        {
             header: "Descripción",
             accessorKey: 'descripcion'
         },

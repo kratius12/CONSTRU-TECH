@@ -56,7 +56,6 @@ export default function EmpleadosForm() {
             nombre: empleado.nombre,
             apellidos: empleado.apellidos,
             direccion: empleado.direccion,
-            estado: empleado.estado === "0" ? "0" : "1",
             email: empleado.email,
             telefono: empleado.telefono,
             tipoDoc: empleado.tipoDoc,
@@ -71,6 +70,8 @@ export default function EmpleadosForm() {
           }));
           setDefaultOptions(defaultOpts);
           setKey((prevKey) => prevKey + 1);
+          checkEmail(empleado.email)
+          checkDoc(empleado.tipoDoc, empleado.cedula)
         }
       } else {
         setEmpleado(initialState);
@@ -88,7 +89,7 @@ export default function EmpleadosForm() {
     fetchData();
     loadEmpleados();
     rol()
-  }, []);
+  }, [params.id]);
   var validate;
   if(params.id){
     validate = EmpleadosSchemaEdit
@@ -156,7 +157,7 @@ export default function EmpleadosForm() {
       console.log(error)
     }
   }
-  console.clear()
+  //console.clear()
   const checkDoc = async (tipoDoc, cedula) => {
     try {
       const response = await fetch(`https://apismovilconstru.onrender.com/checkDocEmp/${cedula}/${tipoDoc}/${params.id}`, {
@@ -199,24 +200,20 @@ export default function EmpleadosForm() {
             initialValues={empleado}
             enableReinitialize={true}
             validationSchema={validate}
-            validateOnChange={true}
             onSubmit={async (values) => {
               const empleadoObject = {
                 ...values,
                 especialidad: selectedEsp,
 
               };
-              console.clear()
               checkEmail(values.email)
               checkDoc(values.tipoDoc, values.cedula)
               if (email === false && doc === false) {
                 if (params.id) {
-                  console.clear()
                   await updateEmpleado(params.id, empleadoObject);
                   alertConfirm('update');
                   setTimeout(() => navigate("/empleados"));
                 } else {
-                  console.clear()
                   await createEmpleado(empleadoObject);
                   alertConfirm();
                   setTimeout(() => navigate("/empleados"));
@@ -235,10 +232,7 @@ export default function EmpleadosForm() {
                     <div className="row">
                       <div id="focusHelper"></div>
                       <div className="col-md-6 mt-3">
-                        <select id="tipoDoc" className="form-select form-control-user" onChange={(e) => {
-                          handleChange(e)
-
-                        }} value={values.tipoDoc}>
+                        <select id="tipoDoc" className="form-select form-control-user" onChange={handleChange} value={values.tipoDoc}>
                           <option value="">Seleccione tipo documento*</option>
                           <option value="CC">Cedula de ciudadanía</option>
                           <option value="CE">Cedula de extranjería</option>
@@ -251,8 +245,7 @@ export default function EmpleadosForm() {
                       <div className="col-md-6 mt-3">
                         <input type="text" className="form-control form-control-user" id="cedula" onChange={(e) => {
                           handleChange(e)
-                          checkDoc(values.tipoDoc, values.cedula)
-                          params.id ? '' : checkDoc(values.tipoDoc, e.target.value)
+                          checkDoc(values.tipoDoc, e.target.value)
                         }} value={values.cedula} placeholder="Número de documento*" />
                         {errors.cedula && touched.cedula ? (
                           <div className="alert alert-danger" role="alert">{errors.cedula}</div>

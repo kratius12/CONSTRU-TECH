@@ -6,11 +6,6 @@ function EmpleadosPage() {
 
     const dataHeader = [
         {
-           header: "ID",
-           accessorKey: 'idEmp'
-
-        },
-        {
             header: "Nombre",
             accessorKey: 'nombre'
         },
