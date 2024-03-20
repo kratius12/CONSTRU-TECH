@@ -1,25 +1,25 @@
 import axios from "axios";
 
 export const GetCategoriasRequest = async () =>{
-    return await axios.get('http://localhost:4000/categorias')
+    return await axios.get('https://apismovilconstru.onrender.com/categorias')
 }
 
 export const CreateCategoriaRequest = async (categoria) => {
-    return await axios.post('http://localhost:4000/categorias', categoria)
+    return await axios.post('https://apismovilconstru.onrender.com/categorias', categoria)
 }
 
 export const DeleteCategoriaRequest = async (idcat) =>{
-    return await axios.delete(`http://localhost:4000/categoria/${idcat}`)
+    return await axios.delete(`https://apismovilconstru.onrender.com/categoria/${idcat}`)
 }
 
 export const GetCategoriaRequest = async (idcat) => {
-    return await axios.get(`http://localhost:4000/categoria/${idcat}`)
+    return await axios.get(`https://apismovilconstru.onrender.com/categoria/${idcat}`)
 }
 
 export const UpdateCategoriaRequest = async (idcat, newFields) =>{
-    return await axios.put(`http://localhost:4000/categoria/${idcat}`, newFields)
+    return await axios.put(`https://apismovilconstru.onrender.com/categoria/${idcat}`, newFields)
 }
 
 export const ToggleCategoriaStatusRequest = async (idcat, estado) =>{
-    return await axios.put(`http://localhost:4000/estadoCategoria/${idcat}`, estado)
+    return await axios.put(`https://apismovilconstru.onrender.com/estadoCategoria/${idcat}`, estado)
 }

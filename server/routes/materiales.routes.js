@@ -32,6 +32,10 @@ router.get("/materialesAc", async (req, res) => {
         const materiales = await prisma.materiales.findMany({
             where:{
                 estado:1
+            },select:{
+              idMat:true,
+              nombre:true,
+              cantidad:true  
             }
 
         })
@@ -60,7 +64,7 @@ router.post("/materiales", async (req, res) => {
             data: {
                 nombre: ucfirst(nombre),
                 estado: 1,
-                cantidad:parseInt(cantidad),
+                cantidad:0,
                 idCategoria:parseInt(idCategoria),
             },
             

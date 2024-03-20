@@ -80,7 +80,7 @@ export default function ClientsForm() {
 
   const checkEmail = async (email) => {
     try {
-      const response = await fetch(`http://localhost:4000/checkEmail/${email}/${params.id}`, {
+      const response = await fetch(`https://apismovilconstru.onrender.com/checkEmail/${email}/${params.id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -115,7 +115,7 @@ export default function ClientsForm() {
 
   const checkDoc = async (tipoDoc, cedula) => {
     try {
-      const response = await fetch(`http://localhost:4000/checkDoc/${cedula}/${tipoDoc}/${params.id}`, {
+      const response = await fetch(`https://apismovilconstru.onrender.com/checkDoc/${cedula}/${tipoDoc}/${params.id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
