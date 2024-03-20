@@ -118,7 +118,7 @@ export default function ProveedoresForm() {
 
   const checkDoc = async (tipo, documento) => {
     try {
-      const response = await fetch(`https://apismovilconstru.onrender.com/checkDocProv/${documento}/${tipo}/${params.id}`, {
+      const response = await fetch(`http://localhost:4000/checkDocProv/${documento}/${tipo}/${params.id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
