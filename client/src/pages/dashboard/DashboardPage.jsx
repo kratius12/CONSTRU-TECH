@@ -7,7 +7,7 @@ function DashboardPage() {
     const clienteRef = useRef(null);
     const obraRef = useRef(null);
     const clientesObras = useRef(null)
-    const especialidadesObras = useRef(null)
+    const obrasEstados = useRef(null)
 
     const { getDashboardClientes, getDashboardObras, getDashboardClienteObras, getObrasEstados, getDashboardEmpleadosCount, getTotalCompras} = useDashboard()
     const [clientesData, setClientesData] = useState([])
@@ -210,30 +210,28 @@ function DashboardPage() {
             }
         };
 
-        const loadchartEspecialidades = async () => {
-            if (especialidadesObras && especialidadesObras.current) {
-                const ctx = especialidadesObras.current.getContext("2d");
-                const especialidadesData = await getObrasEstados();
-                console.log(especialidadesData);
-                const especialidadesCount = {};
+        const loadchartObrasEstados = async () => {
+            if (obrasEstados && obrasEstados.current) {
+                const ctx = obrasEstados.current.getContext("2d");
+                const obrasEstadosData = await getObrasEstados();
+                console.log(obrasEstadosData);
+                const obrasEstadosCount = {}
+                obrasEstadosData.result.forEach((obra) => {
+                    obrasEstadosCount[obra.estado] = obra._count._all
+                })
 
-                especialidadesData.forEach((obra) => {
-                    const estado = obra.estado;
-                    console.log(estado)
-                    // especialidadesCount[estado] = (especialidadesCount[estado] || 0) + 1;
-                });
-
-                const especialidadesLabels = Object.keys(especialidadesCount);
-                const especialidadesValues = Object.values(especialidadesCount);
+                console.log(Object.values(obrasEstadosCount))
+                const obrasEstadosLabels = Object.keys(obrasEstadosCount)
+                const obrasEstadosValues = Object.values(obrasEstadosCount)
 
                 new Chart(ctx, {
                     type: "bar",
                     data: {
-                        labels: especialidadesLabels,
+                        labels: obrasEstadosLabels,
                         datasets: [
                             {
-                                label: "Cantidad de especialidades en Obras",
-                                data: especialidadesValues,
+                                label: "Cantidad obra estado",
+                                data: obrasEstadosValues,
                                 backgroundColor: "rgba(253, 113, 0, 0.8)",
                                 borderColor: "rgba(253, 113, 0, 0.8)",
                                 borderWidth: 1,
@@ -246,7 +244,7 @@ function DashboardPage() {
                                 beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: "Cantidad de Obras",
+                                    text: "Cantidad de Obras estado",
                                 },
                             },
                         },
@@ -264,7 +262,7 @@ function DashboardPage() {
             setCountEmpleados(empleadosCount)
         }
 
-        loadchartEspecialidades()
+        loadchartObrasEstados()
         loadchartClientesObras()
         loadchartObras()
         loadchartClientes()
@@ -352,6 +350,37 @@ function DashboardPage() {
 
             <div className="row">
 
+                <div className="col-xl-6 col-md-6">
+                    <div className="card shadow mb-4">
+
+                        <div
+                            className="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h6 className="m-0 font-weight-bold text-primary">Obras ingresadas en los ultimos 30 Días</h6>
+                        </div>
+
+                        <div className="card-body">
+                            <div className="chart-area">
+                                <canvas ref={obraRef}></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="col-xl-6 col-md-6">
+                    <div className="card shadow mb-4">
+
+                        <div
+                            className="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h6 className="m-0 font-weight-bold text-primary">Reporte de cantidad de obras por estado</h6>
+                        </div>
+
+                        <div className="card-body">
+                            <div className="chart-area">
+                                <canvas ref={obrasEstados}></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <div className="col-xl-6 col-md-6">
                     <div className="card shadow mb-4">
@@ -374,43 +403,12 @@ function DashboardPage() {
 
                         <div
                             className="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                            <h6 className="m-0 font-weight-bold text-primary">Obras ingresadas en los ultimos 30 Días</h6>
-                        </div>
-
-                        <div className="card-body">
-                            <div className="chart-area">
-                                <canvas ref={obraRef}></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="col-xl-6 col-md-6">
-                    <div className="card shadow mb-4">
-
-                        <div
-                            className="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                             <h6 className="m-0 font-weight-bold text-primary">Clientes que han solicitado servicios en los últimos 30 Días</h6>
                         </div>
 
                         <div className="card-body">
                             <div className="chart-area">
                                 <canvas ref={clientesObras}></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div className="col-xl-6 col-md-6">
-                    <div className="card shadow mb-4">
-
-                        <div
-                            className="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                            <h6 className="m-0 font-weight-bold text-primary">Especialidades mas utilizadas en los últimos 30 Días</h6>
-                        </div>
-
-                        <div className="card-body">
-                            <div className="chart-area">
-                                <canvas ref={especialidadesObras}></canvas>
                             </div>
                         </div>
                     </div>
