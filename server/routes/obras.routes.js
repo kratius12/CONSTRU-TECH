@@ -54,7 +54,8 @@ router.get("/obra/:id", async (req, res) => {
           select: {
             idCli: true,
             nombre: true,
-            apellidos: true
+            apellidos: true,
+            direccion:true
           }
         }
       }
