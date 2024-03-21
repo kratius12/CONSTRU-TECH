@@ -214,13 +214,12 @@ function DashboardPage() {
             if (obrasEstados && obrasEstados.current) {
                 const ctx = obrasEstados.current.getContext("2d");
                 const obrasEstadosData = await getObrasEstados();
-                console.log(obrasEstadosData);
+
                 const obrasEstadosCount = {}
                 obrasEstadosData.result.forEach((obra) => {
                     obrasEstadosCount[obra.estado] = obra._count._all
                 })
 
-                console.log(Object.values(obrasEstadosCount))
                 const obrasEstadosLabels = Object.keys(obrasEstadosCount)
                 const obrasEstadosValues = Object.values(obrasEstadosCount)
 
@@ -255,7 +254,11 @@ function DashboardPage() {
         }
         const loadCounts = async () =>{
             setCountObras(obrasData.length)
-            setCountClientes(clientesData.length)
+            let count = ''
+            clientesData.forEach(element => {
+                count = element.count
+            });
+            setCountClientes(count)
             const empleadosCount = await getDashboardEmpleadosCount()
             const totalCompras = await getTotalCompras()
             setTotalCompras(totalCompras.total_compra.toLocaleString())
@@ -312,7 +315,6 @@ function DashboardPage() {
                             </div>
                         </div>
 
-
                         <div className="col-xl-3 col-md-6 mb-4">
                             <div className="card border-left-warning shadow h-100 py-2">
                                 <div className="card-body">
@@ -340,7 +342,7 @@ function DashboardPage() {
                                             <div className="h5 mb-0 font-weight-bold text-gray-800">$ {totalCompras}</div>
                                         </div>
                                         <div className="col-auto">
-                                            <i className="fas fa-user-group fa-2x text-gray-300"></i>
+                                            <i className="fas fa-cart-shopping fa-2x text-gray-300"></i>
                                         </div>
                                     </div>
                                 </div>
