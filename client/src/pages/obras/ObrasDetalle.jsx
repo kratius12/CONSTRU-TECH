@@ -223,6 +223,20 @@ const ObraDetalle = () => {
     const handleSearch = () => {
         setCurrentPage(1);
     };
+    const [modalMatVisible, setModalMatVisible] = useState(false);
+    // Estado para almacenar los materiales de la actividad seleccionada
+    const [selectedActivityMaterials, setSelectedActivityMaterials] = useState([]);
+
+    // Función para abrir la ventana modal y mostrar los materiales de la actividad seleccionada
+    const handleVerMateriales = (materiales) => {
+        setSelectedActivityMaterials(materiales);
+        setModalMatVisible(true);
+    };
+
+    // Función para cerrar la ventana modal
+    const handleCerrarModal = () => {
+        setModalMatVisible(false);
+    };
     const [modalMaterialesVisible, setModalMaterialesVisible] = useState(false);
     const handleAbrirModalMateriales = async (actividad) => {
         const materialesData = await fetchMaterial("http://localhost:4000/materialesAc");
@@ -382,15 +396,15 @@ const ObraDetalle = () => {
                 validationSchema={obraSchemaEdit}
                 validateOnChange={true}
                 validateOnBlur={false}
-                onSubmit={(values, {setSubmitting}) => {
+                onSubmit={(values, { setSubmitting }) => {
                     var is = false
-                    actividades.forEach((actividad)=>{
-                        if(actividad.detalleObra.estado != "Terminada"){
-                            is=true
+                    actividades.forEach((actividad) => {
+                        if (actividad.detalleObra.estado != "Terminada") {
+                            is = true
                             console.log(actividad.detalleObra.estado)
                         }
                     })
-                    if (values.estado == "Terminado" && is==true) {
+                    if (values.estado == "Terminado" && is == true) {
                         // Mostrar la alerta indicando que hay actividades pendientes
                         $.confirm({
                             title: `Error`,
@@ -773,7 +787,28 @@ const ObraDetalle = () => {
 
                                         </ModalBody>
                                     </Modal>
+                                    <Modal isOpen={modalMatVisible} toggle={handleCerrarModal} selectedActivity={selectedActivity}>
+                                        <ModalHeader toggle={handleCerrarModal}>Materiales de la Actividad</ModalHeader>
+                                        <ModalBody>
+                                            <table className="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Material</th>
+                                                        <th>Cantidad</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {selectedActivity.materiales.map((material, index) => (
+                                                        <tr key={index}>
+                                                            <td>{material.materiales.nombre}</td>
+                                                            <td>{material.cantidad}</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
 
+                                        </ModalBody>
+                                    </Modal>
                                     <Modal isOpen={modalMaterialesVisible} toggle={() => setModalMaterialesVisible(!modalMaterialesVisible)}
                                     >
                                         <ModalHeader toggle={() => setModalMaterialesVisible(!modalMaterialesVisible)}>Gestionar Materiales</ModalHeader>
@@ -894,12 +929,7 @@ const ObraDetalle = () => {
                                                                             <p className="card-text">Fecha de inicio: {formatoFechaIni(detalle.detalleObra.fechaini)}</p>
                                                                             <p className="card-text">Fecha de fin estimada: {calcularFechaFinEstimada(detalle.detalleObra.fechaini, detalle.detalleObra.fechafin)}</p>
 
-                                                                            {detalle.materiales.length > 0 && (
-                                                                                <>
-                                                                                    <p className="card-text">Materiales: {detalle.materiales.map((material) => material.materiales.nombre).join(', ')}</p>
-                                                                                    <p className="card-text">Materiales: {detalle.materiales.map((material) => material.cantidad).join(', ')}</p>
-                                                                                </>
-                                                                            )}
+                                                                            
                                                                             {detalle.empleados.length > 0 && (
                                                                                 <p className="card-text">Empleados: {detalle.empleados.map((empleado) => empleado.empleado.nombre).join(', ')}</p>
                                                                             )}
@@ -912,6 +942,14 @@ const ObraDetalle = () => {
                                                                                     <i className="fa-solid fa-pen-to-square"></i>
                                                                                     &nbsp;Editar
                                                                                 </Button>
+                                                                                {detalle.materiales.length > 0 && (
+                                                                                <>
+                                                                                    <Button className="ml-3" color="primary" onClick={() => handleVerMateriales(selectedActivity.materiales)}>
+                                                                                    Ver Materiales
+                                                                                </Button>
+                                                                                </>
+                                                                            )}
+                                                                                
                                                                             </div>
                                                                         </div>
                                                                     </div>
