@@ -44,7 +44,7 @@ export default function EmpleadosForm() {
 
   useEffect(() => {
     const rol = async () => {
-      axios.get(`http://localhost:4000/rolesAct`).then((response) => {
+      axios.get(`apismovilconstru.onrender.com/rolesAct`).then((response) => {
         setRol(response.data)
       })
     }
@@ -125,7 +125,7 @@ export default function EmpleadosForm() {
 
   const checkEmail = async (email) => {
     try {
-      const response = await fetch(`http://localhost:4000/checkEmailEmp/${email}/${params.id}`, {
+      const response = await fetch(`apismovilconstru.onrender.com/checkEmailEmp/${email}/${params.id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -160,7 +160,7 @@ export default function EmpleadosForm() {
   //console.clear()
   const checkDoc = async (tipoDoc, cedula) => {
     try {
-      const response = await fetch(`http://localhost:4000/checkDocEmp/${cedula}/${tipoDoc}/${params.id}`, {
+      const response = await fetch(`apismovilconstru.onrender.com/checkDocEmp/${cedula}/${tipoDoc}/${params.id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

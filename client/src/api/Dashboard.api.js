@@ -1,30 +1,30 @@
 import axios from "axios";
 
 export const GetDashboardClientesRequest = async () =>{
-    return await axios.get('http://localhost:4000/dashboard/clientes')
+    return await axios.get('apismovilconstru.onrender.com/dashboard/clientes')
 }
 
 export const GetDashboardObrasRequest = async () =>{
-    return await axios.get('http://localhost:4000/dashboard/obras')
+    return await axios.get('apismovilconstru.onrender.com/dashboard/obras')
 }
 
 export const GetDashboardClienteObrasRequest = async () =>{
-    return await axios.get('http://localhost:4000/dashboard/clienteObras')
+    return await axios.get('apismovilconstru.onrender.com/dashboard/clienteObras')
 }
 
 export const GetDashboardEspecialidadesRequest = async () =>{
-    return await axios.get('http://localhost:4000/dashboard/especialidades')
+    return await axios.get('apismovilconstru.onrender.com/dashboard/especialidades')
 }
 
 export const GetDashboardEmpleadosCountRequest = async () =>{
 
-    return await axios.get('http://localhost:4000/dashboard/empleadosCount')
+    return await axios.get('apismovilconstru.onrender.com/dashboard/empleadosCount')
 }
 
 export const GetTotalComprasRequest = async () =>{
-    return await axios.get('http://localhost:4000/dashboard/totalCompras')
+    return await axios.get('apismovilconstru.onrender.com/dashboard/totalCompras')
 }
 
 export const GetObrasEstadosRequest = async () =>{
-    return await axios.get('http://localhost:4000/dashboard/obrasEstados')
+    return await axios.get('apismovilconstru.onrender.com/dashboard/obrasEstados')
 }

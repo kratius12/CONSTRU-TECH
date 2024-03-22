@@ -58,7 +58,7 @@ export default function CategoriasForm() {
   const [nombre, setNombre] = useState(true)
   const checkNombre = async (nombre) => {
     try {
-      const response = await fetch(`http://localhost:4000/checkCat/${nombre}/${params.id}`, {
+      const response = await fetch(`apismovilconstru.onrender.com/checkCat/${nombre}/${params.id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
