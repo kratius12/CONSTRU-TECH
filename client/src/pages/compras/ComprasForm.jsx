@@ -77,10 +77,10 @@ const ComprasForm = () => {
   };
 
   useEffect(() => {
-    fetchData("apismovilconstru.onrender.com/materiales").then((data) => {
+    fetchData("https://apismovilconstru.onrender.com/materiales").then((data) => {
       setMateriales(data);
     });
-    fetchData("apismovilconstru.onrender.com/provsAc").then((data) => {
+    fetchData("https://apismovilconstru.onrender.com/provsAc").then((data) => {
       setProveedores(data);
     });
   }, []);

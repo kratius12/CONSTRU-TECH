@@ -51,10 +51,10 @@ const ObrasForm = () => {
 
 
   useEffect(() => {
-    fetchData("apismovilconstru.onrender.com/clientes").then((data) => {
+    fetchData("https://apismovilconstru.onrender.com/clientes").then((data) => {
       setCliente(data);
     });
-    fetchData("apismovilconstru.onrender.com/empleadosAct").then((data) => {
+    fetchData("https://apismovilconstru.onrender.com/empleadosAct").then((data) => {
       setAsesores(data)
     });  
   }, []);
