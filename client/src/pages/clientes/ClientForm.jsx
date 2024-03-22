@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Form, Formik } from "formik";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useClients } from "../../context/clientes/ClientesProvider";
 import { ClientSchema, ClientSchemaEdit } from "../../components/clientes/ValidatorCliente";
 
