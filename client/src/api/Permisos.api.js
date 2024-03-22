@@ -1,25 +1,25 @@
 import axios from "axios";
 
 export const GetPermisosRequest = async () =>{
-    return await axios.get('http://localhost:4000/permisos')
+    return await axios.get('apismovilconstru.onrender.com/permisos')
 }
 
 export const CreatePermisoRequest = async (permiso) => {
-    return await axios.post('http://localhost:4000/permisos', permiso)
+    return await axios.post('apismovilconstru.onrender.com/permisos', permiso)
 }
 
 export const DeletePermisoRequest = async (idPer) =>{
-    return await axios.delete(`http://localhost:4000/permisos/${idPer}`)
+    return await axios.delete(`apismovilconstru.onrender.com/permisos/${idPer}`)
 }
 
 export const GetPermisoRequest = async (idPer) => {
-    return await axios.get(`http://localhost:4000/permisos/${idPer}`)
+    return await axios.get(`apismovilconstru.onrender.com/permisos/${idPer}`)
 }
 
 export const UpdatePermisoRequest = async (idPer, newFields) =>{
-    return await axios.put(`http://localhost:4000/permisos/${idPer}`, newFields)
+    return await axios.put(`apismovilconstru.onrender.com/permisos/${idPer}`, newFields)
 }
 
 export const TogglePermisoStatusRequest = async (idPer, estado) =>{
-    return await axios.put(`http://localhost:4000/permisos/${idPer}`, estado)
+    return await axios.put(`apismovilconstru.onrender.com/permisos/${idPer}`, estado)
 }

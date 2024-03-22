@@ -150,7 +150,7 @@ const ObraDetalle = () => {
     const [values, setValues] = useState([])
     const alertConfirmAct = async () => {
         try {
-            const updatedActividades = await fetchData(`http://localhost:4000/actividades/${params.id}`);
+            const updatedActividades = await fetchData(`apismovilconstru.onrender.com/actividades/${params.id}`);
             setActividades(updatedActividades);
             $.confirm({
                 title: `Actividad guardada con éxito!`,
@@ -225,7 +225,7 @@ const ObraDetalle = () => {
     };
     const [modalMaterialesVisible, setModalMaterialesVisible] = useState(false);
     const handleAbrirModalMateriales = async (actividad) => {
-        const materialesData = await fetchMaterial("http://localhost:4000/materialesAc");
+        const materialesData = await fetchMaterial("apismovilconstru.onrender.com/materialesAc");
         setMateriales(materialesData);
 
         setActividadActual(actividad);
@@ -259,7 +259,7 @@ const ObraDetalle = () => {
     useEffect(() => {
         const fetchObraDetalle = async () => {
             try {
-                const response = await axios.get(`http://localhost:4000/obra/${id}`);
+                const response = await axios.get(`apismovilconstru.onrender.com/obra/${id}`);
                 setObra(response.data)
                 setDireccionCliente(response.data.cliente.direccion);
             } catch (error) {
@@ -267,26 +267,26 @@ const ObraDetalle = () => {
             }
         }
         const loadMaterialesEmpleados = async () => {
-            const empleadosData = await fetchEmpleados("http://localhost:4000/empleadosAct");
+            const empleadosData = await fetchEmpleados("apismovilconstru.onrender.com/empleadosAct");
             setEmpleados(empleadosData);
         };
-        fetchEmpleados(`http://localhost:4000/actividades/${params.id}`).then((data) => {
+        fetchEmpleados(`apismovilconstru.onrender.com/actividades/${params.id}`).then((data) => {
             setEmpDefault(data);
         });
 
-        fetchMaterial(`http://localhost:4000/actividades/${params.id}`).then((data) => {
+        fetchMaterial(`apismovilconstru.onrender.com/actividades/${params.id}`).then((data) => {
             setMatDefault(data);
         });
 
-        fetchData("http://localhost:4000/clientes").then((data) => {
+        fetchData("apismovilconstru.onrender.com/clientes").then((data) => {
             setCliente(data);
 
         });
-        fetchData(`http://localhost:4000/actividades/${params.id}`).then((data) => {
+        fetchData(`apismovilconstru.onrender.com/actividades/${params.id}`).then((data) => {
             setActividades(data)
         })
 
-        fetchData("http://localhost:4000/empleadosAct").then((data) => {
+        fetchData("apismovilconstru.onrender.com/empleadosAct").then((data) => {
             setAsesores(data)
         });
 
@@ -327,13 +327,13 @@ const ObraDetalle = () => {
         const fechafinMaxima = new Date(inicio.getTime() + (fechafin * 24 * 60 * 60 * 1000))
         const fechaMaximaFormateada = format(fechafinMaxima, 'dd/MM/yyyy');
         setFechaMaxima(fechaMaximaFormateada)
-        await axios.put(`http://localhost:4000/updateDate/${id}`, fechaMaxima)
+        await axios.put(`apismovilconstru.onrender.com/updateDate/${id}`, fechaMaxima)
     }
 
 
     const handleGuardarMateriales = async () => {
         const newMaterialErrors = [];
-        const materialesData = await fetchMaterial("http://localhost:4000/materialesAc");
+        const materialesData = await fetchMaterial("apismovilconstru.onrender.com/materialesAc");
         setMateriales(materialesData);
         setCantidadDisponible(materialesData.cantidad);
         materialesList.forEach((material, index) => {

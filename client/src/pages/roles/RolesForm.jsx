@@ -37,7 +37,7 @@ const RolesForm = () => {
 
   useEffect(() => {
     const loadPermisos = async () => {
-      const permisosData = await fetchPermisos("http://localhost:4000/permisosAct");
+      const permisosData = await fetchPermisos("apismovilconstru.onrender.com/permisosAct");
       setPermisos(permisosData);
     };
 
@@ -96,7 +96,7 @@ const RolesForm = () => {
 
   const checkRol = async (rol) => {
     try {
-      const response = await fetch(`http://localhost:4000/checkRol/${rol}/${params.id}`, {
+      const response = await fetch(`apismovilconstru.onrender.com/checkRol/${rol}/${params.id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

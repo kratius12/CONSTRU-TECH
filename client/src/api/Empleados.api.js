@@ -1,51 +1,51 @@
 import axios from "axios";
 
 export const GetEmpleadosRequest = async () =>{
-    return await axios.get('http://localhost:4000/empleados')
+    return await axios.get('apismovilconstru.onrender.com/empleados')
 }
 
 export const GetEmpleadosEspecialidadesRequest = async () =>{
-    return await axios.get('http://localhost:4000/empleadosEsp')
+    return await axios.get('apismovilconstru.onrender.com/empleadosEsp')
 }
 
 export const GetEspecialidadesRequest = async () =>{
-    return await axios.get('http://localhost:4000/especialidades')
+    return await axios.get('apismovilconstru.onrender.com/especialidades')
 }
 
 export const CreateEspecialidadesRequest = async (especialidad) =>{
-    return await axios.post('http://localhost:4000/especialidades', especialidad)
+    return await axios.post('apismovilconstru.onrender.com/especialidades', especialidad)
 }
 
 export const CreateEmpleadoRequest = async (empleado) => {
-    return await axios.post('http://localhost:4000/empleados', empleado)
+    return await axios.post('apismovilconstru.onrender.com/empleados', empleado)
 }
 
 export const DeleteEmpleadoRequest = async (idEmp) =>{
-    return await axios.delete(`http://localhost:4000/empleado/${idEmp}`)
+    return await axios.delete(`apismovilconstru.onrender.com/empleado/${idEmp}`)
 }
 
 export const GetEmpleadoRequest = async (idEmp) => {
-    return await axios.get(`http://localhost:4000/empleado/${idEmp}`)
+    return await axios.get(`apismovilconstru.onrender.com/empleado/${idEmp}`)
 }
 
 export const UpdateEmpleadoRequest = async (idEmp, newFields) =>{
-    return await axios.put(`http://localhost:4000/empleado/${idEmp}`, newFields)
+    return await axios.put(`apismovilconstru.onrender.com/empleado/${idEmp}`, newFields)
 }
 
 export const ToggleEmpleadoStatusRequest = async (idEmp, status) =>{
-    return await axios.put(`http://localhost:4000/empleadoStatus/${idEmp}`, status)
+    return await axios.put(`apismovilconstru.onrender.com/empleadoStatus/${idEmp}`, status)
 }
 
 export const SearchDocRequest = async (fields) =>{
-    return await axios.put(`http://localhost:4000/empleados/searchDoc`, fields)
+    return await axios.put(`apismovilconstru.onrender.com/empleados/searchDoc`, fields)
 }
 export const SearchDocRequestid = async (idEmp,fields) =>{
-    return await axios.put(`http://localhost:4000/empleados/searchDoc/${idEmp}`, fields)
+    return await axios.put(`apismovilconstru.onrender.com/empleados/searchDoc/${idEmp}`, fields)
 }
 
 export const SearchEmailRequest = async (fields)=>{
-    return await axios.put(`http://localhost:4000/empleados/searchEmail`,fields)
+    return await axios.put(`apismovilconstru.onrender.com/empleados/searchEmail`,fields)
 }
 export const SearchEmailIdRequest = async (idEmp,fields)=>{
-    return await axios.put(`http://localhost:4000/empleados/searchEmail/${idEmp}`,fields)
+    return await axios.put(`apismovilconstru.onrender.com/empleados/searchEmail/${idEmp}`,fields)
 }
