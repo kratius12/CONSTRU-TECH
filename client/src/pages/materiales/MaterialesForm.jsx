@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Form, Formik } from "formik";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useMateriales } from "../../context/materiales/MaterialesProvider";
 import materialSchema from "../../components/materiales/MaterialesValidator";
 
@@ -170,12 +170,12 @@ export default function MaterialesForm() {
                         </button>
                       </div>
                       <div className="col-md-6">
-                        <a type="button" href="" className="btn btn-danger btn-icon-split w-50" onClick={() => navigate(`/materiales`)}>
+                        <Link type="button" href="" className="btn btn-danger btn-icon-split w-50" to="/materiales">
                           <span className="text-white-50">
                             <i className="fa-solid fa-x"></i>
                           </span>
                           <span className="text">Cancelar</span>
-                        </a>
+                        </Link>
                       </div>
                     </div>
                   </div>

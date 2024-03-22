@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import { Form, Formik, Field } from "formik";
 import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import { useRol } from "../../context/roles/RolesProvider";
 import RolSchema from "../../components/roles/RolesValidator";
 
@@ -225,16 +225,12 @@ const RolesForm = () => {
                     </button>
                   </div>
                   <div className="col-md-6">
-                    <a
-                      type="button"
-                      className="btn btn-danger btn-icon-split w-50"
-                      onClick={() => navigate(`/roles`)}
-                    >
+                    <Link type="button" href="" className="btn btn-danger btn-icon-split w-50" to="/roles">
                       <span className="text-white-50">
                         <i className="fa-solid fa-x"></i>
                       </span>
                       <span className="text">Cancelar</span>
-                    </a>
+                    </Link>
                   </div>
                 </div>
               </div>

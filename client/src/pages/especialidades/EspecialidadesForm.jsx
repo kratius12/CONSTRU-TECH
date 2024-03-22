@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Form, Formik } from "formik";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useEspecialidades } from "../../context/especialidades/EspecialidadesProvider";
 import EspecialidadSchema from '../../components/especialidades/ValidatorEspecialidad'
 import axios from "axios";
@@ -163,12 +163,12 @@ export default function EspecialidadesForm() {
                         </button>
                       </div>
                       <div className="col-md-6">
-                        <a type="button" href="" className="btn btn-danger btn-icon-split w-50" onClick={() => navigate(`/especialidades`)}>
+                      <Link type="button" href="" className="btn btn-danger btn-icon-split w-50" to="/especialidades">
                           <span className="text-white-50">
                             <i className="fa-solid fa-x"></i>
                           </span>
                           <span className="text">Cancelar</span>
-                        </a>
+                        </Link>
                       </div>
                     </div>
                   </div>

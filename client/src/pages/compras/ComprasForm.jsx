@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Formik, Field, Form, FieldArray, ErrorMessage } from "formik";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useCompras } from "../../context/compras/ComprasProvider";
 import axios from "axios";
 import comprasSchema from "../../components/compras/ComprasSchema";
@@ -365,16 +365,12 @@ const ComprasForm = () => {
                     </button>
                   </div>
                   <div className="col-md-6">
-                    <a
-                      type="button"
-                      className="btn btn-danger btn-icon-split w-50"
-                      onClick={() => navigate(`/compras`)}
-                    >
-                      <span className="text-white-50">
-                        <i className="fa-solid fa-x"></i>
-                      </span>
-                      <span className="text">Cancelar</span>
-                    </a>
+                  <Link type="button" href="" className="btn btn-danger btn-icon-split w-50" to="/compras">
+                          <span className="text-white-50">
+                            <i className="fa-solid fa-x"></i>
+                          </span>
+                          <span className="text">Cancelar</span>
+                  </Link>
                   </div>
                 </div>
               </div>

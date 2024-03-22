@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import { Form, Formik, Field } from "formik";
 import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useEmpleados } from "../../context/empleados/EmpleadosProvider";
 import {EmpleadoSchema, EmpleadosSchemaEdit} from "../../components/empleados/ValidatorEmpleado"
 
@@ -350,12 +350,12 @@ export default function EmpleadosForm() {
                         </button>
                       </div>
                       <div className="col-md-6">
-                        <a type="button" href="" className="btn btn-danger btn-icon-split w-50" onClick={() => navigate(`/empleados`)}>
+                      <Link type="button" href="" className="btn btn-danger btn-icon-split w-50" to="/empleados">
                           <span className="text-white-50">
                             <i className="fa-solid fa-x"></i>
                           </span>
                           <span className="text">Cancelar</span>
-                        </a>
+                        </Link>
                       </div>
                     </div>
                   </div>
