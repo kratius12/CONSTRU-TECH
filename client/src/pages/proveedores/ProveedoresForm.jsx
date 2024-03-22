@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Form, Formik } from "formik";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useProveedores } from "../../context/proveedores/ProveedorProvider";
 import validateForm from "../../components/proveedores/ProveedorValidator";
 import axios from "axios";
@@ -381,12 +381,12 @@ export default function ProveedoresForm() {
                         </button>
                       </div>
                       <div className="col-md-6">
-                        <a type="button" href="" className="btn btn-danger btn-icon-split w-50" onClick={() => navigate(`/proveedores`)}>
+                        <Link type="button" href="" className="btn btn-danger btn-icon-split w-50" to="/proveedores">
                           <span className="text-white-50">
                             <i className="fa-solid fa-x"></i>
                           </span>
                           <span className="text">Cancelar</span>
-                        </a>
+                        </Link>
                       </div>
                     </div>
                   </div>

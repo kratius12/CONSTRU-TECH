@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import Card from 'react-bootstrap/Card';
 import axios from "axios";
 
@@ -134,9 +134,9 @@ const CompraDetalle = () => {
                 <div className="card-footer text-center mt-3">
                     <div className="row">
                         <div className="col-md-4 mt-3 mx-auto">
-                            <a type="button" href="" className="btn btn-danger btn-icon-split mx-auto" onClick={() => navigate(`/compras`)}>
+                            <Link type="button" href="" className="btn btn-danger btn-icon-split mx-auto" to="/compras">
                                 <span className="text">Regresar</span>
-                            </a>
+                            </Link>
                         </div>
 
                     </div>

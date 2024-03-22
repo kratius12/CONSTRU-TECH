@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Formik, Field, Form } from "formik";
 import axios from "axios";
-import {  useNavigate, useParams } from "react-router-dom";
+import {  useNavigate, useParams, Link } from "react-router-dom";
 import { useObras } from "../../context/obras/ObrasProvider";
 import { obraSchemaAgg } from "../../components/obras/ValidateObra"
 const fetchData = async (url) => {
@@ -177,16 +177,12 @@ const ObrasForm = () => {
                     </button>
                   </div>
                   <div className="col-md-6">
-                    <a
-                      type="button"
-                      className="btn btn-danger btn-icon-split w-50"
-                      onClick={() => navigate(`/obras`)}
-                    >
+                    <Link type="button" href="" className="btn btn-danger btn-icon-split w-50" to="/obras">
                       <span className="text-white-50">
                         <i className="fa-solid fa-x"></i>
                       </span>
                       <span className="text">Cancelar</span>
-                    </a>
+                    </Link>
                   </div>
                 </div>
               </div>
