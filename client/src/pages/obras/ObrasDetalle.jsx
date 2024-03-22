@@ -150,7 +150,7 @@ const ObraDetalle = () => {
     const [values, setValues] = useState([])
     const alertConfirmAct = async () => {
         try {
-            const updatedActividades = await fetchData(`apismovilconstru.onrender.com/actividades/${params.id}`);
+            const updatedActividades = await fetchData(`https://apismovilconstru.onrender.com/actividades/${params.id}`);
             setActividades(updatedActividades);
             $.confirm({
                 title: `Actividad guardada con éxito!`,
@@ -225,7 +225,7 @@ const ObraDetalle = () => {
     };
     const [modalMaterialesVisible, setModalMaterialesVisible] = useState(false);
     const handleAbrirModalMateriales = async (actividad) => {
-        const materialesData = await fetchMaterial("apismovilconstru.onrender.com/materialesAc");
+        const materialesData = await fetchMaterial("https://apismovilconstru.onrender.com/materialesAc");
         setMateriales(materialesData);
 
         setActividadActual(actividad);
@@ -259,7 +259,7 @@ const ObraDetalle = () => {
     useEffect(() => {
         const fetchObraDetalle = async () => {
             try {
-                const response = await axios.get(`apismovilconstru.onrender.com/obra/${id}`);
+                const response = await axios.get(`https://apismovilconstru.onrender.com/obra/${id}`);
                 setObra(response.data)
                 setDireccionCliente(response.data.cliente.direccion);
             } catch (error) {
@@ -267,26 +267,26 @@ const ObraDetalle = () => {
             }
         }
         const loadMaterialesEmpleados = async () => {
-            const empleadosData = await fetchEmpleados("apismovilconstru.onrender.com/empleadosAct");
+            const empleadosData = await fetchEmpleados("https://apismovilconstru.onrender.com/empleadosAct");
             setEmpleados(empleadosData);
         };
-        fetchEmpleados(`apismovilconstru.onrender.com/actividades/${params.id}`).then((data) => {
+        fetchEmpleados(`https://apismovilconstru.onrender.com/actividades/${params.id}`).then((data) => {
             setEmpDefault(data);
         });
 
-        fetchMaterial(`apismovilconstru.onrender.com/actividades/${params.id}`).then((data) => {
+        fetchMaterial(`https://apismovilconstru.onrender.com/actividades/${params.id}`).then((data) => {
             setMatDefault(data);
         });
 
-        fetchData("apismovilconstru.onrender.com/clientes").then((data) => {
+        fetchData("https://apismovilconstru.onrender.com/clientes").then((data) => {
             setCliente(data);
 
         });
-        fetchData(`apismovilconstru.onrender.com/actividades/${params.id}`).then((data) => {
+        fetchData(`https://apismovilconstru.onrender.com/actividades/${params.id}`).then((data) => {
             setActividades(data)
         })
 
-        fetchData("apismovilconstru.onrender.com/empleadosAct").then((data) => {
+        fetchData("https://apismovilconstru.onrender.com/empleadosAct").then((data) => {
             setAsesores(data)
         });
 
@@ -327,13 +327,13 @@ const ObraDetalle = () => {
         const fechafinMaxima = new Date(inicio.getTime() + (fechafin * 24 * 60 * 60 * 1000))
         const fechaMaximaFormateada = format(fechafinMaxima, 'dd/MM/yyyy');
         setFechaMaxima(fechaMaximaFormateada)
-        await axios.put(`apismovilconstru.onrender.com/updateDate/${id}`, fechaMaxima)
+        await axios.put(`https://apismovilconstru.onrender.com/updateDate/${id}`, fechaMaxima)
     }
 
 
     const handleGuardarMateriales = async () => {
         const newMaterialErrors = [];
-        const materialesData = await fetchMaterial("apismovilconstru.onrender.com/materialesAc");
+        const materialesData = await fetchMaterial("https://apismovilconstru.onrender.com/materialesAc");
         setMateriales(materialesData);
         setCantidadDisponible(materialesData.cantidad);
         materialesList.forEach((material, index) => {
