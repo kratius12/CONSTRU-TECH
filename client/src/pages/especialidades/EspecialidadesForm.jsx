@@ -64,7 +64,7 @@ export default function EspecialidadesForm() {
 
   const checkNombre = async (nombre) => {
     try {
-      const response = await fetch(`https://apismovilconstru.onrender.com/checkEsp/${nombre}/${params.id}`, {
+      const response = await fetch(`https://apismovilconstru-production-be9a.up.railway.app/checkEsp/${nombre}/${params.id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
