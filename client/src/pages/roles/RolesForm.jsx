@@ -37,7 +37,7 @@ const RolesForm = () => {
 
   useEffect(() => {
     const loadPermisos = async () => {
-      const permisosData = await fetchPermisos("https://apismovilconstru.onrender.com/permisosAct");
+      const permisosData = await fetchPermisos("https://apismovilconstru-production-be9a.up.railway.app/permisosAct");
       setPermisos(permisosData);
     };
 
@@ -96,7 +96,7 @@ const RolesForm = () => {
 
   const checkRol = async (rol) => {
     try {
-      const response = await fetch(`https://apismovilconstru.onrender.com/checkRol/${rol}/${params.id}`, {
+      const response = await fetch(`https://apismovilconstru-production-be9a.up.railway.app/checkRol/${rol}/${params.id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

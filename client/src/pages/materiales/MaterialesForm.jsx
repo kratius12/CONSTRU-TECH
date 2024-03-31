@@ -66,7 +66,7 @@ export default function MaterialesForm() {
 
   const checkNombre = async (nombre) => {
     try {
-      const response = await fetch(`https://apismovilconstru.onrender.com/checkMat/${nombre}/${params.id}`, {
+      const response = await fetch(`https://apismovilconstru-production-be9a.up.railway.app/checkMat/${nombre}/${params.id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

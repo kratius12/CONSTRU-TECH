@@ -77,10 +77,10 @@ const ComprasForm = () => {
   };
 
   useEffect(() => {
-    fetchData("https://apismovilconstru.onrender.com/materiales").then((data) => {
+    fetchData("https://apismovilconstru-production-be9a.up.railway.app/materiales").then((data) => {
       setMateriales(data);
     });
-    fetchData("https://apismovilconstru.onrender.com/provsAc").then((data) => {
+    fetchData("https://apismovilconstru-production-be9a.up.railway.app/provsAc").then((data) => {
       setProveedores(data);
     });
   }, []);

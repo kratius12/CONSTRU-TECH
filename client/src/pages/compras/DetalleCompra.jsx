@@ -26,7 +26,7 @@ const CompraDetalle = () => {
     useEffect(() => {
         const fetchCompraDetalle = async () => {
             try {
-                const response = await axios.get(`https://apismovilconstru.onrender.com/compra/${id}`);
+                const response = await axios.get(`https://apismovilconstru-production-be9a.up.railway.app/compra/${id}`);
                 setCompra(response.data);
             } catch (error) {
                 console.error("Error fetching compra detalle:", error);
@@ -37,7 +37,7 @@ const CompraDetalle = () => {
     }, [id]);
     const handleDownloadPdf = () => {
         // Assuming that the filename is available in the `compra.imagen` field
-        const pdfUrl = `https://apismovilconstru.onrender.com/images/${compra.imagen}`;
+        const pdfUrl = `https://apismovilconstru-production-be9a.up.railway.app/images/${compra.imagen}`;
 
         // Open the PDF in a new tab
         const newTab = window.open(pdfUrl, '_blank');
@@ -102,7 +102,7 @@ const CompraDetalle = () => {
                                 </div>
                             ) : (
                                 <img
-                                    src={`https://apismovilconstru.onrender.com/images/${compra.imagen}`}
+                                    src={`https://apismovilconstru-production-be9a.up.railway.app/images/${compra.imagen}`}
                                     alt="Imagen de factura"
                                     style={{ width: '100%' }}
                                     onClick={() => setFullscreen(!fullscreen)}
