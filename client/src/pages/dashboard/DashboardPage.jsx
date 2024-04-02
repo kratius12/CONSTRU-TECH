@@ -9,7 +9,7 @@ function DashboardPage() {
     const clientesObras = useRef(null)
     const obrasEstados = useRef(null)
 
-    const { getDashboardClientes, getDashboardObras, getDashboardClienteObras, getObrasEstados, getDashboardEmpleadosCount, getTotalCompras} = useDashboard()
+    const { getDashboardClientes, getDashboardObras, getDashboardClienteObras, getObrasEstados, getDashboardEmpleadosCount, getTotalCompras, getDashboardClientesCount} = useDashboard()
     const [clientesData, setClientesData] = useState([])
     const [obrasData, setObrasData] = useState([])
 
@@ -22,8 +22,9 @@ function DashboardPage() {
         const dataClientes = async () => {
             const currentDate = new Date()
 
-            const thirtyDaysAgo = new Date()
-            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+            const today = new Date();
+            const thirtyDaysAgo = new Date(today);
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
             const todayFormatted = currentDate.toISOString().split('T')[0]
             const thirtyDaysAgoFormatted = thirtyDaysAgo.toISOString().split('T')[0]
 
@@ -43,7 +44,8 @@ function DashboardPage() {
                 }
             });
             const data = Object.entries(clientesCountDia).map(([date, count]) => ({ date, count }))
-            setClientesData(data)
+            
+            // setClientesData(data)
         }
         const dataObras = async () => {
             const currentDate = new Date()
@@ -253,12 +255,10 @@ function DashboardPage() {
             }
         }
         const loadCounts = async () =>{
-            setCountObras(obrasData.length)
-            let count = ''
-            clientesData.forEach(element => {
-                count = element.count
-            });
-            setCountClientes(count)
+            const obrasInfo = await getDashboardObras()
+            setCountObras(obrasInfo.length)
+            const clientesCount = await getDashboardClientesCount()
+            setCountClientes(clientesCount.length)
             const empleadosCount = await getDashboardEmpleadosCount()
             const totalCompras = await getTotalCompras()
             setTotalCompras(totalCompras.total_compra.toLocaleString())
@@ -379,22 +379,6 @@ function DashboardPage() {
                         <div className="card-body">
                             <div className="chart-area">
                                 <canvas ref={obrasEstados}></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="col-xl-6 col-md-6">
-                    <div className="card shadow mb-4">
-
-                        <div
-                            className="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                            <h6 className="m-0 font-weight-bold text-primary">Clientes registrados en los ultimos 30 Días</h6>
-                        </div>
-
-                        <div className="card-body">
-                            <div className="chart-area">
-                                <canvas ref={clienteRef}></canvas>
                             </div>
                         </div>
                     </div>

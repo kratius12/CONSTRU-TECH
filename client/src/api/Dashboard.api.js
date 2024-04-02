@@ -28,3 +28,7 @@ export const GetTotalComprasRequest = async () =>{
 export const GetObrasEstadosRequest = async () =>{
     return await axios.get('https://apismovilconstru-production-be9a.up.railway.app/dashboard/obrasEstados')
 }
+
+export const GetDashboardClientesCountRequest = async () =>{
+    return await axios.get('https://apismovilconstru-production-be9a.up.railway.app/clientes')
+}
